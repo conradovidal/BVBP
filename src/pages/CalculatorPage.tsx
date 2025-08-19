@@ -1,0 +1,76 @@
+import { useState } from "react";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import CalculatorHero from "@/components/calculator/CalculatorHero";
+import CalculatorForm from "@/components/calculator/CalculatorForm";
+import CalculatorReportPreview from "@/components/calculator/CalculatorReportPreview";
+import CalculatorSocialProof from "@/components/calculator/CalculatorSocialProof";
+import CalculatorFAQ from "@/components/calculator/CalculatorFAQ";
+import { Helmet } from "react-helmet-async";
+
+export interface CalculatorData {
+  companyName: string;
+  employees: number;
+  monthlyRevenue: string;
+  reworkHours: number;
+  unproductiveMeetings: number;
+  firefightingPercentage: number;
+  missedDeadlines: string;
+  decisionSpeed: number;
+  nonIntegratedSystems: number;
+  name: string;
+  email: string;
+  phone: string;
+  position: string;
+  mainChallenge: string;
+  wantsUpdates: boolean;
+}
+
+const CalculatorPage = () => {
+  const [calculatorData, setCalculatorData] = useState<Partial<CalculatorData>>({});
+  const [showResults, setShowResults] = useState(false);
+
+  const handleDataUpdate = (data: Partial<CalculatorData>) => {
+    setCalculatorData(prev => ({ ...prev, ...data }));
+  };
+
+  const handleCalculationComplete = () => {
+    setShowResults(true);
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Calculadora de Perdas Operacionais | BVBP - Descubra Quanto Está Perdendo</title>
+        <meta name="description" content="Calcule quanto sua empresa está perdendo mensalmente com processos ineficientes. Relatório personalizado gratuito em 3 minutos." />
+        <meta name="keywords" content="calculadora roi, perdas operacionais, eficiência empresarial, consultoria processos, BVBP" />
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        
+        <main className="flex-1">
+          <CalculatorHero />
+          
+          <section className="py-16 bg-background">
+            <div className="container mx-auto px-4">
+              <CalculatorForm 
+                onDataUpdate={handleDataUpdate}
+                onCalculationComplete={handleCalculationComplete}
+                calculatorData={calculatorData}
+              />
+            </div>
+          </section>
+
+          <CalculatorReportPreview />
+          <CalculatorSocialProof />
+          <CalculatorFAQ />
+        </main>
+
+        <Footer />
+      </div>
+    </>
+  );
+};
+
+export default CalculatorPage;
