@@ -23,7 +23,7 @@ const Header = () => {
             BVBP
           </div>
           <div className="hidden sm:block text-sm text-muted-foreground">
-            Building Valuable Business
+            Basso & Vidal Business Partners
           </div>
         </div>
 
