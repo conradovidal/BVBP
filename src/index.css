@@ -161,4 +161,15 @@
   .text-bvbp-growth {
     color: hsl(var(--bvbp-growth));
   }
+  
+  /* Fix dropdown/select positioning and background */
+  [data-radix-popper-content-wrapper] {
+    z-index: 50 !important;
+  }
+  
+  .select-content {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    z-index: 50;
+  }
 }

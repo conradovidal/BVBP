@@ -17,9 +17,9 @@ const Header = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center">
-          <div className="font-heading text-2xl font-bold text-bvbp-corporate">
+          <a href="/" className="font-heading text-2xl font-bold text-bvbp-corporate hover:text-bvbp-growth transition-smooth">
             BVBP
-          </div>
+          </a>
         </div>
 
         {/* Desktop Navigation */}
@@ -37,7 +37,11 @@ const Header = () => {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-          <Button className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white" size="lg">
+          <Button 
+            className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white" 
+            size="lg"
+            onClick={() => window.location.href = '/contato'}
+          >
             Diagnóstico Gratuito
           </Button>
         </div>
@@ -66,7 +70,11 @@ const Header = () => {
                 {item.label}
               </a>
             ))}
-            <Button className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white w-full" size="lg">
+            <Button 
+              className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white w-full" 
+              size="lg"
+              onClick={() => window.location.href = '/contato'}
+            >
               Diagnóstico Gratuito
             </Button>
           </nav>
