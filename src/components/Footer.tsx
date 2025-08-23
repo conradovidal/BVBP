@@ -3,23 +3,16 @@ import { MapPin, Mail, Phone, Linkedin, Instagram, ExternalLink } from "lucide-r
 
 const Footer = () => {
   const services = [
-    "Diagnóstico Gratuito",
     "Quick Win",
     "Momentum", 
-    "Transformation"
+    "Transformation",
+    "Retainer"
   ];
 
   const company = [
-    "Sobre a BVBP",
-    "Nossa Metodologia",
-    "Cases de Sucesso",
-    "Blog"
-  ];
-
-  const legal = [
-    "Política de Privacidade",
-    "Termos de Uso",
-    "LGPD"
+    "Sobre Nós",
+    "Contato",
+    "Diagnóstico Gratuito"
   ];
 
   return (
@@ -31,13 +24,9 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="mb-6">
               <div className="font-heading text-2xl font-bold mb-2">BVBP</div>
-              <div className="text-bvbp-growth font-semibold mb-4">
-                Building better business
+              <div className="text-white/80 font-medium mb-4 italic">
+                "Building better business"
               </div>
-              <p className="text-white/80 mb-6 leading-relaxed">
-                Transformamos processos bagunçados em operações eficientes através de 
-                soluções customizadas, gerando economia mensurável para SMBs em crescimento.
-              </p>
             </div>
 
             {/* Contact Info */}
@@ -86,7 +75,7 @@ const Footer = () => {
               {services.map((service, index) => (
                 <a
                   key={index}
-                  href="#servicos"
+                  href="/servicos"
                   className="block text-white/80 hover:text-bvbp-growth transition-smooth"
                 >
                   {service}
@@ -99,30 +88,15 @@ const Footer = () => {
           <div>
             <h3 className="font-heading text-lg font-bold mb-4">Empresa</h3>
             <div className="space-y-2">
-              {company.map((item, index) => (
-                <a
-                  key={index}
-                  href="#"
-                  className="block text-white/80 hover:text-bvbp-growth transition-smooth"
-                >
-                  {item}
-                </a>
-              ))}
-            </div>
-
-            <div className="mt-6">
-              <h4 className="font-semibold mb-2">Legal</h4>
-              <div className="space-y-2">
-                {legal.map((item, index) => (
-                  <a
-                    key={index}
-                    href="#"
-                    className="block text-sm text-white/60 hover:text-bvbp-growth transition-smooth"
-                  >
-                    {item}
-                  </a>
-                ))}
-              </div>
+              <a href="/sobre" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+                Sobre Nós
+              </a>
+              <a href="/contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+                Contato
+              </a>
+              <a href="/" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+                Diagnóstico Gratuito
+              </a>
             </div>
           </div>
         </div>

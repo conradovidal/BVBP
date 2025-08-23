@@ -6,9 +6,9 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navigationItems = [
+    { label: "Início", href: "/" },
     { label: "Sobre", href: "/sobre" },
     { label: "Serviços", href: "/servicos" },
-    { label: "Calculadora", href: "/calculadora-roi" },
     { label: "Contato", href: "/contato" },
   ];
 
@@ -16,12 +16,9 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <div className="font-heading text-2xl font-bold text-bvbp-corporate">
             BVBP
-          </div>
-          <div className="hidden sm:block text-sm text-muted-foreground">
-            Basso & Vidal Business Partners
           </div>
         </div>
 
@@ -40,7 +37,7 @@ const Header = () => {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-          <Button variant="success" size="lg">
+          <Button className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white" size="lg">
             Diagnóstico Gratuito
           </Button>
         </div>
@@ -69,7 +66,7 @@ const Header = () => {
                 {item.label}
               </a>
             ))}
-            <Button variant="success" size="lg" className="w-full">
+            <Button className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white w-full" size="lg">
               Diagnóstico Gratuito
             </Button>
           </nav>

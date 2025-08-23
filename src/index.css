@@ -1,47 +1,47 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* BVBP Design System - High-conversion landing page */
+/* BVBP Design System - Minimalist & Focused */
 
 @layer base {
   :root {
-    /* Brand Colors - EMERALD LEAD Palette */
-    --bvbp-corporate: 210 20% 22%; /* #1F2937 - Cinza Escuro */
-    --bvbp-corporate-light: 210 15% 42%; /* #6B7280 - Cinza Médio */
-    --bvbp-corporate-dark: 210 25% 18%;
+    /* Brand Colors - New Minimalist Palette */
+    --bvbp-corporate: 214 31% 20%; /* #1B365D - Azul Corporativo */
+    --bvbp-corporate-light: 210 18% 35%; /* #4A5568 - Cinza Executivo */
+    --bvbp-corporate-dark: 214 35% 15%;
     
-    --bvbp-growth: 158 64% 52%; /* #10B981 - Verde Emerald */
-    --bvbp-growth-light: 155 100% 97%; /* #ECFDF5 - Verde Claro */
-    --bvbp-growth-dark: 158 84% 40%; /* #059669 - Verde Escuro para hover */
+    --bvbp-growth: 142 69% 58%; /* #38A169 - Verde Crescimento */
+    --bvbp-growth-light: 142 80% 95%; /* Light green background */
+    --bvbp-growth-dark: 142 69% 48%; /* Darker green for hover */
     
     /* Semantic colors */
     --background: 0 0% 100%; /* #FFFFFF - Branco Puro */
-    --foreground: 210 20% 22%; /* #1F2937 - Cinza Escuro */
+    --foreground: 214 31% 20%; /* #1B365D - Azul Corporativo */
     
     --card: 0 0% 100%; /* #FFFFFF - Branco Puro */
-    --card-foreground: 210 20% 22%; /* #1F2937 - Cinza Escuro */
+    --card-foreground: 214 31% 20%; /* #1B365D - Azul Corporativo */
     
-    --primary: 158 64% 52%; /* #10B981 - Verde Emerald */
+    --primary: 142 69% 58%; /* #38A169 - Verde Crescimento */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 0 0% 98%; /* #FAFAFA - Off-White */
-    --secondary-foreground: 210 20% 22%; /* #1F2937 - Cinza Escuro */
+    --secondary: 0 0% 96%; /* Light gray background */
+    --secondary-foreground: 214 31% 20%; /* #1B365D - Azul Corporativo */
     
-    --success: 158 64% 52%; /* #10B981 - Verde Emerald */
+    --success: 142 69% 58%; /* #38A169 - Verde Crescimento */
     --success-foreground: 0 0% 100%;
     
-    --muted: 0 0% 98%; /* #FAFAFA - Off-White */
-    --muted-foreground: 210 15% 42%; /* #6B7280 - Cinza Médio */
+    --muted: 0 0% 96%; /* Light gray background */
+    --muted-foreground: 210 18% 35%; /* #4A5568 - Cinza Executivo */
     
-    --accent: 158 64% 52%; /* #10B981 - Verde Emerald */
+    --accent: 142 69% 58%; /* #38A169 - Verde Crescimento */
     --accent-foreground: 0 0% 100%;
     
     --border: 210 15% 90%;
     --input: 210 15% 90%;
-    --ring: 158 64% 52%; /* #10B981 - Verde Emerald */
+    --ring: 142 69% 58%; /* #38A169 - Verde Crescimento */
     
     --radius: 0.75rem;
     
