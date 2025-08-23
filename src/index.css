@@ -8,40 +8,40 @@
 
 @layer base {
   :root {
-    /* Brand Colors - Corporate Blue & Growth Green */
-    --bvbp-corporate: 210 65% 20%; /* #1B365D */
-    --bvbp-corporate-light: 210 45% 35%;
-    --bvbp-corporate-dark: 210 75% 15%;
+    /* Brand Colors - EMERALD LEAD Palette */
+    --bvbp-corporate: 210 20% 22%; /* #1F2937 - Cinza Escuro */
+    --bvbp-corporate-light: 210 15% 42%; /* #6B7280 - Cinza Médio */
+    --bvbp-corporate-dark: 210 25% 18%;
     
-    --bvbp-growth: 146 50% 42%; /* #38A169 */
-    --bvbp-growth-light: 146 40% 55%;
-    --bvbp-growth-dark: 146 60% 35%;
+    --bvbp-growth: 158 64% 52%; /* #10B981 - Verde Emerald */
+    --bvbp-growth-light: 155 100% 97%; /* #ECFDF5 - Verde Claro */
+    --bvbp-growth-dark: 158 84% 40%; /* #059669 - Verde Escuro para hover */
     
     /* Semantic colors */
-    --background: 0 0% 100%;
-    --foreground: 210 15% 15%;
+    --background: 0 0% 100%; /* #FFFFFF - Branco Puro */
+    --foreground: 210 20% 22%; /* #1F2937 - Cinza Escuro */
     
-    --card: 0 0% 100%;
-    --card-foreground: 210 15% 15%;
+    --card: 0 0% 100%; /* #FFFFFF - Branco Puro */
+    --card-foreground: 210 20% 22%; /* #1F2937 - Cinza Escuro */
     
-    --primary: 210 65% 20%; /* BVBP Corporate */
+    --primary: 158 64% 52%; /* #10B981 - Verde Emerald */
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 210 15% 96%;
-    --secondary-foreground: 210 65% 20%;
+    --secondary: 0 0% 98%; /* #FAFAFA - Off-White */
+    --secondary-foreground: 210 20% 22%; /* #1F2937 - Cinza Escuro */
     
-    --success: 146 50% 42%; /* BVBP Growth */
+    --success: 158 64% 52%; /* #10B981 - Verde Emerald */
     --success-foreground: 0 0% 100%;
     
-    --muted: 210 10% 95%;
-    --muted-foreground: 210 10% 45%;
+    --muted: 0 0% 98%; /* #FAFAFA - Off-White */
+    --muted-foreground: 210 15% 42%; /* #6B7280 - Cinza Médio */
     
-    --accent: 146 50% 42%;
+    --accent: 158 64% 52%; /* #10B981 - Verde Emerald */
     --accent-foreground: 0 0% 100%;
     
     --border: 210 15% 90%;
     --input: 210 15% 90%;
-    --ring: 210 65% 20%;
+    --ring: 158 64% 52%; /* #10B981 - Verde Emerald */
     
     --radius: 0.75rem;
     
