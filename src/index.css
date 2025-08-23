@@ -108,3 +108,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Custom Background Classes */
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .bg-gradient-success {
+    background: var(--gradient-success);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .bg-bvbp-growth-light {
+    background-color: hsl(var(--bvbp-growth-light));
+  }
+  
+  /* Custom Shadow Classes */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+  
+  .shadow-success {
+    box-shadow: var(--shadow-success);
+  }
+  
+  /* Custom Transition Classes */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+  
+  /* Typography Classes */
+  .font-heading {
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .text-bvbp-corporate {
+    color: hsl(var(--bvbp-corporate));
+  }
+  
+  .text-bvbp-growth {
+    color: hsl(var(--bvbp-growth));
+  }
+}
