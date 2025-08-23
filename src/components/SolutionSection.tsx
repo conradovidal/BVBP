@@ -18,8 +18,8 @@ const SolutionSection = () => {
     },
     {
       icon: Wrench,
-      title: "Implementação Hands-On",
-      description: "Não entregamos PowerPoint - colocamos a mão na massa",
+      title: "Execução Lado a Lado",
+      description: "Não entregamos PowerPoint - somos parceiros de execução, mão na massa junto com você",
       features: ["Implementação prática", "Acompanhamento diário", "Ajustes em tempo real"]
     },
     {
@@ -39,11 +39,11 @@ const SolutionSection = () => {
             A DIFERENÇA BVBP
           </div>
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-            A BVBP É Diferente: Soluções Sob Medida
+            Nossa Forma de Trabalhar: Parceiros de Execução
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Enquanto outras consultorias empurram métodos prontos, nós criamos soluções específicas 
-            para sua realidade, garantindo resultados reais e duradouros
+            Enquanto outras abordagens empurram métodos prontos, somos parceiros de negócio que criam 
+            soluções específicas para sua realidade, executando lado a lado com você
           </p>
         </div>
 
@@ -85,7 +85,7 @@ const SolutionSection = () => {
               {/* Traditional Consulting */}
               <div className="p-8 bg-red-50 border-r border-red-200">
                 <h3 className="font-heading text-xl font-bold text-red-700 mb-4 text-center">
-                  Consultorias Tradicionais
+                  Abordagens Comuns
                 </h3>
                 <div className="space-y-3">
                   {[
@@ -106,13 +106,13 @@ const SolutionSection = () => {
               {/* BVBP Approach */}
               <div className="p-8 bg-bvbp-growth/10">
                 <h3 className="font-heading text-xl font-bold text-bvbp-corporate mb-4 text-center">
-                  Abordagem BVBP
+                  Nossa Forma de Trabalhar
                 </h3>
                 <div className="space-y-3">
                   {[
                     "Soluções 100% customizadas",
                     "Específico para sua realidade",
-                    "Implementação hands-on",
+                    "Execução lado a lado com você",
                     "Autonomia em 90 dias",
                     "ROI comprovado e mensurável"
                   ].map((item, index) => (

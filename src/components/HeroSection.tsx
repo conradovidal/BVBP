@@ -19,22 +19,19 @@ const HeroSection = () => {
             {/* Main Headline */}
             <div className="space-y-4">
               <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate leading-tight">
-                Pare de Jogar{" "}
-                <span className="text-bvbp-growth">R$ 30-50 Mil</span>{" "}
-                por Mês no Lixo
+                Somos parceiros de negócio que transformam{" "}
+                <span className="text-bvbp-growth">processos bagunçados</span>{" "}
+                em operações que realmente funcionam,{" "}
+                <span className="text-bvbp-growth">lado a lado com você</span>
               </h1>
-              <h2 className="font-heading text-xl md:text-2xl font-semibold text-foreground">
-                com Processos Bagunçados
-              </h2>
             </div>
 
             {/* Sub-headline */}
             <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Transformamos processos bagunçados em operações eficientes através de 
-              <span className="font-semibold text-bvbp-corporate"> soluções customizadas</span> de 
-              acordo com a necessidade de cada cliente, gerando 
-              <span className="font-semibold text-bvbp-growth"> economia mensurável</span> já 
-              nos primeiros 60 dias.
+              Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida 
+              e <span className="font-semibold text-bvbp-growth">resultados mensuráveis em até 90 dias</span>.
+              Colocamos a <span className="font-semibold text-bvbp-corporate">mão na massa</span> e executamos 
+              junto com sua equipe.
             </p>
 
             {/* Value Bullets */}

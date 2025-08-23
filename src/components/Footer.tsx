@@ -108,7 +108,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row items-center justify-between">
             <div className="mb-4 md:mb-0">
               <h3 className="font-heading text-lg font-bold text-white mb-1">
-                Pronto para parar de perder dinheiro?
+                Queremos ser parceiros do seu crescimento. Vamos conversar?
               </h3>
               <p className="text-white/90 text-sm">
                 Comece com nosso diagnóstico gratuito hoje mesmo

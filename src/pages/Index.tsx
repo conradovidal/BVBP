@@ -8,8 +8,8 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>BVBP - Transformamos processos bagunçados em operações que funcionam</title>
-        <meta name="description" content="Consultoria boutique para SMBs. Diagnóstico gratuito, soluções sob medida, resultados mensuráveis em até 90 dias." />
+        <title>BVBP - Parceiros de negócio que transformam operações lado a lado com você</title>
+        <meta name="description" content="Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida e resultados mensuráveis em até 90 dias." />
       </Helmet>
       
       <div className="min-h-screen">
@@ -20,14 +20,15 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto text-center space-y-8">
                 <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate leading-tight">
-                  Transformamos processos{" "}
-                  <span className="text-bvbp-growth">bagunçados</span>{" "}
-                  em operações que funcionam
+                  Somos parceiros de negócio que transformam{" "}
+                  <span className="text-bvbp-growth">processos bagunçados</span>{" "}
+                  em operações que realmente funcionam,{" "}
+                  <span className="text-bvbp-growth">lado a lado com você</span>
                 </h1>
                 
                 <h2 className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-                  Consultoria boutique para SMBs. Diagnóstico gratuito, soluções sob medida, 
-                  resultados mensuráveis em até 90 dias.
+                  Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida 
+                  e resultados mensuráveis em até 90 dias.
                 </h2>
                 
                 <div className="pt-4">
@@ -99,7 +100,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate text-center mb-12">
-                  Por Que BVBP É Diferente
+                  Nossa Forma de Trabalhar É Diferente
                 </h2>
                 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -127,9 +128,9 @@ const Index = () => {
                     <div className="w-16 h-16 bg-bvbp-growth-light rounded-full flex items-center justify-center mx-auto">
                       <Zap className="h-8 w-8 text-bvbp-growth" />
                     </div>
-                    <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Implementação Hands-On</h3>
+                    <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Execução Lado a Lado</h3>
                     <p className="text-muted-foreground">
-                      Não entregamos PowerPoint - colocamos a mão na massa e fazemos acontecer
+                      Não entregamos PowerPoint - somos parceiros de execução, mão na massa junto com você
                     </p>
                   </div>
                   

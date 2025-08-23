@@ -96,7 +96,7 @@ const ProblemSection = () => {
                 <div className="bg-white p-6 rounded-lg border-l-4 border-l-bvbp-corporate">
                   <p className="text-bvbp-corporate font-semibold mb-2">O problema:</p>
                   <p className="text-foreground">
-                    Consultorias tradicionais oferecem <em>"receitas prontas"</em> que não encaixam 
+                    Abordagens tradicionais oferecem <em>"receitas prontas"</em> que não encaixam 
                     na <strong>SUA realidade específica</strong>. Resultado? Dinheiro jogado fora 
                     em soluções que não funcionam na prática.
                   </p>
