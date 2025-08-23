@@ -34,6 +34,7 @@ const Index = () => {
                   <Button 
                     size="xl" 
                     className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4"
+                    onClick={() => window.location.href = '/contato'}
                   >
                     Agendar Diagnóstico Gratuito
                   </Button>
@@ -189,6 +190,7 @@ const Index = () => {
                 <Button 
                   size="xl" 
                   className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4"
+                  onClick={() => window.location.href = '/contato'}
                 >
                   QUERO MEU DIAGNÓSTICO GRATUITO
                 </Button>

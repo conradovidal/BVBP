@@ -299,7 +299,13 @@ const ContactPage = () => {
                 Descubra exatamente onde sua empresa está perdendo dinheiro antes mesmo de conversar conosco
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="hero" size="xl">
+                <Button 
+                  variant="hero" 
+                  size="xl"
+                  onClick={() => {
+                    document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
                   FAZER DIAGNÓSTICO GRATUITO
                 </Button>
                 <Button variant="outline-hero" size="xl">

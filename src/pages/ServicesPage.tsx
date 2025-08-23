@@ -311,6 +311,7 @@ const ServicesPage = () => {
                       variant={service.popular ? "success" : "hero"} 
                       className="w-full"
                       size="lg"
+                      onClick={() => window.location.href = '/contato'}
                     >
                       {service.cta}
                     </Button>
@@ -365,7 +366,12 @@ const ServicesPage = () => {
                     <p className="text-muted-foreground">
                       Comece com nosso diagnóstico gratuito - sem compromisso, só clareza
                     </p>
-                    <Button variant="hero" size="xl" className="group">
+                    <Button 
+                      variant="hero" 
+                      size="xl" 
+                      className="group"
+                      onClick={() => window.location.href = '/contato'}
+                    >
                       COMEÇAR COM DIAGNÓSTICO GRATUITO
                       <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
