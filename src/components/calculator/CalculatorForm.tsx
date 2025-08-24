@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, TrendingDown, DollarSign, BarChart3, Target, Calculator } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface ProcessCalculatorData {
@@ -56,15 +56,25 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
     // Desperdício anual = mensal × 12
     const annualWaste = monthlyWaste * 12;
     
-    // Economia potencial = mensal × 20–40% (mostrar faixa no resultado)
-    const savingsMin = monthlyWaste * 0.20;
-    const savingsMax = monthlyWaste * 0.40;
+    // Economia inicial (90 dias) = mensal × 20–40%
+    const initialSavingsMin = monthlyWaste * 0.20;
+    const initialSavingsMax = monthlyWaste * 0.40;
+    
+    // Economia sustentável (após capacitação) = mensal × 40–60%
+    const sustainableSavingsMin = monthlyWaste * 0.40;
+    const sustainableSavingsMax = monthlyWaste * 0.60;
+    
+    // ROI potencial no primeiro ano
+    const roiMultiplier = 4;
 
     return {
       monthlyLoss: Math.round(monthlyWaste),
       annualLoss: Math.round(annualWaste),
-      savingsMin: Math.round(savingsMin),
-      savingsMax: Math.round(savingsMax),
+      initialSavingsMin: Math.round(initialSavingsMin),
+      initialSavingsMax: Math.round(initialSavingsMax),
+      sustainableSavingsMin: Math.round(sustainableSavingsMin),
+      sustainableSavingsMax: Math.round(sustainableSavingsMax),
+      roiMultiplier,
       processType: formData.processType || "processo selecionado"
     };
   };
@@ -199,36 +209,22 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
             <div className="space-y-8">
               {/* Copy principal */}
               <div className="text-center space-y-4 p-6 bg-gradient-subtle rounded-lg">
-                <div className="flex justify-center items-center gap-2 text-xl font-bold text-bvbp-corporate">
-                  PERDAS E OPORTUNIDADES DE ECONOMIA
-                </div>
                 <p className="text-lg text-muted-foreground">
                   Só no processo de <strong>{results.processType}</strong>, sua empresa pode estar perdendo cerca de{" "}
                   <span className="text-destructive font-bold">R$ {results.monthlyLoss.toLocaleString()}/mês</span>{" "}
                   (<span className="text-destructive font-bold">R$ {results.annualLoss.toLocaleString()}/ano</span>) em retrabalho e reuniões improdutivas.
                 </p>
                 <p className="text-lg text-muted-foreground">
-                  Com a BVBP, é realista recuperar entre{" "}
-                  <span className="text-success font-bold">R$ {results.savingsMin.toLocaleString()}</span> e{" "}
-                  <span className="text-success font-bold">R$ {results.savingsMax.toLocaleString()}</span> por mês em até 90 dias.
+                  Com a BVBP, é realista recuperar parte desse valor em até 90 dias — e sustentar ganhos muito maiores após a capacitação da sua equipe.
                 </p>
-                <p className="text-lg text-muted-foreground">
-                  <strong>🎯 Esse é apenas um processo — imagine o impacto na sua operação completa.</strong>
-                </p>
-                <div className="mt-4 p-4 bg-background rounded-lg border">
-                  <p className="text-sm text-muted-foreground">
-                    <strong>Como calculamos:</strong> Com base no número de horas de retrabalho ({formData.reworkHours}h) e reuniões improdutivas ({formData.meetingHours}h) informadas, 
-                    considerando uma equipe de {formData.teamSize} pessoas e salário médio de R$ {formData.averageSalary?.toLocaleString()}, 
-                    estimamos os custos semanais multiplicados por 4 semanas.
-                  </p>
-                </div>
               </div>
 
               {/* Blocos de resultados */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
                   <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <span className="text-destructive">📉</span> Perda Mensal Estimada
+                    <TrendingDown className="h-5 w-5 text-destructive" />
+                    Perda Mensal Estimada
                   </h3>
                   <div className="text-3xl font-bold text-destructive">
                     R$ {results.monthlyLoss.toLocaleString()}
@@ -237,57 +233,78 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
 
                 <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
                   <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <span className="text-destructive">📉</span> Perda Anual Estimada
+                    <BarChart3 className="h-5 w-5 text-destructive" />
+                    Perda Anual Estimada
                   </h3>
                   <div className="text-3xl font-bold text-destructive">
                     R$ {results.annualLoss.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success">
+                <div className="text-center p-6 bg-primary/10 rounded-lg border-l-4 border-primary">
                   <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <span className="text-success">💰</span> Economia Potencial (Mín)
+                    <DollarSign className="h-5 w-5 text-primary" />
+                    Economia Inicial Estimada
                   </h3>
-                  <div className="text-3xl font-bold text-success">
-                    R$ {results.savingsMin.toLocaleString()}
+                  <div className="text-2xl font-bold text-primary">
+                    R$ {results.initialSavingsMin.toLocaleString()} – {results.initialSavingsMax.toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
-                    em até 90 dias
+                    (90 dias)
                   </div>
                 </div>
 
-                <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success">
+                <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success lg:col-span-2">
                   <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <span className="text-success">📊</span> Economia Potencial (Máx)
+                    <Target className="h-5 w-5 text-success" />
+                    Economia Sustentável Estimada
                   </h3>
-                  <div className="text-3xl font-bold text-success">
-                    R$ {results.savingsMax.toLocaleString()}
+                  <div className="text-2xl font-bold text-success">
+                    R$ {results.sustainableSavingsMin.toLocaleString()} – {results.sustainableSavingsMax.toLocaleString()} por mês
                   </div>
                   <div className="text-sm text-muted-foreground mt-1">
-                    em até 90 dias
+                    (após capacitação)
+                  </div>
+                </div>
+
+                <div className="text-center p-6 bg-accent/10 rounded-lg border-l-4 border-accent">
+                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+                    <Calculator className="h-5 w-5 text-accent-foreground" />
+                    ROI Potencial
+                  </h3>
+                  <div className="text-3xl font-bold text-accent-foreground">
+                    até {results.roiMultiplier}x
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    no primeiro ano
                   </div>
                 </div>
               </div>
 
+              {/* Racional */}
+              <div className="p-4 bg-muted/50 rounded-lg border">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Como calculamos:</strong> Baseado no número de funcionários ({formData.teamSize}), horas de retrabalho ({formData.reworkHours}h) e reuniões improdutivas ({formData.meetingHours}h) informadas, multiplicamos pelo salário médio do time (R$ {formData.averageSalary?.toLocaleString()}) e pelos custos semanais/mensais. Para a economia sustentável, consideramos ganhos contínuos após a capacitação da equipe.
+                </p>
+              </div>
+
               {/* CTA */}
-              <div className="text-center space-y-4 p-6 bg-gradient-subtle rounded-lg">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center p-6 bg-gradient-subtle rounded-lg">
                 <Button 
                   size="lg" 
-                  className="h-14 text-lg px-8 bg-success hover:bg-success/90 text-background transition-all duration-300 hover:scale-105"
+                  className="h-14 text-lg px-8 bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 hover:scale-105 w-full sm:w-auto"
                   onClick={() => window.location.href = '/contato'}
                 >
-                  Agendar Diagnóstico Gratuito
+                  Agendar Diagnóstico
                 </Button>
-                <div className="mt-4">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="h-12 text-base px-6"
-                    onClick={() => window.location.href = '/servicos'}
-                  >
-                    Quer entender como resolver essa dor na prática? Veja nossos serviços.
-                  </Button>
-                </div>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="h-14 text-lg px-8 w-full sm:w-auto"
+                  onClick={() => window.location.href = '/servicos'}
+                >
+                  Conheça Nossos Serviços
+                </Button>
               </div>
             </div>
           )}
