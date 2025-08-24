@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Target, Users, Zap, TrendingUp } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
 const Index = () => {
-  return (
-    <>
+  return <>
       <Helmet>
         <title>BVBP - Parceiros de negócio que transformam operações lado a lado com você</title>
         <meta name="description" content="Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida e resultados mensuráveis em até 90 dias." />
@@ -16,25 +14,18 @@ const Index = () => {
         <Header />
         <main>
           {/* Hero Section */}
-          <section className="py-20 lg:py-32 bg-background">
+          <section className="py-16 lg:py-24 bg-background">
             <div className="container mx-auto px-4">
-              <div className="max-w-5xl mx-auto text-center space-y-12">
-                <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-bvbp-corporate leading-tight">
-                  <span className="text-bvbp-growth">Crescimento</span> sem caos.
+              <div className="max-w-4xl mx-auto text-center space-y-8">
+                <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate leading-tight">
+                  Crescer sem caos é possível.
                 </h1>
                 
-                <h2 className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  Transformamos processos bagunçados em operações que funcionam, lado a lado com você.<br />
-                  Resultados visíveis em até 90 dias.
-                </h2>
+                <h2 className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">Transformamos processos bagunçados em sistemas que funcionam, com resultados claros em até 90 dias.</h2>
                 
-                <div className="pt-8">
-                  <Button 
-                    size="xl" 
-                    className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-10 py-5 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-bvbp-growth/25"
-                    onClick={() => window.location.href = '/contato'}
-                  >
-                    Agendar diagnóstico gratuito
+                <div className="pt-4">
+                  <Button size="xl" className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4" onClick={() => window.location.href = '/contato'}>
+                    Agendar Diagnóstico Gratuito
                   </Button>
                 </div>
               </div>
@@ -46,7 +37,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate text-center mb-12">
-                  Reconhece estes sintomas?
+                  Reconhece Estes Sintomas?
                 </h2>
                 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -97,7 +88,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate text-center mb-12">
-                  Nossa forma de trabalhar é diferente
+                  Nossa Forma de Trabalhar É Diferente
                 </h2>
                 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -185,12 +176,8 @@ const Index = () => {
                   Comece com diagnóstico gratuito - sem compromisso, só clareza.
                 </p>
                 
-                <Button 
-                  size="xl" 
-                  className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4"
-                  onClick={() => window.location.href = '/contato'}
-                >
-                  Quero meu diagnóstico gratuito
+                <Button size="xl" className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4" onClick={() => window.location.href = '/contato'}>
+                  QUERO MEU DIAGNÓSTICO GRATUITO
                 </Button>
               </div>
             </div>
@@ -198,8 +185,6 @@ const Index = () => {
         </main>
         <Footer />
       </div>
-    </>
-  );
+    </>;
 };
-
 export default Index;
