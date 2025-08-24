@@ -46,7 +46,8 @@ const ContactPage = () => {
       icon: MailIcon,
       title: "Email",
       info: "basso.vidal.bp@gmail.com",
-      description: "Resposta em até 4 horas úteis"
+      description: "Resposta em até 4 horas úteis",
+      link: "mailto:basso.vidal.bp@gmail.com?subject=[Contato BVBP] Solicitação de Diagnóstico"
     },
     {
       icon: PhoneIcon,
@@ -128,13 +129,13 @@ const ContactPage = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Corporativo *</Label>
+                        <Label htmlFor="email">Email *</Label>
                         <Input
                           id="email"
                           type="email"
                           value={formData.email}
                           onChange={(e) => handleInputChange("email", e.target.value)}
-                          placeholder="seu@empresa.com.br"
+                          placeholder="seu@email.com"
                           required
                         />
                       </div>
@@ -142,23 +143,21 @@ const ContactPage = () => {
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="company">Empresa *</Label>
+                        <Label htmlFor="company">Empresa</Label>
                         <Input
                           id="company"
                           value={formData.company}
                           onChange={(e) => handleInputChange("company", e.target.value)}
                           placeholder="Nome da sua empresa"
-                          required
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Telefone/WhatsApp *</Label>
+                        <Label htmlFor="phone">Telefone/WhatsApp</Label>
                         <Input
                           id="phone"
                           value={formData.phone}
                           onChange={(e) => handleInputChange("phone", e.target.value)}
                           placeholder="+55 51 99999-9999"
-                          required
                         />
                       </div>
                     </div>
@@ -166,13 +165,15 @@ const ContactPage = () => {
                     <div className="space-y-2">
                       <Label htmlFor="role">Cargo/Função</Label>
                       <Select>
-                        <SelectTrigger>
+                        <SelectTrigger className="bg-background border-input">
                           <SelectValue placeholder="Selecione seu cargo" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background border-input z-50">
                           <SelectItem value="ceo">CEO/Founder</SelectItem>
-                          <SelectItem value="diretor">Diretor Operacional</SelectItem>
+                          <SelectItem value="diretor">Diretor/Executivo</SelectItem>
                           <SelectItem value="gerente">Gerente/Coordenador</SelectItem>
+                          <SelectItem value="analista">Analista/Especialista</SelectItem>
+                          <SelectItem value="consultor">Consultor</SelectItem>
                           <SelectItem value="outro">Outro</SelectItem>
                         </SelectContent>
                       </Select>
@@ -193,7 +194,7 @@ const ContactPage = () => {
                     <div className="flex items-center space-x-2">
                       <input type="checkbox" id="newsletter" className="rounded" />
                       <Label htmlFor="newsletter" className="text-sm text-muted-foreground">
-                        Quero receber dicas de otimização por email
+                        Aceito ser contatado pela equipe BVBP
                       </Label>
                     </div>
 
@@ -221,24 +222,33 @@ const ContactPage = () => {
                     {contactInfo.map((contact, index) => {
                       const IconComponent = contact.icon;
                       return (
-                        <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
-                          <div className="flex items-start space-x-4">
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero">
-                              <IconComponent className="h-6 w-6 text-white" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-bvbp-corporate mb-1">
-                                {contact.title}
-                              </h3>
-                              <p className="text-lg font-medium text-foreground mb-1 whitespace-pre-line">
-                                {contact.info}
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {contact.description}
-                              </p>
-                            </div>
-                          </div>
-                        </Card>
+                         <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
+                           <div className="flex items-start space-x-4">
+                             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero">
+                               <IconComponent className="h-6 w-6 text-white" />
+                             </div>
+                             <div>
+                               <h3 className="font-semibold text-bvbp-corporate mb-1">
+                                 {contact.title}
+                               </h3>
+                               {contact.link ? (
+                                 <a 
+                                   href={contact.link}
+                                   className="text-lg font-medium text-foreground mb-1 whitespace-pre-line hover:text-bvbp-growth transition-colors"
+                                 >
+                                   {contact.info}
+                                 </a>
+                               ) : (
+                                 <p className="text-lg font-medium text-foreground mb-1 whitespace-pre-line">
+                                   {contact.info}
+                                 </p>
+                               )}
+                               <p className="text-sm text-muted-foreground">
+                                 {contact.description}
+                               </p>
+                             </div>
+                           </div>
+                         </Card>
                       );
                     })}
                   </div>

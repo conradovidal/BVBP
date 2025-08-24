@@ -176,11 +176,21 @@ const AboutPage = () => {
                   </p>
                 </div>
                 
-                <div className="text-center mt-8">
-                  <Button variant="hero" size="xl" className="group" onClick={() => window.location.href = '/servicos'}>
-                    Conheça Nossos Serviços
-                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
+                <div className="text-center mt-8 space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button variant="hero" size="xl" className="group" onClick={() => window.location.href = '/servicos'}>
+                      Conheça Nossos Serviços
+                      <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                    <Button 
+                      variant="outline-hero" 
+                      size="xl" 
+                      onClick={() => window.location.href = '/calculadora-roi'}
+                      className="hover:scale-105 transition-transform"
+                    >
+                      Descubra Quanto Sua Empresa Pode Economizar
+                    </Button>
+                  </div>
                 </div>
               </Card>
             </div>

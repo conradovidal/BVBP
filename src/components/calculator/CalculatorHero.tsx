@@ -10,7 +10,7 @@ const CalculatorHero = () => {
         </h1>
 
         <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-          Descubra em 3 passos rápidos. Estimativa personalizada, sem jargão, sem compromisso.
+          Descubra em minutos quanto sua empresa pode estar perdendo — estimativa simples, direta e sem compromisso.
         </p>
 
         <div className="flex items-center justify-center gap-8 max-w-2xl mx-auto">

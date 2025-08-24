@@ -29,7 +29,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
   const [formData, setFormData] = useState<Partial<ProcessCalculatorData>>(calculatorData);
   const [results, setResults] = useState<any>(null);
 
-  const totalSteps = 3;
+  const totalSteps = 2;
   const progress = (currentStep / totalSteps) * 100;
 
   const updateFormData = (updates: Partial<ProcessCalculatorData>) => {
@@ -72,7 +72,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
-      if (currentStep === 2) {
+      if (currentStep === 1) {
         const calculatedResults = calculateResults();
         setResults(calculatedResults);
       }
@@ -98,9 +98,8 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-center">
-            {currentStep === 1 && "Passo 1 de 3: Escolha o processo a avaliar"}
-            {currentStep === 2 && "Passo 2 de 3: Detalhes do processo"}
-            {currentStep === 3 && "Resultado estimado"}
+            {currentStep === 1 && "Informações Básicas"}
+            {currentStep === 2 && "Resultado Estimado"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -113,19 +112,17 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                     <SelectValue placeholder="Selecione o processo" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-input z-50">
-                    <SelectItem value="Atendimento ao cliente">Atendimento ao cliente</SelectItem>
+                    <SelectItem value="Atendimento ao Cliente">Atendimento ao Cliente</SelectItem>
                     <SelectItem value="Vendas">Vendas</SelectItem>
                     <SelectItem value="Produção/Operação">Produção/Operação</SelectItem>
-                    <SelectItem value="Reuniões de liderança">Reuniões de liderança</SelectItem>
-                    <SelectItem value="Outro">Outro</SelectItem>
+                    <SelectItem value="Reuniões de Liderança">Reuniões de Liderança</SelectItem>
+                    <SelectItem value="Finanças/Administração">Finanças/Administração</SelectItem>
+                    <SelectItem value="RH/People Ops">RH/People Ops</SelectItem>
+                    <SelectItem value="TI/Sistemas">TI/Sistemas</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-          )}
 
-          {currentStep === 2 && (
-            <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Tamanho da equipe envolvida: {formData.teamSize || 1} pessoas
@@ -198,15 +195,12 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
             </div>
           )}
 
-          {currentStep === 3 && results && (
+          {currentStep === 2 && results && (
             <div className="space-y-8">
               {/* Copy principal */}
               <div className="text-center space-y-4 p-6 bg-gradient-subtle rounded-lg">
-                <div className="flex justify-center items-center gap-2 text-2xl">
-                  <span>💸</span>
-                  <span className="font-bold">PERDAS</span>
-                  <span>📈</span>
-                  <span className="font-bold">ECONOMIA</span>
+                <div className="flex justify-center items-center gap-2 text-xl font-bold text-bvbp-corporate">
+                  PERDAS E OPORTUNIDADES DE ECONOMIA
                 </div>
                 <p className="text-lg text-muted-foreground">
                   Só no processo de <strong>{results.processType}</strong>, sua empresa pode estar perdendo cerca de{" "}
@@ -219,28 +213,41 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                   <span className="text-success font-bold">R$ {results.savingsMax.toLocaleString()}</span> por mês em até 90 dias.
                 </p>
                 <p className="text-lg text-muted-foreground">
-                  <strong>👉 Esse é apenas um processo — imagine o impacto na sua operação completa.</strong>
+                  <strong>🎯 Esse é apenas um processo — imagine o impacto na sua operação completa.</strong>
                 </p>
+                <div className="mt-4 p-4 bg-background rounded-lg border">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Como calculamos:</strong> Com base no número de horas de retrabalho ({formData.reworkHours}h) e reuniões improdutivas ({formData.meetingHours}h) informadas, 
+                    considerando uma equipe de {formData.teamSize} pessoas e salário médio de R$ {formData.averageSalary?.toLocaleString()}, 
+                    estimamos os custos semanais multiplicados por 4 semanas.
+                  </p>
+                </div>
               </div>
 
               {/* Blocos de resultados */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
-                  <h3 className="text-lg font-semibold mb-2">💸 Perda Mensal Estimada</h3>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+                    <span className="text-destructive">📉</span> Perda Mensal Estimada
+                  </h3>
                   <div className="text-3xl font-bold text-destructive">
                     R$ {results.monthlyLoss.toLocaleString()}
                   </div>
                 </div>
 
                 <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
-                  <h3 className="text-lg font-semibold mb-2">💸 Perda Anual Estimada</h3>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+                    <span className="text-destructive">📉</span> Perda Anual Estimada
+                  </h3>
                   <div className="text-3xl font-bold text-destructive">
                     R$ {results.annualLoss.toLocaleString()}
                   </div>
                 </div>
 
                 <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success">
-                  <h3 className="text-lg font-semibold mb-2">📈 Economia Potencial (Mín)</h3>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+                    <span className="text-success">💰</span> Economia Potencial (Mín)
+                  </h3>
                   <div className="text-3xl font-bold text-success">
                     R$ {results.savingsMin.toLocaleString()}
                   </div>
@@ -250,7 +257,9 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                 </div>
 
                 <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success">
-                  <h3 className="text-lg font-semibold mb-2">📈 Economia Potencial (Máx)</h3>
+                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+                    <span className="text-success">📊</span> Economia Potencial (Máx)
+                  </h3>
                   <div className="text-3xl font-bold text-success">
                     R$ {results.savingsMax.toLocaleString()}
                   </div>
@@ -298,17 +307,15 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
               <Button 
                 onClick={nextStep}
                 disabled={
-                  (currentStep === 1 && !formData.processType) ||
-                  (currentStep === 2 && (
-                    !formData.teamSize || 
-                    !formData.averageSalary ||
-                    formData.reworkHours === undefined || 
-                    formData.meetingHours === undefined
-                  ))
+                  !formData.processType || 
+                  !formData.teamSize || 
+                  !formData.averageSalary ||
+                  formData.reworkHours === undefined || 
+                  formData.meetingHours === undefined
                 }
                 className="flex items-center gap-2"
               >
-                Próximo
+                Ver Resultado
                 <ChevronRight className="h-4 w-4" />
               </Button>
             ) : null}
