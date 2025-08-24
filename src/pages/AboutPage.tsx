@@ -5,23 +5,19 @@ import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
-import ConradoImg from "@/assets/conrado-vidal.jpg";
-import CristianoImg from "@/assets/cristiano-basso.jpg";
 const AboutPage = () => {
   const team = [{
     name: "Cristiano Basso",
     role: "Head of Business Operations",
     bio: "10+ anos otimizando operações em empresas de tecnologia. Especialista em transformar caos operacional em crescimento sustentável.",
-    image: CristianoImg,
     linkedin: "https://www.linkedin.com/in/cristianobasso/",
-    grayscale: true
+    placeholder: true
   }, {
     name: "Conrado Vidal",
     role: "Business Agility Specialist",
     bio: "Expertise em desenhar processos que funcionam na vida real. Experiência prática em scaling de operações para empresas em rápido crescimento.",
-    image: ConradoImg,
     linkedin: "https://www.linkedin.com/in/conradovidal/",
-    grayscale: false
+    placeholder: true
   }];
   const values = [{
     icon: Target,
@@ -89,11 +85,9 @@ const AboutPage = () => {
               {team.map((member, index) => (
                 <Card key={index} className="overflow-hidden hover:shadow-soft transition-smooth">
                   <AspectRatio ratio={16 / 9}>
-                    <img
-                      src={member.image}
-                      alt={`Foto de ${member.name}, ${member.role} da BVBP`}
-                      className={`w-full h-full object-cover ${member.grayscale ? 'grayscale brightness-95 contrast-105' : ''}`}
-                    />
+                    <div className="w-full h-full bg-muted flex items-center justify-center">
+                      <Users className="h-16 w-16 text-muted-foreground/50" />
+                    </div>
                   </AspectRatio>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">

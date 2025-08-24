@@ -56,13 +56,13 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
     // Desperdício anual = mensal × 12
     const annualWaste = monthlyWaste * 12;
     
-    // Economia inicial (90 dias) = mensal × 20–40%
-    const initialSavingsMin = monthlyWaste * 0.20;
-    const initialSavingsMax = monthlyWaste * 0.40;
+    // Economia inicial (90 dias) = mensal × 30–50% (mais agressivo)
+    const initialSavingsMin = monthlyWaste * 0.30;
+    const initialSavingsMax = monthlyWaste * 0.50;
     
-    // Economia sustentável (após capacitação) = mensal × 40–60%
-    const sustainableSavingsMin = monthlyWaste * 0.40;
-    const sustainableSavingsMax = monthlyWaste * 0.60;
+    // Economia sustentável (após capacitação) = mensal × 60–80% (potencial máximo)
+    const sustainableSavingsMin = monthlyWaste * 0.60;
+    const sustainableSavingsMax = monthlyWaste * 0.80;
     
     // ROI potencial no primeiro ano
     const roiMultiplier = 4;
@@ -108,7 +108,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-center">
-            {currentStep === 1 && "Informações Básicas"}
+            {currentStep === 1 && "Informações"}
             {currentStep === 2 && "Resultado Estimado"}
           </CardTitle>
         </CardHeader>
@@ -135,7 +135,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Tamanho da equipe envolvida: {formData.teamSize || 1} pessoas
+                  Tamanho da equipe envolvida: <span className="font-bold text-primary">{formData.teamSize || 1} pessoas</span>
                 </label>
                 <Slider
                   value={[formData.teamSize || 1]}
@@ -169,7 +169,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Tempo médio de retrabalho nesse processo: {formData.reworkHours || 0}h/semana por pessoa
+                  Tempo médio de retrabalho nesse processo: <span className="font-bold text-primary">{formData.reworkHours || 0}h/semana por pessoa</span>
                 </label>
                 <Slider
                   value={[formData.reworkHours || 0]}
@@ -187,7 +187,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
 
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Tempo médio em reuniões improdutivas nesse processo: {formData.meetingHours || 0}h/semana por pessoa
+                  Tempo médio em reuniões improdutivas nesse processo: <span className="font-bold text-primary">{formData.meetingHours || 0}h/semana por pessoa</span>
                 </label>
                 <Slider
                   value={[formData.meetingHours || 0]}
@@ -248,8 +248,8 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                   <div className="flex items-center gap-3">
                     <DollarSign className="h-5 w-5 text-success" />
                     <div>
-                      <h3 className="text-lg font-semibold">Economia Inicial Estimada</h3>
-                      <p className="text-sm text-muted-foreground">(90 dias)</p>
+                      <h3 className="text-lg font-semibold">Economia Inicial Mensal</h3>
+                      <p className="text-sm text-muted-foreground">(nos primeiros 90 dias)</p>
                     </div>
                   </div>
                   <div className="text-2xl font-bold text-success">
@@ -282,16 +282,6 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                   </div>
                 </div>
 
-                {/* Payback */}
-                <div className="flex items-center justify-between p-4 bg-accent/5 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-accent-foreground" />
-                    <h3 className="text-lg font-semibold">Quando o investimento se paga?</h3>
-                  </div>
-                  <div className="text-2xl font-bold text-accent-foreground">
-                    2 a 4 meses
-                  </div>
-                </div>
               </div>
 
               {/* Racional */}
