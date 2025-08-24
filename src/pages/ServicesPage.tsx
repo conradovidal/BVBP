@@ -40,20 +40,16 @@ const ServicesPage = () => {
 
   const services = [
     {
-      title: "DIAGNÓSTICO GRATUITO",
-      badge: "GRÁTIS",
+      title: "TRANSPARÊNCIA",
+      badge: "GRATUITO",
       badgeColor: "bg-bvbp-growth text-white",
-      price: "R$ 0",
       duration: "2 semanas",
       icon: Zap,
-      description: "Descubra exatamente onde sua empresa está perdendo dinheiro",
+      description: "Diagnóstico inicial sem custos",
       features: [
         "Entrevistas com liderança e equipe-chave",
         "Mapeamento completo dos processos críticos", 
-        "Relatório executivo detalhado com gaps identificados",
-        "Potencial de economia quantificado",
-        "Roadmap personalizado de melhorias",
-        "Análise de ROI potencial por iniciativa"
+        "Relatório executivo com gaps e oportunidades de economia"
       ],
       details: [
         "2 semanas de análise intensiva",
@@ -61,24 +57,21 @@ const ServicesPage = () => {
         "Apresentação dos resultados",
         "Sem compromisso de continuidade"
       ],
-      cta: "AGENDAR DIAGNÓSTICO",
+      cta: "Quero começar com Transparência",
       popular: false
     },
     {
-      title: "QUICK WIN",
-      badge: "MAIS POPULAR", 
-      badgeColor: "bg-orange-500 text-white",
-      price: "R$ 6.500",
+      title: "VISÃO DE FUTURO",
+      badge: "ESSENCIAL", 
+      badgeColor: "bg-blue-500 text-white",
       duration: "4 semanas",
-      icon: TrendingUp,
-      description: "Primeiros resultados mensuráveis no processo mais crítico",
+      icon: Target,
+      description: "Redesenho de processos críticos e definição do estado futuro",
       features: [
-        "Diagnóstico completo incluído",
-        "1 processo crítico completamente redesenhado",
-        "Quick wins imediatos implementados",
-        "Métricas e KPIs definidos",
-        "Treinamento prático da equipe",
-        "30 dias de suporte pós-implementação"
+        "Redesenho de processos críticos",
+        "Definição do estado futuro",
+        "Clareza sobre ganhos e roadmap",
+        "Métrica base para acompanhamento"
       ],
       details: [
         "Foco no processo que gera maior impacto",
@@ -86,24 +79,21 @@ const ServicesPage = () => {
         "Resultados visíveis em 30 dias",
         "Base para expansão futura"
       ],
-      cta: "COMEÇAR QUICK WIN",
-      popular: true
+      cta: "Quero desenhar minha Visão de Futuro",
+      popular: false
     },
     {
-      title: "MOMENTUM",
+      title: "IMPLEMENTAÇÃO PRÁTICA",
       badge: "RECOMENDADO",
-      badgeColor: "bg-bvbp-corporate text-white", 
-      price: "R$ 12.500",
+      badgeColor: "bg-orange-500 text-white", 
       duration: "8 semanas",
-      icon: Star,
-      description: "Transformação sistêmica com métricas e controle contínuo",
+      icon: Wrench,
+      description: "Execução lado a lado, implementação das mudanças",
       features: [
-        "3-5 processos críticos otimizados",
-        "Sistema de métricas implementado",
-        "Automações simples onde aplicável",
-        "Dashboard de acompanhamento",
-        "Capacitação completa da equipe",
-        "60 dias de suporte incluído"
+        "Execução lado a lado com a equipe",
+        "Implementação das mudanças na prática",
+        "Métricas e acompanhamento contínuo",
+        "Capacitação durante o processo"
       ],
       details: [
         "Visão sistêmica da operação",
@@ -111,24 +101,43 @@ const ServicesPage = () => {
         "Controle contínuo estabelecido",
         "Equipe preparada para evolução"
       ],
-      cta: "QUERO MOMENTUM",
+      cta: "Quero avançar com Implementação Prática",
+      popular: true
+    },
+    {
+      title: "AUTOMAÇÃO INTELIGENTE",
+      badge: "AVANÇADO",
+      badgeColor: "bg-purple-500 text-white",
+      duration: "10 semanas",
+      icon: Star,
+      description: "Introdução de automações simples e integração de sistemas",
+      features: [
+        "Automações simples implementadas",
+        "Integração entre sistemas",
+        "Dashboards de acompanhamento",
+        "Otimização tecnológica"
+      ],
+      details: [
+        "Foco em automações práticas",
+        "Redução de trabalho manual",
+        "Melhor visibilidade de dados",
+        "ROI por redução de retrabalho"
+      ],
+      cta: "Quero aplicar Automação Inteligente",
       popular: false
     },
     {
-      title: "TRANSFORMATION",
+      title: "MELHORIA CONTÍNUA",
       badge: "PREMIUM",
       badgeColor: "bg-gradient-hero text-white",
-      price: "R$ 22.000", 
       duration: "12 semanas",
       icon: Crown,
-      description: "Mudança sistêmica completa com autonomia garantida",
+      description: "Acompanhamento recorrente e garantia de sustentabilidade",
       features: [
-        "Operação completa redesenhada",
-        "Todos os processos críticos otimizados",
-        "Sistema completo de métricas e controle",
-        "Capacitação extensiva de toda equipe",
-        "Documentação completa de processos",
-        "6 meses de suporte incluído"
+        "Acompanhamento recorrente mensal",
+        "Ajustes e evolução de processos",
+        "Garantia de sustentabilidade",
+        "Autonomia total da equipe"
       ],
       details: [
         "Transformação completa da operação",
@@ -136,8 +145,29 @@ const ServicesPage = () => {
         "Autonomia total garantida",
         "Crescimento sustentável assegurado"
       ],
-      cta: "TRANSFORMAR AGORA",
+      cta: "Quero investir em Melhoria Contínua",
       popular: false
+    }
+  ];
+
+  const additionalProducts = [
+    {
+      title: "Meeting Reset Program",
+      description: "Redução de reuniões improdutivas, auditoria de agenda, novo framework de governança",
+      duration: "4 semanas",
+      icon: Clock
+    },
+    {
+      title: "Growth Clarity",
+      description: "Pacote de planejamento estratégico, clareza de prioridades, cascateamento de decisões",
+      duration: "6 semanas", 
+      icon: TrendingUp
+    },
+    {
+      title: "Value Stream Optimization",
+      description: "Mapeamento de fluxos de valor, eliminação de desperdícios críticos",
+      duration: "8 semanas",
+      icon: DollarSign
     }
   ];
 
@@ -266,12 +296,7 @@ const ServicesPage = () => {
                         {service.title}
                       </h3>
                       
-                      <div className="flex items-center justify-center space-x-4 mb-4">
-                        <span className={`text-3xl font-bold ${
-                          service.price === "R$ 0" ? 'text-bvbp-growth' : 'text-bvbp-corporate'
-                        }`}>
-                          {service.price}
-                        </span>
+                      <div className="flex items-center justify-center mb-4">
                         <div className="text-sm text-muted-foreground">
                           <Clock className="h-4 w-4 inline mr-1" />
                           {service.duration}
@@ -314,6 +339,54 @@ const ServicesPage = () => {
                       onClick={() => window.location.href = '/contato'}
                     >
                       {service.cta}
+                    </Button>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Additional Products Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
+                Produtos Avançados
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Soluções complementares para dores específicas
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              {additionalProducts.map((product, index) => {
+                const IconComponent = product.icon;
+                return (
+                  <Card key={index} className="p-6 text-center hover:shadow-soft transition-smooth">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero mb-4">
+                      <IconComponent className="h-6 w-6 text-white" />
+                    </div>
+                    
+                    <h3 className="font-heading text-xl font-bold text-bvbp-corporate mb-2">
+                      {product.title}
+                    </h3>
+                    
+                    <div className="text-sm text-bvbp-growth font-semibold mb-3">
+                      <Clock className="h-4 w-4 inline mr-1" />
+                      {product.duration}
+                    </div>
+                    
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                      {product.description}
+                    </p>
+                    
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => window.location.href = '/contato'}
+                    >
+                      Saiba mais
                     </Button>
                   </Card>
                 );

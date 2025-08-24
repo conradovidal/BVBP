@@ -6,75 +6,63 @@ import { CheckCircle, Clock, DollarSign, Star, Zap, TrendingUp, Crown } from "lu
 const ServicesSection = () => {
   const services = [
     {
-      title: "DIAGNÓSTICO GRATUITO",
-      badge: "GRÁTIS",
+      title: "TRANSPARÊNCIA",
+      badge: "GRATUITO",
       badgeColor: "bg-bvbp-growth text-white",
-      price: "R$ 0",
       duration: "2 semanas",
       icon: Zap,
-      description: "Mapeamento completo dos gaps e oportunidades de economia",
+      description: "Diagnóstico inicial sem custos",
       features: [
-        "Mapeamento completo dos gaps",
-        "Relatório executivo com oportunidades",
-        "Potencial de economia identificado",
-        "Análise de processos críticos",
-        "Roadmap personalizado"
+        "Entrevistas com liderança e equipe-chave",
+        "Mapeamento completo dos processos críticos",
+        "Relatório executivo com gaps e oportunidades"
       ],
-      cta: "AGENDAR AGORA",
+      cta: "Quero começar com Transparência",
       popular: false
     },
     {
-      title: "QUICK WIN",
-      badge: "MAIS POPULAR",
-      badgeColor: "bg-orange-500 text-white",
-      price: "R$ 6.500",
+      title: "VISÃO DE FUTURO",
+      badge: "ESSENCIAL",
+      badgeColor: "bg-blue-500 text-white",
       duration: "4 semanas",
       icon: TrendingUp,
-      description: "Resultados rápidos no processo mais crítico da sua empresa",
+      description: "Redesenho de processos críticos e definição do estado futuro",
       features: [
-        "Economia alvo: R$ 5–20 mil/mês em SMB típica",
-        "Após diagnóstico personalizado",
-        "Métricas de acompanhamento",
-        "Treinamento da equipe",
-        "30 dias de suporte incluído"
+        "Redesenho de processos críticos",
+        "Definição do estado futuro",
+        "Clareza sobre ganhos e roadmap"
       ],
-      cta: "SAIBA MAIS",
+      cta: "Quero desenhar minha Visão de Futuro",
+      popular: false
+    },
+    {
+      title: "IMPLEMENTAÇÃO PRÁTICA",
+      badge: "RECOMENDADO",
+      badgeColor: "bg-orange-500 text-white",
+      duration: "8 semanas",
+      icon: Star,
+      description: "Execução lado a lado, implementação das mudanças",
+      features: [
+        "Execução lado a lado com a equipe",
+        "Implementação das mudanças na prática",
+        "Métricas e acompanhamento contínuo"
+      ],
+      cta: "Quero avançar com Implementação Prática",
       popular: true
     },
     {
-      title: "MOMENTUM",
-      badge: "RECOMENDADO",
-      badgeColor: "bg-bvbp-corporate text-white",
-      price: "R$ 12.500",
-      duration: "8 semanas",
-      icon: Star,
-      description: "Transformação sistêmica com métricas e automação simples",
-      features: [
-        "Redução de desperdícios (5–15%)",
-        "Variando por contexto específico",
-        "3-5 processos otimizados",
-        "Dashboard de acompanhamento",
-        "60 dias de suporte incluído"
-      ],
-      cta: "QUERO ESTE",
-      popular: false
-    },
-    {
-      title: "TRANSFORMATION",
+      title: "MELHORIA CONTÍNUA",
       badge: "PREMIUM",
       badgeColor: "bg-gradient-hero text-white",
-      price: "R$ 22.000",
       duration: "12 semanas",
       icon: Crown,
-      description: "Mudança sistêmica completa com 6 meses de suporte",
+      description: "Acompanhamento recorrente e garantia de sustentabilidade",
       features: [
-        "Ganho de eficiência (10–25% nos fluxos)",
-        "Depende do escopo mapeado",
-        "Todos os processos otimizados",
-        "Autonomia total garantida",
-        "6 meses de suporte incluído"
+        "Acompanhamento recorrente mensal",
+        "Ajustes e evolução de processos",
+        "Garantia de sustentabilidade"
       ],
-      cta: "TRANSFORMAR AGORA",
+      cta: "Quero investir em Melhoria Contínua",
       popular: false
     }
   ];
@@ -123,16 +111,9 @@ const ServicesSection = () => {
                     {service.title}
                   </h3>
                   
-                  <div className="flex items-center justify-center space-x-2 mb-2">
-                    <span className={`text-2xl font-bold ${
-                      service.price === "R$ 0" ? 'text-bvbp-growth' : 'text-bvbp-corporate'
-                    }`}>
-                      {service.price}
-                    </span>
-                    <div className="text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4 inline mr-1" />
-                      {service.duration}
-                    </div>
+                  <div className="text-sm text-muted-foreground mb-2">
+                    <Clock className="h-4 w-4 inline mr-1" />
+                    {service.duration}
                   </div>
                   
                   <p className="text-sm text-muted-foreground">
