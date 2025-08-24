@@ -17,7 +17,7 @@ const ServicesSection = () => {
         "Mapeamento completo dos processos críticos",
         "Relatório executivo com gaps e oportunidades"
       ],
-      cta: "Quero começar com Transparência",
+      cta: "Começar com Transparência",
       popular: false
     },
     {
@@ -32,7 +32,7 @@ const ServicesSection = () => {
         "Definição do estado futuro",
         "Clareza sobre ganhos e roadmap"
       ],
-      cta: "Quero desenhar minha Visão de Futuro",
+      cta: "Desenhar minha Visão de Futuro",
       popular: false
     },
     {
@@ -47,12 +47,27 @@ const ServicesSection = () => {
         "Implementação das mudanças na prática",
         "Métricas e acompanhamento contínuo"
       ],
-      cta: "Quero avançar com Implementação Prática",
+      cta: "Avançar com Implementação Prática",
       popular: true
     },
     {
-      title: "MELHORIA CONTÍNUA",
+      title: "AUTOMAÇÃO INTELIGENTE",
       badge: "PREMIUM",
+      badgeColor: "bg-purple-500 text-white",
+      duration: "10 semanas",
+      icon: Star,
+      description: "Introdução de automações e integração tecnológica",
+      features: [
+        "Automações simples implementadas",
+        "Integração entre sistemas",
+        "Dashboards de acompanhamento"
+      ],
+      cta: "Aplicar Automação Inteligente",
+      popular: false
+    },
+    {
+      title: "MELHORIA CONTÍNUA",
+      badge: "PARTNER",
       badgeColor: "bg-gradient-hero text-white",
       duration: "12 semanas",
       icon: Crown,
@@ -62,7 +77,7 @@ const ServicesSection = () => {
         "Ajustes e evolução de processos",
         "Garantia de sustentabilidade"
       ],
-      cta: "Quero investir em Melhoria Contínua",
+      cta: "Investir em Melhoria Contínua",
       popular: false
     }
   ];
@@ -82,67 +97,134 @@ const ServicesSection = () => {
         </div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {services.map((service, index) => {
-            const IconComponent = service.icon;
-            return (
-              <Card 
-                key={index} 
-                className={`relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth ${
-                  service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
-                }`}
-              >
-                {/* Badge */}
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className={service.badgeColor}>
-                    {service.badge}
-                  </Badge>
-                </div>
-
-                {/* Header */}
-                <div className="text-center mb-6 pt-4">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
-                    service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'
-                  }`}>
-                    <IconComponent className="h-6 w-6 text-white" />
-                  </div>
-                  
-                  <h3 className="font-heading text-lg font-bold text-bvbp-corporate mb-2">
-                    {service.title}
-                  </h3>
-                  
-                  <div className="text-sm text-muted-foreground mb-2">
-                    <Clock className="h-4 w-4 inline mr-1" />
-                    {service.duration}
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground">
-                    {service.description}
-                  </p>
-                </div>
-
-                {/* Features */}
-                <div className="flex-1 space-y-3 mb-6">
-                  {service.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start space-x-2">
-                      <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-foreground">{feature}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA */}
-                <Button 
-                  variant={service.popular ? "success" : "hero"} 
-                  className="w-full"
-                  size="lg"
-                  onClick={() => window.location.href = '/contato'}
+        <div className="space-y-8 mb-12">
+          {/* First row - 3 cards */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.slice(0, 3).map((service, index) => {
+              const IconComponent = service.icon;
+              return (
+                <Card 
+                  key={index} 
+                  className={`relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth ${
+                    service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
+                  }`}
                 >
-                  {service.cta}
-                </Button>
-              </Card>
-            );
-          })}
+                  {/* Badge */}
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className={service.badgeColor}>
+                      {service.badge}
+                    </Badge>
+                  </div>
+
+                  {/* Header */}
+                  <div className="text-center mb-6 pt-4">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
+                      service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'
+                    }`}>
+                      <IconComponent className="h-6 w-6 text-white" />
+                    </div>
+                    
+                    <h3 className="font-heading text-lg font-bold text-bvbp-corporate mb-2">
+                      {service.title}
+                    </h3>
+                    
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <Clock className="h-4 w-4 inline mr-1" />
+                      {service.duration}
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground">
+                      {service.description}
+                    </p>
+                  </div>
+
+                  {/* Features */}
+                  <div className="flex-1 space-y-3 mb-6">
+                    {service.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-start space-x-2">
+                        <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-foreground">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <Button 
+                    variant={service.popular ? "success" : "hero"} 
+                    className="w-full px-4 py-2 text-center"
+                    size="lg"
+                    onClick={() => window.location.href = '/contato'}
+                  >
+                    {service.cta}
+                  </Button>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Second row - 2 cards */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {services.slice(3, 5).map((service, index) => {
+              const IconComponent = service.icon;
+              return (
+                <Card 
+                  key={index + 3} 
+                  className={`relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth ${
+                    service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
+                  }`}
+                >
+                  {/* Badge */}
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <Badge className={service.badgeColor}>
+                      {service.badge}
+                    </Badge>
+                  </div>
+
+                  {/* Header */}
+                  <div className="text-center mb-6 pt-4">
+                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
+                      service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'
+                    }`}>
+                      <IconComponent className="h-6 w-6 text-white" />
+                    </div>
+                    
+                    <h3 className="font-heading text-lg font-bold text-bvbp-corporate mb-2">
+                      {service.title}
+                    </h3>
+                    
+                    <div className="text-sm text-muted-foreground mb-2">
+                      <Clock className="h-4 w-4 inline mr-1" />
+                      {service.duration}
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground">
+                      {service.description}
+                    </p>
+                  </div>
+
+                  {/* Features */}
+                  <div className="flex-1 space-y-3 mb-6">
+                    {service.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-start space-x-2">
+                        <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-foreground">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* CTA */}
+                  <Button 
+                    variant={service.popular ? "success" : "hero"} 
+                    className="w-full px-4 py-2 text-center"
+                    size="lg"
+                    onClick={() => window.location.href = '/contato'}
+                  >
+                    {service.cta}
+                  </Button>
+                </Card>
+              );
+            })}
+          </div>
         </div>
 
         {/* ROI Guarantee */}
