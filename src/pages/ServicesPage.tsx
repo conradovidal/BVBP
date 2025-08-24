@@ -45,10 +45,10 @@ const ServicesPage = () => {
       badgeColor: "bg-bvbp-growth text-white",
       duration: "2 semanas",
       icon: Zap,
-      description: "Diagnóstico inicial sem custos",
+      description: "Diagnóstico inicial gratuito para entender como um processo funciona hoje e onde estão as perdas. Sem pegadinhas, sem compromisso.",
       features: [
         "Entrevistas com liderança e equipe-chave",
-        "Mapeamento completo dos processos críticos", 
+        "Mapeamento completo de um processo crítico", 
         "Relatório executivo com gaps e oportunidades de economia"
       ],
       details: [
@@ -66,9 +66,9 @@ const ServicesPage = () => {
       badgeColor: "bg-blue-500 text-white",
       duration: "4 semanas",
       icon: Target,
-      description: "Redesenho de processos críticos e definição do estado futuro",
+      description: "Redesenho de um processo crítico e definição de como ele deve funcionar no futuro. Clareza sobre ganhos e roadmap de melhorias.",
       features: [
-        "Redesenho de processos críticos",
+        "Redesenho de um processo crítico",
         "Definição do estado futuro",
         "Clareza sobre ganhos e roadmap",
         "Métrica base para acompanhamento"
@@ -88,7 +88,7 @@ const ServicesPage = () => {
       badgeColor: "bg-orange-500 text-white", 
       duration: "8 semanas",
       icon: Wrench,
-      description: "Execução lado a lado, implementação das mudanças",
+      description: "Execução lado a lado para implementar mudanças em um processo, garantindo métricas claras e resultados visíveis em semanas.",
       features: [
         "Execução lado a lado com a equipe",
         "Implementação das mudanças na prática",
@@ -106,11 +106,11 @@ const ServicesPage = () => {
     },
     {
       title: "AUTOMAÇÃO INTELIGENTE",
-      badge: "AVANÇADO",
+      badge: "PREMIUM",
       badgeColor: "bg-purple-500 text-white",
       duration: "10 semanas",
       icon: Star,
-      description: "Introdução de automações simples e integração de sistemas",
+      description: "Introdução de automações e integração tecnológica em um processo, com dashboards e ganhos de eficiência comprovados.",
       features: [
         "Automações simples implementadas",
         "Integração entre sistemas",
@@ -128,11 +128,11 @@ const ServicesPage = () => {
     },
     {
       title: "MELHORIA CONTÍNUA",
-      badge: "PREMIUM",
+      badge: "PARTNER",
       badgeColor: "bg-gradient-hero text-white",
       duration: "12 semanas",
       icon: Crown,
-      description: "Acompanhamento recorrente e garantia de sustentabilidade",
+      description: "Acompanhamento recorrente, ajustes e evolução estratégica de processos ao longo do tempo. Sustentabilidade e crescimento de longo prazo.",
       features: [
         "Acompanhamento recorrente mensal",
         "Ajustes e evolução de processos",
@@ -141,7 +141,7 @@ const ServicesPage = () => {
       ],
       details: [
         "Transformação completa da operação",
-        "ROI médio de 300%+ no primeiro ano",
+        "Sustentabilidade e crescimento",
         "Autonomia total garantida",
         "Crescimento sustentável assegurado"
       ],
@@ -153,22 +153,22 @@ const ServicesPage = () => {
   const specificSolutions = [
     {
       title: "Radiografia de Eficiência",
-      description: "Em uma semana, levantamos dados de retrabalho, desperdícios e custos ocultos. Você entende em números quanto está perdendo e onde estão as maiores oportunidades de economia.",
+      description: "Em uma semana, levantamos dados de retrabalho e desperdícios em um processo específico. Números claros sobre perdas e oportunidades.",
       icon: Search
     },
     {
       title: "Governança de Reuniões",
-      description: "Auditoria da agenda de liderança e times. Reestruturamos rituais e cadência para reduzir drasticamente reuniões improdutivas e liberar tempo estratégico.",
+      description: "Auditoria da agenda de liderança. Reestruturamos rituais para reduzir reuniões improdutivas e liberar tempo estratégico.",
       icon: Clock
     },
     {
       title: "Planejamento com Clareza",
-      description: "Transformamos metas em planos acionáveis. Você ganha clareza sobre prioridades, cascata de decisões e alinhamento entre áreas — sem travar a operação.",
+      description: "Transformamos metas em planos acionáveis para uma área. Clareza sobre prioridades e alinhamento sem travar a operação.",
       icon: Target
     },
     {
       title: "Otimização de Fluxo de Valor",
-      description: "Mapeamos ponta a ponta os processos críticos para eliminar desperdícios que podem custar até 30% da eficiência.",
+      description: "Mapeamos ponta a ponta um processo crítico para eliminar desperdícios que custam até 30% da eficiência.",
       icon: TrendingUp
     }
   ];
@@ -202,74 +202,19 @@ const ServicesPage = () => {
           </div>
         </section>
 
-        {/* Process Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-                Como Trabalhamos
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Nossa metodologia prática em 4 etapas para garantir resultados reais e duradouros
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {processSteps.map((step, index) => {
-                const IconComponent = step.icon;
-                return (
-                  <Card key={index} className="p-6 text-center hover:shadow-soft transition-smooth relative">
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <div className="w-8 h-8 rounded-full bg-bvbp-growth text-white flex items-center justify-center font-bold text-sm">
-                        {step.number}
-                      </div>
-                    </div>
-                    
-                    <div className="pt-6">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero mb-4">
-                        <IconComponent className="h-6 w-6 text-white" />
-                      </div>
-                      
-                      <h3 className="font-heading text-xl font-bold text-bvbp-corporate mb-2">
-                        {step.title}
-                      </h3>
-                      
-                      <div className="text-sm text-bvbp-growth font-semibold mb-3">
-                        <Clock className="h-4 w-4 inline mr-1" />
-                        {step.duration}
-                      </div>
-                      
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        {step.description}
-                      </p>
-                    </div>
-
-                    {/* Arrow for desktop */}
-                    {index < processSteps.length - 1 && (
-                      <div className="hidden lg:block absolute top-1/2 -right-3 transform -translate-y-1/2">
-                        <ArrowRight className="h-6 w-6 text-bvbp-growth" />
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
         {/* Services Section */}
         <section className="py-16 bg-gradient-subtle">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-                Serviços Detalhados
+                Nossos Serviços
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Todos os serviços incluem implementação prática e capacitação para autonomia
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
               {services.map((service, index) => {
                 const IconComponent = service.icon;
                 return (
@@ -405,23 +350,22 @@ const ServicesPage = () => {
                   <div className="prose prose-lg max-w-none mb-8">
                     <p className="text-foreground leading-relaxed">
                       <strong>Se não identificarmos pelo menos R$ 30.000 em oportunidades de economia</strong> 
-                      no diagnóstico gratuito, nem cobramos o projeto. É nossa garantia de que só trabalhamos 
-                      com empresas onde podemos gerar valor real e mensurável.
+                      no diagnóstico gratuito, você não paga nada.
                     </p>
                   </div>
                   
                   <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-bvbp-growth mb-2">300%+</div>
-                      <div className="text-sm text-muted-foreground">ROI Médio Primeiro Ano</div>
+                      <div className="text-3xl font-bold text-bvbp-growth mb-2">R$ 30.000+</div>
+                      <div className="text-sm text-muted-foreground">Oportunidades mapeadas</div>
                     </div>
                     <div className="text-center">
                       <div className="text-3xl font-bold text-bvbp-growth mb-2">60 dias</div>
-                      <div className="text-sm text-muted-foreground">Primeiros Resultados</div>
+                      <div className="text-sm text-muted-foreground">Primeiros resultados</div>
                     </div>
                     <div className="text-center">
                       <div className="text-3xl font-bold text-bvbp-growth mb-2">90 dias</div>
-                      <div className="text-sm text-muted-foreground">Autonomia Completa</div>
+                      <div className="text-sm text-muted-foreground">Autonomia inicial</div>
                     </div>
                   </div>
 
@@ -438,7 +382,7 @@ const ServicesPage = () => {
                       className="group"
                       onClick={() => window.location.href = '/contato'}
                     >
-                      COMEÇAR COM DIAGNÓSTICO GRATUITO
+                      Comece com Transparência
                       <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>

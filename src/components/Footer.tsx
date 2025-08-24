@@ -3,10 +3,11 @@ import { MapPin, Mail, Phone, Linkedin, Instagram, ExternalLink } from "lucide-r
 
 const Footer = () => {
   const services = [
-    "Quick Win",
-    "Momentum", 
-    "Transformation",
-    "Retainer"
+    "Transparência",
+    "Visão de Futuro", 
+    "Implementação Prática",
+    "Automação Inteligente",
+    "Melhoria Contínua"
   ];
 
   const company = [
