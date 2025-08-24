@@ -34,7 +34,7 @@ const Index = () => {
                     className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-10 py-5 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-bvbp-growth/25"
                     onClick={() => window.location.href = '/contato'}
                   >
-                    Agendar Diagnóstico Gratuito
+                    Agendar diagnóstico gratuito
                   </Button>
                 </div>
               </div>
@@ -46,7 +46,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate text-center mb-12">
-                  Reconhece Estes Sintomas?
+                  Reconhece estes sintomas?
                 </h2>
                 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -97,7 +97,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate text-center mb-12">
-                  Nossa Forma de Trabalhar É Diferente
+                  Nossa forma de trabalhar é diferente
                 </h2>
                 
                 <div className="grid md:grid-cols-2 gap-8">
@@ -190,7 +190,7 @@ const Index = () => {
                   className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4"
                   onClick={() => window.location.href = '/contato'}
                 >
-                  QUERO MEU DIAGNÓSTICO GRATUITO
+                  Quero meu diagnóstico gratuito
                 </Button>
               </div>
             </div>
