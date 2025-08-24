@@ -1,22 +1,27 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
+import ConradoImg from "@/assets/conrado-vidal.jpg";
+import CristianoImg from "@/assets/cristiano-basso.jpg";
 const AboutPage = () => {
   const team = [{
-    name: "João Basso",
-    role: "Business Agility Specialist",
+    name: "Cristiano Basso",
+    role: "Head of Business Operations",
     bio: "10+ anos otimizando operações em empresas de tecnologia. Especialista em transformar caos operacional em crescimento sustentável.",
-    expertise: ["Process Optimization", "Business Agility", "Operational Excellence", "Team Leadership"],
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    image: CristianoImg,
+    linkedin: "https://www.linkedin.com/in/cristianobasso/",
+    grayscale: true
   }, {
-    name: "Vidal",
-    role: "Operations & Process Expert",
+    name: "Conrado Vidal",
+    role: "Business Agility Specialist",
     bio: "Expertise em desenhar processos que funcionam na vida real. Experiência prática em scaling de operações para empresas em rápido crescimento.",
-    expertise: ["Process Design", "Operations Scaling", "Systems Integration", "Change Management"],
-    image: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    image: ConradoImg,
+    linkedin: "https://www.linkedin.com/in/conradovidal/",
+    grayscale: false
   }];
   const values = [{
     icon: Target,
@@ -53,9 +58,6 @@ const AboutPage = () => {
           </div>
         </section>
 
-        {/* Team Section */}
-        
-
         {/* Mission Section */}
         <section className="py-16 bg-bvbp-growth-light">
           <div className="container mx-auto px-4">
@@ -74,6 +76,55 @@ const AboutPage = () => {
                   implementar com você e garantir que sua equipe fique autônoma para continuar evoluindo.
                 </p>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
+                Nossa Equipe
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {team.map((member, index) => (
+                <Card key={index} className="overflow-hidden hover:shadow-soft transition-smooth">
+                  <AspectRatio ratio={16 / 9}>
+                    <img
+                      src={member.image}
+                      alt={`Foto de ${member.name}, ${member.role} da BVBP`}
+                      className={`w-full h-full object-cover ${member.grayscale ? 'grayscale brightness-95 contrast-105' : ''}`}
+                    />
+                  </AspectRatio>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h3 className="font-heading text-xl font-bold text-bvbp-corporate">
+                          {member.name}
+                        </h3>
+                        <p className="text-bvbp-growth font-medium">
+                          {member.role}
+                        </p>
+                      </div>
+                      <a
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`LinkedIn de ${member.name}`}
+                        className="text-bvbp-corporate hover:text-bvbp-growth transition-smooth"
+                      >
+                        <LinkedinIcon className="h-6 w-6" />
+                      </a>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {member.bio}
+                    </p>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         </section>
