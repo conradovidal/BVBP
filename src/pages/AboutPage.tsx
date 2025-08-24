@@ -53,7 +53,6 @@ const AboutPage = () => {
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
                 Basso & Vidal Business Partners<br/>
-                Building Valuable Business Partnerships<br/>
                 Transformamos complexidade em clareza.<br/>
                 Parceiros estratégicos para empresas em crescimento.
               </p>
