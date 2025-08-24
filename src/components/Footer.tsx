@@ -128,7 +128,7 @@ const Footer = () => {
             <Button 
               variant="outline"
               size="lg"
-              className="border-white text-white hover:bg-white hover:text-bvbp-growth"
+              className="border-white text-white bg-transparent hover:bg-white hover:text-bvbp-growth transition-smooth"
             >
               Diagnóstico Gratuito
               <ExternalLink className="h-4 w-4 ml-2" />
