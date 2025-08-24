@@ -155,25 +155,20 @@ const AboutPage = () => {
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6 text-center">Por que começamos a BVBP</h2>
                 <div className="prose prose-lg max-w-none">
                   <p className="text-foreground leading-relaxed mb-6">
-                    Depois de anos vendo empresas repetirem os mesmos erros operacionais - 
-                    consultorias caras que entregam PowerPoints genéricos, metodologias "prontas" 
-                    que não funcionam na prática, dependência eterna de consultores - 
-                    decidimos fazer diferente.
+                    Depois de anos vivendo de perto os desafios de escalar operações em diferentes contextos, percebemos um padrão: processos bagunçados, dependências desnecessárias, documentações que não ajudam e metodologias que não funcionam na prática.
                   </p>
                   <p className="text-foreground leading-relaxed mb-6">
-                    Vivenciamos na pele os desafios de escalar operações em empresas de alto crescimento. 
-                    Sabemos o que funciona (e o que não funciona) quando você precisa passar de 30 para 
-                    80 funcionários sem virar um caos.
+                    Construímos experiência real otimizando processos, fluxos de trabalho e métricas de performance, sempre com foco em resultados mensuráveis. Aprendemos que eficiência não basta: é preciso eficácia, clareza estratégica e capacidade de priorizar e acompanhar decisões no dia a dia.
                   </p>
                   <p className="text-bvbp-corporate font-semibold">
-                    A BVBP nasceu para resolver esse problema de forma acessível, prática e com resultados reais.
+                    A BVBP nasceu para trazer essa combinação de prática e estratégia, com uma abordagem acessível, personalizada e orientada a resultados reais.
                   </p>
                 </div>
                 
                 <div className="text-center mt-8 space-y-4">
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button variant="hero" size="xl" className="group" onClick={() => window.location.href = '/servicos'}>
-                      Conheça Nossos Serviços
+                      Conheça nossos serviços
                       <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                     <Button 
@@ -182,7 +177,7 @@ const AboutPage = () => {
                       onClick={() => window.location.href = '/calculadora-roi'}
                       className="hover:scale-105 transition-transform"
                     >
-                      Descubra Quanto Sua Empresa Pode Economizar
+                      Descubra quanto sua empresa pode economizar
                     </Button>
                   </div>
                 </div>

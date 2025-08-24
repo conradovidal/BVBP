@@ -52,7 +52,7 @@ const Index = () => {
                   <div className="flex items-start space-x-4">
                     <Target className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-bvbp-corporate mb-2">CEO é o gargalo de decisões</h3>
+                      <h3 className="font-semibold text-bvbp-corporate mb-2">Gargalo nas decisões da alta liderança</h3>
                       <p className="text-muted-foreground">Estratégia de lado, tempo gasto apagando incêndios</p>
                     </div>
                   </div>
@@ -106,7 +106,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Customização Real</h3>
                     <p className="text-muted-foreground">
-                      Nada de receita pronta — cada solução é feita para sua realidade
+                      Nada de receita pronta — cada solução é feita para sua realidade. Usamos técnicas testadas, mas adaptamos ao seu contexto, criando planos práticos e mensuráveis.
                     </p>
                   </div>
                   
@@ -116,7 +116,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Execução Lado a Lado</h3>
                     <p className="text-muted-foreground">
-                      Somos parceiros de negócio, não entregadores de PowerPoint
+                      Não entregamos apenas relatórios. Atuamos junto com sua equipe, implementando mudanças na prática e garantindo impacto real no dia a dia.
                     </p>
                   </div>
                   
@@ -126,7 +126,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">ROI Transparente</h3>
                     <p className="text-muted-foreground">
-                      Mostramos onde o dinheiro escorre e quanto pode ser recuperado
+                      Mostramos onde o dinheiro escorre e quanto pode ser recuperado. Todas as iniciativas têm métricas claras para provar o retorno.
                     </p>
                   </div>
                   
@@ -136,7 +136,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Autonomia em 90 dias</h3>
                     <p className="text-muted-foreground">
-                      Sua equipe ganha capacidade para evoluir sem depender da gente
+                      Capacitamos sua equipe para não depender de nós. Em até 90 dias, você ganha melhorias sustentáveis que seguem evoluindo sozinhas.
                     </p>
                   </div>
                 </div>
