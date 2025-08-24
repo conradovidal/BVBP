@@ -52,7 +52,7 @@ const AboutPage = () => {
                 Sobre a BVBP
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-                Basso & Vidal Business Partners — parceiros de execução para empresas em crescimento. Menos caos, mais resultado.
+                Basso & Vidal Business Partners  Transformamos complexidade em clareza.  Parceiros estratégicos para empresas em crescimento.
               </p>
             </div>
           </div>
