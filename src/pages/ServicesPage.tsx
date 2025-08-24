@@ -150,24 +150,26 @@ const ServicesPage = () => {
     }
   ];
 
-  const additionalProducts = [
+  const specificSolutions = [
     {
-      title: "Meeting Reset Program",
-      description: "Redução de reuniões improdutivas, auditoria de agenda, novo framework de governança",
-      duration: "4 semanas",
+      title: "Radiografia de Eficiência",
+      description: "Em uma semana, levantamos dados de retrabalho, desperdícios e custos ocultos. Você entende em números quanto está perdendo e onde estão as maiores oportunidades de economia.",
+      icon: Search
+    },
+    {
+      title: "Governança de Reuniões",
+      description: "Auditoria da agenda de liderança e times. Reestruturamos rituais e cadência para reduzir drasticamente reuniões improdutivas e liberar tempo estratégico.",
       icon: Clock
     },
     {
-      title: "Growth Clarity",
-      description: "Pacote de planejamento estratégico, clareza de prioridades, cascateamento de decisões",
-      duration: "6 semanas", 
-      icon: TrendingUp
+      title: "Planejamento com Clareza",
+      description: "Transformamos metas em planos acionáveis. Você ganha clareza sobre prioridades, cascata de decisões e alinhamento entre áreas — sem travar a operação.",
+      icon: Target
     },
     {
-      title: "Value Stream Optimization",
-      description: "Mapeamento de fluxos de valor, eliminação de desperdícios críticos",
-      duration: "8 semanas",
-      icon: DollarSign
+      title: "Otimização de Fluxo de Valor",
+      description: "Mapeamos ponta a ponta os processos críticos para eliminar desperdícios que podem custar até 30% da eficiência.",
+      icon: TrendingUp
     }
   ];
 
@@ -347,47 +349,38 @@ const ServicesPage = () => {
           </div>
         </section>
 
-        {/* Additional Products Section */}
+        {/* Specific Solutions Section */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-                Produtos Avançados
+                Soluções específicas para dores imediatas
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Soluções complementares para dores específicas
+                Diagnósticos e intervenções pontuais para resultados rápidos
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              {additionalProducts.map((product, index) => {
-                const IconComponent = product.icon;
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {specificSolutions.map((solution, index) => {
+                const IconComponent = solution.icon;
                 return (
-                  <Card key={index} className="p-6 text-center hover:shadow-soft transition-smooth">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero mb-4">
-                      <IconComponent className="h-6 w-6 text-white" />
+                  <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
+                    <div className="flex items-start space-x-4">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero flex-shrink-0">
+                        <IconComponent className="h-6 w-6 text-white" />
+                      </div>
+                      
+                      <div className="flex-1">
+                        <h3 className="font-heading text-xl font-bold text-bvbp-corporate mb-3">
+                          {solution.title}
+                        </h3>
+                        
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          {solution.description}
+                        </p>
+                      </div>
                     </div>
-                    
-                    <h3 className="font-heading text-xl font-bold text-bvbp-corporate mb-2">
-                      {product.title}
-                    </h3>
-                    
-                    <div className="text-sm text-bvbp-growth font-semibold mb-3">
-                      <Clock className="h-4 w-4 inline mr-1" />
-                      {product.duration}
-                    </div>
-                    
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                      {product.description}
-                    </p>
-                    
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => window.location.href = '/contato'}
-                    >
-                      Saiba mais
-                    </Button>
                   </Card>
                 );
               })}
