@@ -24,8 +24,7 @@ const Index = () => {
                 </h1>
                 
                 <h2 className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-                  Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida 
-                  e resultados mensuráveis em até 90 dias.
+                  Trabalhamos lado a lado para transformar processos bagunçados em operações que funcionam, com resultados visíveis em até 90 dias.
                 </h2>
                 
                 <div className="pt-4">
