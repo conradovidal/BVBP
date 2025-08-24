@@ -24,7 +24,7 @@ const Index = () => {
                 </h1>
                 
                 <h2 className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  Transformamos processos bagunçados em sistemas que funcionam, com resultados claros em até 90 dias.
+                  Transformamos processos bagunçados em sistemas que funcionam, com resultados mensuráveis em até 90 dias.
                 </h2>
                 
                 <div className="pt-8">
