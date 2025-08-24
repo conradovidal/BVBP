@@ -24,8 +24,7 @@ const Index = () => {
                 </h1>
                 
                 <h2 className="text-xl md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-                  Transformamos processos bagunçados em operações que funcionam, lado a lado com você.<br />
-                  Resultados visíveis em até 90 dias.
+                  Transformamos processos bagunçados em sistemas que funcionam, com resultados claros em até 90 dias.
                 </h2>
                 
                 <div className="pt-8">
@@ -53,7 +52,7 @@ const Index = () => {
                   <div className="flex items-start space-x-4">
                     <Target className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-bvbp-corporate mb-2">CEO apagando incêndios 70% do tempo</h3>
+                      <h3 className="font-semibold text-bvbp-corporate mb-2">CEO é o principal gargalo de decisões</h3>
                       <p className="text-muted-foreground">Sem tempo para estratégia, sempre resolvendo problemas operacionais</p>
                     </div>
                   </div>
@@ -61,7 +60,7 @@ const Index = () => {
                   <div className="flex items-start space-x-4">
                     <Users className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-bvbp-corporate mb-2">40% das reuniões sem objetivo claro</h3>
+                      <h3 className="font-semibold text-bvbp-corporate mb-2">Reuniões demoradas sem objetivos claros</h3>
                       <p className="text-muted-foreground">Tempo perdido em alinhamentos que não geram resultados</p>
                     </div>
                   </div>
@@ -177,7 +176,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-3xl mx-auto text-center space-y-8">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate">
-                  Pare de Perder Dinheiro Enquanto Você Pensa
+                  Pare de perder dinheiro enquanto você pensa
                 </h2>
                 
                 <p className="text-xl text-muted-foreground">
