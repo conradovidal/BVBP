@@ -20,10 +20,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto text-center space-y-8">
                 <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate leading-tight">
-                  Somos parceiros de negócio que transformam{" "}
-                  <span className="text-bvbp-growth">processos bagunçados</span>{" "}
-                  em operações que realmente funcionam,{" "}
-                  <span className="text-bvbp-growth">lado a lado com você</span>
+                  Crescer sem caos é possível.
                 </h1>
                 
                 <h2 className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
