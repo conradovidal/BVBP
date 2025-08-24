@@ -24,11 +24,8 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="mb-6">
               <div className="font-heading text-2xl font-bold mb-1">BVBP</div>
-              <div className="text-white/90 font-medium mb-2">
+              <div className="text-white/90 font-medium">
                 Basso & Vidal Business Partners
-              </div>
-              <div className="text-white/70 text-sm italic">
-                "Building Valuable Business Program"
               </div>
             </div>
 
