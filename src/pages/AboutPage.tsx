@@ -66,7 +66,7 @@ const AboutPage = () => {
                 Missão
               </h2>
               <p className="text-xl text-foreground leading-relaxed">
-                Nossa missão: ajudar empresas a crescer sem perder o controle operacional. 
+                Ajudar empresas a crescer sem perder o controle operacional. 
                 Fazemos isso desenhando sistemas e processos que funcionam na prática, 
                 implementados lado a lado com a equipe, para entregar resultados visíveis 
                 em até 90 dias e autonomia depois.
