@@ -38,11 +38,10 @@ const AboutPage = () => {
   }];
   return <div className="min-h-screen">
       <Helmet>
-        <title>Sobre Nós - BVBP | Especialistas em Transformação de Processos</title>
-        
+        <title>Sobre a BVBP - Basso & Vidal Business Partners | Parceiros de Execução</title>
+        <meta name="description" content="Basso & Vidal Business Partners — parceiros de execução para empresas em crescimento. Menos caos, mais resultado. Conheça nossa missão e equipe." />
       </Helmet>
-      
-      
+      <Header />
       
       <main>
         {/* Hero Section */}
@@ -50,10 +49,11 @@ const AboutPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
-                Quem Somos
+                Sobre a BVBP
               </h1>
-              
-              
+              <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+                Basso & Vidal Business Partners — parceiros de execução para empresas em crescimento. Menos caos, mais resultado.
+              </p>
             </div>
           </div>
         </section>
@@ -63,19 +63,14 @@ const AboutPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6">
-                Nossa Missão
+                Missão
               </h2>
-              <div className="prose prose-lg max-w-none">
-                <p className="text-xl text-foreground leading-relaxed mb-8">
-                  Ajudar SMBs brasileiras a <strong>crescer sem perder o controle operacional</strong>. 
-                  Acreditamos que toda empresa merece processos que funcionam na prática, 
-                  não "receitas de bolo" que não encaixam na sua realidade.
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  Nossa abordagem é simples: entender sua situação específica, criar soluções sob medida, 
-                  implementar com você e garantir que sua equipe fique autônoma para continuar evoluindo.
-                </p>
-              </div>
+              <p className="text-xl text-foreground leading-relaxed">
+                Nossa missão: ajudar empresas a crescer sem perder o controle operacional. 
+                Fazemos isso desenhando sistemas e processos que funcionam na prática, 
+                implementados lado a lado com a equipe, para entregar resultados visíveis 
+                em até 90 dias e autonomia depois.
+              </p>
             </div>
           </div>
         </section>
@@ -85,7 +80,7 @@ const AboutPage = () => {
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-                Nossa Equipe
+                Nosso Time
               </h2>
             </div>
 
@@ -136,7 +131,6 @@ const AboutPage = () => {
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
                 Nossos Valores
               </h2>
-              
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">

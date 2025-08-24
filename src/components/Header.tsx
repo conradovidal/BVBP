@@ -9,6 +9,7 @@ const Header = () => {
     { label: "Início", href: "/" },
     { label: "Sobre", href: "/sobre" },
     { label: "Serviços", href: "/servicos" },
+    { label: "Calculadora ROI", href: "/calculadora-roi" },
     { label: "Contato", href: "/contato" },
   ];
 
