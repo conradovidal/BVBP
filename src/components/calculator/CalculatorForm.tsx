@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, TrendingDown, DollarSign, BarChart3, Target, Calculator } from "lucide-react";
+import { ChevronLeft, ChevronRight, TrendingDown, DollarSign, BarChart3, Target, Calculator, Calendar, Clock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface ProcessCalculatorData {
@@ -219,64 +219,77 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                 </p>
               </div>
 
-              {/* Blocos de resultados */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+              {/* Lista de resultados estruturada */}
+              <div className="space-y-4">
+                {/* Perda Mensal */}
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <div className="flex items-center gap-3">
                     <TrendingDown className="h-5 w-5 text-destructive" />
-                    Perda Mensal Estimada
-                  </h3>
-                  <div className="text-3xl font-bold text-destructive">
+                    <h3 className="text-lg font-semibold">Perda Mensal Estimada</h3>
+                  </div>
+                  <div className="text-2xl font-bold text-destructive">
                     R$ {results.monthlyLoss.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-destructive" />
-                    Perda Anual Estimada
-                  </h3>
-                  <div className="text-3xl font-bold text-destructive">
+                {/* Perda Anual */}
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                    <h3 className="text-lg font-semibold">Perda Anual Estimada</h3>
+                  </div>
+                  <div className="text-2xl font-bold text-destructive">
                     R$ {results.annualLoss.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="text-center p-6 bg-primary/10 rounded-lg border-l-4 border-primary">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <DollarSign className="h-5 w-5 text-primary" />
-                    Economia Inicial Estimada
-                  </h3>
-                  <div className="text-2xl font-bold text-primary">
+                {/* Economia Inicial */}
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="h-5 w-5 text-success" />
+                    <div>
+                      <h3 className="text-lg font-semibold">Economia Inicial Estimada</h3>
+                      <p className="text-sm text-muted-foreground">(90 dias)</p>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-success">
                     R$ {results.initialSavingsMin.toLocaleString()} – {results.initialSavingsMax.toLocaleString()}
                   </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    (90 dias)
-                  </div>
                 </div>
 
-                <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success lg:col-span-2">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
+                {/* Economia Sustentável */}
+                <div className="flex items-center justify-between p-4 border-b border-border bg-success/5">
+                  <div className="flex items-center gap-3">
                     <Target className="h-5 w-5 text-success" />
-                    Economia Sustentável Estimada
-                  </h3>
-                  <div className="text-2xl font-bold text-success">
-                    R$ {results.sustainableSavingsMin.toLocaleString()} – {results.sustainableSavingsMax.toLocaleString()} por mês
+                    <div>
+                      <h3 className="text-lg font-semibold">Economia Sustentável Estimada</h3>
+                      <p className="text-sm text-muted-foreground">(após capacitação, por mês)</p>
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    (após capacitação)
+                  <div className="text-2xl font-bold text-success">
+                    R$ {results.sustainableSavingsMin.toLocaleString()} – {results.sustainableSavingsMax.toLocaleString()}
                   </div>
                 </div>
 
-                <div className="text-center p-6 bg-accent/10 rounded-lg border-l-4 border-accent">
-                  <h3 className="text-lg font-semibold mb-2 flex items-center justify-center gap-2">
-                    <Calculator className="h-5 w-5 text-accent-foreground" />
-                    ROI Potencial
-                  </h3>
-                  <div className="text-3xl font-bold text-accent-foreground">
-                    até {results.roiMultiplier}x
+                {/* Economia Anual Projetada */}
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-success" />
+                    <h3 className="text-lg font-semibold">Economia Anual Projetada</h3>
                   </div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    no primeiro ano
+                  <div className="text-2xl font-bold text-success">
+                    R$ {Math.round((results.initialSavingsMin + results.sustainableSavingsMin * 9)).toLocaleString()} – {Math.round((results.initialSavingsMax + results.sustainableSavingsMax * 9)).toLocaleString()}
+                  </div>
+                </div>
+
+                {/* Payback */}
+                <div className="flex items-center justify-between p-4 bg-accent/5 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5 text-accent-foreground" />
+                    <h3 className="text-lg font-semibold">Quando o investimento se paga?</h3>
+                  </div>
+                  <div className="text-2xl font-bold text-accent-foreground">
+                    2 a 4 meses
                   </div>
                 </div>
               </div>
