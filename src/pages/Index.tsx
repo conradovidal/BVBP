@@ -52,16 +52,16 @@ const Index = () => {
                   <div className="flex items-start space-x-4">
                     <Target className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-bvbp-corporate mb-2">CEO é o principal gargalo de decisões</h3>
-                      <p className="text-muted-foreground">Sem tempo para estratégia, sempre resolvendo problemas operacionais</p>
+                      <h3 className="font-semibold text-bvbp-corporate mb-2">CEO é o gargalo de decisões</h3>
+                      <p className="text-muted-foreground">Estratégia de lado, tempo gasto apagando incêndios</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start space-x-4">
                     <Users className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-bvbp-corporate mb-2">Reuniões demoradas sem objetivos claros</h3>
-                      <p className="text-muted-foreground">Tempo perdido em alinhamentos que não geram resultados</p>
+                      <h3 className="font-semibold text-bvbp-corporate mb-2">Reuniões sem objetivo</h3>
+                      <p className="text-muted-foreground">Horas perdidas em alinhamentos que não geram resultado</p>
                     </div>
                   </div>
                   
@@ -69,22 +69,22 @@ const Index = () => {
                     <TrendingUp className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
                       <h3 className="font-semibold text-bvbp-corporate mb-2">Crescimento travado pela operação</h3>
-                      <p className="text-muted-foreground">Faturamento cresce mas eficiência diminui</p>
+                      <p className="text-muted-foreground">A receita sobe, a eficiência despenca</p>
                     </div>
                   </div>
                   
                   <div className="flex items-start space-x-4">
                     <Zap className="h-8 w-8 text-bvbp-growth mt-1 flex-shrink-0" />
                     <div>
-                      <h3 className="font-semibold text-bvbp-corporate mb-2">Equipe desmotivada com retrabalho constante</h3>
-                      <p className="text-muted-foreground">Processos mal definidos gerando frustração e ineficiência</p>
+                      <h3 className="font-semibold text-bvbp-corporate mb-2">Equipe desmotivada pelo retrabalho</h3>
+                      <p className="text-muted-foreground">Processos mal definidos geram frustração e desperdício</p>
                     </div>
                   </div>
                 </div>
                 
                 <div className="text-center mt-12">
                   <p className="text-lg text-bvbp-corporate-light">
-                    Se sua empresa cresceu mas virou um caos operacional, você não está sozinho.
+                    Se sua empresa parece ter crescido para o caos, você não está sozinho.
                   </p>
                 </div>
               </div>
@@ -106,17 +106,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Customização Real</h3>
                     <p className="text-muted-foreground">
-                      Não empurramos metodologia pronta - criamos soluções específicas para sua realidade
-                    </p>
-                  </div>
-                  
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-bvbp-growth-light rounded-full flex items-center justify-center mx-auto">
-                      <TrendingUp className="h-8 w-8 text-bvbp-growth" />
-                    </div>
-                    <h3 className="font-heading font-bold text-xl text-bvbp-corporate">ROI Transparente</h3>
-                    <p className="text-muted-foreground">
-                      Mostramos exatamente onde você está perdendo dinheiro e quanto pode economizar
+                      Nada de receita pronta — cada solução é feita para sua realidade
                     </p>
                   </div>
                   
@@ -126,7 +116,17 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Execução Lado a Lado</h3>
                     <p className="text-muted-foreground">
-                      Não entregamos PowerPoint - somos parceiros de execução, mão na massa junto com você
+                      Somos parceiros de negócio, não entregadores de PowerPoint
+                    </p>
+                  </div>
+                  
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-bvbp-growth-light rounded-full flex items-center justify-center mx-auto">
+                      <TrendingUp className="h-8 w-8 text-bvbp-growth" />
+                    </div>
+                    <h3 className="font-heading font-bold text-xl text-bvbp-corporate">ROI Transparente</h3>
+                    <p className="text-muted-foreground">
+                      Mostramos onde o dinheiro escorre e quanto pode ser recuperado
                     </p>
                   </div>
                   
@@ -136,7 +136,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Autonomia em 90 dias</h3>
                     <p className="text-muted-foreground">
-                      Sua equipe fica capacitada para evoluir sozinha, sem criar dependência
+                      Sua equipe ganha capacidade para evoluir sem depender da gente
                     </p>
                   </div>
                 </div>
@@ -149,22 +149,22 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-3xl mx-auto text-center space-y-6">
                 <blockquote className="text-2xl md:text-3xl font-medium text-bvbp-corporate italic">
-                  "Vivenciamos na prática os desafios de escalar operações em empresas de alta performance. 
-                  Não teoria, mas experiência real."
+                  "Vivenciamos na prática os desafios de escalar operações em empresas reais. 
+                  Não é teoria, é experiência de quem já esteve dentro."
                 </blockquote>
                 
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-bvbp-growth" />
-                    <span className="text-bvbp-corporate-light">10+ anos de experiência em operações empresariais</span>
+                    <span className="text-bvbp-corporate-light">10+ anos em operações empresariais</span>
                   </div>
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-bvbp-growth" />
-                    <span className="text-bvbp-corporate-light">Especialização em Business Agility e Process Optimization</span>
+                    <span className="text-bvbp-corporate-light">Business Agility & Process Optimization</span>
                   </div>
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-bvbp-growth" />
-                    <span className="text-bvbp-corporate-light">Metodologia testada em ambientes reais de crescimento</span>
+                    <span className="text-bvbp-corporate-light">Metodologias testadas em scale-ups de alto crescimento</span>
                   </div>
                 </div>
               </div>
@@ -176,12 +176,11 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-3xl mx-auto text-center space-y-8">
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate">
-                  Pare de perder dinheiro enquanto você pensa
+                  Cada semana no caos custa caro. Comece hoje.
                 </h2>
                 
                 <p className="text-xl text-muted-foreground">
-                  Cada semana de atraso são milhares de reais jogados fora. 
-                  Comece com diagnóstico gratuito - sem compromisso, só clareza.
+                  Agende seu diagnóstico gratuito — clareza sem compromisso.
                 </p>
                 
                 <Button 
