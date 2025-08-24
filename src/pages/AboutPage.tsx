@@ -4,19 +4,23 @@ import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
+import cristianoBasso from "@/assets/cristiano-basso.jpg";
+import conradoVidal from "@/assets/conrado-vidal.jpg";
 const AboutPage = () => {
   const team = [{
     name: "Cristiano Basso",
     role: "Head of Business Operations",
     bio: "Especialista em agilidade organizacional com 12+ anos de experiência. Atualmente Head of Business Operations na Azion, ajudando empresas a conectar estratégia e execução através de melhoria de processos e transparência organizacional.",
     expertise: ["Business Agility", "Change Management", "Team Leadership", "Strategic Thinking", "Continuous Improvement"],
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    image: cristianoBasso,
+    linkedin: "https://www.linkedin.com/in/cristianobasso/"
   }, {
     name: "Conrado Vidal",
     role: "Business Agility Specialist",
     bio: "Especialista em conectar estratégia à execução através de sistemas transparentes e colaboração efetiva. Foco em desenvolver capacidades organizacionais que permitem prioridades mais claras e melhor colaboração entre equipes.",
     expertise: ["Organizational Development", "Process Optimization", "Strategic Planning", "Systems Thinking", "Team Facilitation"],
-    image: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+    image: conradoVidal,
+    linkedin: "https://www.linkedin.com/in/conradovidal/"
   }];
   const values = [{
     icon: Target,
@@ -85,7 +89,7 @@ const AboutPage = () => {
                     <p className="text-muted-foreground mb-4 leading-relaxed">
                       {member.bio}
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 mb-4">
                       {member.expertise.map((skill, skillIndex) => (
                         <span 
                           key={skillIndex}
@@ -95,6 +99,15 @@ const AboutPage = () => {
                         </span>
                       ))}
                     </div>
+                    <a 
+                      href={member.linkedin}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-bvbp-corporate hover:text-bvbp-growth transition-colors"
+                    >
+                      <LinkedinIcon className="h-5 w-5" />
+                      <span className="font-medium">LinkedIn</span>
+                    </a>
                   </div>
                 </Card>
               ))}
