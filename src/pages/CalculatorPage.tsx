@@ -52,7 +52,7 @@ const CalculatorPage = () => {
             </div>
           </section>
 
-          <CalculatorReportPreview />
+          
         </main>
 
         <Footer />

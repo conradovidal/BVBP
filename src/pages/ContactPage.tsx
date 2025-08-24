@@ -51,7 +51,7 @@ const ContactPage = () => {
     {
       icon: PhoneIcon,
       title: "Telefone/WhatsApp", 
-      info: "+55 51 99653-5711 / +55 51 99899-1771",
+      info: "+55 51 99653-5711\n+55 51 99899-1771",
       description: "Segunda a Sexta: 9h às 18h"
     },
     {
@@ -230,7 +230,7 @@ const ContactPage = () => {
                               <h3 className="font-semibold text-bvbp-corporate mb-1">
                                 {contact.title}
                               </h3>
-                              <p className="text-lg font-medium text-foreground mb-1">
+                              <p className="text-lg font-medium text-foreground mb-1 whitespace-pre-line">
                                 {contact.info}
                               </p>
                               <p className="text-sm text-muted-foreground">
@@ -288,28 +288,23 @@ const ContactPage = () => {
           </div>
         </section>
 
-        {/* CTA Section */}
+        {/* WhatsApp Section */}
         <section className="py-16 bg-bvbp-growth-light">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6">
-                Prefere Começar com Nosso Diagnóstico Gratuito?
+                Prefere Conversar pelo WhatsApp?
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Descubra exatamente onde sua empresa está perdendo dinheiro antes mesmo de conversar conosco
+                Clique no botão abaixo para iniciar uma conversa direta conosco
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  variant="hero" 
-                  size="xl"
-                  onClick={() => window.location.href = '/calculadora-roi'}
-                >
-                  FAZER DIAGNÓSTICO GRATUITO
-                </Button>
-                <Button variant="outline-hero" size="xl" onClick={() => window.location.href = '/calculadora-roi'}>
-                  Ver Calculadora ROI
-                </Button>
-              </div>
+              <Button 
+                variant="hero" 
+                size="xl"
+                onClick={() => window.open('https://wa.me/5551996535711', '_blank')}
+              >
+                Falar pelo WhatsApp
+              </Button>
             </div>
           </div>
         </section>

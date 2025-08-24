@@ -269,6 +269,16 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
                 >
                   Agendar Diagnóstico Gratuito
                 </Button>
+                <div className="mt-4">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="h-12 text-base px-6"
+                    onClick={() => window.location.href = '/servicos'}
+                  >
+                    Quer entender como resolver essa dor na prática? Veja nossos serviços.
+                  </Button>
+                </div>
               </div>
             </div>
           )}
