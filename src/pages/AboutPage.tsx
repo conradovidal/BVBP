@@ -4,45 +4,34 @@ import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
-
 const AboutPage = () => {
-  const team = [
-    {
-      name: "João Basso",
-      role: "Business Agility Specialist",
-      bio: "10+ anos otimizando operações em empresas de tecnologia. Especialista em transformar caos operacional em crescimento sustentável.",
-      expertise: ["Process Optimization", "Business Agility", "Operational Excellence", "Team Leadership"],
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-    },
-    {
-      name: "Vidal",
-      role: "Operations & Process Expert", 
-      bio: "Expertise em desenhar processos que funcionam na vida real. Experiência prática em scaling de operações para empresas em rápido crescimento.",
-      expertise: ["Process Design", "Operations Scaling", "Systems Integration", "Change Management"],
-      image: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-    }
-  ];
-
-  const values = [
-    {
-      icon: Target,
-      title: "Resultados Reais",
-      description: "Não vendemos PowerPoint. Entregamos melhorias mensuráveis e duradouras que impactam diretamente o resultado da empresa."
-    },
-    {
-      icon: Heart,
-      title: "Honestidade Transparente", 
-      description: "Se não conseguirmos ajudar, falamos na lata. Só trabalhamos com empresas onde vemos potencial real de melhoria."
-    },
-    {
-      icon: Users,
-      title: "Autonomia Garantida",
-      description: "Nosso sucesso é sua independência. Em 90 dias você não precisa mais da gente - isso é uma promessa."
-    }
-  ];
-
-  return (
-    <div className="min-h-screen">
+  const team = [{
+    name: "João Basso",
+    role: "Business Agility Specialist",
+    bio: "10+ anos otimizando operações em empresas de tecnologia. Especialista em transformar caos operacional em crescimento sustentável.",
+    expertise: ["Process Optimization", "Business Agility", "Operational Excellence", "Team Leadership"],
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+  }, {
+    name: "Vidal",
+    role: "Operations & Process Expert",
+    bio: "Expertise em desenhar processos que funcionam na vida real. Experiência prática em scaling de operações para empresas em rápido crescimento.",
+    expertise: ["Process Design", "Operations Scaling", "Systems Integration", "Change Management"],
+    image: "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+  }];
+  const values = [{
+    icon: Target,
+    title: "Resultados Reais",
+    description: "Não vendemos PowerPoint. Entregamos melhorias mensuráveis e duradouras que impactam diretamente o resultado da empresa."
+  }, {
+    icon: Heart,
+    title: "Honestidade Transparente",
+    description: "Se não conseguirmos ajudar, falamos na lata. Só trabalhamos com empresas onde vemos potencial real de melhoria."
+  }, {
+    icon: Users,
+    title: "Autonomia Garantida",
+    description: "Nosso sucesso é sua independência. Em 90 dias você não precisa mais da gente - isso é uma promessa."
+  }];
+  return <div className="min-h-screen">
       <Helmet>
         <title>Sobre Nós - BVBP | Especialistas em Transformação de Processos</title>
         <meta name="description" content="Conheça a equipe BVBP: especialistas em transformação de processos com 10+ anos de experiência em otimização operacional para SMBs brasileiras." />
@@ -58,82 +47,14 @@ const AboutPage = () => {
               <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
                 Quem Somos
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                Somos especialistas em transformar operações caóticas em máquinas de crescimento. 
-                Nossa experiência prática ajuda SMBs a escalar sem perder o controle.
-              </p>
-              <div className="inline-flex items-center px-6 py-3 rounded-full bg-bvbp-growth/10 text-bvbp-growth font-semibold">
-                <Users className="h-5 w-5 mr-2" />
-                10+ anos transformando operações
-              </div>
+              
+              
             </div>
           </div>
         </section>
 
         {/* Team Section */}
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-                Nossa Equipe
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Profissionais com experiência real em empresas de crescimento acelerado
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {team.map((member, index) => (
-                <Card key={index} className="p-8 hover:shadow-soft transition-smooth">
-                  <div className="text-center mb-6">
-                    <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
-                      <img 
-                        src={member.image} 
-                        alt={`${member.name} - ${member.role}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
-                      {member.name}
-                    </h3>
-                    <p className="text-bvbp-growth font-semibold mb-4">
-                      {member.role}
-                    </p>
-                  </div>
-                  
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    {member.bio}
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-bvbp-corporate mb-3">Especialidades:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {member.expertise.map((skill, skillIndex) => (
-                        <span 
-                          key={skillIndex}
-                          className="px-3 py-1 bg-bvbp-growth/10 text-bvbp-growth text-sm rounded-full"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-center space-x-4 mt-6">
-                    <Button variant="outline" size="sm">
-                      <LinkedinIcon className="h-4 w-4 mr-2" />
-                      LinkedIn
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <MailIcon className="h-4 w-4 mr-2" />
-                      Email
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
+        
 
         {/* Mission Section */}
         <section className="py-16 bg-bvbp-growth-light">
@@ -164,16 +85,13 @@ const AboutPage = () => {
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
                 Nossos Valores
               </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Os princípios que guiam tudo o que fazemos
-              </p>
+              
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               {values.map((value, index) => {
-                const IconComponent = value.icon;
-                return (
-                  <Card key={index} className="p-6 text-center hover:shadow-soft transition-smooth">
+              const IconComponent = value.icon;
+              return <Card key={index} className="p-6 text-center hover:shadow-soft transition-smooth">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-hero mb-4">
                       <IconComponent className="h-8 w-8 text-white" />
                     </div>
@@ -183,9 +101,8 @@ const AboutPage = () => {
                     <p className="text-muted-foreground leading-relaxed">
                       {value.description}
                     </p>
-                  </Card>
-                );
-              })}
+                  </Card>;
+            })}
             </div>
           </div>
         </section>
@@ -195,9 +112,7 @@ const AboutPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <Card className="p-8 md:p-12">
-                <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6 text-center">
-                  Por Que Começamos a BVBP
-                </h2>
+                <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6 text-center">Por que começamos a BVBP</h2>
                 <div className="prose prose-lg max-w-none">
                   <p className="text-foreground leading-relaxed mb-6">
                     Depois de anos vendo empresas repetirem os mesmos erros operacionais - 
@@ -228,8 +143,6 @@ const AboutPage = () => {
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default AboutPage;
