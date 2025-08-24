@@ -8,20 +8,19 @@ import CalculatorSocialProof from "@/components/calculator/CalculatorSocialProof
 import CalculatorFAQ from "@/components/calculator/CalculatorFAQ";
 import { Helmet } from "react-helmet-async";
 
-export interface CalculatorData {
-  employees: number;
-  monthlyRevenue: string;
-  reworkHours: number;
-  unproductiveMeetingHours: number;
-  emergencyTimePercentage: number;
+export interface ProcessCalculatorData {
+  processType: string;
+  teamSize: number;
   averageSalary: number;
+  reworkHours: number;
+  meetingHours: number;
 }
 
 const CalculatorPage = () => {
-  const [calculatorData, setCalculatorData] = useState<Partial<CalculatorData>>({});
+  const [calculatorData, setCalculatorData] = useState<Partial<ProcessCalculatorData>>({});
   const [showResults, setShowResults] = useState(false);
 
-  const handleDataUpdate = (data: Partial<CalculatorData>) => {
+  const handleDataUpdate = (data: Partial<ProcessCalculatorData>) => {
     setCalculatorData(prev => ({ ...prev, ...data }));
   };
 
