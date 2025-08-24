@@ -12,14 +12,12 @@ const CalculatorHero = () => {
         </div>
 
         <h1 className="font-heading text-4xl lg:text-5xl font-bold text-foreground mb-6 max-w-4xl mx-auto">
-          Descubra Quanto Sua Empresa Está{" "}
-          <span className="text-destructive">Perdendo por Mês</span>{" "}
-          com Processos Ineficientes
+          Quanto sua operação está custando em{" "}
+          <span className="text-destructive">ineficiências?</span>
         </h1>
 
         <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-          Calcule suas perdas operacionais em 3 minutos e receba 
-          um relatório personalizado com oportunidades de economia
+          Descubra em 3 passos rápidos. Estimativa personalizada, sem jargão, sem compromisso.
         </p>
 
         <div className="flex items-center justify-center gap-8 max-w-2xl mx-auto">

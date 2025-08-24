@@ -9,21 +9,11 @@ import CalculatorFAQ from "@/components/calculator/CalculatorFAQ";
 import { Helmet } from "react-helmet-async";
 
 export interface CalculatorData {
-  companyName: string;
   employees: number;
   monthlyRevenue: string;
-  reworkHours: number;
-  unproductiveMeetings: number;
-  firefightingPercentage: number;
-  missedDeadlines: string;
-  decisionSpeed: number;
-  nonIntegratedSystems: number;
-  name: string;
-  email: string;
-  phone: string;
-  position: string;
-  mainChallenge: string;
-  wantsUpdates: boolean;
+  reworkLevel: string;
+  firefightingLevel: string;
+  meetingsLevel: string;
 }
 
 const CalculatorPage = () => {
