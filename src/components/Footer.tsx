@@ -23,9 +23,12 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <div className="font-heading text-2xl font-bold mb-2">BVBP</div>
-              <div className="text-white/80 font-medium mb-4 italic">
-                "Building better business"
+              <div className="font-heading text-2xl font-bold mb-1">BVBP</div>
+              <div className="text-white/90 font-medium mb-2">
+                Basso & Vidal Business Partners
+              </div>
+              <div className="text-white/70 text-sm italic">
+                "Building Valuable Business Program"
               </div>
             </div>
 
@@ -33,15 +36,23 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-bvbp-growth" />
-                <a href="mailto:contato@bvbp.com.br" className="hover:text-bvbp-growth transition-smooth">
-                  contato@bvbp.com.br
+                <a href="mailto:basso.vidal.bo@gmail.com" className="hover:text-bvbp-growth transition-smooth">
+                  basso.vidal.bo@gmail.com
                 </a>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-bvbp-growth" />
-                <a href="tel:+5551999999999" className="hover:text-bvbp-growth transition-smooth">
-                  +55 51 99999-9999
-                </a>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-bvbp-growth" />
+                  <a href="tel:+5551996535711" className="hover:text-bvbp-growth transition-smooth">
+                    +55 51 99653-5711
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-bvbp-growth" />
+                  <a href="tel:+5551998991771" className="hover:text-bvbp-growth transition-smooth">
+                    +55 51 99899-1771
+                  </a>
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-bvbp-growth" />

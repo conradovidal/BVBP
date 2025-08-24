@@ -17,9 +17,13 @@ const Header = () => {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center">
-          <a href="/" className="font-heading text-2xl font-bold text-bvbp-corporate hover:text-bvbp-growth transition-smooth">
+          <a href="/" className="font-heading text-2xl font-bold text-bvbp-corporate hover:text-bvbp-growth transition-smooth mr-3">
             BVBP
           </a>
+          <div className="text-xs leading-tight text-foreground/80">
+            <div>Basso & Vidal</div>
+            <div>Business Partners</div>
+          </div>
         </div>
 
         {/* Desktop Navigation */}
@@ -37,13 +41,13 @@ const Header = () => {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-          <Button 
-            className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white" 
-            size="lg"
-            onClick={() => window.location.href = '/contato'}
-          >
-            Diagnóstico Gratuito
-          </Button>
+        <Button 
+          className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white border-bvbp-growth hover:border-bvbp-growth-dark" 
+          size="lg"
+          onClick={() => window.location.href = '/contato'}
+        >
+          Diagnóstico Gratuito
+        </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -71,7 +75,7 @@ const Header = () => {
               </a>
             ))}
             <Button 
-              className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white w-full" 
+              className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white w-full border-bvbp-growth hover:border-bvbp-growth-dark" 
               size="lg"
               onClick={() => window.location.href = '/contato'}
             >
