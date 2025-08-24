@@ -32,8 +32,8 @@ const ServicesSection = () => {
       icon: TrendingUp,
       description: "Resultados rápidos no processo mais crítico da sua empresa",
       features: [
-        "1 processo crítico redesenhado",
-        "Quick wins imediatos implementados",
+        "Economia alvo: R$ 5–20 mil/mês em SMB típica",
+        "Após diagnóstico personalizado",
         "Métricas de acompanhamento",
         "Treinamento da equipe",
         "30 dias de suporte incluído"
@@ -50,8 +50,8 @@ const ServicesSection = () => {
       icon: Star,
       description: "Transformação sistêmica com métricas e automação simples",
       features: [
-        "Métricas + Automação simples",
-        "ROI transparente + controle contínuo",
+        "Redução de desperdícios (5–15%)",
+        "Variando por contexto específico",
         "3-5 processos otimizados",
         "Dashboard de acompanhamento",
         "60 dias de suporte incluído"
@@ -68,11 +68,11 @@ const ServicesSection = () => {
       icon: Crown,
       description: "Mudança sistêmica completa com 6 meses de suporte",
       features: [
-        "Mudança sistêmica + 6 meses suporte",
-        "Capacitação completa da equipe",
+        "Ganho de eficiência (10–25% nos fluxos)",
+        "Depende do escopo mapeado",
         "Todos os processos otimizados",
         "Autonomia total garantida",
-        "ROI médio de 300%+ no primeiro ano"
+        "6 meses de suporte incluído"
       ],
       cta: "TRANSFORMAR AGORA",
       popular: false
@@ -155,6 +155,7 @@ const ServicesSection = () => {
                   variant={service.popular ? "success" : "hero"} 
                   className="w-full"
                   size="lg"
+                  onClick={() => window.location.href = '/contato'}
                 >
                   {service.cta}
                 </Button>
@@ -196,11 +197,18 @@ const ServicesSection = () => {
                 </div>
               </div>
 
-              <Button variant="hero" size="xl">
+              <Button variant="hero" size="xl" onClick={() => window.location.href = '/contato'}>
                 COMEÇAR COM DIAGNÓSTICO GRATUITO
               </Button>
             </div>
           </Card>
+        </div>
+
+        {/* Footer Note */}
+        <div className="text-center mt-8">
+          <p className="text-sm text-muted-foreground">
+            * Estimativas indicativas. Confirmadas no diagnóstico e variam por setor, porte e maturidade de processos.
+          </p>
         </div>
       </div>
     </section>

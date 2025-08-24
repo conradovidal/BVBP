@@ -52,7 +52,10 @@ const AboutPage = () => {
                 Sobre a BVBP
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-                Basso & Vidal Business Partners  Transformamos complexidade em clareza.  Parceiros estratégicos para empresas em crescimento.
+                Basso & Vidal Business Partners<br/>
+                Building Valuable Business Partnerships<br/>
+                Transformamos complexidade em clareza.<br/>
+                Parceiros estratégicos para empresas em crescimento.
               </p>
             </div>
           </div>
@@ -176,7 +179,7 @@ const AboutPage = () => {
                 </div>
                 
                 <div className="text-center mt-8">
-                  <Button variant="hero" size="xl" className="group">
+                  <Button variant="hero" size="xl" className="group" onClick={() => window.location.href = '/servicos'}>
                     Conheça Nossos Serviços
                     <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>

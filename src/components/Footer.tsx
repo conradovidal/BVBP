@@ -102,7 +102,7 @@ const Footer = () => {
               <a href="/contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
                 Contato
               </a>
-              <a href="/" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+              <a href="/contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
                 Diagnóstico Gratuito
               </a>
             </div>
@@ -126,6 +126,7 @@ const Footer = () => {
               variant="outline"
               size="lg"
               className="border-white text-white bg-transparent hover:bg-white hover:text-bvbp-growth transition-smooth"
+              onClick={() => window.location.href = '/contato'}
             >
               Diagnóstico Gratuito
               <ExternalLink className="h-4 w-4 ml-2" />

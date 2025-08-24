@@ -45,13 +45,13 @@ const ContactPage = () => {
     {
       icon: MailIcon,
       title: "Email",
-      info: "contato@bvbp.com.br",
+      info: "basso.vidal.bp@gmail.com",
       description: "Resposta em até 4 horas úteis"
     },
     {
       icon: PhoneIcon,
       title: "Telefone/WhatsApp", 
-      info: "+55 51 99999-9999",
+      info: "+55 51 99653-5711 / +55 51 99899-1771",
       description: "Segunda a Sexta: 9h às 18h"
     },
     {
@@ -302,13 +302,11 @@ const ContactPage = () => {
                 <Button 
                   variant="hero" 
                   size="xl"
-                  onClick={() => {
-                    document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                  onClick={() => window.location.href = '/calculadora-roi'}
                 >
                   FAZER DIAGNÓSTICO GRATUITO
                 </Button>
-                <Button variant="outline-hero" size="xl">
+                <Button variant="outline-hero" size="xl" onClick={() => window.location.href = '/calculadora-roi'}>
                   Ver Calculadora ROI
                 </Button>
               </div>

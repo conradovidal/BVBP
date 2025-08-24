@@ -54,8 +54,6 @@ const CalculatorPage = () => {
           </section>
 
           <CalculatorReportPreview />
-          <CalculatorSocialProof />
-          <CalculatorFAQ />
         </main>
 
         <Footer />
