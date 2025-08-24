@@ -21,6 +21,38 @@ const CalculatorFAQ = () => {
     question: "Quanto tempo leva para receber o relatório?",
     answer: "O relatório é gerado instantaneamente e enviado por email imediatamente após você completar o formulário. Se não receber em 5 minutos, verifique sua caixa de spam."
   }];
-  return;
+  return (
+    <section className="py-16 bg-background">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Dúvidas Frequentes</h2>
+          <p className="text-muted-foreground">Tudo que você precisa saber sobre nossa calculadora</p>
+        </div>
+
+        <div className="max-w-3xl mx-auto">
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqs.map((faq, index) => (
+              <AccordionItem key={index} value={`item-${index}`} className="border rounded-lg px-6">
+                <AccordionTrigger className="text-left hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pt-2">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+
+          <div className="text-center mt-12">
+            <p className="text-lg mb-6">Ainda tem dúvidas?</p>
+            <Button size="lg" className="inline-flex items-center gap-2" onClick={() => window.location.href = '/contato'}>
+              <MessageCircle className="h-5 w-5" />
+              Falar com Especialista
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
 export default CalculatorFAQ;

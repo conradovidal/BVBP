@@ -32,39 +32,37 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
   };
 
   const calculateResults = () => {
-    if (!formData.employees || !formData.monthlyRevenue) return null;
+    if (!formData.employees || !formData.monthlyRevenue || !formData.averageSalary) return null;
 
     const revenueValue = {
-      "até 500k": 250000,
-      "500k–2M": 1250000,
-      "acima de 2M": 5000000
-    }[formData.monthlyRevenue] || 250000;
+      "até 50k": 25000,
+      "50k–100k": 75000,
+      "100k–500k": 300000,
+      "500k–1M": 750000,
+      "1M+": 2000000
+    }[formData.monthlyRevenue] || 25000;
 
-    // Cálculo baseado na nova fórmula: faturamento × 20–30% × ajuste gargalos
-    const baseLossPercentage = 0.25; // 25% médio entre 20-30%
+    // Cálculo de perdas baseado em horas perdidas e salário médio
+    const monthlyWorkingHours = 160; // 40h/semana * 4 semanas
+    const weeklyToMonthly = 4.33; // Para converter horas semanais em mensais
     
-    // Ajuste baseado nos gargalos (baixo=0.8, médio=1.0, alto=1.3)
-    const bottleneckMultiplier = {
-      "baixo": 0.8,
-      "médio": 1.0,
-      "alto": 1.3
-    };
-
-    const avgBottleneckLevel = [
-      formData.reworkLevel || "médio",
-      formData.firefightingLevel || "médio", 
-      formData.meetingsLevel || "médio"
-    ];
+    // Custo por hora do funcionário (salário + encargos ~70%)
+    const hourlyCost = (formData.averageSalary * 1.7) / monthlyWorkingHours;
     
-    const avgMultiplier = avgBottleneckLevel.reduce((sum, level) => 
-      sum + (bottleneckMultiplier[level as keyof typeof bottleneckMultiplier] || 1.0), 0
-    ) / 3;
-
-    const totalMonthlyLoss = revenueValue * baseLossPercentage * avgMultiplier;
-    const potentialSavings = totalMonthlyLoss * 0.35; // 30-40% de economia média (35%)
+    // Perdas por categoria
+    const reworkLoss = (formData.reworkHours || 0) * weeklyToMonthly * hourlyCost * formData.employees;
+    const meetingLoss = (formData.unproductiveMeetingHours || 0) * weeklyToMonthly * hourlyCost * formData.employees;
+    const emergencyLoss = ((formData.emergencyTimePercentage || 0) / 100) * monthlyWorkingHours * hourlyCost * Math.min(formData.employees * 0.2, 10); // Apenas liderança
+    
+    const totalMonthlyLoss = reworkLoss + meetingLoss + emergencyLoss;
+    const annualLoss = totalMonthlyLoss * 12;
+    const revenuePercentage = (totalMonthlyLoss / revenueValue) * 100;
+    const potentialSavings = totalMonthlyLoss * 0.35; // 35% de economia média
 
     return {
       monthlyLoss: Math.round(totalMonthlyLoss),
+      annualLoss: Math.round(annualLoss),
+      revenuePercentage: Math.round(revenuePercentage * 10) / 10, // 1 casa decimal
       potentialSavings: Math.round(potentialSavings)
     };
   };
@@ -123,13 +121,31 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
               <div>
                 <label className="block text-sm font-medium mb-2">Faturamento mensal</label>
                 <Select value={formData.monthlyRevenue || ""} onValueChange={(value) => updateFormData({ monthlyRevenue: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-background border-input">
                     <SelectValue placeholder="Selecione o faturamento" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="até 500k">até 500k</SelectItem>
-                    <SelectItem value="500k–2M">500k–2M</SelectItem>
-                    <SelectItem value="acima de 2M">acima de 2M</SelectItem>
+                  <SelectContent className="bg-background border-input z-50">
+                    <SelectItem value="até 50k">até 50k</SelectItem>
+                    <SelectItem value="50k–100k">50k–100k</SelectItem>
+                    <SelectItem value="100k–500k">100k–500k</SelectItem>
+                    <SelectItem value="500k–1M">500k–1M</SelectItem>
+                    <SelectItem value="1M+">1M+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Salário médio mensal do time</label>
+                <Select value={formData.averageSalary?.toString() || ""} onValueChange={(value) => updateFormData({ averageSalary: parseInt(value) })}>
+                  <SelectTrigger className="bg-background border-input">
+                    <SelectValue placeholder="Selecione a faixa salarial" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border-input z-50">
+                    <SelectItem value="3000">até R$ 3.000</SelectItem>
+                    <SelectItem value="5000">R$ 3.000 - R$ 5.000</SelectItem>
+                    <SelectItem value="8000">R$ 5.000 - R$ 8.000</SelectItem>
+                    <SelectItem value="12000">R$ 8.000 - R$ 12.000</SelectItem>
+                    <SelectItem value="18000">acima de R$ 12.000</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -139,50 +155,56 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
           {currentStep === 2 && (
             <div className="space-y-8">
               <div>
-                <label className="block text-lg font-medium mb-4">Retrabalho</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {["baixo", "médio", "alto"].map((level) => (
-                    <Button
-                      key={level}
-                      variant={formData.reworkLevel === level ? "default" : "outline"}
-                      onClick={() => updateFormData({ reworkLevel: level })}
-                      className="h-12 capitalize"
-                    >
-                      {level}
-                    </Button>
-                  ))}
+                <label className="block text-lg font-medium mb-4">
+                  Retrabalho: {formData.reworkHours || 0}h por semana
+                </label>
+                <Slider
+                  value={[formData.reworkHours || 0]}
+                  onValueChange={([value]) => updateFormData({ reworkHours: value })}
+                  max={200}
+                  min={0}
+                  step={5}
+                  className="mb-2"
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>0h</span>
+                  <span>200h</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-lg font-medium mb-4">Tempo da liderança em "apagar incêndios"</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {["baixo", "médio", "alto"].map((level) => (
-                    <Button
-                      key={level}
-                      variant={formData.firefightingLevel === level ? "default" : "outline"}
-                      onClick={() => updateFormData({ firefightingLevel: level })}
-                      className="h-12 capitalize"
-                    >
-                      {level}
-                    </Button>
-                  ))}
+                <label className="block text-lg font-medium mb-4">
+                  Reuniões improdutivas: {formData.unproductiveMeetingHours || 0}h por semana
+                </label>
+                <Slider
+                  value={[formData.unproductiveMeetingHours || 0]}
+                  onValueChange={([value]) => updateFormData({ unproductiveMeetingHours: value })}
+                  max={20}
+                  min={0}
+                  step={1}
+                  className="mb-2"
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>0h</span>
+                  <span>20h</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-lg font-medium mb-4">Reuniões improdutivas</label>
-                <div className="grid grid-cols-3 gap-3">
-                  {["baixo", "médio", "alto"].map((level) => (
-                    <Button
-                      key={level}
-                      variant={formData.meetingsLevel === level ? "default" : "outline"}
-                      onClick={() => updateFormData({ meetingsLevel: level })}
-                      className="h-12 capitalize"
-                    >
-                      {level}
-                    </Button>
-                  ))}
+                <label className="block text-lg font-medium mb-4">
+                  Tempo da liderança em emergências: {formData.emergencyTimePercentage || 0}%
+                </label>
+                <Slider
+                  value={[formData.emergencyTimePercentage || 0]}
+                  onValueChange={([value]) => updateFormData({ emergencyTimePercentage: value })}
+                  max={100}
+                  min={0}
+                  step={5}
+                  className="mb-2"
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>0%</span>
+                  <span>100%</span>
                 </div>
               </div>
             </div>
@@ -190,53 +212,53 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
 
           {currentStep === 3 && results && (
             <div className="space-y-8">
-              {/* Resultado Principal */}
-              <div className="text-center bg-gradient-subtle p-8 rounded-lg">
-                <p className="text-lg mb-6">
-                  Sua empresa pode estar perdendo até
-                </p>
-                <div className="text-5xl font-bold text-destructive mb-2">
-                  R$ {results.monthlyLoss.toLocaleString()}
+              {/* 4 Blocos de Resultados */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
+                  <h3 className="text-lg font-semibold mb-2">Perda Mensal Estimada</h3>
+                  <div className="text-3xl font-bold text-destructive">
+                    R$ {results.monthlyLoss.toLocaleString()}
+                  </div>
                 </div>
-                <p className="text-lg text-muted-foreground mb-6">
-                  por mês com processos ineficientes
-                </p>
-                <p className="text-lg font-medium">
-                  Nós ajudamos a recuperar isso em até 90 dias.
-                </p>
-              </div>
 
-              {/* Economia Potencial */}
-              <div className="text-center p-6 bg-success/10 rounded-lg">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="text-3xl">💰</div>
-                  <div>
-                    <div className="text-2xl font-bold text-success">
-                      R$ {results.potentialSavings.toLocaleString()}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Potencial de economia mensal com BVBP
-                    </div>
+                <div className="text-center p-6 bg-destructive/10 rounded-lg border-l-4 border-destructive">
+                  <h3 className="text-lg font-semibold mb-2">Perda Anual Estimada</h3>
+                  <div className="text-3xl font-bold text-destructive">
+                    R$ {results.annualLoss.toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="text-center p-6 bg-muted rounded-lg border-l-4 border-muted-foreground">
+                  <h3 className="text-lg font-semibold mb-2">% do Faturamento</h3>
+                  <div className="text-3xl font-bold text-muted-foreground">
+                    {results.revenuePercentage}%
+                  </div>
+                </div>
+
+                <div className="text-center p-6 bg-success/10 rounded-lg border-l-4 border-success">
+                  <h3 className="text-lg font-semibold mb-2">Economia Potencial com BVBP</h3>
+                  <div className="text-3xl font-bold text-success">
+                    R$ {results.potentialSavings.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground mt-1">
+                    em até 90 dias
                   </div>
                 </div>
               </div>
 
-              {/* CTAs */}
-              <div className="space-y-4">
+              {/* Copy e CTA */}
+              <div className="text-center space-y-6 bg-gradient-subtle p-8 rounded-lg">
+                <p className="text-lg text-muted-foreground">
+                  Esse é o dinheiro que sua empresa pode estar deixando na mesa todo mês. 
+                  Quer entender como economizar e transformar em resultado real? Vamos conversar.
+                </p>
+                
                 <Button 
                   size="lg" 
-                  className="w-full h-14 text-lg"
+                  className="h-14 text-lg px-8"
                   onClick={() => window.location.href = '/contato'}
                 >
                   Agendar Conversa
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full h-14 text-lg"
-                  onClick={() => window.location.href = '/contato'}
-                >
-                  Falar com Especialista
                 </Button>
               </div>
             </div>
@@ -257,8 +279,12 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
               <Button 
                 onClick={nextStep}
                 disabled={
-                  (currentStep === 1 && (!formData.employees || !formData.monthlyRevenue)) ||
-                  (currentStep === 2 && (!formData.reworkLevel || !formData.firefightingLevel || !formData.meetingsLevel))
+                  (currentStep === 1 && (!formData.employees || !formData.monthlyRevenue || !formData.averageSalary)) ||
+                  (currentStep === 2 && (
+                    formData.reworkHours === undefined || 
+                    formData.unproductiveMeetingHours === undefined || 
+                    formData.emergencyTimePercentage === undefined
+                  ))
                 }
                 className="flex items-center gap-2"
               >

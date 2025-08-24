@@ -11,9 +11,10 @@ import { Helmet } from "react-helmet-async";
 export interface CalculatorData {
   employees: number;
   monthlyRevenue: string;
-  reworkLevel: string;
-  firefightingLevel: string;
-  meetingsLevel: string;
+  reworkHours: number;
+  unproductiveMeetingHours: number;
+  emergencyTimePercentage: number;
+  averageSalary: number;
 }
 
 const CalculatorPage = () => {
