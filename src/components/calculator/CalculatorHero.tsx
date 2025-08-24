@@ -1,23 +1,18 @@
 import { Calculator, TrendingDown, TrendingUp } from "lucide-react";
-
 const CalculatorHero = () => {
-  return (
-    <section className="py-20 bg-gradient-subtle border-b">
+  return <section className="bg-gradient-subtle border-b mx-px my-0 px-0 py-[49px]">
       <div className="container mx-auto px-4 text-center">
-        <div className="flex items-center justify-center mb-6">
-          <Calculator className="h-12 w-12 text-bvbp-corporate mr-4" />
-          <div className="text-sm text-muted-foreground">
-            Início &gt; Calculadora ROI
-          </div>
-        </div>
+        
 
         <h1 className="font-heading text-4xl lg:text-5xl font-bold text-foreground mb-6 max-w-4xl mx-auto">
-          Quanto sua operação está custando em{" "}
-          <span className="text-destructive">ineficiências?</span>
+          Descubra Quanto Sua Empresa Está{" "}
+          <span className="text-destructive">Perdendo por Mês</span>{" "}
+          com Processos Ineficientes
         </h1>
 
         <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-          Descubra em 3 passos rápidos. Estimativa personalizada, sem jargão, sem compromisso.
+          Calcule suas perdas operacionais em 3 minutos e receba 
+          um relatório personalizado com oportunidades de economia
         </p>
 
         <div className="flex items-center justify-center gap-8 max-w-2xl mx-auto">
@@ -40,8 +35,6 @@ const CalculatorHero = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default CalculatorHero;
