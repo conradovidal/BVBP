@@ -223,7 +223,7 @@ const ServicesPage = () => {
                     <Card 
                       key={index} 
                       className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${
-                        service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
+                        service.popular ? 'ring-2 ring-bvbp-growth' : ''
                       }`}
                     >
                       {/* Badge */}
@@ -302,7 +302,7 @@ const ServicesPage = () => {
                     <Card 
                       key={index + 3} 
                       className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${
-                        service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
+                        service.popular ? 'ring-2 ring-bvbp-growth' : ''
                       }`}
                     >
                       {/* Badge */}
