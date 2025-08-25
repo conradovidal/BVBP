@@ -57,7 +57,7 @@ const ServicesPage = () => {
         "Apresentação dos resultados",
         "Sem compromisso de continuidade"
       ],
-      cta: "Quero começar com Transparência",
+      cta: "Começar com Transparência",
       popular: false
     },
     {
@@ -79,7 +79,7 @@ const ServicesPage = () => {
         "Resultados visíveis em 30 dias",
         "Base para expansão futura"
       ],
-      cta: "Quero desenhar minha Visão de Futuro",
+      cta: "Desenhar minha Visão de Futuro",
       popular: false
     },
     {
@@ -101,7 +101,7 @@ const ServicesPage = () => {
         "Controle contínuo estabelecido",
         "Equipe preparada para evolução"
       ],
-      cta: "Quero avançar com Implementação Prática",
+      cta: "Avançar com Implementação Prática",
       popular: true
     },
     {
@@ -123,7 +123,7 @@ const ServicesPage = () => {
         "Melhor visibilidade de dados",
         "ROI por redução de retrabalho"
       ],
-      cta: "Quero aplicar Automação Inteligente",
+      cta: "Aplicar Automação Inteligente",
       popular: false
     },
     {
@@ -145,7 +145,7 @@ const ServicesPage = () => {
         "Autonomia total garantida",
         "Crescimento sustentável assegurado"
       ],
-      cta: "Quero investir em Melhoria Contínua",
+      cta: "Investir em Melhoria Contínua",
       popular: false
     }
   ];
@@ -214,82 +214,164 @@ const ServicesPage = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto">
-              {services.map((service, index) => {
-                const IconComponent = service.icon;
-                return (
-                  <Card 
-                    key={index} 
-                    className={`relative p-8 hover:shadow-strong transition-smooth ${
-                      service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
-                    }`}
-                  >
-                    {/* Badge */}
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                      <Badge className={service.badgeColor}>
-                        {service.badge}
-                      </Badge>
-                    </div>
-
-                    {/* Header */}
-                    <div className="text-center mb-6 pt-4">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
-                        service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'
-                      }`}>
-                        <IconComponent className="h-8 w-8 text-white" />
+            <div className="space-y-8 max-w-7xl mx-auto">
+              {/* First row - 3 cards */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.slice(0, 3).map((service, index) => {
+                  const IconComponent = service.icon;
+                  return (
+                    <Card 
+                      key={index} 
+                      className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${
+                        service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
+                      }`}
+                    >
+                      {/* Badge */}
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <Badge className={service.badgeColor}>
+                          {service.badge}
+                        </Badge>
                       </div>
-                      
-                      <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
-                        {service.title}
-                      </h3>
-                      
-                      <div className="flex items-center justify-center mb-4">
-                        <div className="text-sm text-muted-foreground">
-                          <Clock className="h-4 w-4 inline mr-1" />
-                          {service.duration}
+
+                      {/* Header */}
+                      <div className="text-center mb-6 pt-4">
+                        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
+                          service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'
+                        }`}>
+                          <IconComponent className="h-8 w-8 text-white" />
                         </div>
+                        
+                        <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                          {service.title}
+                        </h3>
+                        
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4 inline mr-1" />
+                            {service.duration}
+                          </div>
+                        </div>
+                        
+                        <p className="text-muted-foreground">
+                          {service.description}
+                        </p>
                       </div>
-                      
-                      <p className="text-muted-foreground">
-                        {service.description}
-                      </p>
-                    </div>
 
-                    {/* Features */}
-                    <div className="space-y-3 mb-6">
-                      <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
-                      {service.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-start space-x-2">
-                          <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                          <span className="text-sm text-foreground">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Details */}
-                    <div className="bg-muted/30 p-4 rounded-lg mb-6">
-                      <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
-                      <div className="space-y-1">
-                        {service.details.map((detail, detailIndex) => (
-                          <div key={detailIndex} className="text-sm text-muted-foreground">
-                            • {detail}
+                      {/* Features */}
+                      <div className="space-y-3 mb-6 flex-1">
+                        <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
+                        {service.features.map((feature, featureIndex) => (
+                          <div key={featureIndex} className="flex items-start space-x-2">
+                            <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-foreground">{feature}</span>
                           </div>
                         ))}
                       </div>
-                    </div>
 
-                    {/* CTA */}
-                    <Button 
-                      variant={service.popular ? "success" : "hero"} 
-                      className="w-full"
-                      size="lg"
-                      onClick={() => window.location.href = '/contato'}
+                      {/* Details */}
+                      <div className="bg-muted/30 p-4 rounded-lg mb-6">
+                        <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
+                        <div className="space-y-1">
+                          {service.details.map((detail, detailIndex) => (
+                            <div key={detailIndex} className="text-sm text-muted-foreground">
+                              • {detail}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <Button 
+                        variant={service.popular ? "success" : "hero"} 
+                        className="w-full px-4 py-2 text-center"
+                        size="lg"
+                        onClick={() => window.location.href = '/contato'}
+                      >
+                        {service.cta}
+                      </Button>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              {/* Second row - 2 cards */}
+              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                {services.slice(3, 5).map((service, index) => {
+                  const IconComponent = service.icon;
+                  return (
+                    <Card 
+                      key={index + 3} 
+                      className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${
+                        service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
+                      }`}
                     >
-                      {service.cta}
-                    </Button>
-                  </Card>
-                );
-              })}
+                      {/* Badge */}
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <Badge className={service.badgeColor}>
+                          {service.badge}
+                        </Badge>
+                      </div>
+
+                      {/* Header */}
+                      <div className="text-center mb-6 pt-4">
+                        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
+                          service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'
+                        }`}>
+                          <IconComponent className="h-8 w-8 text-white" />
+                        </div>
+                        
+                        <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                          {service.title}
+                        </h3>
+                        
+                        <div className="flex items-center justify-center mb-4">
+                          <div className="text-sm text-muted-foreground">
+                            <Clock className="h-4 w-4 inline mr-1" />
+                            {service.duration}
+                          </div>
+                        </div>
+                        
+                        <p className="text-muted-foreground">
+                          {service.description}
+                        </p>
+                      </div>
+
+                      {/* Features */}
+                      <div className="space-y-3 mb-6 flex-1">
+                        <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
+                        {service.features.map((feature, featureIndex) => (
+                          <div key={featureIndex} className="flex items-start space-x-2">
+                            <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                            <span className="text-sm text-foreground">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Details */}
+                      <div className="bg-muted/30 p-4 rounded-lg mb-6">
+                        <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
+                        <div className="space-y-1">
+                          {service.details.map((detail, detailIndex) => (
+                            <div key={detailIndex} className="text-sm text-muted-foreground">
+                              • {detail}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <Button 
+                        variant={service.popular ? "success" : "hero"} 
+                        className="w-full px-4 py-2 text-center"
+                        size="lg"
+                        onClick={() => window.location.href = '/contato'}
+                      >
+                        {service.cta}
+                      </Button>
+                    </Card>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </section>
