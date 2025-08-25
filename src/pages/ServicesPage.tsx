@@ -57,7 +57,7 @@ const ServicesPage = () => {
         "Apresentação dos resultados",
         "Sem compromisso de continuidade"
       ],
-      cta: "Começar com Transparência",
+      cta: "Quero começar com Transparência",
       popular: false
     },
     {
@@ -79,7 +79,7 @@ const ServicesPage = () => {
         "Resultados visíveis em 30 dias",
         "Base para expansão futura"
       ],
-      cta: "Desenhar minha Visão de Futuro",
+      cta: "Quero desenhar minha Visão de Futuro",
       popular: false
     },
     {
@@ -101,7 +101,7 @@ const ServicesPage = () => {
         "Controle contínuo estabelecido",
         "Equipe preparada para evolução"
       ],
-      cta: "Avançar com Implementação Prática",
+      cta: "Quero avançar com Implementação Prática",
       popular: true
     },
     {
@@ -123,7 +123,7 @@ const ServicesPage = () => {
         "Melhor visibilidade de dados",
         "ROI por redução de retrabalho"
       ],
-      cta: "Aplicar Automação Inteligente",
+      cta: "Quero aplicar Automação Inteligente",
       popular: false
     },
     {
@@ -145,7 +145,7 @@ const ServicesPage = () => {
         "Autonomia total garantida",
         "Crescimento sustentável assegurado"
       ],
-      cta: "Investir em Melhoria Contínua",
+      cta: "Quero investir em Melhoria Contínua",
       popular: false
     }
   ];
@@ -273,7 +273,11 @@ const ServicesPage = () => {
                         variant={service.popular ? "success" : "hero"} 
                         className="w-full px-4 py-2 text-center"
                         size="lg"
-                        onClick={() => window.location.href = '/contato'}
+                        onClick={() => {
+                          const interestSlug = index === 0 ? 'transparencia' : 
+                                            index === 1 ? 'visao-de-futuro' : 'implementacao-pratica';
+                          window.location.href = `/contato?interest=${interestSlug}`;
+                        }}
                       >
                         {service.cta}
                       </Button>
@@ -352,7 +356,10 @@ const ServicesPage = () => {
                         variant={service.popular ? "success" : "hero"} 
                         className="w-full px-4 py-2 text-center"
                         size="lg"
-                        onClick={() => window.location.href = '/contato'}
+                        onClick={() => {
+                          const interestSlug = index === 0 ? 'automacao-inteligente' : 'melhoria-continua';
+                          window.location.href = `/contato?interest=${interestSlug}`;
+                        }}
                       >
                         {service.cta}
                       </Button>
@@ -379,6 +386,7 @@ const ServicesPage = () => {
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {specificSolutions.map((solution, index) => {
                 const IconComponent = solution.icon;
+                const slugs = ['radiografia-de-eficiencia', 'governanca-de-reunioes', 'planejamento-com-clareza', 'otimizacao-de-fluxo-de-valor'];
                 return (
                   <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
                     <div className="flex items-start space-x-4">
@@ -391,9 +399,17 @@ const ServicesPage = () => {
                           {solution.title}
                         </h3>
                         
-                        <p className="text-muted-foreground text-sm leading-relaxed">
+                        <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                           {solution.description}
                         </p>
+                        
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => window.location.href = `/contato?interest=${slugs[index]}`}
+                        >
+                          Saiba mais
+                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -414,7 +430,7 @@ const ServicesPage = () => {
                   </div>
                   
                   <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6">
-                    👉 Nossa Garantia
+                    Nossa Garantia
                   </h2>
                   
                   <div className="max-w-3xl mx-auto mb-8">
@@ -446,9 +462,9 @@ const ServicesPage = () => {
                       variant="hero" 
                       size="xl" 
                       className="group"
-                      onClick={() => window.location.href = '/contato'}
+                      onClick={() => window.location.href = '/contato?interest=transparencia'}
                     >
-                      👉 Comece com Transparência
+                      Comece com Transparência
                       <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>

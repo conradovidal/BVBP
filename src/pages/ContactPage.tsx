@@ -8,32 +8,73 @@ import { MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, CheckCir
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    company: "",
     phone: "",
+    company: "",
+    role: "",
+    interest: "",
     challenge: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // Map URL slugs to select values
+  const interestMap = {
+    'transparencia': 'Transparência (diagnóstico gratuito)',
+    'visao-de-futuro': 'Visão de Futuro',
+    'implementacao-pratica': 'Implementação Prática',
+    'automacao-inteligente': 'Automação Inteligente',
+    'melhoria-continua': 'Melhoria Contínua',
+    'radiografia-de-eficiencia': 'Radiografia de Eficiência',
+    'governanca-de-reunioes': 'Governança de Reuniões',
+    'planejamento-com-clareza': 'Planejamento com Clareza',
+    'otimizacao-de-fluxo-de-valor': 'Otimização de Fluxo de Valor'
+  };
+
+  // Handle URL parameter pre-filling
+  useEffect(() => {
+    const interestParam = searchParams.get('interest');
+    if (interestParam && interestMap[interestParam as keyof typeof interestMap]) {
+      setFormData(prev => ({ 
+        ...prev, 
+        interest: interestMap[interestParam as keyof typeof interestMap] 
+      }));
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
+    // Simulate form submission with email
+    const emailSubject = `Novo contato BVBP – ${formData.interest || 'Contato geral'}`;
+    const emailBody = `
+      Nome: ${formData.name}
+      Email: ${formData.email}
+      Telefone: ${formData.phone}
+      Empresa: ${formData.company}
+      Cargo: ${formData.role}
+      Serviço de interesse: ${formData.interest}
+      Desafio: ${formData.challenge}
+      
+      UTM/Interest: ${searchParams.get('interest') || 'N/A'}
+    `;
+    
     setTimeout(() => {
       toast({
-        title: "Mensagem enviada com sucesso!",
-        description: "Entraremos em contato em até 4 horas úteis.",
+        title: "Recebemos seus dados.",
+        description: "Responderemos em até 4 horas úteis.",
       });
       setIsSubmitting(false);
-      setFormData({ name: "", email: "", company: "", phone: "", challenge: "" });
+      setFormData({ name: "", email: "", phone: "", company: "", role: "", interest: "", challenge: "" });
     }, 1000);
   };
 
@@ -47,7 +88,7 @@ const ContactPage = () => {
       title: "Email",
       info: "basso.vidal.bp@gmail.com",
       description: "Resposta em até 4 horas úteis",
-      link: "mailto:basso.vidal.bp@gmail.com?subject=[Contato BVBP] Solicitação de Diagnóstico"
+      link: "mailto:basso.vidal.bp@gmail.com?subject=Contato%20BVBP"
     },
     {
       icon: PhoneIcon,
@@ -117,54 +158,53 @@ const ContactPage = () => {
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Nome Completo *</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) => handleInputChange("name", e.target.value)}
-                          placeholder="Seu nome completo"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange("email", e.target.value)}
-                          placeholder="seu@email.com"
-                          required
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nome completo *</Label>
+                      <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => handleInputChange("name", e.target.value)}
+                        placeholder="Seu nome completo"
+                        required
+                      />
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="company">Empresa</Label>
-                        <Input
-                          id="company"
-                          value={formData.company}
-                          onChange={(e) => handleInputChange("company", e.target.value)}
-                          placeholder="Nome da sua empresa"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Telefone/WhatsApp</Label>
-                        <Input
-                          id="phone"
-                          value={formData.phone}
-                          onChange={(e) => handleInputChange("phone", e.target.value)}
-                          placeholder="+55 51 99999-9999"
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        placeholder="seu@email.com"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Telefone *</Label>
+                      <Input
+                        id="phone"
+                        value={formData.phone}
+                        onChange={(e) => handleInputChange("phone", e.target.value)}
+                        placeholder="+55 51 99999-9999"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="company">Empresa</Label>
+                      <Input
+                        id="company"
+                        value={formData.company}
+                        onChange={(e) => handleInputChange("company", e.target.value)}
+                        placeholder="Nome da sua empresa"
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="role">Cargo/Função</Label>
-                      <Select>
+                      <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
                         <SelectTrigger className="bg-background border-input">
                           <SelectValue placeholder="Selecione seu cargo" />
                         </SelectTrigger>
@@ -175,6 +215,27 @@ const ContactPage = () => {
                           <SelectItem value="analista">Analista/Especialista</SelectItem>
                           <SelectItem value="consultor">Consultor</SelectItem>
                           <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="interest">Serviço ou produto de interesse</Label>
+                      <Select value={formData.interest} onValueChange={(value) => handleInputChange("interest", value)}>
+                        <SelectTrigger className="bg-background border-input">
+                          <SelectValue placeholder="Transparência" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background border-input z-50">
+                          <SelectItem value="Transparência (diagnóstico gratuito)">Transparência (diagnóstico gratuito)</SelectItem>
+                          <SelectItem value="Visão de Futuro">Visão de Futuro</SelectItem>
+                          <SelectItem value="Implementação Prática">Implementação Prática</SelectItem>
+                          <SelectItem value="Automação Inteligente">Automação Inteligente</SelectItem>
+                          <SelectItem value="Melhoria Contínua">Melhoria Contínua</SelectItem>
+                          <SelectItem value="Radiografia de Eficiência">Radiografia de Eficiência</SelectItem>
+                          <SelectItem value="Governança de Reuniões">Governança de Reuniões</SelectItem>
+                          <SelectItem value="Planejamento com Clareza">Planejamento com Clareza</SelectItem>
+                          <SelectItem value="Otimização de Fluxo de Valor">Otimização de Fluxo de Valor</SelectItem>
+                          <SelectItem value="Outro">Outro</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -192,9 +253,9 @@ const ContactPage = () => {
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="newsletter" className="rounded" />
-                      <Label htmlFor="newsletter" className="text-sm text-muted-foreground">
-                        Aceito ser contatado pela equipe BVBP
+                      <input type="checkbox" id="consent" className="rounded" required />
+                      <Label htmlFor="consent" className="text-sm text-muted-foreground">
+                        Concordo que a BVBP entre em contato sobre minha solicitação.
                       </Label>
                     </div>
 
