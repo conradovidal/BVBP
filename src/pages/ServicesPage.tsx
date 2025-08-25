@@ -414,37 +414,33 @@ const ServicesPage = () => {
                   </div>
                   
                   <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6">
-                    Nossa Garantia
+                    👉 Nossa Garantia
                   </h2>
                   
-                  <div className="prose prose-lg max-w-none mb-8">
-                    <p className="text-foreground leading-relaxed">
-                      <strong>Se não identificarmos pelo menos R$ 30.000 em oportunidades de economia</strong> 
-                      no diagnóstico gratuito, você não paga nada.
+                  <div className="max-w-3xl mx-auto mb-8">
+                    <p className="text-lg text-foreground leading-relaxed mb-4">
+                      Nosso compromisso é simples: se no diagnóstico inicial não identificarmos pelo menos R$ 30.000 em oportunidades de economia, você não paga nada.
                     </p>
                   </div>
                   
                   <div className="grid md:grid-cols-3 gap-6 mb-8">
                     <div className="text-center">
                       <div className="text-3xl font-bold text-bvbp-growth mb-2">R$ 30.000+</div>
-                      <div className="text-sm text-muted-foreground">Oportunidades mapeadas</div>
+                      <div className="text-sm text-muted-foreground">Valor mínimo de oportunidades mapeadas</div>
                     </div>
                     <div className="text-center">
                       <div className="text-3xl font-bold text-bvbp-growth mb-2">60 dias</div>
-                      <div className="text-sm text-muted-foreground">Primeiros resultados</div>
+                      <div className="text-sm text-muted-foreground">Primeiros ganhos perceptíveis</div>
                     </div>
                     <div className="text-center">
                       <div className="text-3xl font-bold text-bvbp-growth mb-2">90 dias</div>
-                      <div className="text-sm text-muted-foreground">Autonomia inicial</div>
+                      <div className="text-sm text-muted-foreground">Autonomia inicial da equipe</div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="font-heading text-xl font-bold text-bvbp-corporate">
-                      Pronto para Descobrir Suas Oportunidades?
-                    </h3>
                     <p className="text-muted-foreground">
-                      Comece com nosso diagnóstico gratuito - sem compromisso, só clareza
+                      Só seguimos adiante se houver clareza de valor real para o seu negócio.
                     </p>
                     <Button 
                       variant="hero" 
@@ -452,7 +448,7 @@ const ServicesPage = () => {
                       className="group"
                       onClick={() => window.location.href = '/contato'}
                     >
-                      Comece com Transparência
+                      👉 Comece com Transparência
                       <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
