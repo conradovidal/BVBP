@@ -188,12 +188,11 @@ const ServicesPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
-                Nossos Serviços
+                Serviços
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Jornada modular de transformação.<br />
-                Do diagnóstico gratuito ao acompanhamento contínuo.<br />
-                Escolha o nível ideal para sua empresa.
+                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo.<br />
+                Cada serviço é prático, mensurável e voltado para dar autonomia à sua equipe.
               </p>
             </div>
           </div>
@@ -202,14 +201,6 @@ const ServicesPage = () => {
         {/* Services Section */}
         <section className="py-16 bg-gradient-subtle">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-                Nossos Serviços
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Cada serviço é prático, mensurável e voltado para dar autonomia à sua equipe.
-              </p>
-            </div>
 
             <div className="space-y-8 max-w-7xl mx-auto">
               {/* First row - 3 cards */}
