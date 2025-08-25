@@ -190,14 +190,11 @@ const ServicesPage = () => {
               <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
                 Nossos Serviços
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                Jornada modular de transformação: do diagnóstico gratuito à mudança sistêmica completa. 
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Jornada modular de transformação.<br />
+                Do diagnóstico gratuito ao acompanhamento contínuo.<br />
                 Escolha o nível ideal para sua empresa.
               </p>
-              <div className="inline-flex items-center px-6 py-3 rounded-full bg-bvbp-growth/10 text-bvbp-growth font-semibold">
-                <DollarSign className="h-5 w-5 mr-2" />
-                ROI garantido em todos os serviços
-              </div>
             </div>
           </div>
         </section>
@@ -210,7 +207,7 @@ const ServicesPage = () => {
                 Nossos Serviços
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Todos os serviços incluem implementação prática e capacitação para autonomia
+                Cada serviço é prático, mensurável e voltado para dar autonomia à sua equipe.
               </p>
             </div>
 
