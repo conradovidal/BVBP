@@ -21,11 +21,11 @@ const AboutPage = () => {
   }];
   const values = [{
     icon: Target,
-    title: "Resultados Reais",
+    title: "Orientação a Resultado",
     description: "Não vendemos PowerPoint. Entregamos melhorias mensuráveis e duradouras que impactam diretamente o resultado da empresa."
   }, {
     icon: Heart,
-    title: "Honestidade Transparente",
+    title: "Honestidade",
     description: "Se não conseguirmos ajudar, falamos na lata. Só trabalhamos com empresas onde vemos potencial real de melhoria."
   }, {
     icon: Target,
