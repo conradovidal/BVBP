@@ -191,8 +191,7 @@ const ServicesPage = () => {
                 Serviços
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
-                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo.<br />
-                Cada serviço é prático, mensurável e voltado para dar autonomia à sua equipe.
+                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo.
               </p>
             </div>
           </div>
