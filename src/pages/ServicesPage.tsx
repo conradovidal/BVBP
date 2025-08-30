@@ -190,6 +190,10 @@ const ServicesPage = () => {
               <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
                 Serviços
               </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo.<br />
+                Cada serviço é prático, mensurável e voltado para dar autonomia à sua equipe.
+              </p>
             </div>
           </div>
         </section>
