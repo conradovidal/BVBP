@@ -126,7 +126,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">ROI Transparente</h3>
                     <p className="text-muted-foreground">
-                      Mostramos onde o dinheiro escorre e quanto pode ser recuperado. Todas as iniciativas têm métricas claras para provar o retorno.
+                      Mostramos onde estão as ineficiências e como resolvê-las. Todas as iniciativas têm métricas claras para comprovar o retorno.
                     </p>
                   </div>
                   
@@ -136,7 +136,7 @@ const Index = () => {
                     </div>
                     <h3 className="font-heading font-bold text-xl text-bvbp-corporate">Autonomia em 90 dias</h3>
                     <p className="text-muted-foreground">
-                      Capacitamos sua equipe para não depender de nós. Em até 90 dias, você ganha melhorias sustentáveis que seguem evoluindo sozinhas.
+                      Em até 90 dias, você ganha melhorias sustentáveis prontas para a melhoria contínua.
                     </p>
                   </div>
                 </div>
@@ -156,15 +156,19 @@ const Index = () => {
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-bvbp-growth" />
-                    <span className="text-bvbp-corporate-light">10+ anos em operações empresariais</span>
+                    <span className="text-bvbp-corporate-light">15+ anos em operações empresariais</span>
                   </div>
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-bvbp-growth" />
-                    <span className="text-bvbp-corporate-light">Business Agility & Process Optimization</span>
+                    <span className="text-bvbp-corporate-light">Processos • Planejamento • Gestão • Acompanhamento</span>
                   </div>
                   <div className="flex items-center justify-center space-x-3">
                     <CheckCircle className="h-5 w-5 text-bvbp-growth" />
-                    <span className="text-bvbp-corporate-light">Metodologias testadas em scale-ups de alto crescimento</span>
+                    <span className="text-bvbp-corporate-light">Gestão de Reuniões • Metodologias ágeis • Lean • OKRs</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-3">
+                    <CheckCircle className="h-5 w-5 text-bvbp-growth" />
+                    <span className="text-bvbp-corporate-light">Gestão de Mudanças • Facilitação • Pensamento Sistêmico • Business Agility</span>
                   </div>
                 </div>
               </div>
@@ -183,13 +187,24 @@ const Index = () => {
                   Agende seu diagnóstico gratuito — clareza sem compromisso.
                 </p>
                 
-                <Button 
-                  size="xl" 
-                  className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4"
-                  onClick={() => window.location.href = '/contato'}
-                >
-                  Quero meu diagnóstico gratuito
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Button 
+                    size="xl" 
+                    className="bg-bvbp-growth hover:bg-bvbp-growth-dark text-white text-lg px-8 py-4"
+                    onClick={() => window.location.href = '/contato'}
+                  >
+                    Quero Meu Diagnóstico Gratuito
+                  </Button>
+                  
+                  <Button 
+                    variant="outline-hero"
+                    size="xl" 
+                    className="text-lg px-8 py-4"
+                    onClick={() => window.location.href = '/sobre'}
+                  >
+                    Conheça mais sobre nós
+                  </Button>
+                </div>
               </div>
             </div>
           </section>

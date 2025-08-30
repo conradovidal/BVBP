@@ -8,13 +8,13 @@ import { Helmet } from "react-helmet-async";
 const AboutPage = () => {
   const team = [{
     name: "Cristiano Basso",
-    role: "Head of Business Operations",
-    bio: "10+ anos otimizando operações em empresas de tecnologia. Especialista em transformar caos operacional em crescimento sustentável.",
+    role: "",
+    bio: "10+ anos otimizando processos em empresas de diversos tamanhos. Especialista em transformar caos operacional em crescimento sustentável.",
     linkedin: "https://www.linkedin.com/in/cristianobasso/",
     placeholder: true
   }, {
     name: "Conrado Vidal",
-    role: "Business Agility Specialist",
+    role: "",
     bio: "Expertise em desenhar processos que funcionam na vida real. Experiência prática em scaling de operações para empresas em rápido crescimento.",
     linkedin: "https://www.linkedin.com/in/conradovidal/",
     placeholder: true
@@ -28,9 +28,9 @@ const AboutPage = () => {
     title: "Honestidade Transparente",
     description: "Se não conseguirmos ajudar, falamos na lata. Só trabalhamos com empresas onde vemos potencial real de melhoria."
   }, {
-    icon: Users,
-    title: "Autonomia Garantida",
-    description: "Nosso sucesso é sua independência. Em 90 dias você não precisa mais da gente - isso é uma promessa."
+    icon: Target,
+    title: "Qualidade",
+    description: "Na BVBP, prezamos pela qualidade em cada passo do processo. Acreditamos que a verdadeira mudança começa com soluções práticas e sustentáveis, entregues com atenção aos detalhes e compromisso com resultados."
   }];
   return <div className="min-h-screen">
       <Helmet>
@@ -63,10 +63,7 @@ const AboutPage = () => {
                 Missão
               </h2>
               <p className="text-xl text-foreground leading-relaxed">
-                Ajudar empresas a crescer sem perder o controle operacional. 
-                Fazemos isso desenhando sistemas e processos que funcionam na prática, 
-                implementados lado a lado com a equipe, para entregar resultados visíveis 
-                em até 90 dias e autonomia depois.
+                Guiamos empresas a crescer com propósito e estrutura, desenhando e implementando sistemas e processos que funcionam na prática, lado a lado com a equipe, para gerar resultados visíveis.
               </p>
             </div>
           </div>
@@ -95,9 +92,11 @@ const AboutPage = () => {
                         <h3 className="font-heading text-xl font-bold text-bvbp-corporate">
                           {member.name}
                         </h3>
-                        <p className="text-bvbp-growth font-medium">
-                          {member.role}
-                        </p>
+                        {member.role && (
+                          <p className="text-bvbp-growth font-medium">
+                            {member.role}
+                          </p>
+                        )}
                       </div>
                       <a
                         href={member.linkedin}
