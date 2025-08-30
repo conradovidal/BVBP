@@ -15,7 +15,7 @@ const AboutPage = () => {
   }, {
     name: "Conrado Vidal",
     role: "",
-    bio: "Expertise em desenhar processos que funcionam na vida real. Experiência prática em scaling de operações para empresas em rápido crescimento.",
+    bio: "9+ anos ajudando empresas a alinhar estratégia e execução. Especialista em transformar o complexo em simples, promovendo transparência e colaboração.",
     linkedin: "https://www.linkedin.com/in/conradovidal/",
     placeholder: true
   }];
@@ -30,7 +30,7 @@ const AboutPage = () => {
   }, {
     icon: Target,
     title: "Qualidade",
-    description: "Na BVBP, prezamos pela qualidade em cada passo do processo. Acreditamos que a verdadeira mudança começa com soluções práticas e sustentáveis, entregues com atenção aos detalhes e compromisso com resultados."
+    description: "Garantimos soluções práticas e sustentáveis, entregues com atenção aos detalhes e compromisso com resultados."
   }];
   return <div className="min-h-screen">
       <Helmet>
@@ -154,13 +154,13 @@ const AboutPage = () => {
                 <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6 text-center">Por que começamos a BVBP</h2>
                 <div className="prose prose-lg max-w-none">
                   <p className="text-foreground leading-relaxed mb-6">
-                    Depois de anos vivendo de perto os desafios de escalar operações em diferentes contextos, percebemos um padrão: processos bagunçados, dependências desnecessárias, documentações que não ajudam e metodologias que não funcionam na prática.
+                    A BVBP surgiu a partir da nossa experiência em transformar operações complexas em sistemas funcionais, focados em resultados reais. Ao longo dos anos, trabalhamos com diversas empresas e entendemos que otimizar processos não é apenas sobre eficiência, mas sobre garantir que cada decisão estratégica seja clara e mensurável.
                   </p>
                   <p className="text-foreground leading-relaxed mb-6">
-                    Construímos experiência real otimizando processos, fluxos de trabalho e métricas de performance, sempre com foco em resultados mensuráveis. Aprendemos que eficiência não basta: é preciso eficácia, clareza estratégica e capacidade de priorizar e acompanhar decisões no dia a dia.
+                    Acreditamos que é essencial criar sistemas que não só otimizem, mas que tragam clareza e permitam a evolução contínua das equipes e resultados. Queremos ir além do diagnóstico: buscamos impactar positivamente a forma como as empresas operam no dia a dia, fornecendo a estrutura necessária para tomar decisões estratégicas com confiança e priorizar o que realmente importa.
                   </p>
                   <p className="text-bvbp-corporate font-semibold">
-                    A BVBP nasceu para trazer essa combinação de prática e estratégia, com uma abordagem acessível, personalizada e orientada a resultados reais.
+                    Nosso objetivo é continuar explorando novos desafios, ajudando organizações a alcançar o crescimento com propósito, clareza e, principalmente, com a capacidade de se adaptar e evoluir com consistência.
                   </p>
                 </div>
                 
