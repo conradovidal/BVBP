@@ -114,23 +114,21 @@ const ServicesPage = () => {
       
       <main>
         {/* Hero Section */}
-        <section className="relative py-20 lg:py-28 bg-white overflow-hidden">
-          <div className="absolute inset-0 bg-muted/20" />
-          <div className="container mx-auto px-4 relative">
+        <section className="py-16 lg:py-24 bg-gradient-subtle">
+          <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6 animate-fade-in">
-                Nossos Serviços
+              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
+                Serviços
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed max-w-3xl mx-auto animate-fade-in">
-                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo. 
-                Soluções customizadas para cada estágio da sua evolução operacional.
+              <p className="text-xl text-muted-foreground leading-relaxed mx-[166px] px-[15px]">
+                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo.
               </p>
             </div>
           </div>
         </section>
 
         {/* Services Section */}
-        <section className="py-20 bg-muted/30">
+        <section className="py-16 bg-gradient-subtle">
           <div className="container mx-auto px-4">
 
             <div className="space-y-8 max-w-7xl mx-auto">
@@ -138,7 +136,7 @@ const ServicesPage = () => {
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.slice(0, 3).map((service, index) => {
                 const IconComponent = service.icon;
-                return <Card key={index} className={`group relative p-8 h-full flex flex-col hover:shadow-strong transition-all duration-500 hover:-translate-y-2 ${service.popular ? 'ring-2 ring-bvbp-growth shadow-success' : ''}`}>
+                return <Card key={index} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
                       {/* Badge */}
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                         <Badge className={service.badgeColor}>
@@ -148,7 +146,7 @@ const ServicesPage = () => {
 
                       {/* Header */}
                       <div className="text-center mb-6 pt-4">
-                        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-bvbp-growth' : 'bg-bvbp-corporate'}`}>
+                        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'}`}>
                           <IconComponent className="h-8 w-8 text-white" />
                         </div>
                         
@@ -202,7 +200,7 @@ const ServicesPage = () => {
               <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 {services.slice(3, 5).map((service, index) => {
                 const IconComponent = service.icon;
-                return <Card key={index + 3} className={`group relative p-8 h-full flex flex-col hover:shadow-strong transition-all duration-500 hover:-translate-y-2 ${service.popular ? 'ring-2 ring-bvbp-growth shadow-success' : ''}`}>
+                return <Card key={index + 3} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
                       {/* Badge */}
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                         <Badge className={service.badgeColor}>
@@ -212,7 +210,7 @@ const ServicesPage = () => {
 
                       {/* Header */}
                       <div className="text-center mb-6 pt-4">
-                        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-bvbp-growth' : 'bg-bvbp-corporate'}`}>
+                        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-gradient-success' : 'bg-gradient-hero'}`}>
                           <IconComponent className="h-8 w-8 text-white" />
                         </div>
                         
@@ -283,7 +281,7 @@ const ServicesPage = () => {
               const slugs = ['radiografia-de-eficiencia', 'governanca-de-reunioes', 'planejamento-com-clareza', 'otimizacao-de-fluxo-de-valor'];
               return <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
                     <div className="flex items-start space-x-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bvbp-corporate flex-shrink-0">
+                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero flex-shrink-0">
                         <IconComponent className="h-6 w-6 text-white" />
                       </div>
                       
@@ -313,7 +311,7 @@ const ServicesPage = () => {
             <div className="max-w-4xl mx-auto">
               <Card className="p-8 md:p-12 bg-bvbp-growth/10 border-bvbp-growth/20">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-bvbp-growth mb-6">
+                  <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-success mb-6">
                     <DollarSign className="h-10 w-10 text-white" />
                   </div>
                   
