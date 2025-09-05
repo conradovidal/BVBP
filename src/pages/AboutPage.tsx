@@ -41,82 +41,90 @@ const AboutPage = () => {
       
       <main>
         {/* Hero Section */}
-        <section className="py-16 lg:py-24 bg-gradient-subtle">
-          <div className="container mx-auto px-4">
+        <section className="relative py-20 lg:py-28 bg-gradient-hero overflow-hidden">
+          <div className="absolute inset-0 bg-black/5"></div>
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
+              <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 animate-fade-in">
                 Sobre a BVBP
               </h1>
-              <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+              <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed animate-fade-in [animation-delay:200ms]">
                 Transformamos complexidade em clareza.<br/>
-                Parceiros estratégicos para empresas em crescimento.
+                <span className="text-bvbp-growth-light font-semibold">Parceiros estratégicos para empresas em crescimento.</span>
               </p>
             </div>
           </div>
         </section>
 
         {/* Mission Section */}
-        <section className="py-16 bg-bvbp-growth-light">
+        <section className="relative py-20 bg-white overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-success"></div>
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6">
-                Missão
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-success mb-8 shadow-success">
+                <Target className="h-8 w-8 text-white" />
+              </div>
+              <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-8">
+                Nossa Missão
               </h2>
-              <p className="text-xl text-foreground leading-relaxed">
-                Transformamos o caos operacional em crescimento estruturado. Trabalhamos lado a lado com empresas para implementar sistemas e processos que realmente funcionam, eliminando ineficiências e criando bases sólidas para o sucesso sustentável.
+              <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
+                Transformamos o <span className="text-bvbp-growth font-bold">caos operacional</span> em <span className="text-bvbp-growth font-bold">crescimento estruturado</span>. Trabalhamos lado a lado com empresas para implementar sistemas e processos que realmente funcionam, eliminando ineficiências e criando bases sólidas para o sucesso sustentável.
               </p>
             </div>
           </div>
         </section>
 
         {/* Team Section */}
-        <section className="py-16 bg-white">
+        <section className="py-20 bg-gradient-subtle">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
+            <div className="text-center mb-16">
+              <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
                 Nosso Time
               </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Conheça os especialistas que transformam visão em realidade
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
               {team.map((member, index) => (
-                <Card key={index} className="overflow-hidden hover:shadow-soft transition-smooth">
-                  <AspectRatio ratio={4 / 5}>
-                    {member.photo ? (
-                      <img 
-                        src={member.photo} 
-                        alt={`Foto de ${member.name}`}
-                        className="w-full h-full object-cover object-center"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-muted flex items-center justify-center">
-                        <Users className="h-16 w-16 text-muted-foreground/50" />
-                      </div>
-                    )}
-                  </AspectRatio>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h3 className="font-heading text-xl font-bold text-bvbp-corporate">
-                          {member.name}
-                        </h3>
-                        {member.role && (
-                          <p className="text-bvbp-growth font-medium">
-                            {member.role}
-                          </p>
-                        )}
-                      </div>
+                <Card key={index} className="group overflow-hidden hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white border-0">
+                  <div className="relative">
+                    <AspectRatio ratio={4 / 5}>
+                      {member.photo ? (
+                        <img 
+                          src={member.photo} 
+                          alt={`Foto de ${member.name}`}
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-muted flex items-center justify-center">
+                          <Users className="h-16 w-16 text-muted-foreground/50" />
+                        </div>
+                      )}
+                    </AspectRatio>
+                    <div className="absolute top-4 right-4">
                       <a
                         href={member.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={`LinkedIn de ${member.name}`}
-                        className="text-bvbp-corporate hover:text-bvbp-growth transition-smooth"
+                        className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm hover:bg-bvbp-growth hover:text-white transition-all duration-300 shadow-soft"
                       >
                         <LinkedinIcon className="h-6 w-6" />
                       </a>
                     </div>
-                    <p className="text-muted-foreground leading-relaxed">
+                  </div>
+                  <div className="p-8">
+                    <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                      {member.name}
+                    </h3>
+                    {member.role && (
+                      <p className="text-bvbp-growth font-semibold mb-4 text-lg">
+                        {member.role}
+                      </p>
+                    )}
+                    <p className="text-muted-foreground leading-relaxed text-lg">
                       {member.bio}
                     </p>
                   </div>
@@ -127,27 +135,34 @@ const AboutPage = () => {
         </section>
 
         {/* Values Section */}
-        <section className="py-16 bg-white">
+        <section className="py-20 bg-white relative">
+          <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-success"></div>
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
+            <div className="text-center mb-16">
+              <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
                 Nossos Valores
               </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Os princípios que guiam cada decisão e ação
+              </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {values.map((value, index) => {
               const IconComponent = value.icon;
-              return <Card key={index} className="p-6 text-center hover:shadow-soft transition-smooth">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-hero mb-4">
-                      <IconComponent className="h-8 w-8 text-white" />
+              return <Card key={index} className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-subtle relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
+                    <div className="relative z-10">
+                      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-hero mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
+                        <IconComponent className="h-10 w-10 text-white" />
+                      </div>
+                      <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
+                        {value.title}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed text-lg">
+                        {value.description}
+                      </p>
                     </div>
-                    <h3 className="font-heading text-xl font-bold text-bvbp-corporate mb-3">
-                      {value.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {value.description}
-                    </p>
                   </Card>;
             })}
             </div>
@@ -155,26 +170,29 @@ const AboutPage = () => {
         </section>
 
         {/* Story Section */}
-        <section className="py-16 bg-gradient-subtle">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <Card className="p-8 md:p-12">
-                <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6 text-center">Por que começamos a BVBP</h2>
-                <div className="prose prose-lg max-w-none">
-                  <p className="text-foreground leading-relaxed mb-6">
+        <section className="py-20 bg-gradient-hero relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-5xl mx-auto">
+              <Card className="p-10 md:p-16 bg-white/95 backdrop-blur-sm border-0 shadow-strong">
+                <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-8 text-center">Por que começamos a BVBP</h2>
+                <div className="prose prose-xl max-w-none">
+                  <p className="text-foreground leading-relaxed mb-8 text-lg">
                     A BVBP surgiu a partir da nossa experiência em transformar operações complexas em sistemas funcionais, focados em resultados reais. Ao longo dos anos, trabalhamos com diversas empresas e entendemos que otimizar processos não é apenas sobre eficiência, mas sobre garantir que cada decisão estratégica seja clara e mensurável.
                   </p>
-                  <p className="text-foreground leading-relaxed mb-6">
+                  <p className="text-foreground leading-relaxed mb-8 text-lg">
                     Acreditamos que é essencial criar sistemas que não só otimizem, mas que tragam clareza e permitam a evolução contínua das equipes e resultados. Queremos ir além do diagnóstico: buscamos impactar positivamente a forma como as empresas operam no dia a dia, fornecendo a estrutura necessária para tomar decisões estratégicas com confiança e priorizar o que realmente importa.
                   </p>
-                  <p className="text-bvbp-corporate font-semibold">
-                    Nosso objetivo é continuar explorando novos desafios, ajudando organizações a alcançar o crescimento com propósito, clareza e, principalmente, com a capacidade de se adaptar e evoluir com consistência.
-                  </p>
+                  <div className="p-6 bg-gradient-success rounded-xl mb-8">
+                    <p className="text-white font-semibold text-xl leading-relaxed">
+                      Nosso objetivo é continuar explorando novos desafios, ajudando organizações a alcançar o crescimento com propósito, clareza e, principalmente, com a capacidade de se adaptar e evoluir com consistência.
+                    </p>
+                  </div>
                 </div>
                 
-                <div className="text-center mt-8 space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button variant="hero" size="xl" className="group" onClick={() => window.location.href = '/servicos'}>
+                <div className="text-center mt-12 space-y-6">
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center">
+                    <Button variant="hero" size="xl" className="group shadow-strong" onClick={() => window.location.href = '/servicos'}>
                       Conheça nossos serviços
                       <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
@@ -182,7 +200,7 @@ const AboutPage = () => {
                       variant="outline-hero" 
                       size="xl" 
                       onClick={() => window.location.href = '/calculadora-roi'}
-                      className="hover:scale-105 transition-transform"
+                      className="hover:scale-105 transition-transform shadow-soft"
                     >
                       Descubra quanto sua empresa pode economizar
                     </Button>
