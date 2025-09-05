@@ -63,7 +63,7 @@ const AboutPage = () => {
                 Missão
               </h2>
               <p className="text-xl text-foreground leading-relaxed">
-                Guiamos empresas a crescer com propósito e estrutura, desenhando e implementando sistemas e processos que funcionam na prática, lado a lado com a equipe, para gerar resultados visíveis.
+                Transformamos o caos operacional em crescimento estruturado. Trabalhamos lado a lado com empresas para implementar sistemas e processos que realmente funcionam, eliminando ineficiências e criando bases sólidas para o sucesso sustentável.
               </p>
             </div>
           </div>
