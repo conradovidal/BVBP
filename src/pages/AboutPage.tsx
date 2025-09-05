@@ -5,7 +5,7 @@ import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
-import cristianoPhoto from "@/assets/cristiano-basso.jpg";
+import cristianoPhoto from "/lovable-uploads/4ca7c5b3-73ec-4d81-9501-ab6f211b3cae.png";
 const AboutPage = () => {
   const team = [{
     name: "Cristiano Basso",
