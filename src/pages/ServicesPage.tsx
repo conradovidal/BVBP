@@ -171,7 +171,7 @@ const ServicesPage = () => {
                         <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
                         {service.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-start space-x-2">
                             <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                            
+                            <span className="text-sm text-foreground">{feature}</span>
                           </div>)}
                       </div>
 
