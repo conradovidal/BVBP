@@ -5,14 +5,13 @@ import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
-import cristianoPhoto from "/lovable-uploads/4ca7c5b3-73ec-4d81-9501-ab6f211b3cae.png";
 const AboutPage = () => {
   const team = [{
     name: "Cristiano Basso",
     role: "",
     bio: "10+ anos otimizando processos em empresas de diversos tamanhos. Especialista em transformar caos operacional em crescimento sustentável.",
     linkedin: "https://www.linkedin.com/in/cristianobasso/",
-    photo: cristianoPhoto
+    photo: "/lovable-uploads/5308fe52-0ff8-4f9d-8040-99ff6ff89d35.png"
   }, {
     name: "Conrado Vidal",
     role: "",
