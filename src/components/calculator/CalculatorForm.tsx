@@ -208,7 +208,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
           {currentStep === 2 && results && (
             <div className="space-y-8">
               {/* Copy principal */}
-              <div className="text-center space-y-4 p-6 bg-gradient-subtle rounded-lg">
+              <div className="text-center space-y-4 p-6 bg-muted/30 rounded-lg">
                 <p className="text-lg text-muted-foreground">
                   Só no processo de <strong>{results.processType}</strong>, sua empresa pode estar perdendo cerca de{" "}
                   <span className="text-destructive font-bold">R$ {results.monthlyLoss.toLocaleString()}/mês</span>{" "}
@@ -292,7 +292,7 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
               </div>
 
               {/* CTA */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center p-6 bg-gradient-subtle rounded-lg">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center p-6 bg-muted/30 rounded-lg">
                 <Button 
                   size="lg" 
                   className="h-14 text-lg px-8 bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 hover:scale-105 w-full sm:w-auto"

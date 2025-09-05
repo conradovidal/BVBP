@@ -122,17 +122,18 @@ const ContactPage = () => {
       
       <main>
         {/* Hero Section */}
-        <section className="py-16 lg:py-24 bg-gradient-subtle">
-          <div className="container mx-auto px-4">
+        <section className="relative py-20 lg:py-28 bg-white overflow-hidden">
+          <div className="absolute inset-0 bg-muted/20" />
+          <div className="container mx-auto px-4 relative">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
+              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6 animate-fade-in">
                 Vamos Conversar
               </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
+              <p className="text-xl text-muted-foreground leading-relaxed mb-8 max-w-3xl mx-auto animate-fade-in">
                 Conte-nos sobre seus desafios operacionais. Vamos descobrir juntos 
-                como transformar sua operação em uma máquina de crescimento.
+                como transformar sua operação em uma máquina de crescimento sustentável.
               </p>
-              <div className="inline-flex items-center px-6 py-3 rounded-full bg-bvbp-growth/10 text-bvbp-growth font-semibold">
+              <div className="inline-flex items-center px-6 py-3 rounded-full bg-bvbp-growth/10 text-bvbp-growth font-semibold shadow-soft hover:shadow-success transition-all duration-300 hover:scale-105 animate-fade-in">
                 <MessageCircleIcon className="h-5 w-5 mr-2" />
                 Primeira conversa sempre gratuita
               </div>
@@ -283,9 +284,9 @@ const ContactPage = () => {
                     {contactInfo.map((contact, index) => {
                       const IconComponent = contact.icon;
                       return (
-                         <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
+                         <Card key={index} className="group p-6 hover:shadow-strong transition-all duration-300 hover:-translate-y-1">
                            <div className="flex items-start space-x-4">
-                             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero">
+                              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bvbp-corporate">
                                <IconComponent className="h-6 w-6 text-white" />
                              </div>
                              <div>
@@ -333,7 +334,7 @@ const ContactPage = () => {
                 {/* Operating Hours */}
                 <Card className="p-6">
                   <div className="flex items-start space-x-4">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bvbp-corporate">
                       <ClockIcon className="h-6 w-6 text-white" />
                     </div>
                     <div>
