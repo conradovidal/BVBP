@@ -81,12 +81,12 @@ const AboutPage = () => {
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {team.map((member, index) => (
                 <Card key={index} className="overflow-hidden hover:shadow-soft transition-smooth">
-                  <AspectRatio ratio={16 / 9}>
+                  <AspectRatio ratio={4 / 5}>
                     {member.photo ? (
                       <img 
                         src={member.photo} 
                         alt={`Foto de ${member.name}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover object-center"
                       />
                     ) : (
                       <div className="w-full h-full bg-muted flex items-center justify-center">
