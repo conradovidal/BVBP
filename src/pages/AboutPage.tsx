@@ -17,7 +17,7 @@ const AboutPage = () => {
     role: "",
     bio: "9+ anos ajudando empresas a alinhar estratégia e execução. Especialista em transformar o complexo em simples, promovendo transparência e colaboração.",
     linkedin: "https://www.linkedin.com/in/conradovidal/",
-    photo: "/lovable-uploads/5308fe52-0ff8-4f9d-8040-99ff6ff89d35.png"
+    photo: "/lovable-uploads/c237e246-d750-44a5-96a1-510e298e84ed.png"
   }];
   const values = [{
     icon: Target,
