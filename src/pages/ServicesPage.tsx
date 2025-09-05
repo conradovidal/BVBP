@@ -37,9 +37,9 @@ const ServicesPage = () => {
     badgeColor: "bg-bvbp-growth text-white",
     duration: "2 semanas",
     icon: Zap,
-    description: "Diagnóstico inicial gratuito para entender como um processo funciona hoje e onde estão as perdas. Sem pegadinhas, sem compromisso.",
-    features: ["Entrevistas com liderança e equipe-chave", "Mapeamento completo de um processo crítico", "Relatório executivo com gaps e oportunidades de economia"],
-    details: ["2 semanas de análise intensiva", "Relatório executivo de 15-20 páginas", "Apresentação dos resultados", "Sem compromisso de continuidade"],
+    description: "Diagnóstico inicial gratuito para entender como um processo funciona hoje e onde estão as perdas.",
+    features: ["Entrevistas com liderança e equipe-chave", "Mapeamento completo de um processo crítico", "Relatório executivo com gaps e oportunidades de economia", "Entrevistas com pessoas-chave", "Métricas para avaliar oportunidades de melhoria"],
+    details: ["2 semanas de análise intensiva", "Relatório executivo", "Apresentação dos resultados", "Sem compromisso de continuidade"],
     cta: "Quero começar com Transparência",
     popular: false
   }, {
