@@ -183,7 +183,7 @@ const AboutPage = () => {
                   <p className="text-foreground leading-relaxed mb-8 text-lg">
                     Acreditamos que é essencial criar sistemas que não só otimizem, mas que tragam clareza e permitam a evolução contínua das equipes e resultados. Queremos ir além do diagnóstico: buscamos impactar positivamente a forma como as empresas operam no dia a dia, fornecendo a estrutura necessária para tomar decisões estratégicas com confiança e priorizar o que realmente importa.
                   </p>
-                  <div className="p-6 bg-gradient-success rounded-xl mb-8">
+                  <div className="p-6 bg-bvbp-growth rounded-xl mb-8">
                     <p className="text-white font-semibold text-xl leading-relaxed">
                       Nosso objetivo é continuar explorando novos desafios, ajudando organizações a alcançar o crescimento com propósito, clareza e, principalmente, com a capacidade de se adaptar e evoluir com consistência.
                     </p>
