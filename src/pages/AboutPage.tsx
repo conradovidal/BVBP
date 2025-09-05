@@ -5,13 +5,14 @@ import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
+import cristianoPhoto from "@/assets/cristiano-basso.jpg";
 const AboutPage = () => {
   const team = [{
     name: "Cristiano Basso",
     role: "",
     bio: "10+ anos otimizando processos em empresas de diversos tamanhos. Especialista em transformar caos operacional em crescimento sustentável.",
     linkedin: "https://www.linkedin.com/in/cristianobasso/",
-    placeholder: true
+    photo: cristianoPhoto
   }, {
     name: "Conrado Vidal",
     role: "",
@@ -82,9 +83,17 @@ const AboutPage = () => {
               {team.map((member, index) => (
                 <Card key={index} className="overflow-hidden hover:shadow-soft transition-smooth">
                   <AspectRatio ratio={16 / 9}>
-                    <div className="w-full h-full bg-muted flex items-center justify-center">
-                      <Users className="h-16 w-16 text-muted-foreground/50" />
-                    </div>
+                    {member.photo ? (
+                      <img 
+                        src={member.photo} 
+                        alt={`Foto de ${member.name}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <Users className="h-16 w-16 text-muted-foreground/50" />
+                      </div>
+                    )}
                   </AspectRatio>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-3">
