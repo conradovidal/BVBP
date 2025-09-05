@@ -42,7 +42,8 @@ const CalculatorPage = () => {
         <main className="flex-1">
           <CalculatorHero />
           
-          <section className="py-16 bg-background">
+          <section className="py-20 bg-gradient-subtle relative">
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-success"></div>
             <div className="container mx-auto px-4">
               <CalculatorForm 
                 onDataUpdate={handleDataUpdate}
@@ -51,6 +52,13 @@ const CalculatorPage = () => {
               />
             </div>
           </section>
+
+          {showResults && (
+            <CalculatorReportPreview />
+          )}
+
+          <CalculatorSocialProof />
+          <CalculatorFAQ />
 
           
         </main>
