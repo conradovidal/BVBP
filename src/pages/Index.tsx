@@ -1,10 +1,12 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Target, Users, Zap, TrendingUp } from "lucide-react";
+import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
 const Index = () => {
-  return <>
+  return (
+    <>
       <Helmet>
         <title>BVBP - Parceiros de negócio que transformam operações lado a lado com você</title>
         <meta name="description" content="Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida e resultados mensuráveis em até 90 dias." />
@@ -27,7 +29,12 @@ const Index = () => {
                 </h2>
                 
                 <div className="pt-8 animate-fade-in [animation-delay:400ms]">
-                  <Button variant="hero" size="xl" className="group shadow-strong" onClick={() => window.location.href = '/contato'}>
+                  <Button 
+                    variant="hero"
+                    size="xl" 
+                    className="group shadow-strong"
+                    onClick={() => window.location.href = '/contato'}
+                  >
                     Agendar diagnóstico gratuito
                   </Button>
                 </div>
@@ -36,12 +43,18 @@ const Index = () => {
           </section>
 
           {/* Problem Section */}
-          <section className="bg-gradient-subtle relative my-0 py-0">
+          <section className="py-20 bg-gradient-subtle relative">
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-warning"></div>
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-16 mx-[43px] my-[21px] py-0">
-                  
+                <div className="text-center mb-16">
+                  <div className="inline-flex items-center gap-2 text-sm font-semibold text-bvbp-growth bg-white/90 px-4 py-2 rounded-full mb-4 shadow-soft">
+                    <Search className="h-4 w-4" />
+                    Diagnóstico
+                  </div>
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-warning mb-8 shadow-warning">
+                    <Search className="h-8 w-8 text-white" />
+                  </div>
                   <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
                     Reconhece estes sintomas?
                   </h2>
@@ -53,8 +66,8 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-warning group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                        <Target className="h-6 w-6 text-white" />
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                        <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
                         <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -69,8 +82,8 @@ const Index = () => {
                   
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-warning group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                        <Users className="h-6 w-6 text-white" />
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                        <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
                         <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -85,8 +98,8 @@ const Index = () => {
                   
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-warning group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                        <TrendingUp className="h-6 w-6 text-white" />
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                        <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
                         <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -101,8 +114,8 @@ const Index = () => {
                   
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-warning group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                        <Zap className="h-6 w-6 text-white" />
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                        <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
                         <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -133,8 +146,8 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-16">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-success mb-8 shadow-success">
-                    <Zap className="h-8 w-8 text-white" />
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-8 shadow-success">
+                    <Sparkles className="h-8 w-8 text-white" />
                   </div>
                   <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
                     Nossa forma de trabalhar é diferente
@@ -224,29 +237,17 @@ const Index = () => {
                     </blockquote>
                     
                     <div className="grid md:grid-cols-2 gap-6 pt-8">
-                      <div className="group p-4 rounded-lg hover:bg-gradient-subtle transition-all duration-300">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircle className="h-6 w-6 text-bvbp-growth group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-bvbp-corporate font-semibold">15+ anos em operações empresariais</span>
-                        </div>
+                      <div className="text-bvbp-corporate font-semibold text-left">
+                        • 15+ anos em operações empresariais
                       </div>
-                      <div className="group p-4 rounded-lg hover:bg-gradient-subtle transition-all duration-300">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircle className="h-6 w-6 text-bvbp-growth group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-bvbp-corporate font-semibold">Processos • Planejamento • Gestão</span>
-                        </div>
+                      <div className="text-bvbp-corporate font-semibold text-left">
+                        • Processos • Planejamento • Gestão
                       </div>
-                      <div className="group p-4 rounded-lg hover:bg-gradient-subtle transition-all duration-300">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircle className="h-6 w-6 text-bvbp-growth group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-bvbp-corporate font-semibold">Metodologias ágeis • Lean • OKRs</span>
-                        </div>
+                      <div className="text-bvbp-corporate font-semibold text-left">
+                        • Metodologias ágeis • Lean • OKRs
                       </div>
-                      <div className="group p-4 rounded-lg hover:bg-gradient-subtle transition-all duration-300">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircle className="h-6 w-6 text-bvbp-growth group-hover:scale-110 transition-transform duration-300" />
-                          <span className="text-bvbp-corporate font-semibold">Gestão de Mudanças • Business Agility</span>
-                        </div>
+                      <div className="text-bvbp-corporate font-semibold text-left">
+                        • Gestão de Mudanças • Business Agility
                       </div>
                     </div>
                   </div>
@@ -271,11 +272,21 @@ const Index = () => {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-6">
-                      <Button variant="hero" size="xl" className="group shadow-strong" onClick={() => window.location.href = '/contato'}>
+                      <Button 
+                        variant="success"
+                        size="xl" 
+                        className="group shadow-strong"
+                        onClick={() => window.location.href = '/contato'}
+                      >
                         Quero Meu Diagnóstico Gratuito
                       </Button>
                       
-                      <Button variant="outline-hero" size="xl" className="hover:scale-105 transition-transform shadow-soft" onClick={() => window.location.href = '/sobre'}>
+                      <Button 
+                        variant="corporate"
+                        size="xl" 
+                        className="hover:scale-105 transition-transform shadow-soft"
+                        onClick={() => window.location.href = '/sobre'}
+                      >
                         Conheça mais sobre nós
                       </Button>
                     </div>
@@ -287,6 +298,8 @@ const Index = () => {
         </main>
         <Footer />
       </div>
-    </>;
+    </>
+  );
 };
+
 export default Index;
