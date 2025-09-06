@@ -18,7 +18,7 @@ const PageHero = ({
       <div className="absolute inset-0 bg-black/5"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {Icon}
+          {Icon && <Icon className="w-16 h-16 text-white/80 mx-auto mb-6" />}
           <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-8 animate-fade-in [animation-delay:200ms]">
             {title}
           </h1>
