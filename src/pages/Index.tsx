@@ -216,29 +216,17 @@ const Index = () => {
           <section className="py-20 bg-gradient-subtle relative">
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
-                <div className="bg-white/95 backdrop-blur-sm p-10 md:p-16 rounded-xl shadow-strong border-0">
+                <div className="bg-white p-10 md:p-16 rounded-xl shadow-strong border-0">
                   <div className="text-center space-y-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-hero mb-6 shadow-soft">
                       <CheckCircle className="h-8 w-8 text-white" />
                     </div>
                     <blockquote className="text-2xl md:text-3xl font-medium text-bvbp-corporate italic leading-relaxed">
-                      "Vivenciamos na prática os desafios de escalar operações em empresas reais. 
-                      Não é teoria, é experiência de quem já esteve dentro."
+                      "Vivenciamos na prática os desafios de escalar operações em empresas reais. Não é teoria, é experiência de quem já esteve dentro."
                     </blockquote>
                     
-                    <div className="grid md:grid-cols-2 gap-6 pt-8">
-                      <div className="text-bvbp-corporate font-semibold text-left">
-                        • 15+ anos em operações empresariais
-                      </div>
-                      <div className="text-bvbp-corporate font-semibold text-left">
-                        • Processos • Planejamento • Gestão
-                      </div>
-                      <div className="text-bvbp-corporate font-semibold text-left">
-                        • Metodologias ágeis • Lean • OKRs
-                      </div>
-                      <div className="text-bvbp-corporate font-semibold text-left">
-                        • Gestão de Mudanças • Business Agility
-                      </div>
+                    <div className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
+                      Combinamos mais de 15 anos em operações empresariais com expertise em processos, planejamento e gestão. Nossa base é o pensamento sistêmico, a facilitação e metodologias ágeis como Lean, OKRs e Agilidade Organizacional — sempre com foco em resultados mensuráveis.
                     </div>
                   </div>
                 </div>
