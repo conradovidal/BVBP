@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, CheckCircle, Users } from "lucide-react";
+import { MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, CheckCircle, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PageHero from "@/components/PageHero";
@@ -126,7 +126,7 @@ const ContactPage = () => {
           title="Fale Conosco"
           subtitle="Vamos conversar sobre sua transformação"
           description="Agende uma conversa sem compromisso. Entendemos seus desafios e propomos soluções práticas para sua realidade."
-          icon={Users}
+          icon={Search}
         >
           <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/20 text-white font-semibold backdrop-blur-sm">
             <MessageCircleIcon className="h-5 w-5 mr-2" />

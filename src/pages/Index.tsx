@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check } from "lucide-react";
+import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check, Settings, Lightbulb } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -192,7 +192,7 @@ const Index = () => {
                     <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                     <div className="relative z-10">
                       <div className="w-20 h-20 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                        <TrendingUp className="h-10 w-10 text-white" />
+                        <Settings className="h-10 w-10 text-white" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
                         ROI Transparente
@@ -207,7 +207,7 @@ const Index = () => {
                     <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                     <div className="relative z-10">
                       <div className="w-20 h-20 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                        <Users className="h-10 w-10 text-white" />
+                        <Lightbulb className="h-10 w-10 text-white" />
                       </div>
                       <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
                         Autonomia em 90 dias
