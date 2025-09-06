@@ -43,13 +43,6 @@ const CalculatorPage = () => {
         <main className="flex-1">
           <CalculatorHero />
           
-          {/* Search Icon Section */}
-          <div className="py-8 bg-background">
-            <div className="container mx-auto px-4 text-center">
-              <Search className="h-16 w-16 mx-auto text-bvbp-corporate" />
-            </div>
-          </div>
-          
           <section className="py-16 bg-background">
             <div className="container mx-auto px-4">
               <CalculatorForm 

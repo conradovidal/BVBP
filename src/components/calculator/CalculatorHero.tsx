@@ -1,5 +1,4 @@
 import PageHero from "@/components/PageHero";
-import { Search } from "lucide-react";
 
 const CalculatorHero = () => {
   return (
@@ -7,7 +6,6 @@ const CalculatorHero = () => {
       title="Calculadora de Perdas Operacionais"
       subtitle="Quanto sua operação está custando em ineficiências?"
       description="Descubra em minutos quanto sua empresa pode estar perdendo — estimativa simples, direta e sem compromisso."
-      icon={Search}
     />
   );
 };
