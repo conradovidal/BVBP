@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, DollarSign, ArrowRight, Zap, TrendingUp, Star, Crown, Search, Target, Wrench, Rocket } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 import { Helmet } from "react-helmet-async";
 const ServicesPage = () => {
   const processSteps = [{
@@ -113,19 +114,11 @@ const ServicesPage = () => {
       <Header />
       
       <main>
-        {/* Hero Section */}
-        <section className="py-16 lg:py-24 bg-gradient-subtle">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
-                Serviços
-              </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed mx-[166px] px-[15px]">
-                Jornada modular de transformação: do diagnóstico gratuito ao acompanhamento contínuo.
-              </p>
-            </div>
-          </div>
-        </section>
+        <PageHero
+          title="Nossos Serviços"
+          subtitle="Transformamos processos em resultados mensuráveis"
+          description="Soluções customizadas para otimizar sua operação, reduzir custos e aumentar a eficiência. Do diagnóstico à implementação, trabalhamos lado a lado com sua equipe."
+        />
 
         {/* Services Section */}
         <section className="py-16 bg-gradient-subtle">

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, CheckCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PageHero from "@/components/PageHero";
 import { Helmet } from "react-helmet-async";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -121,24 +122,16 @@ const ContactPage = () => {
       <Header />
       
       <main>
-        {/* Hero Section */}
-        <section className="py-16 lg:py-24 bg-gradient-subtle">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate mb-6">
-                Vamos Conversar
-              </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-                Conte-nos sobre seus desafios operacionais. Vamos descobrir juntos 
-                como transformar sua operação em uma máquina de crescimento.
-              </p>
-              <div className="inline-flex items-center px-6 py-3 rounded-full bg-bvbp-growth/10 text-bvbp-growth font-semibold">
-                <MessageCircleIcon className="h-5 w-5 mr-2" />
-                Primeira conversa sempre gratuita
-              </div>
-            </div>
+        <PageHero
+          title="Fale Conosco"
+          subtitle="Vamos conversar sobre sua transformação"
+          description="Agende uma conversa sem compromisso. Entendemos seus desafios e propomos soluções práticas para sua realidade."
+        >
+          <div className="inline-flex items-center px-6 py-3 rounded-full bg-white/20 text-white font-semibold backdrop-blur-sm">
+            <MessageCircleIcon className="h-5 w-5 mr-2" />
+            Primeira conversa sempre gratuita
           </div>
-        </section>
+        </PageHero>
 
         {/* Contact Form & Info Section */}
         <section className="py-16 bg-white">
