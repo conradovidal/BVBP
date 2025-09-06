@@ -66,9 +66,9 @@ const CalculatorPage = () => {
                     Conheça nossos serviços e descubra como transformamos operações bagunçadas em sistemas que funcionam.
                   </p>
                   <Button 
-                    variant="success" 
+                    variant="hero" 
                     size="xl" 
-                    className="group shadow-strong" 
+                    className="group shadow-strong bg-green-600 hover:bg-green-500 text-white font-bold px-12 py-4 text-lg animate-pulse hover:animate-none" 
                     onClick={() => window.location.href = '/servicos'}
                   >
                     Conheça Nossos Serviços
