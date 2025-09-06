@@ -142,7 +142,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-16">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-success mb-8 shadow-success">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-8 shadow-success">
                     <Zap className="h-8 w-8 text-white" />
                   </div>
                   <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
