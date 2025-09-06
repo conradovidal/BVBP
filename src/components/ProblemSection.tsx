@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Flame, Clock, TrendingDown, DollarSign, Frown, ArrowDown } from "lucide-react";
+import { Flame, Clock, TrendingDown, DollarSign, Frown, ArrowDown, Search } from "lucide-react";
 
 const ProblemSection = () => {
   const painPoints = [
@@ -41,9 +41,12 @@ const ProblemSection = () => {
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-            Reconhece Alguns Destes Problemas?
-          </h2>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <Search className="h-12 w-12 text-bvbp-corporate" />
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate">
+              Reconhece Alguns Destes Problemas?
+            </h2>
+          </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Se sua empresa cresceu mas a operação virou um caos, você não está sozinho
           </p>

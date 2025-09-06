@@ -29,7 +29,7 @@ const ServicesSection = () => {
     },
     {
       title: "TRANSPARÊNCIA",
-      badge: "GRATUITO",
+      badge: "GRATUITO - LIMITADO",
       badgeColor: "bg-bvbp-growth text-white",
       duration: "2 semanas",
       icon: Zap,
