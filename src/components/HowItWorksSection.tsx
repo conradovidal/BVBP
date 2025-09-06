@@ -71,7 +71,7 @@ const HowItWorksSection = () => {
                     </div>
                     
                     {/* Desktop Timeline Dot */}
-                    <div className="hidden lg:block absolute -top-16 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-success border-4 border-white shadow-soft"></div>
+                    <div className="hidden lg:block absolute -top-16 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-bvbp-growth border-4 border-white shadow-soft"></div>
                     
                     <div className="pt-4">
                       {/* Icon */}

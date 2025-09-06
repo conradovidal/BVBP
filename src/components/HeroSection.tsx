@@ -60,7 +60,7 @@ const HeroSection = () => {
             <div className="flex items-center space-x-4 pt-4">
               <div className="flex -space-x-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="w-10 h-10 rounded-full bg-gradient-success border-2 border-white" />
+                  <div key={i} className="w-10 h-10 rounded-full bg-bvbp-growth border-2 border-white" />
                 ))}
               </div>
               <div className="text-sm text-muted-foreground">
