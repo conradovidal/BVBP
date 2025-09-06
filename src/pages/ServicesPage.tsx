@@ -104,7 +104,7 @@ const ServicesPage = () => {
     description: "Auditoria da agenda de liderança. Reestruturamos rituais para reduzir reuniões improdutivas e liberar tempo estratégico.",
     icon: Clock
   }, {
-    title: "Planejamento com Clareza",
+    title: "Planejamento Estratégico",
     description: "Transformamos metas em planos acionáveis para uma área. Clareza sobre prioridades e alinhamento sem travar a operação.",
     icon: Target
   }, {
@@ -275,10 +275,10 @@ const ServicesPage = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {specificSolutions.map((solution, index) => {
               const IconComponent = solution.icon;
-              const slugs = ['governanca-de-reunioes', 'planejamento-com-clareza', 'otimizacao-de-fluxo-de-valor'];
+              const slugs = ['governanca-de-reunioes', 'planejamento-estrategico', 'otimizacao-de-fluxo-de-valor'];
               return <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
                     <div className="flex items-start space-x-4">
                       <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-bvbp-corporate flex-shrink-0">
