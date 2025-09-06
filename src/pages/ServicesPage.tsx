@@ -38,15 +38,15 @@ const ServicesPage = () => {
     badgeColor: "bg-bvbp-growth text-white",
     duration: "1 semana",
     icon: Search,
-    description: "Clareza inicial sobre os principais gargalos e perdas da operação. Em apenas uma semana com o líder, identificamos dores críticas e entregamos ações rápidas para começar a recuperar eficiência.",
-    features: ["Conversa estruturada com o líder/tomador de decisão", "Levantamento e priorização dos processos críticos", "Estimativa de perdas (tempo e custo)", "Relatório executivo de 1 página com Top 5 dores e 3 Quick Wins"],
-    details: ["2 a 3 encontros curtos ao longo da semana", "Sem necessidade de envolver toda a equipe", "Entrega objetiva, sem burocracia", "Base para decidir próximos passos (Transparência, Visão de Futuro, etc.)"],
+    description: "Clareza inicial sobre os principais gargalos e perdas da operação.",
+    features: ["Conversa estruturada com o líder", "Levantamento e priorização dos processos críticos", "Estimativa de perdas (tempo e custo)", "Relatório executivo"],
+    details: ["2 a 3 encontros curtos ao longo da semana", "Sem necessidade de envolver toda a equipe", "Entrega objetiva, sem burocracia"],
     cta: "Quero meu Diagnóstico Gratuito",
     popular: false
   }, {
     title: "TRANSPARÊNCIA",
-    badge: "GRATUITO POR TEMPO LIMITADO",
-    badgeColor: "bg-bvbp-growth text-white",
+    badge: "🔥 OFERTA LIMITADA",
+    badgeColor: "bg-gradient-to-r from-orange-500 to-red-500 text-white",
     duration: "2 semanas",
     icon: Zap,
     description: "Diagnóstico inicial gratuito para entender como um processo funciona hoje e onde estão as perdas.",
@@ -132,9 +132,9 @@ const ServicesPage = () => {
           <div className="container mx-auto px-4">
 
             <div className="space-y-8 max-w-7xl mx-auto">
-              {/* First row - 4 cards */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {services.slice(0, 4).map((service, index) => {
+              {/* First row - 3 cards */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.slice(0, 3).map((service, index) => {
                 const IconComponent = service.icon;
                 return <Card key={index} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
                       {/* Badge */}
@@ -196,11 +196,11 @@ const ServicesPage = () => {
               })}
               </div>
 
-              {/* Second row - 2 cards */}
-              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {services.slice(4, 6).map((service, index) => {
+              {/* Second row - 3 cards */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.slice(3, 6).map((service, index) => {
                 const IconComponent = service.icon;
-                return <Card key={index + 4} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
+                return <Card key={index + 3} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
                       {/* Badge */}
                       <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                         <Badge className={service.badgeColor}>
@@ -251,7 +251,7 @@ const ServicesPage = () => {
 
                       {/* CTA */}
                       <Button variant={service.popular ? "success" : "hero"} className="w-full px-4 py-2 text-center" size="lg" onClick={() => {
-                    const interestSlug = index === 0 ? 'automacao-inteligente' : 'melhoria-continua';
+                    const interestSlug = index === 0 ? 'implementacao-pratica' : index === 1 ? 'automacao-inteligente' : 'melhoria-continua';
                     window.location.href = `/contato?interest=${interestSlug}`;
                   }}>
                         {service.cta}
