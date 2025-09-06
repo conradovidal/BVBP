@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight } from "lucide-react";
+import { LinkedinIcon, MailIcon, Users, Target, Heart, ArrowRight, Award } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
@@ -28,7 +28,7 @@ const AboutPage = () => {
     title: "Honestidade",
     description: "Se não conseguirmos ajudar, falamos na lata. Só trabalhamos com empresas onde vemos potencial real de melhoria."
   }, {
-    icon: Target,
+    icon: Award,
     title: "Qualidade",
     description: "Garantimos soluções práticas e sustentáveis, entregues com atenção aos detalhes e compromisso com resultados."
   }];
