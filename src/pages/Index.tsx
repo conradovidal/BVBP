@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check, Settings, Lightbulb } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
 const Index = () => {
-  return (
-    <>
+  return <>
       <Helmet>
         <title>BVBP - Parceiros de negócio que transformam operações lado a lado com você</title>
         <meta name="description" content="Parceria boutique para SMBs. Diagnóstico gratuito, soluções sob medida e resultados mensuráveis em até 90 dias." />
@@ -29,12 +27,7 @@ const Index = () => {
                 </h2>
                 
                 <div className="pt-8 animate-fade-in [animation-delay:400ms]">
-                  <Button 
-                    variant="hero"
-                    size="xl" 
-                    className="group shadow-strong"
-                    onClick={() => window.location.href = '/contato'}
-                  >
+                  <Button variant="hero" size="xl" className="group shadow-strong" onClick={() => window.location.href = '/contato'}>
                     Agendar diagnóstico gratuito
                   </Button>
                 </div>
@@ -48,10 +41,7 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
-                  <div className="inline-flex items-center gap-2 text-sm font-semibold text-bvbp-growth bg-white/90 px-4 py-2 rounded-full mb-4 shadow-soft">
-                    <Search className="h-4 w-4" />
-                    Diagnóstico
-                  </div>
+                  
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-warning mb-8 shadow-warning">
                     <Search className="h-8 w-8 text-white" />
                   </div>
@@ -272,21 +262,11 @@ const Index = () => {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-6">
-                      <Button 
-                        variant="success"
-                        size="xl" 
-                        className="group shadow-strong"
-                        onClick={() => window.location.href = '/contato'}
-                      >
+                      <Button variant="success" size="xl" className="group shadow-strong" onClick={() => window.location.href = '/contato'}>
                         Quero Meu Diagnóstico Gratuito
                       </Button>
                       
-                      <Button 
-                        variant="corporate"
-                        size="xl" 
-                        className="hover:scale-105 transition-transform shadow-soft"
-                        onClick={() => window.location.href = '/sobre'}
-                      >
+                      <Button variant="corporate" size="xl" className="hover:scale-105 transition-transform shadow-soft" onClick={() => window.location.href = '/sobre'}>
                         Conheça mais sobre nós
                       </Button>
                     </div>
@@ -298,8 +278,6 @@ const Index = () => {
         </main>
         <Footer />
       </div>
-    </>
-  );
+    </>;
 };
-
 export default Index;
