@@ -226,7 +226,7 @@ const Index = () => {
                     </blockquote>
                     
                     <div className="text-lg text-muted-foreground leading-relaxed max-w-3xl mx-auto">
-                      Combinamos mais de 15 anos em operações empresariais com expertise em processos, planejamento e gestão. Nossa base é o pensamento sistêmico, a facilitação e metodologias ágeis como Lean, OKRs e Agilidade Organizacional — sempre com foco em resultados mensuráveis.
+                      Unimos mais de 15 anos em operações empresariais com expertise em planejamento, processos, gestão e execução. Nossa atuação se apoia na facilitação, priorização, pensamento sistêmico,e metodologias ágeis, sempre orientados a resultados mensuráveis.
                     </div>
                   </div>
                 </div>
