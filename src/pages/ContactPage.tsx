@@ -29,12 +29,12 @@ const ContactPage = () => {
 
   // Map URL slugs to select values
   const interestMap = {
-    'transparencia': 'Transparência (diagnóstico gratuito)',
+    'diagnostico': 'Diagnóstico (gratuito)',
+    'transparencia': 'Transparência (gratuito por tempo limitado)',
     'visao-de-futuro': 'Visão de Futuro',
     'implementacao-pratica': 'Implementação Prática',
     'automacao-inteligente': 'Automação Inteligente',
     'melhoria-continua': 'Melhoria Contínua',
-    'radiografia-de-eficiencia': 'Radiografia de Eficiência',
     'governanca-de-reunioes': 'Governança de Reuniões',
     'planejamento-com-clareza': 'Planejamento com Clareza',
     'otimizacao-de-fluxo-de-valor': 'Otimização de Fluxo de Valor'
@@ -220,12 +220,12 @@ const ContactPage = () => {
                           <SelectValue placeholder="Transparência" />
                         </SelectTrigger>
                         <SelectContent className="bg-background border-input z-50">
-                          <SelectItem value="Transparência (diagnóstico gratuito)">Transparência (diagnóstico gratuito)</SelectItem>
+                          <SelectItem value="Diagnóstico (gratuito)">Diagnóstico (gratuito)</SelectItem>
+                          <SelectItem value="Transparência (gratuito por tempo limitado)">Transparência (gratuito por tempo limitado)</SelectItem>
                           <SelectItem value="Visão de Futuro">Visão de Futuro</SelectItem>
                           <SelectItem value="Implementação Prática">Implementação Prática</SelectItem>
                           <SelectItem value="Automação Inteligente">Automação Inteligente</SelectItem>
                           <SelectItem value="Melhoria Contínua">Melhoria Contínua</SelectItem>
-                          <SelectItem value="Radiografia de Eficiência">Radiografia de Eficiência</SelectItem>
                           <SelectItem value="Governança de Reuniões">Governança de Reuniões</SelectItem>
                           <SelectItem value="Planejamento com Clareza">Planejamento com Clareza</SelectItem>
                           <SelectItem value="Otimização de Fluxo de Valor">Otimização de Fluxo de Valor</SelectItem>

@@ -89,10 +89,6 @@ const ServicesPage = () => {
     popular: false
   }];
   const specificSolutions = [{
-    title: "Radiografia de Eficiência",
-    description: "Em uma semana, levantamos dados de retrabalho e desperdícios em um processo específico. Números claros sobre perdas e oportunidades.",
-    icon: Search
-  }, {
     title: "Governança de Reuniões",
     description: "Auditoria da agenda de liderança. Reestruturamos rituais para reduzir reuniões improdutivas e liberar tempo estratégico.",
     icon: Clock

@@ -1,13 +1,35 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, DollarSign, Star, Zap, TrendingUp, Crown } from "lucide-react";
+import { CheckCircle, Clock, DollarSign, Star, Zap, TrendingUp, Crown, Search } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
     {
-      title: "TRANSPARÊNCIA",
+      title: "DIAGNÓSTICO",
       badge: "GRATUITO",
+      badgeColor: "bg-bvbp-growth text-white",
+      duration: "1 semana",
+      icon: Search,
+      description: "Clareza inicial sobre os principais gargalos e perdas da operação. Em apenas uma semana com o líder, identificamos dores críticas e entregamos ações rápidas para começar a recuperar eficiência.",
+      features: [
+        "Conversa estruturada com o líder/tomador de decisão",
+        "Levantamento e priorização dos processos críticos",
+        "Estimativa de perdas (tempo e custo)",
+        "Relatório executivo de 1 página com Top 5 dores e 3 Quick Wins"
+      ],
+      details: [
+        "2 a 3 encontros curtos ao longo da semana",
+        "Sem necessidade de envolver toda a equipe",
+        "Entrega objetiva, sem burocracia",
+        "Base para decidir próximos passos (Transparência, Visão de Futuro, etc.)"
+      ],
+      cta: "Quero meu Diagnóstico Gratuito",
+      popular: false
+    },
+    {
+      title: "TRANSPARÊNCIA",
+      badge: "GRATUITO POR TEMPO LIMITADO",
       badgeColor: "bg-bvbp-growth text-white",
       duration: "2 semanas",
       icon: Zap,
