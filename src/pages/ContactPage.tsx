@@ -126,9 +126,8 @@ const ContactPage = () => {
           title="Fale Conosco"
           subtitle="Vamos conversar sobre sua transformação"
           description="Agende uma conversa sem compromisso. Entendemos seus desafios e propomos soluções práticas para sua realidade."
-          icon={MessageCircleIcon}
         >
-          <div className="inline-flex items-center px-8 py-4 rounded-full bg-gradient-to-r from-primary to-primary-glow text-white font-bold backdrop-blur-sm shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105">
+          <div className="inline-flex items-center px-8 py-4 rounded-full bg-primary text-white font-bold shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105">
             <MessageCircleIcon className="h-6 w-6 mr-3" />
             Primeira conversa sempre gratuita
           </div>
