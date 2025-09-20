@@ -61,7 +61,7 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
                         <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
@@ -77,7 +77,7 @@ const Index = () => {
                   
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
                         <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
@@ -93,7 +93,7 @@ const Index = () => {
                   
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
                         <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>
@@ -109,7 +109,7 @@ const Index = () => {
                   
                   <div className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                     <div className="flex items-start space-x-4">
-                      <div className="relative inline-flex items-center justify-center w-12 h-12 rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                      <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
                         <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                       </div>
                       <div>

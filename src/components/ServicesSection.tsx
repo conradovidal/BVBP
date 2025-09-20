@@ -140,7 +140,7 @@ const ServicesSection = () => {
 
                   {/* Header */}
                   <div className="text-center mb-6 pt-4">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
+                    <div className={`inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full mb-4 ${
                       service.popular ? 'bg-bvbp-growth' : 'bg-gradient-hero'
                     }`}>
                       <IconComponent className="h-6 w-6 text-white" />
@@ -204,7 +204,7 @@ const ServicesSection = () => {
 
                   {/* Header */}
                   <div className="text-center mb-6 pt-4">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
+                    <div className={`inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full mb-4 ${
                       service.popular ? 'bg-bvbp-growth' : 'bg-gradient-hero'
                     }`}>
                       <IconComponent className="h-6 w-6 text-white" />
@@ -253,7 +253,7 @@ const ServicesSection = () => {
         <div className="max-w-3xl mx-auto">
           <Card className="p-8 bg-bvbp-growth/10 border-bvbp-growth/20">
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 aspect-square rounded-full bg-bvbp-growth mb-4">
                 <DollarSign className="h-8 w-8 text-white" />
               </div>
               
