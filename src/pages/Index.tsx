@@ -27,7 +27,12 @@ const Index = () => {
                 </h2>
                 
                 <div className="pt-8 animate-fade-in [animation-delay:400ms]">
-                  <Button variant="hero" size="xl" className="group shadow-strong" onClick={() => window.location.href = '/contato'}>
+                  <Button 
+                    variant="success" 
+                    size="xl" 
+                    className="group shadow-strong bg-bvbp-growth hover:bg-bvbp-growth/90 text-white font-bold px-8 py-4 text-lg hover:scale-105 transform transition-bounce pulse" 
+                    onClick={() => window.location.href = '/contato'}
+                  >
                     Agendar diagnóstico gratuito
                   </Button>
                 </div>
