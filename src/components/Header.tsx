@@ -1,17 +1,27 @@
 import { Button } from "@/components/ui/button";
+import { Tabs } from "@/components/ui/vercel-tabs";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   const navigationItems = [
-    { label: "Início", href: "/" },
-    { label: "Quem Somos", href: "/sobre" },
-    { label: "Calculadora", href: "/calculadora-roi" },
-    { label: "Serviços", href: "/servicos" },
-    { label: "Contato", href: "/contato" },
+    { id: "home", label: "Início", href: "/" },
+    { id: "about", label: "Quem Somos", href: "/sobre" },
+    { id: "calculator", label: "Calculadora", href: "/calculadora-roi" },
+    { id: "services", label: "Serviços", href: "/servicos" },
+    { id: "contact", label: "Contato", href: "/contato" },
   ];
+
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    const currentIndex = navigationItems.findIndex(item => item.href === currentPath);
+    if (currentIndex !== -1) {
+      setActiveTab(currentIndex);
+    }
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -28,16 +38,17 @@ const Header = () => {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navigationItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="text-sm font-medium text-foreground hover:text-bvbp-corporate transition-smooth"
-            >
-              {item.label}
-            </a>
-          ))}
+        <nav className="hidden md:flex items-center">
+          <Tabs
+            tabs={navigationItems}
+            activeTab={navigationItems[activeTab]?.id}
+            onTabChange={(tabId, href) => {
+              if (href) {
+                window.location.href = href;
+              }
+            }}
+            className="mx-4"
+          />
         </nav>
 
         {/* CTA Button */}
