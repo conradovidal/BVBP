@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, CheckCircle, Search } from "lucide-react";
 import Header from "@/components/Header";
@@ -245,8 +246,8 @@ const ContactPage = () => {
                       />
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="consent" className="rounded" required />
+                    <div className="flex items-center space-x-3">
+                      <Checkbox id="consent" required />
                       <Label htmlFor="consent" className="text-sm text-muted-foreground">
                         Concordo que a BVBP entre em contato sobre minha solicitação.
                       </Label>
