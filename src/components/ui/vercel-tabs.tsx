@@ -37,6 +37,16 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
       }
     }, [hoveredIndex])
 
+    // Sync internal activeIndex with external activeTab prop
+    useEffect(() => {
+      if (activeTab) {
+        const newIndex = tabs.findIndex(tab => tab.id === activeTab)
+        if (newIndex !== -1 && newIndex !== activeIndex) {
+          setActiveIndex(newIndex)
+        }
+      }
+    }, [activeTab, tabs, activeIndex])
+
     useEffect(() => {
       const activeElement = tabRefs.current[activeIndex]
       if (activeElement) {

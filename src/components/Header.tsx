@@ -16,11 +16,22 @@ const Header = () => {
   ];
 
   useEffect(() => {
-    const currentPath = window.location.pathname;
-    const currentIndex = navigationItems.findIndex(item => item.href === currentPath);
-    if (currentIndex !== -1) {
-      setActiveTab(currentIndex);
-    }
+    const updateActiveTab = () => {
+      const currentPath = window.location.pathname;
+      const currentIndex = navigationItems.findIndex(item => item.href === currentPath);
+      if (currentIndex !== -1) {
+        setActiveTab(currentIndex);
+      }
+    };
+
+    updateActiveTab();
+    
+    // Listen for route changes
+    window.addEventListener('popstate', updateActiveTab);
+    
+    return () => {
+      window.removeEventListener('popstate', updateActiveTab);
+    };
   }, []);
 
   return (
