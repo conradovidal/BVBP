@@ -17,9 +17,19 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const Index = () => {
   const { toast } = useToast();
+  
+  // Scroll animations for each section
+  const { ref: heroRef, isVisible: heroVisible } = useScrollAnimation(0.1);
+  const { ref: problemRef, isVisible: problemVisible } = useScrollAnimation(0.1);
+  const { ref: differentialRef, isVisible: differentialVisible } = useScrollAnimation(0.1);
+  const { ref: aboutRef, isVisible: aboutVisible } = useScrollAnimation(0.1);
+  const { ref: servicesRef, isVisible: servicesVisible } = useScrollAnimation(0.1);
+  const { ref: storyRef, isVisible: storyVisible } = useScrollAnimation(0.1);
+  const { ref: contactRef, isVisible: contactVisible } = useScrollAnimation(0.1);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -193,7 +203,13 @@ const Index = () => {
         <Header />
         <main>
           {/* Hero Section */}
-          <section id="inicio" className="relative py-20 lg:py-32 bg-gradient-hero overflow-hidden">
+          <section 
+            id="inicio" 
+            ref={heroRef as React.RefObject<HTMLElement>}
+            className={`relative py-20 lg:py-32 bg-gradient-hero overflow-hidden transition-all duration-700 ${
+              heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="absolute inset-0 bg-black/5"></div>
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto text-center space-y-12">
@@ -228,7 +244,12 @@ const Index = () => {
           </section>
 
           {/* Problem Section */}
-          <section className="py-20 bg-gradient-subtle relative">
+          <section 
+            ref={problemRef as React.RefObject<HTMLElement>}
+            className={`py-20 bg-gradient-subtle relative transition-all duration-700 ${
+              problemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-warning"></div>
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
@@ -293,7 +314,12 @@ const Index = () => {
           </section>
 
           {/* Differentiation Section */}
-          <section className="py-20 bg-white relative">
+          <section 
+            ref={differentialRef as React.RefObject<HTMLElement>}
+            className={`py-20 bg-white relative transition-all duration-700 ${
+              differentialVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-success"></div>
             <div className="container mx-auto px-4">
               <div className="max-w-6xl mx-auto">
@@ -353,7 +379,13 @@ const Index = () => {
           </section>
 
           {/* Quem Somos Section */}
-          <section id="quem-somos" className="py-20 bg-gradient-subtle">
+          <section 
+            id="quem-somos" 
+            ref={aboutRef as React.RefObject<HTMLElement>}
+            className={`py-20 bg-gradient-subtle transition-all duration-700 ${
+              aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="container mx-auto px-4">
               {/* Mission */}
               <div className="max-w-4xl mx-auto text-center mb-20">
@@ -458,7 +490,13 @@ const Index = () => {
           </section>
 
           {/* Serviços Section */}
-          <section id="servicos" className="py-20 bg-white">
+          <section 
+            id="servicos" 
+            ref={servicesRef as React.RefObject<HTMLElement>}
+            className={`py-20 bg-white transition-all duration-700 ${
+              servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
@@ -618,7 +656,12 @@ const Index = () => {
           </section>
 
           {/* Authority & Story Section */}
-          <section className="py-20 bg-gradient-hero relative overflow-hidden">
+          <section 
+            ref={storyRef as React.RefObject<HTMLElement>}
+            className={`py-20 bg-gradient-hero relative overflow-hidden transition-all duration-700 ${
+              storyVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="absolute inset-0 bg-black/10"></div>
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto">
@@ -656,7 +699,13 @@ const Index = () => {
           </section>
 
           {/* Contato Section */}
-          <section id="contato" className="py-20 bg-gradient-subtle">
+          <section 
+            id="contato" 
+            ref={contactRef as React.RefObject<HTMLElement>}
+            className={`py-20 bg-gradient-subtle transition-all duration-700 ${
+              contactVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <div className="inline-flex items-center px-8 py-4 rounded-full bg-primary text-white font-bold shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105 mb-8">

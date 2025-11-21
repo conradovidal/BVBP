@@ -14,23 +14,46 @@ const Header = () => {
     { id: "contato", label: "Contato", href: "#contato" },
   ];
 
+  // Scroll spy with IntersectionObserver
   useEffect(() => {
-    const updateActiveTab = () => {
-      const hash = window.location.hash || "#inicio";
-      const currentIndex = navigationItems.findIndex(item => item.href === hash);
-      if (currentIndex !== -1) {
-        setActiveTab(currentIndex);
-      }
+    const observerOptions = {
+      root: null,
+      rootMargin: '-80px 0px -80% 0px', // Offset do header + threshold
+      threshold: 0
     };
 
-    updateActiveTab();
-    
-    // Listen for hash changes
-    window.addEventListener('hashchange', updateActiveTab);
-    
-    return () => {
-      window.removeEventListener('hashchange', updateActiveTab);
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          const index = navigationItems.findIndex(item => item.id === sectionId);
+          if (index !== -1) {
+            setActiveTab(index);
+            // Atualizar URL sem scroll
+            window.history.replaceState(null, '', `#${sectionId}`);
+          }
+        }
+      });
     };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    
+    // Observar todas as seções
+    navigationItems.forEach(item => {
+      const element = document.getElementById(item.id);
+      if (element) observer.observe(element);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Initial hash on load
+  useEffect(() => {
+    const hash = window.location.hash || "#inicio";
+    const currentIndex = navigationItems.findIndex(item => item.href === hash);
+    if (currentIndex !== -1) {
+      setActiveTab(currentIndex);
+    }
   }, []);
 
   return (
