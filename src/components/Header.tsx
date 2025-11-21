@@ -8,17 +8,16 @@ const Header = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const navigationItems = [
-    { id: "home", label: "Início", href: "/" },
-    { id: "about", label: "Quem Somos", href: "/sobre" },
-    { id: "calculator", label: "Calculadora", href: "/calculadora-roi" },
-    { id: "services", label: "Serviços", href: "/servicos" },
-    { id: "contact", label: "Contato", href: "/contato" },
+    { id: "inicio", label: "Início", href: "#inicio" },
+    { id: "quem-somos", label: "Quem Somos", href: "#quem-somos" },
+    { id: "servicos", label: "Serviços", href: "#servicos" },
+    { id: "contato", label: "Contato", href: "#contato" },
   ];
 
   useEffect(() => {
     const updateActiveTab = () => {
-      const currentPath = window.location.pathname;
-      const currentIndex = navigationItems.findIndex(item => item.href === currentPath);
+      const hash = window.location.hash || "#inicio";
+      const currentIndex = navigationItems.findIndex(item => item.href === hash);
       if (currentIndex !== -1) {
         setActiveTab(currentIndex);
       }
@@ -26,11 +25,11 @@ const Header = () => {
 
     updateActiveTab();
     
-    // Listen for route changes
-    window.addEventListener('popstate', updateActiveTab);
+    // Listen for hash changes
+    window.addEventListener('hashchange', updateActiveTab);
     
     return () => {
-      window.removeEventListener('popstate', updateActiveTab);
+      window.removeEventListener('hashchange', updateActiveTab);
     };
   }, []);
 
@@ -55,7 +54,12 @@ const Header = () => {
             activeTab={navigationItems[activeTab]?.id}
             onTabChange={(tabId, href) => {
               if (href) {
-                window.location.href = href;
+                const targetId = href.replace('#', '');
+                const element = document.getElementById(targetId);
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                  window.history.pushState(null, '', href);
+                }
               }
             }}
             className="mx-4"
@@ -64,14 +68,30 @@ const Header = () => {
 
         {/* CTA Button */}
         <div className="hidden md:block">
-        <Button 
-          variant="corporate"
-          size="lg"
-          className="px-4 py-2 text-sm whitespace-nowrap"
-          onClick={() => window.location.href = '/contato'}
-        >
-          Diagnóstico Gratuito
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="corporate"
+            size="lg"
+            className="px-4 py-2 text-sm whitespace-nowrap"
+            onClick={() => {
+              const element = document.getElementById('contato');
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                window.history.pushState(null, '', '#contato');
+              }
+            }}
+          >
+            Diagnóstico Gratuito
+          </Button>
+          <Button 
+            variant="outline"
+            size="lg"
+            className="px-4 py-2 text-sm whitespace-nowrap"
+            onClick={() => window.location.href = '/calculadora-roi'}
+          >
+            Calculadora ROI
+          </Button>
+        </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -93,7 +113,16 @@ const Header = () => {
                 key={item.label}
                 href={item.href}
                 className="block text-sm font-medium text-foreground hover:text-bvbp-corporate transition-smooth"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetId = item.href.replace('#', '');
+                  const element = document.getElementById(targetId);
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    window.history.pushState(null, '', item.href);
+                    setIsMenuOpen(false);
+                  }
+                }}
               >
                 {item.label}
               </a>
@@ -102,9 +131,27 @@ const Header = () => {
               variant="corporate"
               size="lg"
               className="w-full text-sm"
-              onClick={() => window.location.href = '/contato'}
+              onClick={() => {
+                const element = document.getElementById('contato');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                  window.history.pushState(null, '', '#contato');
+                  setIsMenuOpen(false);
+                }
+              }}
             >
               Diagnóstico Gratuito
+            </Button>
+            <Button 
+              variant="outline"
+              size="lg"
+              className="w-full text-sm"
+              onClick={() => {
+                window.location.href = '/calculadora-roi';
+                setIsMenuOpen(false);
+              }}
+            >
+              Calculadora ROI
             </Button>
           </nav>
         </div>
