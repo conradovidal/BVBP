@@ -89,8 +89,12 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
 
           {/* Active Indicator */}
           <div
-            className="absolute bottom-[-6px] h-[2px] bg-bvbp-corporate transition-all duration-300 ease-out rounded-full"
-            style={activeStyle}
+            className="absolute bottom-[-6px] h-[2px] bg-bvbp-corporate rounded-full"
+            style={{
+              ...activeStyle,
+              opacity: activeIndex !== null ? 1 : 0,
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
           />
 
           {/* Tabs */}
