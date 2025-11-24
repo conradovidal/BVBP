@@ -93,6 +93,14 @@ const Header = () => {
         <div className="hidden md:block">
         <div className="flex items-center gap-3">
           <Button 
+            variant="outline"
+            size="lg"
+            className="px-4 py-2 text-sm whitespace-nowrap"
+            onClick={() => window.location.href = '/calculadora-roi'}
+          >
+            Calculadora ROI
+          </Button>
+          <Button 
             variant="corporate"
             size="lg"
             className="px-4 py-2 text-sm whitespace-nowrap"
@@ -105,14 +113,6 @@ const Header = () => {
             }}
           >
             Diagnóstico Gratuito
-          </Button>
-          <Button 
-            variant="outline"
-            size="lg"
-            className="px-4 py-2 text-sm whitespace-nowrap"
-            onClick={() => window.location.href = '/calculadora-roi'}
-          >
-            Calculadora ROI
           </Button>
         </div>
         </div>
@@ -151,6 +151,17 @@ const Header = () => {
               </a>
             ))}
             <Button 
+              variant="outline"
+              size="lg"
+              className="w-full text-sm"
+              onClick={() => {
+                window.location.href = '/calculadora-roi';
+                setIsMenuOpen(false);
+              }}
+            >
+              Calculadora ROI
+            </Button>
+            <Button 
               variant="corporate"
               size="lg"
               className="w-full text-sm"
@@ -164,17 +175,6 @@ const Header = () => {
               }}
             >
               Diagnóstico Gratuito
-            </Button>
-            <Button 
-              variant="outline"
-              size="lg"
-              className="w-full text-sm"
-              onClick={() => {
-                window.location.href = '/calculadora-roi';
-                setIsMenuOpen(false);
-              }}
-            >
-              Calculadora ROI
             </Button>
           </nav>
         </div>
