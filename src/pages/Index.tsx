@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -500,16 +500,18 @@ const Index = () => {
           {/* Quem Somos Section */}
           <section id="quem-somos" ref={aboutRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="container mx-auto px-4">
-              {/* Nossa Missão - Apenas a caixa verde com texto integrado */}
+              {/* Nossa Missão - Minimalista com tipografia forte */}
               <div className="max-w-4xl mx-auto mb-16">
-                <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg">
-                  <p className="text-xl text-foreground leading-relaxed font-medium text-center mb-4">
-                    Você volta a ter tempo para pensar no negócio, não só na operação.
-                  </p>
-                  <p className="text-muted-foreground leading-relaxed text-center">
-                    A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
-                  </p>
-                </div>
+                <h2 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate leading-tight text-center mb-8">
+                  Você volta a ter tempo para pensar no <span className="text-bvbp-growth">negócio</span>, não só na operação.
+                </h2>
+                <Card className="bg-muted/50 border-border/50 shadow-none">
+                  <CardContent className="p-6">
+                    <p className="text-muted-foreground leading-relaxed text-center">
+                      A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
 
               {/* Nosso Time - Grid 2 colunas, cards verticais */}
