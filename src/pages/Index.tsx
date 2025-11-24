@@ -502,11 +502,11 @@ const Index = () => {
             <div className="container mx-auto px-4">
               {/* Nossa Missão - Minimalista com tipografia forte */}
               <div className="max-w-4xl mx-auto mb-16">
-                <h2 className="font-heading text-3xl md:text-5xl lg:text-6xl font-bold text-bvbp-corporate leading-tight text-center mb-8">
-                  Você volta a ter tempo para pensar no <span className="text-bvbp-growth">negócio</span>, não só na operação.
+                <h2 className="font-heading text-2xl md:text-4xl lg:text-5xl font-bold text-bvbp-corporate leading-snug text-center mb-8 max-w-5xl mx-auto text-balance">
+                  Você volta a ter tempo para pensar no <span className="text-bvbp-growth inline-block animate-pulse-subtle hover:scale-110 transition-transform duration-300">negócio</span>, não só na operação.
                 </h2>
-                <Card className="bg-muted/50 border-border/50 shadow-none">
-                  <CardContent className="p-6">
+                <Card className="bg-white border-gray-200 shadow-soft hover:shadow-strong transition-all duration-300">
+                  <CardContent className="p-8">
                     <p className="text-muted-foreground leading-relaxed text-center">
                       A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
                     </p>
