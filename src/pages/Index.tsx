@@ -18,11 +18,9 @@ import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useParallax } from "@/hooks/useParallax";
 
 const Index = () => {
   const { toast } = useToast();
-  const parallaxOffset = useParallax(0.3);
   
   // Scroll animations for each section
   const { ref: heroRef, isVisible: heroVisible } = useScrollAnimation(0.1);
@@ -212,10 +210,7 @@ const Index = () => {
               heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
             }`}
           >
-            <div 
-              className="absolute inset-0 bg-black/5"
-              style={{ transform: `translateY(${parallaxOffset}px)` }}
-            ></div>
+            <div className="absolute inset-0 bg-black/5"></div>
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto text-center space-y-12">
                 <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight animate-fade-in">
@@ -289,14 +284,10 @@ const Index = () => {
                       description: "Processos mal definidos geram frustração e desperdício"
                     }
                   ].map((problem, index) => (
-                    <div 
-                      key={index} 
-                      className="group p-6 bg-white rounded-lg shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 animate-fade-in"
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
+                    <div key={index} className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
                       <div className="flex items-start space-x-4">
-                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white shadow-soft group-hover:shadow-success">
-                          <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100 drop-shadow-sm" />
+                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
+                          <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
                         </div>
                         <div>
                           <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -367,14 +358,10 @@ const Index = () => {
                       description: "Em até 90 dias, você ganha melhorias sustentáveis prontas para a melhoria contínua."
                     }
                   ].map((diff, index) => (
-                    <div 
-                      key={index} 
-                      className="group text-center p-8 shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-subtle relative overflow-hidden rounded-lg animate-fade-in"
-                      style={{ animationDelay: `${index * 150}ms` }}
-                    >
+                    <div key={index} className="group text-center p-8 hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-subtle relative overflow-hidden rounded-lg">
                       <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                       <div className="relative z-10">
-                        <div className="w-20 h-20 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft group-hover:shadow-strong">
+                        <div className="w-20 h-20 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
                           <diff.icon className="h-10 w-10 text-white" />
                         </div>
                         <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -426,11 +413,7 @@ const Index = () => {
 
                 <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
                   {team.map((member, index) => (
-                    <Card 
-                      key={index} 
-                      className="group overflow-hidden border-0 bg-white animate-fade-in"
-                      style={{ animationDelay: `${index * 200}ms` }}
-                    >
+                    <Card key={index} className="group overflow-hidden hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white border-0">
                       <div className="relative">
                         <AspectRatio ratio={4 / 5}>
                           {member.photo ? (
@@ -451,7 +434,7 @@ const Index = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             aria-label={`LinkedIn de ${member.name}`}
-                            className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm hover:bg-bvbp-growth hover:text-white transition-all duration-300 shadow-soft hover:shadow-success"
+                            className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm hover:bg-bvbp-growth hover:text-white transition-all duration-300 shadow-soft"
                           >
                             <LinkedinIcon className="h-6 w-6" />
                           </a>
@@ -530,12 +513,59 @@ const Index = () => {
                   {services.slice(0, 3).map((service, index) => {
                     const IconComponent = service.icon;
                     return (
-                      <Card 
-                        key={index} 
-                        className={`relative p-8 h-full flex flex-col border-0 animate-fade-in ${service.popular ? 'ring-2 ring-bvbp-growth shadow-success' : 'shadow-soft'}`}
-                        style={{ animationDelay: `${index * 100}ms` }}
-                      >
-...
+                      <Card key={index} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
+                        {/* Badge */}
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <Badge className={service.badgeColor}>
+                            {service.badge}
+                          </Badge>
+                        </div>
+
+                        {/* Header */}
+                        <div className="text-center mb-6 pt-4">
+                          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-bvbp-growth' : 'bg-bvbp-corporate'}`}>
+                            <IconComponent className="h-8 w-8 text-white" />
+                          </div>
+
+                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                            {service.title}
+                          </h3>
+
+                          <div className="flex items-center justify-center mb-4">
+                            <div className="text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4 inline mr-1" />
+                              {service.duration}
+                            </div>
+                          </div>
+
+                          <p className="text-muted-foreground">
+                            {service.description}
+                          </p>
+                        </div>
+
+                        {/* Features */}
+                        <div className="space-y-3 mb-6 flex-1">
+                          <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
+                          {service.features.map((feature, featureIndex) => (
+                            <div key={featureIndex} className="flex items-start space-x-2">
+                              <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                              <span className="text-sm text-foreground">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Details */}
+                        <div className="bg-muted/30 p-4 rounded-lg mb-6">
+                          <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
+                          <div className="space-y-1">
+                            {service.details.map((detail, detailIndex) => (
+                              <div key={detailIndex} className="text-sm text-muted-foreground">
+                                • {detail}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
                         {/* CTA */}
                         <Button
                           variant={service.popular ? "success" : "hero"}
@@ -555,12 +585,59 @@ const Index = () => {
                   {services.slice(3, 6).map((service, index) => {
                     const IconComponent = service.icon;
                     return (
-                      <Card 
-                        key={index + 3} 
-                        className={`relative p-8 h-full flex flex-col border-0 animate-fade-in ${service.popular ? 'ring-2 ring-bvbp-growth shadow-success' : 'shadow-soft'}`}
-                        style={{ animationDelay: `${(index + 3) * 100}ms` }}
-                      >
-...
+                      <Card key={index + 3} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
+                        {/* Badge */}
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <Badge className={service.badgeColor}>
+                            {service.badge}
+                          </Badge>
+                        </div>
+
+                        {/* Header */}
+                        <div className="text-center mb-6 pt-4">
+                          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-bvbp-growth' : 'bg-bvbp-corporate'}`}>
+                            <IconComponent className="h-8 w-8 text-white" />
+                          </div>
+
+                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                            {service.title}
+                          </h3>
+
+                          <div className="flex items-center justify-center mb-4">
+                            <div className="text-sm text-muted-foreground">
+                              <Clock className="h-4 w-4 inline mr-1" />
+                              {service.duration}
+                            </div>
+                          </div>
+
+                          <p className="text-muted-foreground">
+                            {service.description}
+                          </p>
+                        </div>
+
+                        {/* Features */}
+                        <div className="space-y-3 mb-6 flex-1">
+                          <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
+                          {service.features.map((feature, featureIndex) => (
+                            <div key={featureIndex} className="flex items-start space-x-2">
+                              <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                              <span className="text-sm text-foreground">{feature}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Details */}
+                        <div className="bg-muted/30 p-4 rounded-lg mb-6">
+                          <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
+                          <div className="space-y-1">
+                            {service.details.map((detail, detailIndex) => (
+                              <div key={detailIndex} className="text-sm text-muted-foreground">
+                                • {detail}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
                         {/* CTA */}
                         <Button
                           variant={service.popular ? "success" : "hero"}
