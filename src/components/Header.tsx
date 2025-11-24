@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const navigationItems = [
     { id: "inicio", label: "Início", href: "#inicio" },
@@ -56,8 +57,28 @@ const Header = () => {
     }
   }, []);
 
+  // Scroll progress indicator
+  useEffect(() => {
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY;
+      const progress = (scrollTop / (documentHeight - windowHeight)) * 100;
+      setScrollProgress(Math.min(progress, 100));
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      {/* Scroll Progress Bar */}
+      <div 
+        className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-bvbp-corporate via-bvbp-growth to-bvbp-corporate transition-all duration-300 shadow-success"
+        style={{ width: `${scrollProgress}%` }}
+      />
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <div className="flex items-center">
