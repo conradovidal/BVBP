@@ -500,30 +500,16 @@ const Index = () => {
           {/* Quem Somos Section */}
           <section id="quem-somos" ref={aboutRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                  Quem Somos
-                </h2>
-              </div>
-
-              {/* Nossa Missão - Separada, em destaque */}
+              {/* Nossa Missão - Apenas a caixa verde com texto integrado */}
               <div className="max-w-4xl mx-auto mb-16">
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-6 shadow-success">
-                    <Target className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="font-heading text-2xl md:text-3xl font-bold text-bvbp-corporate mb-4">
-                    Nossa Missão
-                  </h3>
-                </div>
                 <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg">
-                  <p className="text-xl text-foreground leading-relaxed font-medium text-center">
+                  <p className="text-xl text-foreground leading-relaxed font-medium text-center mb-4">
                     Você volta a ter tempo para pensar no negócio, não só na operação.
                   </p>
+                  <p className="text-muted-foreground leading-relaxed text-center">
+                    A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
+                  </p>
                 </div>
-                <p className="text-muted-foreground leading-relaxed text-center mt-6">
-                  A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
-                </p>
               </div>
 
               {/* Nosso Time - Grid 2 colunas, cards verticais */}
@@ -535,14 +521,11 @@ const Index = () => {
                   <h3 className="font-heading text-2xl md:text-3xl font-bold text-bvbp-corporate mb-4">
                     Nosso Time
                   </h3>
-                  <p className="text-lg text-muted-foreground">
-                    Especialistas em organização operacional
-                  </p>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
                   {team.map((member, index) => <Card key={index} className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white">
-                      <img src={member.photo} alt={member.name} className="w-40 h-40 rounded-full object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300" />
+                      <img src={member.photo} alt={member.name} className="w-48 h-48 rounded-xl object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300" />
                       <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-2">
                         {member.name}
                       </h3>
