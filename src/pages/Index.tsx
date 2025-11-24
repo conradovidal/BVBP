@@ -541,33 +541,19 @@ const Index = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
-                  {team.map((member, index) => (
-                    <Card 
-                      key={index} 
-                      className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white"
-                    >
-                      <img 
-                        src={member.photo} 
-                        alt={member.name}
-                        className="w-40 h-40 rounded-full object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300"
-                      />
+                  {team.map((member, index) => <Card key={index} className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white">
+                      <img src={member.photo} alt={member.name} className="w-40 h-40 rounded-full object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300" />
                       <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-2">
                         {member.name}
                       </h3>
                       <p className="text-muted-foreground leading-relaxed mb-4">
                         {member.bio}
                       </p>
-                      <a 
-                        href={member.linkedin} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-bvbp-growth hover:text-bvbp-growth/80 transition-colors font-medium"
-                      >
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-bvbp-growth hover:text-bvbp-growth/80 transition-colors font-medium">
                         <LinkedinIcon className="h-5 w-5" />
                         <span>LinkedIn</span>
                       </a>
-                    </Card>
-                  ))}
+                    </Card>)}
                 </div>
               </div>
 
@@ -778,19 +764,7 @@ const Index = () => {
                   </Card>
 
                   {/* WhatsApp Button */}
-                  <Card className="p-6 bg-bvbp-growth text-white">
-                    <div className="text-center space-y-4">
-                      <h4 className="font-heading text-xl font-bold">
-                        Prefere Conversar pelo WhatsApp?
-                      </h4>
-                      <p className="text-white/90">
-                        Clique no botão abaixo para iniciar uma conversa direta conosco
-                      </p>
-                      <Button variant="outline" size="lg" className="w-full bg-white text-bvbp-growth hover:bg-white/90" onClick={() => window.open('https://wa.me/5551996535711', '_blank')}>
-                        Falar pelo WhatsApp
-                      </Button>
-                    </div>
-                  </Card>
+                  
                 </div>
               </div>
             </div>
