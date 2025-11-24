@@ -210,7 +210,8 @@ const Index = () => {
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto text-center space-y-12">
                 <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight animate-fade-in">
-                  Você está perdendo dinheiro todo mês com <span className="text-bvbp-growth-light">retrabalho e processos confusos</span>
+                  Você está <span className="text-bvbp-growth-light font-bold">perdendo dinheiro</span> todo mês com{" "}
+                  <span className="text-bvbp-growth-light font-bold">retrabalho e processos confusos</span>
                 </h1>
 
                 <h2 className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in [animation-delay:200ms]">
@@ -232,7 +233,7 @@ const Index = () => {
           </section>
 
           {/* Problem Section */}
-          <section ref={problemRef as React.RefObject<HTMLElement>} className={`py-20 bg-gradient-subtle relative transition-all duration-700 ${problemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <section ref={problemRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 relative transition-all duration-700 ${problemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="absolute top-0 left-0 w-full h-2 bg-gradient-warning"></div>
             <div className="container mx-auto px-4">
               <div className="max-w-4xl mx-auto">
@@ -261,10 +262,10 @@ const Index = () => {
                 }, {
                   title: "Dinheiro jogado fora com retrabalho",
                   description: "Processos confusos geram desperdício"
-                }].map((problem, index) => <div key={index} className="group p-6 bg-white rounded-lg hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0">
+                }].map((problem, index) => <div key={index} className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-lg border-2 border-gray-100 hover:border-bvbp-growth hover:shadow-strong transition-all duration-500 hover:-translate-y-2">
                       <div className="flex items-start space-x-4">
-                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-muted group-hover:border-bvbp-growth transition-all duration-300 bg-white">
-                          <Check className="h-6 w-6 text-bvbp-growth opacity-0 group-hover:opacity-100 transition-all duration-300 scale-0 group-hover:scale-100" />
+                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-gray-200 bg-gray-100 group-hover:bg-bvbp-growth group-hover:border-bvbp-growth transition-all duration-300">
+                          <Check className="h-6 w-6 text-gray-400 group-hover:text-white transition-all duration-300" />
                         </div>
                         <div>
                           <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -497,57 +498,58 @@ const Index = () => {
           
 
           {/* Quem Somos Section */}
-          <section id="quem-somos" ref={aboutRef as React.RefObject<HTMLElement>} className={`py-20 bg-gradient-subtle transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <section id="quem-somos" ref={aboutRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="container mx-auto px-4">
-              {/* Mission */}
-              <div className="max-w-4xl mx-auto text-center mb-20">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-8 shadow-success">
-                  <Target className="h-8 w-8 text-white" />
-                </div>
-                <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-8">
-                  Nossa Missão
+              {/* Mission & Team Unificados */}
+              <div className="text-center mb-12">
+                <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
+                  Nossa Missão e Time
                 </h2>
-                <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg">
-                  <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
-                    Você volta a ter tempo para pensar no negócio, não só na operação.
-                  </p>
-                </div>
               </div>
 
-              {/* Team */}
-              <div className="mb-20">
-                <div className="text-center mb-16">
-                  <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                    Nosso Time
-                  </h2>
-                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Conheça os especialistas que transformam visão em realidade
+              <div className="grid lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto mb-20">
+                {/* Missão */}
+                <div>
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-8 shadow-success">
+                    <Target className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg mb-6">
+                    <p className="text-xl text-foreground leading-relaxed font-medium">
+                      Você volta a ter tempo para pensar no negócio, não só na operação.
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed">
+                    A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                  {team.map((member, index) => <Card key={index} className="group overflow-hidden hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white border-0">
-                      <div className="relative">
-                        <AspectRatio ratio={4 / 5}>
-                          {member.photo ? <img src={member.photo} alt={`Foto de ${member.name}`} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" /> : <div className="w-full h-full bg-muted flex items-center justify-center">
-                              <Users className="h-16 w-16 text-muted-foreground/50" />
-                            </div>}
-                        </AspectRatio>
-                        <div className="absolute top-4 right-4">
-                          <a href={member.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`LinkedIn de ${member.name}`} className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm hover:bg-bvbp-growth hover:text-white transition-all duration-300 shadow-soft">
-                            <LinkedinIcon className="h-6 w-6" />
-                          </a>
-                        </div>
-                      </div>
-                      <div className="p-8">
-                        <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                {/* Time (cards menores, horizontais) */}
+                <div className="space-y-6">
+                  {team.map((member, index) => (
+                    <Card key={index} className="flex items-center gap-4 p-4 bg-white hover:shadow-strong transition-all duration-300 hover:-translate-y-1">
+                      <img 
+                        src={member.photo} 
+                        alt={member.name}
+                        className="w-20 h-20 rounded-full object-cover flex-shrink-0"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-1">
                           {member.name}
                         </h3>
-                        <p className="text-muted-foreground leading-relaxed text-lg">
+                        <p className="text-sm text-muted-foreground line-clamp-2">
                           {member.bio}
                         </p>
                       </div>
-                    </Card>)}
+                      <a 
+                        href={member.linkedin} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0"
+                      >
+                        <LinkedinIcon className="h-5 w-5 text-muted-foreground hover:text-bvbp-growth transition-colors" />
+                      </a>
+                    </Card>
+                  ))}
                 </div>
               </div>
 
@@ -586,7 +588,7 @@ const Index = () => {
           </section>
 
           {/* Contato Section */}
-          <section id="contato" ref={contactRef as React.RefObject<HTMLElement>} className={`py-20 bg-gradient-subtle transition-all duration-700 ${contactVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <section id="contato" ref={contactRef as React.RefObject<HTMLElement>} className={`py-20 bg-white transition-all duration-700 ${contactVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
