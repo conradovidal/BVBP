@@ -213,15 +213,15 @@ const Index = () => {
                   Você está perdendo dinheiro todo mês com <span className="text-bvbp-growth-light">retrabalho e processos confusos</span>
                 </h1>
 
-                <h2 className="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed animate-fade-in [animation-delay:200ms]">
-                  A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Seu time ganha foco e autonomia, e você para de viver apagando incêndio. Você volta a ter tempo para pensar no negócio, não só na operação.
+                <h2 className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in [animation-delay:200ms]">
+                  E isso está impedindo sua empresa de crescer.
                 </h2>
 
                 <div className="pt-8 animate-fade-in [animation-delay:400ms] flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <Button variant="success" size="xl" className="group shadow-strong bg-bvbp-growth hover:bg-bvbp-growth/90 text-white font-bold px-8 py-4 text-lg hover:scale-105 transform transition-bounce pulse" onClick={() => document.getElementById('contato')?.scrollIntoView({
                   behavior: 'smooth'
                 })}>
-                    Quero parar de perder dinheiro com retrabalho
+                    Quero parar de perder dinheiro
                   </Button>
                   <Button variant="outline-hero" size="xl" onClick={() => window.location.href = '/calculadora-roi'} className="hover:scale-105 transition-transform shadow-soft bg-white/10 hover:bg-white/20 text-white border-white/30">
                     Calculadora ROI
@@ -282,7 +282,7 @@ const Index = () => {
                   <Card className="p-8 bg-white border-0 shadow-soft">
                     <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">O custo real disso</h3>
                     <p className="text-lg text-foreground leading-relaxed mb-6">
-                      Você está perdendo dinheiro todo mês com retrabalho e processos confusos. A gente sabe como é frustrante ver o time se esforçar e, mesmo assim, as coisas não andarem.
+                      Empresas médias perdem em média 20-30% de receita com retrabalho e processos confusos.
                     </p>
                     <Button variant="success" size="lg" className="bg-bvbp-growth hover:bg-bvbp-growth/90" onClick={() => document.getElementById('contato')?.scrollIntoView({
                     behavior: 'smooth'
@@ -356,7 +356,7 @@ const Index = () => {
                   Como trabalhamos com você
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Escolha como começar. Tudo focado em parar o retrabalho e dar autonomia pro seu time.
+                  Seu time ganha foco e autonomia, e você para de viver apagando incêndio.
                 </p>
               </div>
 
@@ -507,9 +507,11 @@ const Index = () => {
                 <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-8">
                   Nossa Missão
                 </h2>
-                <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
-                  A gente sabe como é frustrante ver o time se esforçar e, mesmo assim, as coisas não andarem. Por isso, a BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Seu time ganha foco e autonomia, e você para de viver apagando incêndio. Você volta a ter tempo para pensar no negócio, não só na operação.
-                </p>
+                <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg">
+                  <p className="text-xl md:text-2xl text-foreground leading-relaxed font-medium">
+                    Você volta a ter tempo para pensar no negócio, não só na operação.
+                  </p>
+                </div>
               </div>
 
               {/* Team */}
