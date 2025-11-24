@@ -210,8 +210,8 @@ const Index = () => {
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto text-center space-y-12">
                 <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight animate-fade-in">
-                  Você está <span className="text-bvbp-growth-light font-bold">perdendo dinheiro</span> todo mês com{" "}
-                  <span className="text-bvbp-growth-light font-bold">retrabalho e processos confusos</span>
+            Você está <span className="text-bvbp-growth font-bold">perdendo dinheiro</span> todo mês com{" "}
+            <span className="text-bvbp-growth font-bold">retrabalho e processos confusos</span>
                 </h1>
 
                 <h2 className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in [animation-delay:200ms]">
@@ -500,53 +500,71 @@ const Index = () => {
           {/* Quem Somos Section */}
           <section id="quem-somos" ref={aboutRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="container mx-auto px-4">
-              {/* Mission & Team Unificados */}
               <div className="text-center mb-12">
                 <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                  Nossa Missão e Time
+                  Quem Somos
                 </h2>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-12 items-start max-w-6xl mx-auto mb-20">
-                {/* Missão */}
-                <div>
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-8 shadow-success">
+              {/* Nossa Missão - Separada, em destaque */}
+              <div className="max-w-4xl mx-auto mb-16">
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-6 shadow-success">
                     <Target className="h-8 w-8 text-white" />
                   </div>
-                  <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg mb-6">
-                    <p className="text-xl text-foreground leading-relaxed font-medium">
-                      Você volta a ter tempo para pensar no negócio, não só na operação.
-                    </p>
+                  <h3 className="font-heading text-2xl md:text-3xl font-bold text-bvbp-corporate mb-4">
+                    Nossa Missão
+                  </h3>
+                </div>
+                <div className="bg-bvbp-growth/10 border-l-4 border-bvbp-growth p-8 rounded-lg">
+                  <p className="text-xl text-foreground leading-relaxed font-medium text-center">
+                    Você volta a ter tempo para pensar no negócio, não só na operação.
+                  </p>
+                </div>
+                <p className="text-muted-foreground leading-relaxed text-center mt-6">
+                  A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
+                </p>
+              </div>
+
+              {/* Nosso Time - Grid 2 colunas, cards verticais */}
+              <div className="max-w-6xl mx-auto mb-20">
+                <div className="text-center mb-12">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-hero mb-6 shadow-soft">
+                    <Users className="h-8 w-8 text-white" />
                   </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
+                  <h3 className="font-heading text-2xl md:text-3xl font-bold text-bvbp-corporate mb-4">
+                    Nosso Time
+                  </h3>
+                  <p className="text-lg text-muted-foreground">
+                    Especialistas em organização operacional
                   </p>
                 </div>
 
-                {/* Time (cards menores, horizontais) */}
-                <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-8">
                   {team.map((member, index) => (
-                    <Card key={index} className="flex items-center gap-4 p-4 bg-white hover:shadow-strong transition-all duration-300 hover:-translate-y-1">
+                    <Card 
+                      key={index} 
+                      className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white"
+                    >
                       <img 
                         src={member.photo} 
                         alt={member.name}
-                        className="w-20 h-20 rounded-full object-cover flex-shrink-0"
+                        className="w-40 h-40 rounded-full object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300"
                       />
-                      <div className="flex-1">
-                        <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-1">
-                          {member.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {member.bio}
-                        </p>
-                      </div>
+                      <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-2">
+                        {member.name}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed mb-4">
+                        {member.bio}
+                      </p>
                       <a 
                         href={member.linkedin} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="flex-shrink-0"
+                        className="inline-flex items-center gap-2 text-bvbp-growth hover:text-bvbp-growth/80 transition-colors font-medium"
                       >
-                        <LinkedinIcon className="h-5 w-5 text-muted-foreground hover:text-bvbp-growth transition-colors" />
+                        <LinkedinIcon className="h-5 w-5" />
+                        <span>LinkedIn</span>
                       </a>
                     </Card>
                   ))}
