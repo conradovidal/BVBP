@@ -214,9 +214,7 @@ const Index = () => {
             <span className="text-bvbp-growth font-bold">retrabalho e processos confusos</span>
                 </h1>
 
-                <h2 className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed animate-fade-in [animation-delay:200ms]">
-                  E isso está impedindo sua empresa de crescer.
-                </h2>
+                
 
                 <div className="pt-8 animate-fade-in [animation-delay:400ms] flex flex-col sm:flex-row gap-6 justify-center items-center">
                   <Button variant="success" size="xl" className="group shadow-strong bg-bvbp-growth hover:bg-bvbp-growth/90 text-white font-bold px-8 py-4 text-lg hover:scale-105 transform transition-bounce pulse" onClick={() => document.getElementById('contato')?.scrollIntoView({
