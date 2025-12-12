@@ -209,12 +209,12 @@ const Index = () => {
             <div className="absolute inset-0 bg-black/5"></div>
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto text-center space-y-12">
-                <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight animate-fade-in">
-                  Você está deixando<br />
-                  <span className="text-bvbp-growth font-bold">dinheiro na mesa</span><br />
-                  todo mês devido a<br />
-                  <span className="text-bvbp-growth font-bold">planejamento</span> e <span className="text-bvbp-growth font-bold">processos</span><br />
-                  <span className="text-bvbp-growth font-bold">mal executados</span>
+                <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                  <span className="block animate-fade-in">Você está deixando</span>
+                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:150ms] opacity-0 [animation-fill-mode:forwards]">dinheiro na mesa</span>
+                  <span className="block animate-fade-in [animation-delay:300ms] opacity-0 [animation-fill-mode:forwards]">todo mês devido a</span>
+                  <span className="block animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards]"><span className="text-bvbp-growth font-bold">planejamento</span> e <span className="text-bvbp-growth font-bold">processos</span></span>
+                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards]">mal executados</span>
                 </h1>
 
                 
