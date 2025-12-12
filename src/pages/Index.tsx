@@ -213,7 +213,7 @@ const Index = () => {
                   Você está deixando<br />
                   <span className="text-bvbp-growth font-bold">dinheiro na mesa</span><br />
                   todo mês devido a<br />
-                  <span className="text-bvbp-growth font-bold">planejamento e processos</span><br />
+                  <span className="text-bvbp-growth font-bold">planejamento</span> e <span className="text-bvbp-growth font-bold">processos</span><br />
                   <span className="text-bvbp-growth font-bold">mal executados</span>
                 </h1>
 
