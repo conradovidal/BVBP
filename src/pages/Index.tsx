@@ -111,71 +111,45 @@ const Index = () => {
     description: "Entregamos processos claros e sustentáveis. Seu time ganha autonomia, não dependência."
   }];
   const services = [{
-    title: "DIAGNÓSTICO",
-    badge: "GRATUITO",
-    badgeColor: "bg-bvbp-growth text-white",
+    title: "Diagnóstico Operacional",
     duration: "1 semana",
     icon: Search,
-    description: "Mostramos onde você perde dinheiro com retrabalho e processos confusos.",
-    features: ["Conversa com o líder", "Mapeamento dos processos que mais travam", "Estimativa de quanto você perde por mês", "Relatório de 1 página com próximos passos"],
+    description: "Mapeamos onde o fluxo trava, onde o retrabalho aparece e quais são os próximos passos mais efetivos.",
+    features: ["Conversa com o líder para entender contexto e objetivo", "Mapeamento de 1 fluxo crítico de ponta a ponta", "Baseline simples, filas, retrabalho e pontos de decisão", "Plano de 2 semanas com prioridades e sequência sugerida"],
     details: ["2 a 3 encontros ao longo da semana", "Sem necessidade de envolver toda a equipe", "Entrega objetiva, sem burocracia"],
-    popular: false,
-    cta: "Quero saber onde estou perdendo dinheiro"
+    cta: "Quero mapear meu gargalo"
   }, {
-    title: "TRANSPARÊNCIA",
-    badge: "GRATUITO - LIMITADO",
-    badgeColor: "bg-gradient-to-r from-orange-500 to-red-500 text-white",
+    title: "Sprint de Otimização de Processo",
     duration: "2 semanas",
     icon: Zap,
-    description: "Mergulho em um processo crítico para mostrar exatamente onde está o problema.",
-    features: ["Entrevistas com quem faz o trabalho", "Mapeamento completo do processo", "Quanto você está perdendo nisso", "Relatório executivo"],
-    details: ["2 semanas de análise intensiva", "Relatório executivo detalhado", "Apresentação dos resultados", "Sem compromisso de continuidade"],
-    popular: false,
-    cta: "Quero entender meu processo crítico"
+    description: "Escolhemos 1 fluxo e fazemos um quick win real. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
+    features: ["Diagnóstico rápido do fluxo e seus gargalos", "Redesenho do processo com acordos e regras simples", "Ajustes no jeito de trabalhar, entrada, saída, prioridade", "Validação e acompanhamento da implementação"],
+    details: ["1 fluxo por sprint, sem tentar arrumar a empresa", "Foco em reduzir fila e retrabalho", "Resultado visível em pouco tempo"],
+    cta: "Quero destravar um fluxo"
   }, {
-    title: "VISÃO DE FUTURO",
-    badge: "ESSENCIAL",
-    badgeColor: "bg-blue-500 text-white",
-    duration: "4 semanas",
-    icon: Target,
-    description: "Redesenhamos um processo crítico e mostramos como ele deve funcionar. Seu time ganha clareza, você ganha previsibilidade.",
-    features: ["Processo redesenhado do zero", "Jeito claro de trabalhar definido", "Ganhos mensais estimados", "Plano de implementação"],
-    details: ["Foco no processo de maior impacto", "Clareza sobre próximos passos", "Base para expansão futura", "ROI transparente"],
-    popular: false,
-    cta: "Quero redesenhar meu processo"
+    title: "Configuração de Gestão e Entrega de Projetos",
+    duration: "2 semanas",
+    icon: Settings,
+    description: "Criamos o sistema mínimo para tocar projetos com cadência, papéis claros e reporting que vira decisão.",
+    features: ["Board mínimo e padrão de organização de projetos", "Cadência de ritos, alinhamentos e checkpoints", "Definição de papéis, responsabilidades e acordos", "Modelo de reporte simples para dar visibilidade"],
+    details: ["Adaptado à ferramenta que vocês já usam", "Menos status, mais clareza e decisão", "Pronto para escalar com o time"],
+    cta: "Quero organizar meus projetos"
   }, {
-    title: "IMPLEMENTAÇÃO PRÁTICA",
-    badge: "RECOMENDADO",
-    badgeColor: "bg-orange-500 text-white",
-    duration: "8 semanas",
-    icon: Wrench,
-    description: "Executamos lado a lado com seu time. Cortamos retrabalho, definimos o jeito certo de fazer, e você vê resultado em semanas.",
-    features: ["Trabalhamos junto com seu time", "Mudanças aplicadas na prática", "Acompanhamento semanal de resultados", "Time capacitado durante o processo"],
-    details: ["Execução hands-on", "Métricas claras de progresso", "Time preparado para evoluir sozinho", "Resultados visíveis rapidamente"],
-    popular: true,
-    cta: "Quero implementar agora"
+    title: "Configuração de Governança de Execução",
+    duration: "2 semanas",
+    icon: TrendingUp,
+    description: "Implementamos uma governança leve para dar ritmo, visibilidade e alinhamento sem burocracia.",
+    features: ["Rotina de planejamento e revisão com cadências claras", "Padrão de priorização e tomada de decisão", "Métricas mínimas para acompanhar progresso e gargalos", "Template de comunicação e atualização de status"],
+    details: ["Baixo custo de manutenção", "Funciona bem em time remoto e fuso diferente", "Traz previsibilidade sem engessar"],
+    cta: "Quero governança leve"
   }, {
-    title: "AUTOMAÇÃO INTELIGENTE",
-    badge: "PREMIUM",
-    badgeColor: "bg-purple-500 text-white",
-    duration: "10 semanas",
-    icon: Star,
-    description: "Tiramos trabalho manual da equipe com automação simples. Menos retrabalho, mais foco no que importa.",
-    features: ["Automações práticas implementadas", "Menos trabalho manual", "Dashboards simples para acompanhar", "Redução de erros e retrabalho"],
-    details: ["Automações que realmente funcionam", "Integração entre ferramentas", "Redução de trabalho repetitivo", "ROI por economia de tempo"],
-    popular: false,
-    cta: "Quero reduzir trabalho manual"
-  }, {
-    title: "MELHORIA CONTÍNUA",
-    badge: "PARTNER",
-    badgeColor: "bg-bvbp-corporate text-white",
-    duration: "12 semanas",
+    title: "Programa Customizado de Melhoria",
+    duration: "6 a 12 semanas",
     icon: Crown,
-    description: "Acompanhamento mensal para garantir que o time segue evoluindo sozinho. Você ganha autonomia total.",
-    features: ["Acompanhamento mensal", "Ajustes conforme o negócio cresce", "Time autônomo para melhorar sozinho", "Crescimento sustentável"],
-    details: ["Evolução contínua da operação", "Autonomia total garantida", "Processos que se ajustam ao crescimento", "Sustentabilidade de longo prazo"],
-    popular: false,
-    cta: "Quero crescer com autonomia"
+    description: "Para quando precisa ir além do quick win. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
+    features: ["Plano por ondas com escopo e sequência de execução", "Otimização de 2 a 3 fluxos críticos", "Implementação acompanhada para garantir adoção", "Capacitação do time para manter depois"],
+    details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
+    cta: "Quero um plano sob medida"
   }];
   const contactInfo = [{
     icon: MailIcon,
@@ -351,10 +325,10 @@ const Index = () => {
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                  Como trabalhamos com você
+                  Serviços
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Seu time ganha foco e autonomia, e você para de viver apagando incêndio.
+                  Ofertas enxutas para tirar gargalos do caminho e dar previsibilidade para a operação.
                 </p>
               </div>
 
@@ -363,17 +337,10 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.slice(0, 3).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
-                        {/* Badge */}
-                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <Badge className={service.badgeColor}>
-                            {service.badge}
-                          </Badge>
-                        </div>
-
+                  return <Card key={index} className="relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth">
                         {/* Header */}
-                        <div className="text-center mb-6 pt-4">
-                          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-bvbp-growth' : 'bg-bvbp-corporate'}`}>
+                        <div className="text-center mb-6">
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-bvbp-corporate">
                             <IconComponent className="h-8 w-8 text-white" />
                           </div>
 
@@ -413,30 +380,23 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant={service.popular ? "success" : "hero"} className="w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
+                        <Button variant="hero" className="w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
                       behavior: 'smooth'
                     })}>
-                          {service.cta || "Quero saber mais"}
+                          {service.cta}
                         </Button>
                       </Card>;
                 })}
                 </div>
 
-                {/* Second row - 3 cards */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {services.slice(3, 6).map((service, index) => {
+                {/* Second row - 2 cards centered */}
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  {services.slice(3, 5).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index + 3} className={`relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth ${service.popular ? 'ring-2 ring-bvbp-growth' : ''}`}>
-                        {/* Badge */}
-                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                          <Badge className={service.badgeColor}>
-                            {service.badge}
-                          </Badge>
-                        </div>
-
+                  return <Card key={index + 3} className="relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth">
                         {/* Header */}
-                        <div className="text-center mb-6 pt-4">
-                          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${service.popular ? 'bg-bvbp-growth' : 'bg-bvbp-corporate'}`}>
+                        <div className="text-center mb-6">
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-bvbp-corporate">
                             <IconComponent className="h-8 w-8 text-white" />
                           </div>
 
@@ -476,10 +436,10 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant={service.popular ? "success" : "hero"} className="w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
+                        <Button variant="hero" className="w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
                       behavior: 'smooth'
                     })}>
-                          {service.cta || "Quero saber mais"}
+                          {service.cta}
                         </Button>
                       </Card>;
                 })}
