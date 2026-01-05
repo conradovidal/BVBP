@@ -682,26 +682,26 @@ const Index = () => {
                     <div className="space-y-6">
                       {contactInfo.map((contact, index) => {
                       const IconComponent = contact.icon;
-                      return <Card key={index} className="p-6 hover:shadow-soft transition-smooth">
+                      return <a key={index} href={contact.link}>
+                          <Card className="p-6 hover:shadow-soft transition-smooth cursor-pointer group hover:border-bvbp-growth/30">
                             <div className="flex items-start space-x-4">
-                              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero">
+                              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero group-hover:scale-105 transition-transform">
                                 <IconComponent className="h-6 w-6 text-white" />
                               </div>
                               <div>
                                 <h4 className="font-semibold text-bvbp-corporate mb-1">
                                   {contact.title}
                                 </h4>
-                                {contact.link ? <a href={contact.link} className="text-lg font-medium text-foreground mb-1 whitespace-pre-line hover:text-bvbp-growth transition-colors">
-                                    {contact.info}
-                                  </a> : <p className="text-lg font-medium text-foreground mb-1 whitespace-pre-line">
-                                    {contact.info}
-                                  </p>}
-                                <p className="text-sm text-muted-foreground">
-                                  {contact.description}
+                                <p className="text-lg font-medium text-foreground mb-1">
+                                  {contact.info}
+                                </p>
+                                <p className="text-sm text-bvbp-growth font-medium group-hover:translate-x-1 transition-transform">
+                                  Clique para enviar email →
                                 </p>
                               </div>
                             </div>
-                          </Card>;
+                          </Card>
+                        </a>;
                     })}
                     </div>
                   </div>

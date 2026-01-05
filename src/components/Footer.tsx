@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { MapPin, Mail, Phone, Linkedin, Instagram, ExternalLink } from "lucide-react";
+import { MapPin, Mail, Linkedin, Instagram, ExternalLink } from "lucide-react";
 
 const Footer = () => {
   const services = [
-    "Transparência",
-    "Visão de Futuro", 
-    "Implementação Prática",
-    "Automação Inteligente",
-    "Melhoria Contínua"
+    "Diagnóstico Operacional",
+    "Sprint de Otimização de Processo", 
+    "Configuração de Gestão e Entrega de Projetos",
+    "Configuração de Governança de Execução",
+    "Programa Customizado de Melhoria"
   ];
 
   const company = [
@@ -34,23 +34,15 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-bvbp-growth" />
-                <a href="mailto:basso.vidal.bp@gmail.com" className="hover:text-bvbp-growth transition-smooth">
-                  basso.vidal.bp@gmail.com
+                <a href="mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" className="hover:text-bvbp-growth transition-smooth">
+                  Conrado Vidal - conrado@bvbp.com.br
                 </a>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-bvbp-growth" />
-                  <a href="tel:+5551996535711" className="hover:text-bvbp-growth transition-smooth">
-                    +55 51 99653-5711
-                  </a>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-bvbp-growth" />
-                  <a href="tel:+5551998991771" className="hover:text-bvbp-growth transition-smooth">
-                    +55 51 99899-1771
-                  </a>
-                </div>
+              <div className="flex items-center space-x-3">
+                <Mail className="h-5 w-5 text-bvbp-growth" />
+                <a href="mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" className="hover:text-bvbp-growth transition-smooth">
+                  Cristiano Basso - cristiano@bvbp.com.br
+                </a>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-bvbp-growth" />
