@@ -4,10 +4,10 @@ import { MapPin, Mail, Linkedin, Instagram, ExternalLink } from "lucide-react";
 const Footer = () => {
   const services = [
     "Diagnóstico Operacional",
-    "Sprint de Otimização de Processo", 
-    "Configuração de Gestão e Entrega de Projetos",
-    "Configuração de Governança de Execução",
-    "Programa Customizado de Melhoria"
+    "Otimização de Processos", 
+    "Gestão de Projetos",
+    "Governança e Execução",
+    "Programa Customizado"
   ];
 
   const company = [
@@ -76,7 +76,7 @@ const Footer = () => {
               {services.map((service, index) => (
                 <a
                   key={index}
-                  href="/servicos"
+                  href="/#servicos"
                   className="block text-white/80 hover:text-bvbp-growth transition-smooth"
                 >
                   {service}
@@ -89,13 +89,13 @@ const Footer = () => {
           <div>
             <h3 className="font-heading text-lg font-bold mb-4">Empresa</h3>
             <div className="space-y-2">
-              <a href="/sobre" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+              <a href="/#quem-somos" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
                 Sobre Nós
               </a>
-              <a href="/contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+              <a href="/#contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
                 Contato
               </a>
-              <a href="/contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+              <a href="/#contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
                 Diagnóstico Gratuito
               </a>
             </div>
@@ -119,7 +119,7 @@ const Footer = () => {
               variant="outline"
               size="lg"
               className="border-white text-white bg-transparent hover:bg-white hover:text-bvbp-growth transition-smooth"
-              onClick={() => window.location.href = '/contato'}
+              onClick={() => window.location.href = '/#contato'}
             >
               Diagnóstico Gratuito
               <ExternalLink className="h-4 w-4 ml-2" />

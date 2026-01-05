@@ -637,10 +637,7 @@ const Index = () => {
                     </h3>
 
                     <Card className="p-6">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <span className="text-2xl">📧</span>
-                        <p className="text-muted-foreground">Resposta em até 4 horas úteis</p>
-                      </div>
+              <p className="text-muted-foreground mb-4">Resposta em até 4 horas úteis</p>
                       
                       <div className="space-y-3">
                         {emails.map((item, index) => (
