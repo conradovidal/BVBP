@@ -179,20 +179,16 @@ const Index = () => {
   }];
   const contactInfo = [{
     icon: MailIcon,
-    title: "Email",
-    info: "basso.vidal.bp@gmail.com",
+    title: "Conrado Vidal",
+    info: "conrado@bvbp.com.br",
     description: "Resposta em até 4 horas úteis",
-    link: "mailto:basso.vidal.bp@gmail.com?subject=Contato%20BVBP"
+    link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP"
   }, {
-    icon: PhoneIcon,
-    title: "Telefone/WhatsApp",
-    info: "+55 51 99653-5711\n+55 51 99899-1771",
-    description: "Segunda a Sexta: 9h às 18h"
-  }, {
-    icon: MapPinIcon,
-    title: "Localização",
-    info: "Porto Alegre, RS",
-    description: "Atendimento presencial e remoto"
+    icon: MailIcon,
+    title: "Cristiano Basso",
+    info: "cristiano@bvbp.com.br",
+    description: "Resposta em até 4 horas úteis",
+    link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP"
   }];
   const benefits = ["Diagnóstico gratuito", "Resposta em até 4 horas úteis", "Sem compromisso", "Mostramos onde você está perdendo dinheiro"];
   return <>
@@ -647,12 +643,11 @@ const Index = () => {
                             <SelectValue placeholder="Selecione um serviço" />
                           </SelectTrigger>
                           <SelectContent className="bg-background border-input z-50">
-                            <SelectItem value="Diagnóstico (gratuito)">Diagnóstico (gratuito)</SelectItem>
-                            <SelectItem value="Transparência (gratuito por tempo limitado)">Transparência (gratuito por tempo limitado)</SelectItem>
-                            <SelectItem value="Visão de Futuro">Visão de Futuro</SelectItem>
-                            <SelectItem value="Implementação Prática">Implementação Prática</SelectItem>
-                            <SelectItem value="Automação Inteligente">Automação Inteligente</SelectItem>
-                            <SelectItem value="Melhoria Contínua">Melhoria Contínua</SelectItem>
+                            <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
+                            <SelectItem value="Sprint de Otimização de Processo">Sprint de Otimização de Processo</SelectItem>
+                            <SelectItem value="Configuração de Gestão e Entrega de Projetos">Configuração de Gestão e Entrega de Projetos</SelectItem>
+                            <SelectItem value="Configuração de Governança de Execução">Configuração de Governança de Execução</SelectItem>
+                            <SelectItem value="Programa Customizado de Melhoria">Programa Customizado de Melhoria</SelectItem>
                             <SelectItem value="Outro">Outro</SelectItem>
                           </SelectContent>
                         </Select>
@@ -711,45 +706,6 @@ const Index = () => {
                     </div>
                   </div>
 
-                  {/* Benefits */}
-                  <Card className="p-6 bg-bvbp-growth/10 border-bvbp-growth/20">
-                    <h4 className="font-heading text-xl font-bold text-bvbp-corporate mb-4">
-                      Por Que Falar Conosco?
-                    </h4>
-                    <div className="space-y-3">
-                      {benefits.map((benefit, index) => <div key={index} className="flex items-center space-x-3">
-                          <CheckCircle className="h-5 w-5 text-bvbp-growth flex-shrink-0" />
-                          <span className="text-foreground">{benefit}</span>
-                        </div>)}
-                    </div>
-                  </Card>
-
-                  {/* Operating Hours */}
-                  <Card className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero">
-                        <ClockIcon className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-bvbp-corporate mb-2">
-                          Horário de Atendimento
-                        </h4>
-                        <div className="space-y-1 text-sm">
-                          <p className="text-foreground">
-                            <strong>Segunda a Sexta:</strong> 9h às 18h
-                          </p>
-                          <p className="text-muted-foreground">
-                            Resposta por email em até 4 horas úteis
-                          </p>
-                          <p className="text-muted-foreground">
-                            WhatsApp: resposta no mesmo dia
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* WhatsApp Button */}
                   
                 </div>
               </div>
