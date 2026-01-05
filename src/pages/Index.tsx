@@ -151,10 +151,13 @@ const Index = () => {
     details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
     cta: "Quero um plano sob medida"
   }];
-  const emails = [
-    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
-    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" }
-  ];
+  const emails = [{
+    email: "conrado@bvbp.com.br",
+    link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP"
+  }, {
+    email: "cristiano@bvbp.com.br",
+    link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP"
+  }];
   const benefits = ["Diagnóstico gratuito", "Resposta em até 4 horas úteis", "Sem compromisso", "Mostramos onde você está perdendo dinheiro"];
   return <>
       <Helmet>
@@ -637,22 +640,13 @@ const Index = () => {
                     </h3>
 
                     <Card className="p-6">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <span className="text-2xl">📧</span>
-                        <p className="text-muted-foreground">Resposta em até 4 horas úteis</p>
-                      </div>
+                      
                       
                       <div className="space-y-3">
-                        {emails.map((item, index) => (
-                          <a 
-                            key={index}
-                            href={item.link}
-                            className="flex items-center space-x-2 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
-                          >
+                        {emails.map((item, index) => <a key={index} href={item.link} className="flex items-center space-x-2 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors">
                             <MailIcon className="h-5 w-5" />
                             <span>{item.email}</span>
-                          </a>
-                        ))}
+                          </a>)}
                       </div>
                     </Card>
                   </div>
