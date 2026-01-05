@@ -151,10 +151,19 @@ const Index = () => {
     details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
     cta: "Quero um plano sob medida"
   }];
-  const emails = [
-    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
-    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" }
-  ];
+  const contactInfo = [{
+    icon: MailIcon,
+    title: "Conrado Vidal",
+    info: "conrado@bvbp.com.br",
+    description: "Resposta em até 4 horas úteis",
+    link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP"
+  }, {
+    icon: MailIcon,
+    title: "Cristiano Basso",
+    info: "cristiano@bvbp.com.br",
+    description: "Resposta em até 4 horas úteis",
+    link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP"
+  }];
   const benefits = ["Diagnóstico gratuito", "Resposta em até 4 horas úteis", "Sem compromisso", "Mostramos onde você está perdendo dinheiro"];
   return <>
       <Helmet>
@@ -312,7 +321,7 @@ const Index = () => {
           </section>
 
           {/* Serviços Section */}
-          <section id="servicos" ref={servicesRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <section id="servicos" ref={servicesRef as React.RefObject<HTMLElement>} className={`py-20 bg-white transition-all duration-700 ${servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="container mx-auto px-4">
               <div className="text-center mb-16">
                 <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
@@ -325,20 +334,20 @@ const Index = () => {
 
               <div className="space-y-8 max-w-7xl mx-auto">
                 {/* First row - 3 cards */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.slice(0, 3).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index} className="group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl">
+                  return <Card key={index} className="group relative p-8 h-full flex flex-col hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white overflow-hidden">
                         {/* Hover overlay */}
                         <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                         
                         {/* Header */}
                         <div className="relative text-center mb-6">
-                          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
-                            <IconComponent className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
+                            <IconComponent className="h-8 w-8 text-white" />
                           </div>
 
-                          <h3 className="font-heading text-xl md:text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
+                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
                             {service.title}
                           </h3>
 
@@ -384,20 +393,20 @@ const Index = () => {
                 </div>
 
                 {/* Second row - 2 cards centered */}
-                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                   {services.slice(3, 5).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index + 3} className="group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl">
+                  return <Card key={index + 3} className="group relative p-8 h-full flex flex-col hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white overflow-hidden">
                         {/* Hover overlay */}
                         <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                         
                         {/* Header */}
                         <div className="relative text-center mb-6">
-                          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
-                            <IconComponent className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
+                            <IconComponent className="h-8 w-8 text-white" />
                           </div>
 
-                          <h3 className="font-heading text-xl md:text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
+                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
                             {service.title}
                           </h3>
 
@@ -630,35 +639,7 @@ const Index = () => {
                 </div>
 
                 {/* Contact Information */}
-                <div className="space-y-8">
-                  <div>
-                    <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-6">
-                      Fale Direto Conosco
-                    </h3>
-
-                    <Card className="p-6">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <span className="text-2xl">📧</span>
-                        <p className="text-muted-foreground">Resposta em até 4 horas úteis</p>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        {emails.map((item, index) => (
-                          <a 
-                            key={index}
-                            href={item.link}
-                            className="flex items-center space-x-2 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
-                          >
-                            <MailIcon className="h-5 w-5" />
-                            <span>{item.email}</span>
-                          </a>
-                        ))}
-                      </div>
-                    </Card>
-                  </div>
-
-                  
-                </div>
+                
               </div>
             </div>
           </section>
