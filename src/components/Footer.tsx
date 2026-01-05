@@ -133,7 +133,7 @@ const Footer = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row items-center justify-between text-sm text-white/60">
             <div>
-              © 2024 BVBP - Basso & Vidal Business Partners. Todos os direitos reservados.
+              © 2026 BVBP - Basso & Vidal Business Partners. Todos os direitos reservados.
             </div>
             <div className="mt-2 md:mt-0">
               <span>Feito com</span> <span className="text-red-400">♥</span> <span>em Porto Alegre</span>
