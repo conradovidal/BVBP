@@ -337,14 +337,17 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.slice(0, 3).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index} className="relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth">
+                  return <Card key={index} className="group relative p-8 h-full flex flex-col hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white overflow-hidden">
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
+                        
                         {/* Header */}
-                        <div className="text-center mb-6">
-                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-bvbp-corporate">
+                        <div className="relative text-center mb-6">
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
                             <IconComponent className="h-8 w-8 text-white" />
                           </div>
 
-                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
                             {service.title}
                           </h3>
 
@@ -361,7 +364,7 @@ const Index = () => {
                         </div>
 
                         {/* Features */}
-                        <div className="space-y-3 mb-6 flex-1">
+                        <div className="relative space-y-3 mb-6 flex-1">
                           <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
                           {service.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-start space-x-2">
                               <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
@@ -370,7 +373,7 @@ const Index = () => {
                         </div>
 
                         {/* Details */}
-                        <div className="bg-muted/30 p-4 rounded-lg mb-6">
+                        <div className="relative bg-muted/30 p-4 rounded-lg mb-6">
                           <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
                           <div className="space-y-1">
                             {service.details.map((detail, detailIndex) => <div key={detailIndex} className="text-sm text-muted-foreground">
@@ -380,7 +383,7 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant="hero" className="w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
+                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
                       behavior: 'smooth'
                     })}>
                           {service.cta}
@@ -393,14 +396,17 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                   {services.slice(3, 5).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index + 3} className="relative p-8 h-full flex flex-col hover:shadow-strong transition-smooth">
+                  return <Card key={index + 3} className="group relative p-8 h-full flex flex-col hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white overflow-hidden">
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
+                        
                         {/* Header */}
-                        <div className="text-center mb-6">
-                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-bvbp-corporate">
+                        <div className="relative text-center mb-6">
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
                             <IconComponent className="h-8 w-8 text-white" />
                           </div>
 
-                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2">
+                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
                             {service.title}
                           </h3>
 
@@ -417,7 +423,7 @@ const Index = () => {
                         </div>
 
                         {/* Features */}
-                        <div className="space-y-3 mb-6 flex-1">
+                        <div className="relative space-y-3 mb-6 flex-1">
                           <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
                           {service.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-start space-x-2">
                               <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
@@ -426,7 +432,7 @@ const Index = () => {
                         </div>
 
                         {/* Details */}
-                        <div className="bg-muted/30 p-4 rounded-lg mb-6">
+                        <div className="relative bg-muted/30 p-4 rounded-lg mb-6">
                           <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
                           <div className="space-y-1">
                             {service.details.map((detail, detailIndex) => <div key={detailIndex} className="text-sm text-muted-foreground">
@@ -436,7 +442,7 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant="hero" className="w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
+                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
                       behavior: 'smooth'
                     })}>
                           {service.cta}
