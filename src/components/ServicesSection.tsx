@@ -1,108 +1,104 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, DollarSign, Star, Zap, TrendingUp, Crown, Search } from "lucide-react";
+import { CheckCircle, Clock, Zap, TrendingUp, Crown, Search, Settings } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
     {
-      title: "DIAGNÓSTICO",
-      badge: "GRATUITO",
-      badgeColor: "bg-bvbp-growth text-white",
+      title: "Diagnóstico Operacional",
       duration: "1 semana",
       icon: Search,
-      description: "Clareza inicial sobre os principais gargalos e perdas da operação. Em apenas uma semana com o líder, identificamos dores críticas e entregamos ações rápidas para começar a recuperar eficiência.",
+      description: "Mapeamos onde o fluxo trava, onde o retrabalho aparece e quais são os próximos passos mais efetivos.",
       features: [
-        "Conversa estruturada com o líder/tomador de decisão",
-        "Levantamento e priorização dos processos críticos",
-        "Estimativa de perdas (tempo e custo)",
-        "Relatório executivo de 1 página com Top 5 dores e 3 Quick Wins"
+        "Conversa com o líder para entender contexto e objetivo",
+        "Mapeamento de 1 fluxo crítico de ponta a ponta",
+        "Baseline simples, filas, retrabalho e pontos de decisão",
+        "Plano de 2 semanas com prioridades e sequência sugerida"
       ],
       details: [
-        "2 a 3 encontros curtos ao longo da semana",
+        "2 a 3 encontros ao longo da semana",
         "Sem necessidade de envolver toda a equipe",
-        "Entrega objetiva, sem burocracia",
-        "Base para decidir próximos passos (Transparência, Visão de Futuro, etc.)"
+        "Entrega objetiva, sem burocracia"
       ],
-      cta: "Quero meu Diagnóstico Gratuito",
-      popular: false
+      cta: "Quero mapear meu gargalo"
     },
     {
-      title: "TRANSPARÊNCIA",
-      badge: "GRATUITO - LIMITADO",
-      badgeColor: "bg-bvbp-growth text-white",
+      title: "Sprint de Otimização de Processo",
       duration: "2 semanas",
       icon: Zap,
-      description: "Diagnóstico inicial sem custos",
+      description: "Escolhemos 1 fluxo e fazemos um quick win real. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
       features: [
-        "Entrevistas com liderança e equipe-chave",
-        "Mapeamento completo dos processos críticos",
-        "Relatório executivo com gaps e oportunidades"
+        "Diagnóstico rápido do fluxo e seus gargalos",
+        "Redesenho do processo com acordos e regras simples",
+        "Ajustes no jeito de trabalhar, entrada, saída, prioridade",
+        "Validação e acompanhamento da implementação"
       ],
-      cta: "Começar com Transparência",
-      popular: false
+      details: [
+        "1 fluxo por sprint, sem tentar arrumar a empresa",
+        "Foco em reduzir fila e retrabalho",
+        "Resultado visível em pouco tempo"
+      ],
+      cta: "Quero destravar um fluxo"
     },
     {
-      title: "VISÃO DE FUTURO",
-      badge: "ESSENCIAL",
-      badgeColor: "bg-blue-500 text-white",
-      duration: "4 semanas",
+      title: "Configuração de Gestão e Entrega de Projetos",
+      duration: "2 semanas",
+      icon: Settings,
+      description: "Criamos o sistema mínimo para tocar projetos com cadência, papéis claros e reporting que vira decisão.",
+      features: [
+        "Board mínimo e padrão de organização de projetos",
+        "Cadência de ritos, alinhamentos e checkpoints",
+        "Definição de papéis, responsabilidades e acordos",
+        "Modelo de reporte simples para dar visibilidade"
+      ],
+      details: [
+        "Adaptado à ferramenta que vocês já usam",
+        "Menos status, mais clareza e decisão",
+        "Pronto para escalar com o time"
+      ],
+      cta: "Quero organizar meus projetos"
+    },
+    {
+      title: "Configuração de Governança de Execução",
+      duration: "2 semanas",
       icon: TrendingUp,
-      description: "Redesenho de processos críticos e definição do estado futuro",
+      description: "Implementamos uma governança leve para dar ritmo, visibilidade e alinhamento sem burocracia.",
       features: [
-        "Redesenho de processos críticos",
-        "Definição do estado futuro",
-        "Clareza sobre ganhos e roadmap"
+        "Rotina de planejamento e revisão com cadências claras",
+        "Padrão de priorização e tomada de decisão",
+        "Métricas mínimas para acompanhar progresso e gargalos",
+        "Template de comunicação e atualização de status"
       ],
-      cta: "Desenhar minha Visão de Futuro",
-      popular: false
+      details: [
+        "Baixo custo de manutenção",
+        "Funciona bem em time remoto e fuso diferente",
+        "Traz previsibilidade sem engessar"
+      ],
+      cta: "Quero governança leve"
     },
     {
-      title: "IMPLEMENTAÇÃO PRÁTICA",
-      badge: "RECOMENDADO",
-      badgeColor: "bg-orange-500 text-white",
-      duration: "8 semanas",
-      icon: Star,
-      description: "Execução lado a lado, implementação das mudanças",
-      features: [
-        "Execução lado a lado com a equipe",
-        "Implementação das mudanças na prática",
-        "Métricas e acompanhamento contínuo"
-      ],
-      cta: "Avançar com Implementação Prática",
-      popular: true
-    },
-    {
-      title: "AUTOMAÇÃO INTELIGENTE",
-      badge: "PREMIUM",
-      badgeColor: "bg-purple-500 text-white",
-      duration: "10 semanas",
-      icon: Star,
-      description: "Introdução de automações e integração tecnológica",
-      features: [
-        "Automações simples implementadas",
-        "Integração entre sistemas",
-        "Dashboards de acompanhamento"
-      ],
-      cta: "Aplicar Automação Inteligente",
-      popular: false
-    },
-    {
-      title: "MELHORIA CONTÍNUA",
-      badge: "PARTNER",
-      badgeColor: "bg-gradient-hero text-white",
-      duration: "12 semanas",
+      title: "Programa Customizado de Melhoria",
+      duration: "6 a 12 semanas",
       icon: Crown,
-      description: "Acompanhamento recorrente e garantia de sustentabilidade",
+      description: "Para quando precisa ir além do quick win. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
       features: [
-        "Acompanhamento recorrente mensal",
-        "Ajustes e evolução de processos",
-        "Garantia de sustentabilidade"
+        "Plano por ondas com escopo e sequência de execução",
+        "Otimização de 2 a 3 fluxos críticos",
+        "Implementação acompanhada para garantir adoção",
+        "Capacitação do time para manter depois"
       ],
-      cta: "Investir em Melhoria Contínua",
-      popular: false
+      details: [
+        "Entrada via Diagnóstico Operacional",
+        "Escopo controlado, sem virar infinito",
+        "Foco em resultado prático e sustentação"
+      ],
+      cta: "Quero um plano sob medida"
     }
   ];
+
+  const scrollToContact = () => {
+    document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section id="servicos" className="py-16 bg-gradient-subtle">
@@ -110,16 +106,15 @@ const ServicesSection = () => {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
-            Nossos Serviços (Jornada Modular)
+            Serviços
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Escolha o nível de transformação ideal para sua empresa. Todos os serviços incluem 
-            nossa garantia de resultados mensuráveis
+            Ofertas enxutas para tirar gargalos do caminho e dar previsibilidade para a operação.
           </p>
         </div>
 
         {/* Services Grid */}
-        <div className="space-y-8 mb-12">
+        <div className="space-y-8">
           {/* First row - 3 cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.slice(0, 3).map((service, index) => {
@@ -127,22 +122,11 @@ const ServicesSection = () => {
               return (
                 <Card 
                   key={index} 
-                  className={`relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth ${
-                    service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
-                  }`}
+                  className="relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth"
                 >
-                  {/* Badge */}
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className={service.badgeColor}>
-                      {service.badge}
-                    </Badge>
-                  </div>
-
                   {/* Header */}
-                  <div className="text-center mb-6 pt-4">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full mb-4 ${
-                      service.popular ? 'bg-bvbp-growth' : 'bg-gradient-hero'
-                    }`}>
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full bg-gradient-hero mb-4">
                       <IconComponent className="h-6 w-6 text-white" />
                     </div>
                     
@@ -160,22 +144,37 @@ const ServicesSection = () => {
                     </p>
                   </div>
 
-                  {/* Features */}
-                  <div className="flex-1 space-y-3 mb-6">
-                    {service.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-start space-x-2">
-                        <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-foreground">{feature}</span>
-                      </div>
-                    ))}
+                  {/* O que está incluído */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-bvbp-corporate mb-2">O que está incluído</h4>
+                    <div className="space-y-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-start space-x-2">
+                          <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-foreground">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Detalhes */}
+                  <div className="flex-1 mb-6">
+                    <h4 className="text-sm font-semibold text-bvbp-corporate mb-2">Detalhes</h4>
+                    <div className="space-y-2">
+                      {service.details.map((detail, detailIndex) => (
+                        <div key={detailIndex} className="flex items-start space-x-2">
+                          <span className="text-sm text-muted-foreground">• {detail}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* CTA */}
                   <Button 
-                    variant={service.popular ? "success" : "hero"} 
-                    className="w-full px-4 py-2 text-center"
+                    variant="hero" 
+                    className="w-full"
                     size="lg"
-                    onClick={() => window.location.href = '/contato'}
+                    onClick={scrollToContact}
                   >
                     {service.cta}
                   </Button>
@@ -184,29 +183,18 @@ const ServicesSection = () => {
             })}
           </div>
 
-          {/* Second row - 2 cards */}
+          {/* Second row - 2 cards centered */}
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {services.slice(3, 5).map((service, index) => {
               const IconComponent = service.icon;
               return (
                 <Card 
                   key={index + 3} 
-                  className={`relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth ${
-                    service.popular ? 'ring-2 ring-bvbp-growth scale-105' : ''
-                  }`}
+                  className="relative p-6 h-full flex flex-col hover:shadow-strong transition-smooth"
                 >
-                  {/* Badge */}
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className={service.badgeColor}>
-                      {service.badge}
-                    </Badge>
-                  </div>
-
                   {/* Header */}
-                  <div className="text-center mb-6 pt-4">
-                    <div className={`inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full mb-4 ${
-                      service.popular ? 'bg-bvbp-growth' : 'bg-gradient-hero'
-                    }`}>
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full bg-gradient-hero mb-4">
                       <IconComponent className="h-6 w-6 text-white" />
                     </div>
                     
@@ -224,22 +212,37 @@ const ServicesSection = () => {
                     </p>
                   </div>
 
-                  {/* Features */}
-                  <div className="flex-1 space-y-3 mb-6">
-                    {service.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-start space-x-2">
-                        <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-foreground">{feature}</span>
-                      </div>
-                    ))}
+                  {/* O que está incluído */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-bvbp-corporate mb-2">O que está incluído</h4>
+                    <div className="space-y-2">
+                      {service.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-start space-x-2">
+                          <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-foreground">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Detalhes */}
+                  <div className="flex-1 mb-6">
+                    <h4 className="text-sm font-semibold text-bvbp-corporate mb-2">Detalhes</h4>
+                    <div className="space-y-2">
+                      {service.details.map((detail, detailIndex) => (
+                        <div key={detailIndex} className="flex items-start space-x-2">
+                          <span className="text-sm text-muted-foreground">• {detail}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* CTA */}
                   <Button 
-                    variant={service.popular ? "success" : "hero"} 
-                    className="w-full px-4 py-2 text-center"
+                    variant="hero" 
+                    className="w-full"
                     size="lg"
-                    onClick={() => window.location.href = '/contato'}
+                    onClick={scrollToContact}
                   >
                     {service.cta}
                   </Button>
@@ -247,53 +250,6 @@ const ServicesSection = () => {
               );
             })}
           </div>
-        </div>
-
-        {/* ROI Guarantee */}
-        <div className="max-w-3xl mx-auto">
-          <Card className="p-8 bg-bvbp-growth/10 border-bvbp-growth/20">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 aspect-square rounded-full bg-bvbp-growth mb-4">
-                <DollarSign className="h-8 w-8 text-white" />
-              </div>
-              
-              <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">
-                Garantia de ROI
-              </h3>
-              
-              <p className="text-foreground mb-6">
-                <strong>Se não identificarmos pelo menos R$ 30.000 em oportunidades de economia</strong> 
-                no diagnóstico gratuito, nem cobramos o projeto. É nossa garantia de que só trabalhamos 
-                com empresas onde podemos gerar valor real.
-              </p>
-              
-              <div className="grid md:grid-cols-3 gap-4 mb-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-bvbp-growth mb-1">300%+</div>
-                  <div className="text-sm text-muted-foreground">ROI Médio Primeiro Ano</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-bvbp-growth mb-1">60 dias</div>
-                  <div className="text-sm text-muted-foreground">Primeiros Resultados</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-bvbp-growth mb-1">90 dias</div>
-                  <div className="text-sm text-muted-foreground">Autonomia Completa</div>
-                </div>
-              </div>
-
-              <Button variant="hero" size="xl" onClick={() => window.location.href = '/contato'}>
-                COMEÇAR COM DIAGNÓSTICO GRATUITO
-              </Button>
-            </div>
-          </Card>
-        </div>
-
-        {/* Footer Note */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-muted-foreground">
-            * Estimativas indicativas. Confirmadas no diagnóstico e variam por setor, porte e maturidade de processos.
-          </p>
         </div>
       </div>
     </section>
