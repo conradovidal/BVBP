@@ -151,19 +151,10 @@ const Index = () => {
     details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
     cta: "Quero um plano sob medida"
   }];
-  const contactInfo = [{
-    icon: MailIcon,
-    title: "Conrado Vidal",
-    info: "conrado@bvbp.com.br",
-    description: "Resposta em até 4 horas úteis",
-    link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP"
-  }, {
-    icon: MailIcon,
-    title: "Cristiano Basso",
-    info: "cristiano@bvbp.com.br",
-    description: "Resposta em até 4 horas úteis",
-    link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP"
-  }];
+  const emails = [
+    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
+    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" }
+  ];
   const benefits = ["Diagnóstico gratuito", "Resposta em até 4 horas úteis", "Sem compromisso", "Mostramos onde você está perdendo dinheiro"];
   return <>
       <Helmet>
@@ -645,31 +636,25 @@ const Index = () => {
                       Fale Direto Conosco
                     </h3>
 
-                    <div className="space-y-6">
-                      {contactInfo.map((contact, index) => {
-                      const IconComponent = contact.icon;
-                      return <a key={index} href={contact.link}>
-                          <Card className="p-6 hover:shadow-soft transition-smooth cursor-pointer group hover:border-bvbp-growth/30">
-                            <div className="flex items-start space-x-4">
-                              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-hero group-hover:scale-105 transition-transform">
-                                <IconComponent className="h-6 w-6 text-white" />
-                              </div>
-                              <div>
-                                <h4 className="font-semibold text-bvbp-corporate mb-1">
-                                  {contact.title}
-                                </h4>
-                                <p className="text-lg font-medium text-foreground mb-1">
-                                  {contact.info}
-                                </p>
-                                <p className="text-sm text-bvbp-growth font-medium group-hover:translate-x-1 transition-transform">
-                                  Clique para enviar email →
-                                </p>
-                              </div>
-                            </div>
-                          </Card>
-                        </a>;
-                    })}
-                    </div>
+                    <Card className="p-6">
+                      <div className="flex items-center space-x-3 mb-4">
+                        <span className="text-2xl">📧</span>
+                        <p className="text-muted-foreground">Resposta em até 4 horas úteis</p>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {emails.map((item, index) => (
+                          <a 
+                            key={index}
+                            href={item.link}
+                            className="flex items-center space-x-2 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
+                          >
+                            <MailIcon className="h-5 w-5" />
+                            <span>{item.email}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </Card>
                   </div>
 
                   

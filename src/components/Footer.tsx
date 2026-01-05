@@ -35,13 +35,13 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-bvbp-growth" />
                 <a href="mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" className="hover:text-bvbp-growth transition-smooth">
-                  Conrado Vidal - conrado@bvbp.com.br
+                  conrado@bvbp.com.br
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-bvbp-growth" />
                 <a href="mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" className="hover:text-bvbp-growth transition-smooth">
-                  Cristiano Basso - cristiano@bvbp.com.br
+                  cristiano@bvbp.com.br
                 </a>
               </div>
               <div className="flex items-center space-x-3">
