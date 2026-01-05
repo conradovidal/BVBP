@@ -64,14 +64,14 @@ const Header = () => {
           <a href="/" className="font-heading text-2xl font-bold text-bvbp-corporate hover:text-bvbp-growth transition-smooth">
             BVBP
           </a>
-          <div className="hidden md:block text-xs leading-tight text-foreground/80 ml-3">
+          <div className="hidden lg:block text-xs leading-tight text-foreground/80 ml-3">
             <div>Basso & Vidal</div>
             <div>Business Partners</div>
           </div>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center">
+        <nav className="hidden lg:flex items-center">
           <Tabs
             tabs={navigationItems}
             activeTab={navigationItems[activeTab]?.id}
@@ -90,7 +90,7 @@ const Header = () => {
         </nav>
 
         {/* CTA Button */}
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
         <div className="flex items-center gap-3">
           <Button 
             variant="outline"
@@ -119,7 +119,7 @@ const Header = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden p-2"
+          className="lg:hidden p-2"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -129,7 +129,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t bg-background">
+        <div className="lg:hidden border-t bg-background">
           <nav className="container mx-auto px-4 py-4 space-y-4">
             {navigationItems.map((item) => (
               <a
