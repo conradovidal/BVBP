@@ -130,12 +130,13 @@ const Index = () => {
     link: "/sprint-otimizacao"
   }, {
     title: "Configuração de Gestão e Entrega de Projetos",
-    duration: "2 semanas",
+    duration: "3-4 semanas",
     icon: Settings,
     description: "Criamos o sistema mínimo para tocar projetos com cadência, papéis claros e reporting que vira decisão.",
     features: ["Board mínimo e padrão de organização de projetos", "Cadência de ritos, alinhamentos e checkpoints", "Definição de papéis, responsabilidades e acordos", "Modelo de reporte simples para dar visibilidade"],
     details: ["Adaptado à ferramenta que vocês já usam", "Menos status, mais clareza e decisão", "Pronto para escalar com o time"],
-    cta: "Quero organizar meus projetos"
+    cta: "Quero organizar meus projetos",
+    link: "/gestao-projetos"
   }, {
     title: "Configuração de Governança de Execução",
     duration: "2 semanas",
