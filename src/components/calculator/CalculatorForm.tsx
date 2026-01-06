@@ -50,9 +50,9 @@ const sliderPositionToValue = (position: number, min: number, max: number) => {
 
 // Slider configs
 const sliderConfigs = {
-  teamSize: { min: 1, max: 50, marks: [1, 5, 10, 20, 50] },
-  reworkHours: { min: 1, max: 20, marks: [1, 3, 5, 10, 20] },
-  meetingHours: { min: 1, max: 10, marks: [1, 2, 4, 6, 10] }
+  teamSize: { min: 1, max: 50 },
+  reworkHours: { min: 1, max: 20 },
+  meetingHours: { min: 1, max: 10 }
 };
 
 const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }: CalculatorFormProps) => {
@@ -152,24 +152,10 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
             step={1}
             className="cursor-pointer"
           />
-          {/* Marks - positioned using logarithmic scale */}
-          <div className="relative mt-2 h-5">
-            {config.marks.map((mark) => {
-              const position = valueToSliderPosition(mark, config.min, config.max);
-              return (
-                <span
-                  key={mark}
-                  className={`absolute text-xs transform -translate-x-1/2 ${
-                    value === mark 
-                      ? 'text-bvbp-growth font-semibold' 
-                      : 'text-muted-foreground'
-                  }`}
-                  style={{ left: `${position}%` }}
-                >
-                  {mark}
-                </span>
-              );
-            })}
+          {/* Marks - apenas início e fim */}
+          <div className="flex justify-between mt-2 px-1">
+            <span className="text-xs text-muted-foreground">{config.min}</span>
+            <span className="text-xs text-muted-foreground">{config.max}</span>
           </div>
         </div>
       </div>
