@@ -153,7 +153,8 @@ const Index = () => {
     description: "Para quando precisa ir além do quick win. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
     features: ["Plano por ondas com escopo e sequência de execução", "Otimização de 2 a 3 fluxos críticos", "Implementação acompanhada para garantir adoção", "Capacitação do time para manter depois"],
     details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
-    cta: "Quero um plano sob medida"
+    cta: "Quero um plano sob medida",
+    link: "/programa-customizado"
   }];
   const emails = [
     { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
