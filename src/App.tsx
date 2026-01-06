@@ -7,6 +7,7 @@ import { HelmetProvider } from "react-helmet-async";
 import Index from "./pages/Index";
 import CalculatorPage from "./pages/CalculatorPage";
 import DiagnosticoOperacionalPage from "./pages/DiagnosticoOperacionalPage";
+import SprintOtimizacaoPage from "./pages/SprintOtimizacaoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/calculadora-roi" element={<CalculatorPage />} />
             <Route path="/diagnostico-operacional" element={<DiagnosticoOperacionalPage />} />
+            <Route path="/sprint-otimizacao" element={<SprintOtimizacaoPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
