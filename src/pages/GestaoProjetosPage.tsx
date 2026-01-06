@@ -39,6 +39,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+import { Link } from "react-router-dom";
 
 const GestaoProjetosPage = () => {
   const { toast } = useToast();
@@ -162,10 +163,12 @@ const GestaoProjetosPage = () => {
     {
       title: "Retainer de Execução e Governança",
       description: "Acompanhamento contínuo para manter disciplina e evoluir sem virar burocracia",
+      link: "/retainer-governanca",
     },
     {
       title: "Sprints de Otimização Pontuais",
       description: "Otimizar fluxos específicos após o sistema de execução estar funcionando",
+      link: "/sprint-otimizacao",
     },
   ];
 
@@ -412,17 +415,22 @@ const GestaoProjetosPage = () => {
             </p>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {nextSteps.map((step, index) => (
-                <Card key={index} className="p-6">
-                  <div className="flex items-start gap-4">
-                    <ArrowRight className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
-                    <div>
-                      <h3 className="font-heading font-semibold text-foreground mb-2">
-                        {step.title}
-                      </h3>
-                      <p className="text-muted-foreground text-sm">{step.description}</p>
+                <Link key={index} to={step.link}>
+                  <Card className="p-6 h-full hover:border-primary/50 hover:shadow-md transition-all cursor-pointer">
+                    <div className="flex items-start gap-4">
+                      <ArrowRight className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-heading font-semibold text-foreground mb-2">
+                          {step.title}
+                        </h3>
+                        <p className="text-muted-foreground text-sm">{step.description}</p>
+                        <span className="text-sm text-primary font-medium mt-2 inline-flex items-center gap-1">
+                          Ver mais <ArrowRight className="w-4 h-4" />
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Card>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>

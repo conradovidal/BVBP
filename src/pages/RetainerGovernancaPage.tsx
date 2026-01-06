@@ -40,6 +40,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+import { Link } from "react-router-dom";
 
 const RetainerGovernancaPage = () => {
   const { toast } = useToast();
@@ -161,10 +162,12 @@ const RetainerGovernancaPage = () => {
     {
       title: "Sprints de Otimização Adicionais",
       description: "Otimizar fluxos específicos que surgirem como gargalos",
+      link: "/sprint-otimizacao",
     },
     {
       title: "Melhorias Pontuais no Sistema",
       description: "Evoluir o sistema de execução conforme a empresa cresce",
+      link: null,
     },
   ];
 
@@ -436,8 +439,8 @@ const RetainerGovernancaPage = () => {
               O retainer mantém a disciplina — e cria espaço para evoluções pontuais conforme a empresa cresce.
             </p>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {nextSteps.map((step, index) => (
-                <Card key={index} className="p-6">
+              {nextSteps.map((step, index) => {
+                const content = (
                   <div className="flex items-start gap-4">
                     <ArrowRight className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
                     <div>
@@ -445,10 +448,27 @@ const RetainerGovernancaPage = () => {
                         {step.title}
                       </h3>
                       <p className="text-muted-foreground text-sm">{step.description}</p>
+                      {step.link && (
+                        <span className="text-sm text-primary font-medium mt-2 inline-flex items-center gap-1">
+                          Ver mais <ArrowRight className="w-4 h-4" />
+                        </span>
+                      )}
                     </div>
                   </div>
-                </Card>
-              ))}
+                );
+
+                return step.link ? (
+                  <Link key={index} to={step.link}>
+                    <Card className="p-6 h-full hover:border-primary/50 hover:shadow-md transition-all cursor-pointer">
+                      {content}
+                    </Card>
+                  </Link>
+                ) : (
+                  <Card key={index} className="p-6">
+                    {content}
+                  </Card>
+                );
+              })}
             </div>
           </div>
         </section>

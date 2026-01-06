@@ -19,6 +19,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+import { Link } from "react-router-dom";
 
 const SprintOtimizacaoPage = () => {
   const { toast } = useToast();
@@ -119,9 +120,9 @@ const SprintOtimizacaoPage = () => {
   ];
 
   const proximosPassos = [
-    { title: "Outro Sprint", description: "Para um segundo fluxo crítico que precisa de atenção" },
-    { title: "Configuração de Gestão de Projetos", description: "Estruturar como a empresa toca projetos no geral" },
-    { title: "Programa Customizado", description: "Melhoria contínua de múltiplos fluxos ao longo do tempo" },
+    { title: "Outro Sprint", description: "Para um segundo fluxo crítico que precisa de atenção", link: null },
+    { title: "Configuração de Gestão de Projetos", description: "Estruturar como a empresa toca projetos no geral", link: "/gestao-projetos" },
+    { title: "Programa Customizado", description: "Melhoria contínua de múltiplos fluxos ao longo do tempo", link: "/programa-customizado" },
   ];
 
   const faqs = [
@@ -422,8 +423,8 @@ const SprintOtimizacaoPage = () => {
               </p>
 
               <div className="grid md:grid-cols-3 gap-6">
-                {proximosPassos.map((step, index) => (
-                  <Card key={index} className="p-6">
+                {proximosPassos.map((step, index) => {
+                  const content = (
                     <div className="flex items-start gap-4">
                       <ArrowRight className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                       <div>
@@ -431,10 +432,27 @@ const SprintOtimizacaoPage = () => {
                           {step.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">{step.description}</p>
+                        {step.link && (
+                          <span className="text-sm text-primary font-medium mt-2 inline-flex items-center gap-1">
+                            Ver mais <ArrowRight className="w-4 h-4" />
+                          </span>
+                        )}
                       </div>
                     </div>
-                  </Card>
-                ))}
+                  );
+
+                  return step.link ? (
+                    <Link key={index} to={step.link}>
+                      <Card className="p-6 h-full hover:border-primary/50 hover:shadow-md transition-all cursor-pointer">
+                        {content}
+                      </Card>
+                    </Link>
+                  ) : (
+                    <Card key={index} className="p-6">
+                      {content}
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           </div>
