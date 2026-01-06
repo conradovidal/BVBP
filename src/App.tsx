@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import CalculatorPage from "./pages/CalculatorPage";
 import DiagnosticoOperacionalPage from "./pages/DiagnosticoOperacionalPage";
 import SprintOtimizacaoPage from "./pages/SprintOtimizacaoPage";
+import GestaoProjetosPage from "./pages/GestaoProjetosPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/calculadora-roi" element={<CalculatorPage />} />
             <Route path="/diagnostico-operacional" element={<DiagnosticoOperacionalPage />} />
             <Route path="/sprint-otimizacao" element={<SprintOtimizacaoPage />} />
+            <Route path="/gestao-projetos" element={<GestaoProjetosPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
