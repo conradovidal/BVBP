@@ -5,7 +5,7 @@ const CalculatorHero = () => {
     <PageHero
       title="Calculadora de Perdas Operacionais"
       subtitle="Quanto sua operação está custando em ineficiências?"
-      description="Descubra em minutos quanto sua empresa pode estar perdendo — estimativa simples, direta e sem compromisso."
+      description="Descubra em minutos quanto sua empresa pode estar perdendo."
     />
   );
 };
