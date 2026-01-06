@@ -76,7 +76,7 @@ const Footer = () => {
               {services.map((service, index) => (
                 <a
                   key={index}
-                  href="/#servicos"
+                  href={service === "Diagnóstico Operacional" ? "/diagnostico-operacional" : "/#servicos"}
                   className="block text-white/80 hover:text-bvbp-growth transition-smooth"
                 >
                   {service}
