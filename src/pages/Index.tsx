@@ -117,7 +117,8 @@ const Index = () => {
     description: "Mapeamos onde o fluxo trava, onde o retrabalho aparece e quais são os próximos passos mais efetivos.",
     features: ["Conversa com o líder para entender contexto e objetivo", "Mapeamento de 1 fluxo crítico de ponta a ponta", "Baseline simples, filas, retrabalho e pontos de decisão", "Plano de 2 semanas com prioridades e sequência sugerida"],
     details: ["2 a 3 encontros ao longo da semana", "Sem necessidade de envolver toda a equipe", "Entrega objetiva, sem burocracia"],
-    cta: "Quero mapear meu gargalo"
+    cta: "Quero mapear meu gargalo",
+    link: "/diagnostico-operacional"
   }, {
     title: "Sprint de Otimização de Processo",
     duration: "2 semanas",
@@ -374,9 +375,13 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
-                      behavior: 'smooth'
-                    })}>
+                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => {
+                          if (service.link) {
+                            window.location.href = service.link;
+                          } else {
+                            document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}>
                           {service.cta}
                         </Button>
                       </Card>;
@@ -433,9 +438,13 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => document.getElementById('contato')?.scrollIntoView({
-                      behavior: 'smooth'
-                    })}>
+                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => {
+                          if (service.link) {
+                            window.location.href = service.link;
+                          } else {
+                            document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+                          }
+                        }}>
                           {service.cta}
                         </Button>
                       </Card>;
