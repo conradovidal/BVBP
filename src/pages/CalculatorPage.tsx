@@ -1,14 +1,10 @@
 import { useState } from "react";
 import Header from "@/components/Header";
-import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import CalculatorHero from "@/components/calculator/CalculatorHero";
 import CalculatorForm from "@/components/calculator/CalculatorForm";
-import CalculatorReportPreview from "@/components/calculator/CalculatorReportPreview";
-import CalculatorSocialProof from "@/components/calculator/CalculatorSocialProof";
-import CalculatorFAQ from "@/components/calculator/CalculatorFAQ";
+import CalculatorContactSection from "@/components/calculator/CalculatorContactSection";
 import { Helmet } from "react-helmet-async";
-import { Search } from "lucide-react";
 
 export interface ProcessCalculatorData {
   processType: string;
@@ -54,31 +50,8 @@ const CalculatorPage = () => {
             </div>
           </section>
 
-          {/* CTA Section */}
-          <section className="py-20 bg-gradient-subtle">
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="bg-white p-10 md:p-16 rounded-xl shadow-strong border-0">
-                  <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-6">
-                    Quer saber como podemos ajudar sua empresa?
-                  </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-2xl mx-auto">
-                    Conheça nossos serviços e descubra como transformamos operações bagunçadas em sistemas que funcionam.
-                  </p>
-                  <Button 
-                    variant="success" 
-                    size="xl" 
-                    className="group shadow-strong" 
-                    onClick={() => window.location.href = '/servicos'}
-                  >
-                    Conheça Nossos Serviços
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          
+          {/* Two Paths Section - Contact or Services */}
+          <CalculatorContactSection />
         </main>
 
         <Footer />
