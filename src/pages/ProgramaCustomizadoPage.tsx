@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
 
 const ProgramaCustomizadoPage = () => {
   const { toast } = useToast();
@@ -110,7 +111,8 @@ const ProgramaCustomizadoPage = () => {
 
       <div className="min-h-screen">
         <Header />
-        <main className="pt-20">
+        <ServiceBreadcrumb currentTitle="Programa Customizado" />
+        <main className="pt-0">
           {/* Hero Section */}
           <section className="relative py-20 lg:py-28 bg-gradient-hero overflow-hidden">
             <div className="absolute inset-0 bg-black/5"></div>
@@ -569,6 +571,7 @@ const ProgramaCustomizadoPage = () => {
             </div>
           </section>
         </main>
+        <OtherServicesSection />
         <Footer />
       </div>
     </>

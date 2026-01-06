@@ -39,6 +39,7 @@ import {
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
 
 const RetainerGovernancaPage = () => {
   const { toast } = useToast();
@@ -201,8 +202,9 @@ const RetainerGovernancaPage = () => {
       </Helmet>
 
       <Header />
+      <ServiceBreadcrumb currentTitle="Retainer de Governança" />
 
-      <main className="pt-20">
+      <main className="pt-0">
         {/* Hero Section */}
         <section 
           ref={heroRef as React.RefObject<HTMLElement>}
@@ -632,6 +634,7 @@ const RetainerGovernancaPage = () => {
         </section>
       </main>
 
+      <OtherServicesSection />
       <Footer />
     </>
   );
