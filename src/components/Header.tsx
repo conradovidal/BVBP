@@ -120,10 +120,14 @@ const Header = () => {
             size="lg"
             className="px-4 py-2 text-sm whitespace-nowrap"
             onClick={() => {
-              const element = document.getElementById('contato');
-              if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
-                window.history.pushState(null, '', '#contato');
+              if (isHomePage) {
+                const element = document.getElementById('contato');
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' });
+                  window.history.pushState(null, '', '#contato');
+                }
+              } else {
+                navigate('/#contato');
               }
             }}
           >
@@ -177,12 +181,16 @@ const Header = () => {
               size="lg"
               className="w-full text-sm"
               onClick={() => {
-                const element = document.getElementById('contato');
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                  window.history.pushState(null, '', '#contato');
-                  setIsMenuOpen(false);
+                if (isHomePage) {
+                  const element = document.getElementById('contato');
+                  if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    window.history.pushState(null, '', '#contato');
+                  }
+                } else {
+                  navigate('/#contato');
                 }
+                setIsMenuOpen(false);
               }}
             >
               Diagnóstico Gratuito

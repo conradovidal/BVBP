@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+import { Link } from "react-router-dom";
 
 const ProgramaCustomizadoPage = () => {
   const { toast } = useToast();
@@ -397,40 +398,50 @@ const ProgramaCustomizadoPage = () => {
                   O que geralmente vem depois
                 </h2>
                 <div className="grid md:grid-cols-2 gap-6">
-                  <Card className="border-gray-200 hover:border-bvbp-growth/50 hover:shadow-md transition-all">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-bvbp-growth/10 flex items-center justify-center flex-shrink-0">
-                          <Repeat className="w-6 h-6 text-bvbp-growth" />
+                  <Link to="/retainer-governanca">
+                    <Card className="border-gray-200 hover:border-bvbp-growth/50 hover:shadow-md transition-all cursor-pointer h-full">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-full bg-bvbp-growth/10 flex items-center justify-center flex-shrink-0">
+                            <Repeat className="w-6 h-6 text-bvbp-growth" />
+                          </div>
+                          <div>
+                            <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-2">
+                              Retainer de Execução e Governança
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                              Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões — sem virar burocracia.
+                            </p>
+                            <span className="text-sm text-primary font-medium mt-2 inline-flex items-center gap-1">
+                              Ver mais <ArrowRight className="w-4 h-4" />
+                            </span>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-2">
-                            Retainer de Execução e Governança
-                          </h3>
-                          <p className="text-muted-foreground text-sm">
-                            Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões — sem virar burocracia.
-                          </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                  <Link to="/sprint-otimizacao">
+                    <Card className="border-gray-200 hover:border-bvbp-growth/50 hover:shadow-md transition-all cursor-pointer h-full">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-full bg-bvbp-growth/10 flex items-center justify-center flex-shrink-0">
+                            <Zap className="w-6 h-6 text-bvbp-growth" />
+                          </div>
+                          <div>
+                            <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-2">
+                              Sprints de Otimização adicionais
+                            </h3>
+                            <p className="text-muted-foreground text-sm">
+                              Para fluxos que ficaram fora do escopo inicial ou surgiram depois da transformação.
+                            </p>
+                            <span className="text-sm text-primary font-medium mt-2 inline-flex items-center gap-1">
+                              Ver mais <ArrowRight className="w-4 h-4" />
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-gray-200 hover:border-bvbp-growth/50 hover:shadow-md transition-all">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-bvbp-growth/10 flex items-center justify-center flex-shrink-0">
-                          <Zap className="w-6 h-6 text-bvbp-growth" />
-                        </div>
-                        <div>
-                          <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-2">
-                            Sprints de Otimização adicionais
-                          </h3>
-                          <p className="text-muted-foreground text-sm">
-                            Para fluxos que ficaram fora do escopo inicial ou surgiram depois da transformação.
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </div>
               </div>
             </div>
