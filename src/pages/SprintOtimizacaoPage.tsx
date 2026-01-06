@@ -18,6 +18,7 @@ import { XCircle, AlertTriangle, FileText, Map, ListChecks, Calendar, ArrowRight
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
 
 const SprintOtimizacaoPage = () => {
   const { toast } = useToast();
@@ -167,8 +168,9 @@ const SprintOtimizacaoPage = () => {
       </Helmet>
 
       <Header />
+      <ServiceBreadcrumb currentTitle="Sprint de Otimização" />
 
-      <main className="pt-20">
+      <main className="pt-0">
         {/* Seção 1: Hero */}
         <section
           ref={heroRef}
@@ -637,6 +639,7 @@ const SprintOtimizacaoPage = () => {
         </section>
       </main>
 
+      <OtherServicesSection />
       <Footer />
     </>
   );

@@ -38,6 +38,7 @@ import {
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
 
 const GestaoProjetosPage = () => {
   const { toast } = useToast();
@@ -202,8 +203,9 @@ const GestaoProjetosPage = () => {
       </Helmet>
 
       <Header />
+      <ServiceBreadcrumb currentTitle="Gestão de Projetos" />
 
-      <main className="pt-20">
+      <main className="pt-0">
         {/* Hero Section */}
         <section 
           ref={heroRef as React.RefObject<HTMLElement>}
@@ -636,6 +638,7 @@ const GestaoProjetosPage = () => {
         </section>
       </main>
 
+      <OtherServicesSection />
       <Footer />
     </>
   );
