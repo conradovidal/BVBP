@@ -14,7 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { X, AlertTriangle, FileText, Map, ListChecks, Calendar, ArrowRight, Search, Lightbulb, TrendingUp, Clock, MailIcon } from "lucide-react";
+import { XCircle, AlertTriangle, FileText, Map, ListChecks, Calendar, ArrowRight, Search, Lightbulb, TrendingUp, Clock, MailIcon, CheckCircle2, Users, Eye, ClipboardList, MessageSquare } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -96,19 +96,11 @@ const DiagnosticoOperacionalPage = () => {
   ];
 
   const comoFuncionaSteps = [
-    "Kickoff",
-    "Entrevistas",
-    "Mapeamento",
-    "Síntese",
-    "Readout",
-  ];
-
-  const comoFuncionaDescriptions = [
-    "Alinhamento inicial (30–45 min)",
-    "2 a 3 conversas objetivas",
-    "Análise do fluxo crítico",
-    "Priorização dos achados",
-    "Apresentação executiva",
+    { number: 1, title: "Kickoff", description: "Alinhamento inicial (30–45 min)", icon: Users },
+    { number: 2, title: "Entrevistas", description: "2 a 3 conversas objetivas", icon: MessageSquare },
+    { number: 3, title: "Mapeamento", description: "Análise do fluxo crítico", icon: Map },
+    { number: 4, title: "Síntese", description: "Priorização dos achados", icon: Lightbulb },
+    { number: 5, title: "Readout", description: "Apresentação executiva", icon: ClipboardList },
   ];
 
   const entregaveis = [
@@ -120,15 +112,15 @@ const DiagnosticoOperacionalPage = () => {
   ];
 
   const resultadoBullets = [
-    { icon: Search, text: "Clareza sobre onde a operação está 'vazando' tempo e energia" },
-    { icon: Lightbulb, text: "Um ponto de partida nítido para melhorar" },
-    { icon: TrendingUp, text: "Menos risco de investir em iniciativas erradas" },
+    { icon: Eye, title: "Clareza", text: "Saber onde a operação está 'vazando' tempo e energia" },
+    { icon: Lightbulb, title: "Direção", text: "Um ponto de partida nítido para melhorar" },
+    { icon: TrendingUp, title: "Menos Risco", text: "Evitar investir em iniciativas erradas" },
   ];
 
   const proximosPassos = [
-    "Sprint de Otimização de Processo",
-    "Configuração de Gestão e Entrega de Projetos",
-    "Ou parar por aqui (o que também é um bom resultado)",
+    { title: "Sprint de Otimização", description: "Resolver o fluxo identificado em 2 semanas focadas" },
+    { title: "Configuração de Gestão de Projetos", description: "Estruturar como a empresa toca projetos no geral" },
+    { title: "Parar por aqui", description: "Às vezes o melhor próximo passo é não seguir — e isso também é um bom resultado" },
   ];
 
   const faqs = [
@@ -175,17 +167,19 @@ const DiagnosticoOperacionalPage = () => {
 
       <Header />
 
-      <main>
+      <main className="pt-20">
         {/* Seção 1: Hero */}
         <section
           ref={heroRef}
-          className={`py-16 lg:py-24 bg-gradient-hero transition-all duration-700 ${
+          className={`relative py-16 lg:py-24 bg-gradient-hero overflow-hidden transition-all duration-700 ${
             heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <div className="container mx-auto px-4">
+          <div className="absolute inset-0 bg-black/5"></div>
+          <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+              <Search className="w-16 h-16 mx-auto mb-6 text-white" />
+              <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
                 Diagnóstico Operacional
               </h1>
               
@@ -193,20 +187,22 @@ const DiagnosticoOperacionalPage = () => {
                 "Sabemos que algo está errado na operação, mas não sabemos por onde começar."
               </p>
 
-              <p className="text-lg text-white/80 mb-8">
-                Escopo fixo · 1 fluxo crítico · 1 plano de otimização de 2 semanas
-              </p>
+              <div className="flex flex-wrap justify-center gap-4 text-white/80 mb-8">
+                <span className="flex items-center gap-2">
+                  <Search className="w-5 h-5" />
+                  Escopo fixo
+                </span>
+                <span className="flex items-center gap-2">
+                  <Clock className="w-5 h-5" />
+                  10-15 dias
+                </span>
+                <span className="flex items-center gap-2">
+                  <Lightbulb className="w-5 h-5" />
+                  Clareza operacional
+                </span>
+              </div>
 
-              <Button
-                variant="success"
-                size="xl"
-                onClick={scrollToContato}
-                className="mb-4"
-              >
-                Quero entender meu gargalo
-              </Button>
-
-              <p className="text-white/60 text-sm max-w-md mx-auto">
+              <p className="text-lg text-white/80 font-medium">
                 Sem compromisso de continuidade. O diagnóstico pode terminar em "não seguir adiante".
               </p>
             </div>
@@ -230,29 +226,31 @@ const DiagnosticoOperacionalPage = () => {
               </p>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <Card className="p-6 shadow-soft border-gray-100">
-                  <h3 className="font-heading text-xl font-semibold text-bvbp-corporate mb-4">
+                <Card className="p-6 border-green-200 bg-green-50/50">
+                  <h3 className="font-heading text-lg font-semibold text-green-800 mb-4 flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5" />
                     Funciona bem para
                   </h3>
                   <ul className="space-y-3">
                     {funcionaBemPara.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="text-bvbp-growth font-bold mt-0.5">•</span>
-                        <span className="text-muted-foreground">{item}</span>
+                      <li key={index} className="flex items-start gap-2 text-green-700">
+                        <CheckCircle2 className="w-4 h-4 mt-1 flex-shrink-0" />
+                        <span>{item}</span>
                       </li>
                     ))}
                   </ul>
                 </Card>
 
-                <Card className="p-6 shadow-soft border-gray-100">
-                  <h3 className="font-heading text-xl font-semibold text-bvbp-corporate mb-4">
+                <Card className="p-6 border-red-200 bg-red-50/50">
+                  <h3 className="font-heading text-lg font-semibold text-red-800 mb-4 flex items-center gap-2">
+                    <XCircle className="w-5 h-5" />
                     Não é para
                   </h3>
                   <ul className="space-y-3">
                     {naoEPara.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <X className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-muted-foreground">{item}</span>
+                      <li key={index} className="flex items-start gap-2 text-red-700">
+                        <XCircle className="w-4 h-4 mt-1 flex-shrink-0" />
+                        <span>{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -275,21 +273,21 @@ const DiagnosticoOperacionalPage = () => {
                 Escopo (deliberadamente limitado)
               </h2>
 
-              <Card className="p-6 shadow-soft border-gray-100 mb-6">
-                <ul className="space-y-3">
-                  {escopoItems.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <span className="text-bvbp-growth font-bold mt-0.5">•</span>
-                      <span className="text-muted-foreground text-lg">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
+              <ul className="space-y-4 mb-8">
+                {escopoItems.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                    <span className="text-muted-foreground">{item}</span>
+                  </li>
+                ))}
+              </ul>
 
-              <Card className="p-4 bg-amber-50 border border-amber-200 flex items-start gap-4">
-                <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <p className="font-medium text-amber-800">
-                  Regra: não analisamos a empresa inteira.
+              <Card className="p-4 border-amber-200 bg-amber-50/50">
+                <p className="flex items-start gap-2 text-amber-800">
+                  <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Regra:</strong> Não analisamos a empresa inteira. Foco em 1 fluxo crítico.
+                  </span>
                 </p>
               </Card>
             </div>
@@ -310,13 +308,16 @@ const DiagnosticoOperacionalPage = () => {
               </h2>
 
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-                {comoFuncionaSteps.map((step, index) => (
-                  <div key={index} className="text-center">
-                    <div className="w-12 h-12 mx-auto rounded-full bg-bvbp-corporate text-white flex items-center justify-center font-bold text-xl mb-3">
-                      {index + 1}
+                {comoFuncionaSteps.map((step) => (
+                  <div key={step.number} className="text-center">
+                    <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center mx-auto mb-3 text-lg font-bold">
+                      {step.number}
                     </div>
-                    <p className="font-semibold text-bvbp-corporate mb-1">{step}</p>
-                    <p className="text-sm text-muted-foreground">{comoFuncionaDescriptions[index]}</p>
+                    <step.icon className="w-6 h-6 mx-auto mb-2 text-primary" />
+                    <h3 className="font-heading font-semibold text-foreground text-sm mb-1">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">{step.description}</p>
                   </div>
                 ))}
               </div>
@@ -387,12 +388,12 @@ const DiagnosticoOperacionalPage = () => {
                 {resultadoBullets.map((item, index) => {
                   const IconComponent = item.icon;
                   return (
-                    <Card
-                      key={index}
-                      className="p-6 shadow-soft border-gray-100 text-center"
-                    >
-                      <IconComponent className="h-8 w-8 text-bvbp-growth mx-auto mb-4" />
-                      <p className="text-muted-foreground">{item.text}</p>
+                    <Card key={index} className="p-6 text-center">
+                      <IconComponent className="w-10 h-10 mx-auto mb-4 text-primary" />
+                      <h3 className="font-heading text-lg font-semibold text-foreground mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">{item.text}</p>
                     </Card>
                   );
                 })}
@@ -417,16 +418,21 @@ const DiagnosticoOperacionalPage = () => {
                 Dependendo do diagnóstico, o próximo passo pode ser um sprint de otimização, a configuração do sistema de projetos, ou nenhum próximo passo.
               </p>
 
-              <Card className="p-6 shadow-soft border-gray-100">
-                <ul className="space-y-3">
-                  {proximosPassos.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3">
-                      <div className="h-2 w-2 rounded-full bg-bvbp-growth flex-shrink-0 mt-2" />
-                      <span className="text-muted-foreground text-lg">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
+              <div className="grid md:grid-cols-3 gap-6">
+                {proximosPassos.map((step, index) => (
+                  <Card key={index} className="p-6">
+                    <div className="flex items-start gap-4">
+                      <ArrowRight className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                      <div>
+                        <h3 className="font-heading font-semibold text-foreground mb-1">
+                          {step.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">{step.description}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </section>
