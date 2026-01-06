@@ -4,9 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, Send, CheckCircle, Users, Target, Cog, Shield, Layers } from "lucide-react";
+import { ArrowRight, Send, Users, Target, Cog, Layers } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { CalculatorResults, ProcessCalculatorData } from "./CalculatorForm";
 
 const services = [
   { 
@@ -29,7 +31,12 @@ const services = [
   },
 ];
 
-const CalculatorContactSection = () => {
+interface CalculatorContactSectionProps {
+  calculatorData?: Partial<ProcessCalculatorData>;
+  results?: CalculatorResults | null;
+}
+
+const CalculatorContactSection = ({ calculatorData, results }: CalculatorContactSectionProps) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -37,8 +44,10 @@ const CalculatorContactSection = () => {
     phone: "",
     company: "",
     role: "",
-    interest: "",
-    challenge: ""
+    interest: results && results.monthlyLoss > 50000 ? "Programa Customizado" : "Diagnóstico Operacional",
+    challenge: results 
+      ? `Identificamos uma perda estimada de R$ ${results.monthlyLoss.toLocaleString()}/mês no processo de ${results.processType}.` 
+      : ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,61 +59,85 @@ const CalculatorContactSection = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: "Mensagem enviada!",
-      description: "Entraremos em contato em até 4 horas úteis.",
+    const { error } = await supabase.from('leads').insert({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || null,
+      company: formData.company,
+      role: formData.role || null,
+      interest: formData.interest,
+      challenge: formData.challenge || null,
+      source: 'calculator',
+      page_url: window.location.href,
+      calculator_data: calculatorData && results ? {
+        ...calculatorData,
+        monthlyLoss: results.monthlyLoss,
+        annualLoss: results.annualLoss
+      } : null
     });
     
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      role: "",
-      interest: "",
-      challenge: ""
-    });
+    if (error) {
+      console.error('Error submitting lead:', error);
+      toast({
+        title: "Erro ao enviar",
+        description: "Tente novamente ou entre em contato por e-mail.",
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Mensagem enviada!",
+        description: "Entraremos em contato em até 4 horas úteis.",
+      });
+      
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        role: "",
+        interest: "",
+        challenge: ""
+      });
+    }
+    
     setIsSubmitting(false);
   };
 
   const isFormValid = formData.name && formData.email && formData.company && formData.interest;
 
   return (
-    <section id="contato" className="py-20 bg-gray-50">
+    <section id="contato" className="py-12 sm:py-16 lg:py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-4">
+        <div className="text-center mb-10 sm:mb-12 lg:mb-16">
+          <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold text-bvbp-corporate mb-3 sm:mb-4">
             Qual o próximo passo?
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Escolha como prefere continuar: agende uma conversa ou explore nossos serviços
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+        <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 max-w-6xl mx-auto">
           {/* Left Column - Contact Form */}
           <div>
-            <Card className="p-8 shadow-strong border-0 bg-white h-full">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-gradient-success flex items-center justify-center shadow-success">
-                  <Send className="h-5 w-5 text-white" />
+            <Card className="p-5 sm:p-6 lg:p-8 shadow-strong border-0 bg-white h-full">
+              <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-bvbp-growth flex items-center justify-center shadow-success">
+                  <Send className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-xl font-bold text-bvbp-corporate">
+                  <h3 className="font-heading text-lg sm:text-xl font-bold text-bvbp-corporate">
                     Agendar uma conversa
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Resposta em até 4 horas úteis
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <Input
                       placeholder="Seu nome *"
@@ -126,7 +159,7 @@ const CalculatorContactSection = () => {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <Input
                       placeholder="Telefone"
@@ -186,7 +219,7 @@ const CalculatorContactSection = () => {
                   type="submit" 
                   variant="hero" 
                   size="lg" 
-                  className="w-full shadow-strong"
+                  className="w-full shadow-strong h-11 sm:h-12"
                   disabled={!isFormValid || isSubmitting}
                 >
                   {isSubmitting ? (
@@ -204,32 +237,32 @@ const CalculatorContactSection = () => {
 
           {/* Right Column - Services */}
           <div className="flex flex-col">
-            <Card className="p-8 shadow-strong border-0 bg-white flex-1">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-bvbp-corporate flex items-center justify-center">
-                  <Users className="h-5 w-5 text-white" />
+            <Card className="p-5 sm:p-6 lg:p-8 shadow-strong border-0 bg-white flex-1">
+              <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-bvbp-corporate flex items-center justify-center">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-heading text-xl font-bold text-bvbp-corporate">
+                  <h3 className="font-heading text-lg sm:text-xl font-bold text-bvbp-corporate">
                     Conheça nossos serviços
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Entenda como podemos ajudar
                   </p>
                 </div>
               </div>
 
-              <p className="text-muted-foreground mb-6">
+              <p className="text-sm sm:text-base text-muted-foreground mb-5 sm:mb-6">
                 Transformamos operações confusas em sistemas que funcionam. Escolha o serviço mais adequado para sua realidade:
               </p>
 
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                 {services.map((service, index) => {
                   const Icon = service.icon;
                   return (
                     <div 
                       key={index}
-                      className="group p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-bvbp-growth hover:shadow-soft transition-all duration-300 cursor-pointer"
+                      className="group p-3.5 sm:p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-white hover:border-bvbp-growth hover:shadow-soft transition-all duration-300 cursor-pointer active:scale-[0.98]"
                       onClick={() => {
                         if (service.link) {
                           navigate(service.link);
@@ -238,18 +271,18 @@ const CalculatorContactSection = () => {
                         }
                       }}
                     >
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-white group-hover:bg-bvbp-growth/10 flex items-center justify-center transition-colors border border-gray-100 group-hover:border-bvbp-growth/20">
-                          <Icon className="h-5 w-5 text-bvbp-corporate group-hover:text-bvbp-growth transition-colors" />
+                      <div className="flex items-start gap-3 sm:gap-4">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white group-hover:bg-bvbp-growth/10 flex items-center justify-center transition-colors border border-gray-100 group-hover:border-bvbp-growth/20 flex-shrink-0">
+                          <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-bvbp-corporate group-hover:text-bvbp-growth transition-colors" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-semibold text-bvbp-corporate group-hover:text-bvbp-growth transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-semibold text-sm sm:text-base text-bvbp-corporate group-hover:text-bvbp-growth transition-colors truncate">
                               {service.title}
                             </h4>
-                            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-bvbp-growth group-hover:translate-x-1 transition-all" />
+                            <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-bvbp-growth group-hover:translate-x-1 transition-all flex-shrink-0" />
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs sm:text-sm text-muted-foreground">
                             Duração: {service.duration}
                           </p>
                         </div>
@@ -262,7 +295,7 @@ const CalculatorContactSection = () => {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="w-full border-bvbp-corporate text-bvbp-corporate hover:bg-bvbp-corporate hover:text-white transition-all"
+                className="w-full border-bvbp-corporate text-bvbp-corporate hover:bg-bvbp-corporate hover:text-white transition-all h-11 sm:h-12"
                 onClick={() => navigate("/#servicos")}
               >
                 Ver todos os serviços

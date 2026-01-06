@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leads: {
+        Row: {
+          calculator_data: Json | null
+          challenge: string | null
+          company: string
+          created_at: string | null
+          email: string
+          id: string
+          interest: string
+          name: string
+          page_url: string | null
+          phone: string | null
+          role: string | null
+          source: string | null
+        }
+        Insert: {
+          calculator_data?: Json | null
+          challenge?: string | null
+          company: string
+          created_at?: string | null
+          email: string
+          id?: string
+          interest: string
+          name: string
+          page_url?: string | null
+          phone?: string | null
+          role?: string | null
+          source?: string | null
+        }
+        Update: {
+          calculator_data?: Json | null
+          challenge?: string | null
+          company?: string
+          created_at?: string | null
+          email?: string
+          id?: string
+          interest?: string
+          name?: string
+          page_url?: string | null
+          phone?: string | null
+          role?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

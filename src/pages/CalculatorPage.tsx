@@ -2,28 +2,20 @@ import { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CalculatorHero from "@/components/calculator/CalculatorHero";
-import CalculatorForm from "@/components/calculator/CalculatorForm";
+import CalculatorForm, { ProcessCalculatorData, CalculatorResults } from "@/components/calculator/CalculatorForm";
 import CalculatorContactSection from "@/components/calculator/CalculatorContactSection";
 import { Helmet } from "react-helmet-async";
 
-export interface ProcessCalculatorData {
-  processType: string;
-  teamSize: number;
-  averageSalary: number;
-  reworkHours: number;
-  meetingHours: number;
-}
-
 const CalculatorPage = () => {
   const [calculatorData, setCalculatorData] = useState<Partial<ProcessCalculatorData>>({});
-  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState<CalculatorResults | null>(null);
 
   const handleDataUpdate = (data: Partial<ProcessCalculatorData>) => {
     setCalculatorData(prev => ({ ...prev, ...data }));
   };
 
-  const handleCalculationComplete = () => {
-    setShowResults(true);
+  const handleCalculationComplete = (calculatedResults: CalculatorResults) => {
+    setResults(calculatedResults);
   };
 
   return (
@@ -40,7 +32,7 @@ const CalculatorPage = () => {
         <main className="flex-1">
           <CalculatorHero />
           
-          <section className="py-16 bg-background">
+          <section className="py-10 sm:py-12 lg:py-16 bg-background">
             <div className="container mx-auto px-4">
               <CalculatorForm 
                 onDataUpdate={handleDataUpdate}
@@ -51,7 +43,10 @@ const CalculatorPage = () => {
           </section>
 
           {/* Two Paths Section - Contact or Services */}
-          <CalculatorContactSection />
+          <CalculatorContactSection 
+            calculatorData={calculatorData}
+            results={results}
+          />
         </main>
 
         <Footer />
