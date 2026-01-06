@@ -138,13 +138,14 @@ const Index = () => {
     cta: "Quero organizar meus projetos",
     link: "/gestao-projetos"
   }, {
-    title: "Configuração de Governança de Execução",
-    duration: "2 semanas",
+    title: "Retainer de Execução e Governança",
+    duration: "Mensal",
     icon: TrendingUp,
-    description: "Implementamos uma governança leve para dar ritmo, visibilidade e alinhamento sem burocracia.",
-    features: ["Rotina de planejamento e revisão com cadências claras", "Padrão de priorização e tomada de decisão", "Métricas mínimas para acompanhar progresso e gargalos", "Template de comunicação e atualização de status"],
-    details: ["Baixo custo de manutenção", "Funciona bem em time remoto e fuso diferente", "Traz previsibilidade sem engessar"],
-    cta: "Quero governança leve"
+    description: "Acompanhamento contínuo para manter disciplina de execução, visibilidade e decisões — sem virar burocracia.",
+    features: ["Check-ins regulares de execução e governança", "Revisão de prioridades, progresso e bloqueios", "Suporte a decisões da liderança", "Advisory sobre riscos de execução"],
+    details: ["Após projeto bem-sucedido (Diagnóstico, Sprint ou Setup)", "Governança, não execução — o time continua tocando", "Objetivo: vocês precisarem menos de nós"],
+    cta: "Quero manter a disciplina",
+    link: "/retainer-governanca"
   }, {
     title: "Programa Customizado de Melhoria",
     duration: "6 a 12 semanas",
