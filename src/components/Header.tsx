@@ -2,10 +2,15 @@ import { Button } from "@/components/ui/button";
 import { Tabs } from "@/components/ui/vercel-tabs";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const isHomePage = location.pathname === "/";
 
   const navigationItems = [
     { id: "inicio", label: "Início", href: "#inicio" },
@@ -14,11 +19,26 @@ const Header = () => {
     { id: "contato", label: "Contato", href: "#contato" },
   ];
 
-  // Scroll spy with IntersectionObserver
+  // Navigate to section - handles both home and other pages
+  const navigateToSection = (sectionId: string) => {
+    if (isHomePage) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', `#${sectionId}`);
+      }
+    } else {
+      navigate(`/#${sectionId}`);
+    }
+  };
+
+  // Scroll spy with IntersectionObserver - only active on home page
   useEffect(() => {
+    if (!isHomePage) return;
+
     const observerOptions = {
       root: null,
-      rootMargin: '-80px 0px -80% 0px', // Offset do header + threshold
+      rootMargin: '-80px 0px -80% 0px',
       threshold: 0
     };
 
@@ -29,7 +49,6 @@ const Header = () => {
           const index = navigationItems.findIndex(item => item.id === sectionId);
           if (index !== -1) {
             setActiveTab(index);
-            // Atualizar URL sem scroll
             window.history.replaceState(null, '', `#${sectionId}`);
           }
         }
@@ -38,23 +57,23 @@ const Header = () => {
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
     
-    // Observar todas as seções
     navigationItems.forEach(item => {
       const element = document.getElementById(item.id);
       if (element) observer.observe(element);
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [isHomePage]);
 
   // Initial hash on load
   useEffect(() => {
+    if (!isHomePage) return;
     const hash = window.location.hash || "#inicio";
     const currentIndex = navigationItems.findIndex(item => item.href === hash);
     if (currentIndex !== -1) {
       setActiveTab(currentIndex);
     }
-  }, []);
+  }, [isHomePage]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -74,15 +93,11 @@ const Header = () => {
         <nav className="hidden lg:flex items-center">
           <Tabs
             tabs={navigationItems}
-            activeTab={navigationItems[activeTab]?.id}
+            activeTab={isHomePage ? navigationItems[activeTab]?.id : undefined}
             onTabChange={(tabId, href) => {
               if (href) {
                 const targetId = href.replace('#', '');
-                const element = document.getElementById(targetId);
-                if (element) {
-                  element.scrollIntoView({ behavior: 'smooth' });
-                  window.history.pushState(null, '', href);
-                }
+                navigateToSection(targetId);
               }
             }}
             className="mx-4"
@@ -139,12 +154,8 @@ const Header = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   const targetId = item.href.replace('#', '');
-                  const element = document.getElementById(targetId);
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                    window.history.pushState(null, '', item.href);
-                    setIsMenuOpen(false);
-                  }
+                  navigateToSection(targetId);
+                  setIsMenuOpen(false);
                 }}
               >
                 {item.label}
