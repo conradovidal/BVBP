@@ -41,6 +41,12 @@ const allServices = [
     shortTitle: "Programa Customizado",
     duration: "6-12 semanas",
   },
+  {
+    slug: "comparativo-servicos",
+    title: "Comparar Serviços",
+    shortTitle: "Comparar",
+    duration: "",
+  },
 ];
 
 interface ServiceBreadcrumbProps {
