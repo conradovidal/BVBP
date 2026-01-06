@@ -126,7 +126,8 @@ const Index = () => {
     description: "Escolhemos 1 fluxo e fazemos um quick win real. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
     features: ["Diagnóstico rápido do fluxo e seus gargalos", "Redesenho do processo com acordos e regras simples", "Ajustes no jeito de trabalhar, entrada, saída, prioridade", "Validação e acompanhamento da implementação"],
     details: ["1 fluxo por sprint, sem tentar arrumar a empresa", "Foco em reduzir fila e retrabalho", "Resultado visível em pouco tempo"],
-    cta: "Quero destravar um fluxo"
+    cta: "Quero destravar um fluxo",
+    link: "/sprint-otimizacao"
   }, {
     title: "Configuração de Gestão e Entrega de Projetos",
     duration: "2 semanas",
