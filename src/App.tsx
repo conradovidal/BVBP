@@ -10,6 +10,7 @@ import DiagnosticoOperacionalPage from "./pages/DiagnosticoOperacionalPage";
 import SprintOtimizacaoPage from "./pages/SprintOtimizacaoPage";
 import GestaoProjetosPage from "./pages/GestaoProjetosPage";
 import RetainerGovernancaPage from "./pages/RetainerGovernancaPage";
+import ProgramaCustomizadoPage from "./pages/ProgramaCustomizadoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/sprint-otimizacao" element={<SprintOtimizacaoPage />} />
             <Route path="/gestao-projetos" element={<GestaoProjetosPage />} />
             <Route path="/retainer-governanca" element={<RetainerGovernancaPage />} />
+            <Route path="/programa-customizado" element={<ProgramaCustomizadoPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
