@@ -152,22 +152,24 @@ const CalculatorForm = ({ onDataUpdate, onCalculationComplete, calculatorData }:
             step={1}
             className="cursor-pointer"
           />
-          {/* Marks */}
-          <div className="flex justify-between mt-2 px-1">
-            {config.marks.map((mark) => (
-              <button
-                key={mark}
-                type="button"
-                onClick={() => onChange(mark)}
-                className={`text-xs transition-colors ${
-                  value === mark 
-                    ? 'text-bvbp-growth font-semibold' 
-                    : 'text-muted-foreground hover:text-bvbp-corporate'
-                }`}
-              >
-                {mark}
-              </button>
-            ))}
+          {/* Marks - positioned using logarithmic scale */}
+          <div className="relative mt-2 h-5">
+            {config.marks.map((mark) => {
+              const position = valueToSliderPosition(mark, config.min, config.max);
+              return (
+                <span
+                  key={mark}
+                  className={`absolute text-xs transform -translate-x-1/2 ${
+                    value === mark 
+                      ? 'text-bvbp-growth font-semibold' 
+                      : 'text-muted-foreground'
+                  }`}
+                  style={{ left: `${position}%` }}
+                >
+                  {mark}
+                </span>
+              );
+            })}
           </div>
         </div>
       </div>
