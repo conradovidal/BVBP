@@ -202,18 +202,14 @@ const Index = () => {
 
                 
 
-                <div className="pt-8 animate-fade-in [animation-delay:400ms] flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <div className="pt-8 animate-fade-in [animation-delay:400ms] flex flex-col gap-4 justify-center items-center">
                   <InteractiveHoverButton 
                     text="Quero parar de perder dinheiro" 
-                    hoverColor="green"
                     onClick={() => document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' })}
-                    className="w-auto"
                   />
                   <InteractiveHoverButton 
                     text="Calculadora ROI" 
-                    hoverColor="white"
                     onClick={() => window.location.href = '/calculadora-roi'}
-                    className="w-auto"
                   />
                 </div>
               </div>
