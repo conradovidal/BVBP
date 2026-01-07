@@ -618,20 +618,25 @@ const RetainerGovernancaPage = () => {
 
                 {/* Contact Info */}
                 <div className="lg:col-span-2 space-y-6">
-                  <Card className="p-6">
-                    <h3 className="font-heading font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <MailIcon className="w-5 h-5 text-primary" />
-                      Fale direto conosco
-                    </h3>
-                    <div className="space-y-3">
+                  <Card className="p-8">
+                    <div className="mb-6">
+                      <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">
+                        Fale Direto Conosco
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Resposta em até 4 horas úteis
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
                       {emails.map((item, index) => (
-                        <a
+                        <a 
                           key={index}
                           href={item.link}
-                          className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                          className="flex items-center space-x-3 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
                         >
-                          <Mail className="w-4 h-4" />
-                          {item.email}
+                          <MailIcon className="h-5 w-5" />
+                          <span>{item.email}</span>
                         </a>
                       ))}
                     </div>
