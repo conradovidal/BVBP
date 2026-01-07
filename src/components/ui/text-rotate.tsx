@@ -196,7 +196,7 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
             layout
             aria-hidden="true"
           >
-            {(splitBy === "characters"
+            {(splitBy === "characters" || splitBy === "none"
               ? (elements as WordObject[])
               : (elements as string[]).map((el, i) => ({
                   characters: [el],
