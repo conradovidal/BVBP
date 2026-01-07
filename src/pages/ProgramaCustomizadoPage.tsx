@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-
+import { validateLeadData } from "@/lib/leadValidation";
 import { Link } from "react-router-dom";
 
 const ProgramaCustomizadoPage = () => {
@@ -32,18 +32,33 @@ const ProgramaCustomizadoPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      const { error } = await supabase.from('leads').insert({
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone || null,
-        company: formData.company,
-        role: formData.role || null,
-        interest: formData.interest,
-        challenge: formData.challenge || null,
-        source: 'programa-customizado-page',
-        page_url: window.location.href
+    // Validate form data before submitting
+    const dataToValidate = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || null,
+      company: formData.company,
+      role: formData.role || null,
+      interest: formData.interest,
+      challenge: formData.challenge || null,
+      source: 'programa-customizado-page',
+      page_url: window.location.href
+    };
+
+    const validation = validateLeadData(dataToValidate);
+    
+    if (!validation.success) {
+      toast({
+        title: "Dados inválidos",
+        description: validation.errors?.join(", ") || "Verifique os campos e tente novamente.",
+        variant: "destructive"
       });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('leads').insert(validation.data!);
 
       if (error) throw error;
 
