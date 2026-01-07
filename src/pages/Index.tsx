@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { TextRotate } from "@/components/ui/text-rotate";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -179,8 +180,27 @@ const Index = () => {
                   <span className="block animate-fade-in">Você está deixando</span>
                   <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:150ms] opacity-0 [animation-fill-mode:forwards]">dinheiro na mesa</span>
                   <span className="block animate-fade-in [animation-delay:300ms] opacity-0 [animation-fill-mode:forwards]">todo mês devido a</span>
-                  <span className="block animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards]"><span className="text-bvbp-growth font-bold">planejamento</span> e <span className="text-bvbp-growth font-bold">processos</span></span>
-                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards]">mal executados</span>
+                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards] overflow-hidden">
+                    <TextRotate
+                      texts={[
+                        "planejamentos",
+                        "processos",
+                        "priorizações",
+                        "gestão de projetos",
+                        "comunicação",
+                        "operação",
+                        "alinhamento",
+                        "comprometimento"
+                      ]}
+                      rotationInterval={2500}
+                      staggerDuration={0.03}
+                      staggerFrom="first"
+                      mainClassName="inline-flex"
+                      splitLevelClassName="inline-flex"
+                      elementLevelClassName="inline-block"
+                    />
+                  </span>
+                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards]">que não funcionam</span>
                 </h1>
 
                 
