@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check, Settings, Lightbulb, LinkedinIcon, Heart, Award, Clock, ArrowRight, Wrench, Rocket, Star, Crown, MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon } from "lucide-react";
+import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check, Settings, Lightbulb, LinkedinIcon, Heart, Award, Clock, ArrowRight, Wrench, Rocket, Star, Crown, MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, HelpCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState } from "react";
@@ -140,7 +140,7 @@ const Index = () => {
     cta: "Quero organizar meus projetos",
     link: "/gestao-projetos"
   }, {
-    title: "Retainer de Execução e Governança",
+    title: "Implementação de Governança de Execução",
     duration: "Mensal",
     icon: TrendingUp,
     description: "Acompanhamento contínuo para manter disciplina de execução, visibilidade e decisões — sem virar burocracia.",
@@ -157,6 +157,15 @@ const Index = () => {
     details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
     cta: "Quero um plano sob medida",
     link: "/programa-customizado"
+  }, {
+    title: "Qual serviço é para mim?",
+    duration: "",
+    icon: HelpCircle,
+    description: "Compare todos os serviços lado a lado e descubra qual é o melhor ponto de partida para sua empresa.",
+    features: ["Tabela comparativa completa", "Quiz para identificar seu perfil", "Recomendação personalizada"],
+    details: ["Sem compromisso", "Ajuda a escolher o próximo passo"],
+    cta: "Ver comparativo",
+    link: "/comparativo-servicos"
   }];
   const emails = [
     { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
@@ -409,9 +418,9 @@ const Index = () => {
                 })}
                 </div>
 
-                {/* Second row - 2 cards centered */}
-                <div className="grid md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
-                  {services.slice(3, 5).map((service, index) => {
+                {/* Second row - 3 cards */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  {services.slice(3, 6).map((service, index) => {
                   const IconComponent = service.icon;
                   return <Card key={index + 3} className="group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl">
                         {/* Hover overlay */}
