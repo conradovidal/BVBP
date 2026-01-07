@@ -627,29 +627,30 @@ const SprintOtimizacaoPage = () => {
               </div>
 
               {/* Contact Information */}
-              <div className="space-y-8">
-                <div>
-                  <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-6">
-                    Fale Direto Conosco
-                  </h3>
+              <div>
+                <Card className="p-8">
+                  <div className="mb-6">
+                    <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">
+                      Fale Direto Conosco
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Resposta em até 4 horas úteis
+                    </p>
+                  </div>
 
-                  <Card className="p-6">
-                    <p className="text-muted-foreground mb-4">Resposta em até 4 horas úteis</p>
-                    
-                    <div className="space-y-3">
-                      {emails.map((item, index) => (
-                        <a 
-                          key={index}
-                          href={item.link}
-                          className="flex items-center space-x-2 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
-                        >
-                          <MailIcon className="h-5 w-5" />
-                          <span>{item.email}</span>
-                        </a>
-                      ))}
-                    </div>
-                  </Card>
-                </div>
+                  <div className="space-y-4">
+                    {emails.map((item, index) => (
+                      <a 
+                        key={index}
+                        href={item.link}
+                        className="flex items-center space-x-3 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
+                      >
+                        <MailIcon className="h-5 w-5" />
+                        <span>{item.email}</span>
+                      </a>
+                    ))}
+                  </div>
+                </Card>
               </div>
             </div>
           </div>
