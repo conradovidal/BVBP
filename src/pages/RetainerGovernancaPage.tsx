@@ -39,7 +39,7 @@ import {
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+
 import { Link } from "react-router-dom";
 
 const RetainerGovernancaPage = () => {
@@ -66,7 +66,7 @@ const RetainerGovernancaPage = () => {
     phone: "",
     company: "",
     role: "",
-    interest: "Retainer de Execução e Governança",
+    interest: "Implementação de Governança de Execução",
     challenge: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,7 +86,7 @@ const RetainerGovernancaPage = () => {
         phone: "",
         company: "",
         role: "",
-        interest: "Retainer de Execução e Governança",
+        interest: "Implementação de Governança de Execução",
         challenge: ""
       });
     }, 1000);
@@ -197,7 +197,7 @@ const RetainerGovernancaPage = () => {
   return (
     <>
       <Helmet>
-        <title>Retainer de Execução e Governança | BVBP</title>
+        <title>Implementação de Governança de Execução | BVBP</title>
         <meta
           name="description"
           content="Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões claras. Governança sem burocracia."
@@ -205,7 +205,6 @@ const RetainerGovernancaPage = () => {
       </Helmet>
 
       <Header />
-      <ServiceBreadcrumb currentTitle="Retainer de Governança" />
 
       <main className="pt-0">
         {/* Hero Section */}
@@ -218,7 +217,7 @@ const RetainerGovernancaPage = () => {
             <div className="max-w-4xl mx-auto text-center">
               <Shield className="w-16 h-16 mx-auto mb-6 text-white" />
               <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-                Retainer de Execução e Governança
+                Implementação de Governança de Execução
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-6 max-w-3xl mx-auto leading-relaxed italic">
                 "As coisas melhoram quando focamos, mas voltam ao caos quando a atenção vai para outro lugar."
@@ -654,7 +653,6 @@ const RetainerGovernancaPage = () => {
         </section>
       </main>
 
-      <OtherServicesSection />
       <Footer />
     </>
   );

@@ -13,7 +13,7 @@ const Footer = () => {
   const company = [
     "Sobre Nós",
     "Contato",
-    "Diagnóstico Gratuito"
+    "Agendar uma Conversa"
   ];
 
   return (
@@ -96,7 +96,7 @@ const Footer = () => {
                 Contato
               </a>
               <a href="/#contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
-                Diagnóstico Gratuito
+Agendar uma Conversa
               </a>
             </div>
           </div>
@@ -112,7 +112,7 @@ const Footer = () => {
                 Queremos ser parceiros do seu crescimento. Vamos conversar?
               </h3>
               <p className="text-white/90 text-sm">
-                Comece com nosso diagnóstico gratuito hoje mesmo
+                Comece agendando uma conversa sem compromisso
               </p>
             </div>
             <Button 
@@ -121,7 +121,7 @@ const Footer = () => {
               className="border-white text-white bg-transparent hover:bg-white hover:text-bvbp-growth transition-smooth"
               onClick={() => window.location.href = '/#contato'}
             >
-              Diagnóstico Gratuito
+              Agendar uma Conversa
               <ExternalLink className="h-4 w-4 ml-2" />
             </Button>
           </div>

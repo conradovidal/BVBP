@@ -31,8 +31,8 @@ const allServices = [
   },
   {
     slug: "retainer-governanca",
-    title: "Retainer de Execução e Governança",
-    shortTitle: "Retainer",
+    title: "Implementação de Governança de Execução",
+    shortTitle: "Governança",
     duration: "Mensal",
   },
   {

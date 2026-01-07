@@ -38,7 +38,7 @@ import {
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+
 import { Link } from "react-router-dom";
 
 const GestaoProjetosPage = () => {
@@ -161,7 +161,7 @@ const GestaoProjetosPage = () => {
 
   const nextSteps = [
     {
-      title: "Retainer de Execução e Governança",
+      title: "Implementação de Governança de Execução",
       description: "Acompanhamento contínuo para manter disciplina e evoluir sem virar burocracia",
       link: "/retainer-governanca",
     },
@@ -206,7 +206,6 @@ const GestaoProjetosPage = () => {
       </Helmet>
 
       <Header />
-      <ServiceBreadcrumb currentTitle="Gestão de Projetos" />
 
       <main className="pt-0">
         {/* Hero Section */}
@@ -646,7 +645,6 @@ const GestaoProjetosPage = () => {
         </section>
       </main>
 
-      <OtherServicesSection />
       <Footer />
     </>
   );

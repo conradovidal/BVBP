@@ -18,7 +18,7 @@ import { XCircle, AlertTriangle, FileText, Map, ListChecks, Calendar, ArrowRight
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+
 import { Link } from "react-router-dom";
 
 const DiagnosticoOperacionalPage = () => {
@@ -168,7 +168,6 @@ const DiagnosticoOperacionalPage = () => {
       </Helmet>
 
       <Header />
-      <ServiceBreadcrumb currentTitle="Diagnóstico Operacional" />
 
       <main className="pt-0">
         {/* Seção 1: Hero */}
@@ -656,7 +655,6 @@ const DiagnosticoOperacionalPage = () => {
         </section>
       </main>
 
-      <OtherServicesSection />
       <Footer />
     </>
   );

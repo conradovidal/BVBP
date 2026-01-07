@@ -131,7 +131,7 @@ const Header = () => {
               }
             }}
           >
-            Diagnóstico Gratuito
+            Agendar uma Conversa
           </Button>
         </div>
         </div>
@@ -193,7 +193,7 @@ const Header = () => {
                 setIsMenuOpen(false);
               }}
             >
-              Diagnóstico Gratuito
+              Agendar uma Conversa
             </Button>
           </nav>
         </div>

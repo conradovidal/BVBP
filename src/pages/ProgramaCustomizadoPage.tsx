@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { ServiceBreadcrumb, OtherServicesSection } from "@/components/ServiceNavigation";
+
 import { Link } from "react-router-dom";
 
 const ProgramaCustomizadoPage = () => {
@@ -99,7 +99,7 @@ const ProgramaCustomizadoPage = () => {
     },
     {
       question: "O que acontece depois do programa?",
-      answer: "O time sai capacitado para manter os novos processos. Se quiserem suporte contínuo, oferecemos o Retainer de Execução e Governança para manter a disciplina. Mas o objetivo é vocês não precisarem de nós."
+      answer: "O time sai capacitado para manter os novos processos. Se quiserem suporte contínuo, oferecemos a Implementação de Governança de Execução para manter a disciplina. Mas o objetivo é vocês não precisarem de nós."
     }
   ];
 
@@ -112,7 +112,6 @@ const ProgramaCustomizadoPage = () => {
 
       <div className="min-h-screen">
         <Header />
-        <ServiceBreadcrumb currentTitle="Programa Customizado" />
         <main className="pt-0">
           {/* Hero Section */}
           <section className="relative py-20 lg:py-28 bg-gradient-hero overflow-hidden">
@@ -407,7 +406,7 @@ const ProgramaCustomizadoPage = () => {
                           </div>
                           <div>
                             <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-2">
-                              Retainer de Execução e Governança
+                              Implementação de Governança de Execução
                             </h3>
                             <p className="text-muted-foreground text-sm">
                               Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões — sem virar burocracia.
@@ -548,7 +547,7 @@ const ProgramaCustomizadoPage = () => {
                               <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
                               <SelectItem value="Sprint de Otimização">Sprint de Otimização</SelectItem>
                               <SelectItem value="Gestão de Projetos">Gestão de Projetos</SelectItem>
-                              <SelectItem value="Retainer de Execução e Governança">Retainer de Execução e Governança</SelectItem>
+                              <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
                               <SelectItem value="Outro">Outro</SelectItem>
                             </SelectContent>
                           </Select>
@@ -582,7 +581,6 @@ const ProgramaCustomizadoPage = () => {
             </div>
           </section>
         </main>
-        <OtherServicesSection />
         <Footer />
       </div>
     </>

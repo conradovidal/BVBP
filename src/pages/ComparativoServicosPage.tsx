@@ -76,8 +76,8 @@ const services = [
   },
   {
     slug: "retainer-governanca",
-    title: "Retainer de Governança",
-    shortTitle: "Retainer",
+    title: "Implementação de Governança de Execução",
+    shortTitle: "Governança",
     duration: "Mensal",
     icon: RefreshCw,
     focus: "Governança contínua",
@@ -228,8 +228,8 @@ const ComparativoServicosPage = () => {
       answer: "Se não tem clareza do problema, comece pelo Diagnóstico. Se já sabe o gargalo, vá direto para Sprint ou Gestão de Projetos.",
     },
     {
-      question: "Posso contratar o Retainer direto?",
-      answer: "O Retainer é sempre consequência de valor entregue. Funciona melhor após um Diagnóstico, Sprint ou Setup bem-sucedido.",
+      question: "Posso contratar a Governança de Execução direto?",
+      answer: "A Implementação de Governança é sempre consequência de valor entregue. Funciona melhor após um Diagnóstico, Sprint ou Setup bem-sucedido.",
     },
     {
       question: "Qual a diferença entre Sprint e Programa?",
@@ -260,7 +260,7 @@ const ComparativoServicosPage = () => {
         <title>Comparativo de Serviços | Qual é o certo para você? | BVBP</title>
         <meta
           name="description"
-          content="Compare os serviços da BVBP e descubra qual é o mais adequado para sua situação. Diagnóstico, Sprint, Gestão de Projetos, Retainer ou Programa Customizado."
+          content="Compare os serviços da BVBP e descubra qual é o mais adequado para sua situação. Diagnóstico, Sprint, Gestão de Projetos, Governança ou Programa Customizado."
         />
       </Helmet>
 
