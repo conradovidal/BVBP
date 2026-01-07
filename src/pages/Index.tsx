@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
+import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TextRotate } from "@/components/ui/text-rotate";
 import { Input } from "@/components/ui/input";
@@ -202,14 +203,18 @@ const Index = () => {
                 
 
                 <div className="pt-8 animate-fade-in [animation-delay:400ms] flex flex-col sm:flex-row gap-6 justify-center items-center">
-                  <Button variant="success" size="xl" className="group shadow-strong bg-bvbp-growth hover:bg-bvbp-growth/90 text-white font-bold px-8 py-4 text-lg hover:scale-105 transform transition-bounce pulse" onClick={() => document.getElementById('contato')?.scrollIntoView({
-                  behavior: 'smooth'
-                })}>
-                    Quero parar de perder dinheiro
-                  </Button>
-                  <Button variant="outline-hero" size="xl" onClick={() => window.location.href = '/calculadora-roi'} className="hover:scale-105 transition-transform shadow-soft bg-white/10 hover:bg-white/20 text-white border-white/30">
-                    Calculadora ROI
-                  </Button>
+                  <InteractiveHoverButton 
+                    text="Quero parar de perder dinheiro" 
+                    hoverColor="green"
+                    onClick={() => document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' })}
+                    className="w-auto"
+                  />
+                  <InteractiveHoverButton 
+                    text="Calculadora ROI" 
+                    hoverColor="white"
+                    onClick={() => window.location.href = '/calculadora-roi'}
+                    className="w-auto"
+                  />
                 </div>
               </div>
             </div>
