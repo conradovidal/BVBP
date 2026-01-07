@@ -183,14 +183,13 @@ const Index = () => {
                   <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards] overflow-hidden">
                     <TextRotate
                       texts={[
-                        "planejamentos",
-                        "processos",
-                        "priorizações",
-                        "gestão de projetos",
-                        "comunicação",
-                        "operação",
-                        "alinhamento",
-                        "comprometimento"
+                        "planejamentos mal feitos",
+                        "processos ineficientes",
+                        "priorizações confusas",
+                        "gestão de projetos desorganizada",
+                        "comunicação falha",
+                        "operação bagunçada",
+                        "alinhamento superficial"
                       ]}
                       rotationInterval={2500}
                       staggerDuration={0.03}
@@ -200,7 +199,6 @@ const Index = () => {
                       elementLevelClassName="inline-block"
                     />
                   </span>
-                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards]">que não funcionam</span>
                 </h1>
 
                 
