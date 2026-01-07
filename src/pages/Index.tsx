@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check, Settings, Lightbulb, LinkedinIcon, Heart, Award, Clock, ArrowRight, Wrench, Rocket, Star, Crown, MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, HelpCircle } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 const Index = () => {
@@ -50,6 +50,21 @@ const Index = () => {
     ref: contactRef,
     isVisible: contactVisible
   } = useScrollAnimation(0.1);
+
+  // Scroll to section based on URL hash when page loads
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const targetId = hash.replace('#', '');
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
