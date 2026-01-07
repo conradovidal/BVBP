@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { CalculatorResults, ProcessCalculatorData } from "./CalculatorForm";
+import { validateLeadData } from "@/lib/leadValidation";
 
 const services = [
   { 
@@ -59,7 +60,8 @@ const CalculatorContactSection = ({ calculatorData, results }: CalculatorContact
     e.preventDefault();
     setIsSubmitting(true);
     
-    const { error } = await supabase.from('leads').insert({
+    // Validate form data before submitting
+    const dataToValidate = {
       name: formData.name,
       email: formData.email,
       phone: formData.phone || null,
@@ -74,10 +76,23 @@ const CalculatorContactSection = ({ calculatorData, results }: CalculatorContact
         monthlyLoss: results.monthlyLoss,
         annualLoss: results.annualLoss
       } : null
-    });
+    };
+
+    const validation = validateLeadData(dataToValidate);
+    
+    if (!validation.success) {
+      toast({
+        title: "Dados inválidos",
+        description: validation.errors?.join(", ") || "Verifique os campos e tente novamente.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { error } = await supabase.from('leads').insert(validation.data!);
     
     if (error) {
-      console.error('Error submitting lead:', error);
       toast({
         title: "Erro ao enviar",
         description: "Tente novamente ou entre em contato por e-mail.",
