@@ -176,26 +176,24 @@ const Index = () => {
             <div className="absolute inset-0 bg-black/5"></div>
             <div className="container mx-auto px-4 relative z-10">
               <div className="max-w-5xl mx-auto text-center space-y-12">
-                <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-relaxed">
                   <span className="block animate-fade-in">Você está deixando</span>
                   <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:150ms] opacity-0 [animation-fill-mode:forwards]">dinheiro na mesa</span>
                   <span className="block animate-fade-in [animation-delay:300ms] opacity-0 [animation-fill-mode:forwards]">todo mês devido a</span>
-                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards] overflow-hidden">
+                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards] pb-2">
                     <TextRotate
                       texts={[
                         "planejamentos mal feitos",
                         "processos ineficientes",
                         "priorizações confusas",
-                        "gestão de projetos desorganizada",
+                        "gestão desorganizada",
                         "comunicação falha",
                         "operação bagunçada",
                         "alinhamento superficial"
                       ]}
                       rotationInterval={2500}
-                      staggerDuration={0.03}
-                      staggerFrom="first"
-                      mainClassName="inline-flex"
-                      splitLevelClassName="inline-flex"
+                      splitBy="none"
+                      mainClassName="inline-flex justify-center"
                       elementLevelClassName="inline-block"
                     />
                   </span>
