@@ -100,8 +100,8 @@ const RetainerGovernancaPage = () => {
   };
 
   const emails = [
-    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP%20-%20Retainer%20Governança" },
-    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP%20-%20Retainer%20Governança" }
+    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP%20-%20Governança%20de%20Execução" },
+    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP%20-%20Governança%20de%20Execução" }
   ];
 
   const idealFor = [
@@ -173,8 +173,8 @@ const RetainerGovernancaPage = () => {
 
   const faqs = [
     {
-      question: "Por que não posso contratar o retainer direto?",
-      answer: "O retainer só faz sentido após um projeto bem-sucedido. Sem valor entregue antes, vira custo fixo sem referência de resultado. A sequência correta é: Diagnóstico → Sprint ou Setup → Retainer.",
+      question: "Por que não posso contratar direto?",
+      answer: "A Implementação de Governança só faz sentido após um projeto bem-sucedido. Sem valor entregue antes, vira custo fixo sem referência de resultado. A sequência correta é: Diagnóstico → Sprint ou Setup → Governança.",
     },
     {
       question: "Vocês vão executar o trabalho?",
@@ -186,11 +186,11 @@ const RetainerGovernancaPage = () => {
     },
     {
       question: "Como evitar virar consultoria infinita?",
-      answer: "Escopo claro de governança. Revisamos regularmente se o retainer ainda faz sentido. O objetivo é vocês precisarem menos de nós, não mais.",
+      answer: "Escopo claro de governança. Revisamos regularmente se ainda faz sentido. O objetivo é vocês precisarem menos de nós, não mais.",
     },
     {
       question: "Qual a diferença do Setup de Gestão de Projetos?",
-      answer: "O Setup cria o sistema de execução. O Retainer mantém a disciplina e evolui o sistema ao longo do tempo sem deixar virar burocracia.",
+      answer: "O Setup cria o sistema de execução. A Governança mantém a disciplina e evolui o sistema ao longo do tempo sem deixar virar burocracia.",
     },
   ];
 
@@ -257,11 +257,11 @@ const RetainerGovernancaPage = () => {
                     Este serviço é sempre consequência de valor entregue
                   </h3>
                   <p className="text-amber-800 mb-3">
-                    O retainer funciona após um projeto bem-sucedido: Diagnóstico Operacional, Sprint de Otimização ou Setup de Gestão de Projetos.
+                    A Implementação de Governança funciona após um projeto bem-sucedido: Diagnóstico Operacional, Sprint de Otimização ou Setup de Gestão de Projetos.
                   </p>
                   <p className="text-amber-700 text-sm">
                     <strong>A lógica:</strong> O sistema está funcionando. O risco agora não é técnico — é perder disciplina com o tempo. 
-                    O retainer existe para garantir que isso não volte ao estado anterior.
+                    A governança existe para garantir que isso não volte ao estado anterior.
                   </p>
                 </div>
               </div>
@@ -435,7 +435,7 @@ const RetainerGovernancaPage = () => {
               O que costuma vir depois
             </h2>
             <p className="text-muted-foreground text-center mb-10 max-w-2xl mx-auto">
-              O retainer mantém a disciplina — e cria espaço para evoluções pontuais conforme a empresa cresce.
+              A governança mantém a disciplina — e cria espaço para evoluções pontuais conforme a empresa cresce.
             </p>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {nextSteps.map((step, index) => {
@@ -511,7 +511,7 @@ const RetainerGovernancaPage = () => {
                   Quer manter a disciplina após um projeto bem-sucedido?
                 </h2>
                 <p className="text-muted-foreground">
-                  Preencha o formulário e conversamos sobre como o retainer pode funcionar para você.
+                  Preencha o formulário e conversamos sobre como a governança pode funcionar para você.
                 </p>
               </div>
 
@@ -581,7 +581,7 @@ const RetainerGovernancaPage = () => {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Retainer de Execução e Governança">Retainer de Execução e Governança</SelectItem>
+                            <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
                             <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
                             <SelectItem value="Sprint de Otimização de Processo">Sprint de Otimização de Processo</SelectItem>
                             <SelectItem value="Configuração de Gestão e Entrega de Projetos">Configuração de Gestão e Entrega de Projetos</SelectItem>
@@ -642,7 +642,7 @@ const RetainerGovernancaPage = () => {
                       Não é delivery
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                      O retainer é governança e suporte a decisões. A execução continua sendo do time. 
+                      A governança é suporte a decisões. A execução continua sendo do time. 
                       Nosso objetivo é vocês precisarem menos de nós, não mais.
                     </p>
                   </Card>
