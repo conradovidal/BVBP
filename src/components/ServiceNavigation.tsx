@@ -19,8 +19,8 @@ const allServices = [
   },
   {
     slug: "sprint-otimizacao",
-    title: "Sprint de Otimização de Processo",
-    shortTitle: "Sprint",
+    title: "Otimização de Processo",
+    shortTitle: "Otimização",
     duration: "2 semanas",
   },
   {
