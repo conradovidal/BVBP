@@ -160,7 +160,7 @@ const RetainerGovernancaPage = () => {
 
   const nextSteps = [
     {
-      title: "Sprints de Otimização Adicionais",
+      title: "Otimizações Adicionais",
       description: "Otimizar fluxos específicos que surgirem como gargalos",
       link: "/sprint-otimizacao",
     },
@@ -257,7 +257,7 @@ const RetainerGovernancaPage = () => {
                     Este serviço é sempre consequência de valor entregue
                   </h3>
                   <p className="text-amber-800 mb-3">
-                    A Implementação de Governança funciona após um projeto bem-sucedido: Diagnóstico Operacional, Sprint de Otimização ou Setup de Gestão de Projetos.
+                    A Implementação de Governança funciona após um projeto bem-sucedido: Diagnóstico Operacional, Otimização de Processo ou Setup de Gestão de Projetos.
                   </p>
                   <p className="text-amber-700 text-sm">
                     <strong>A lógica:</strong> O sistema está funcionando. O risco agora não é técnico — é perder disciplina com o tempo. 

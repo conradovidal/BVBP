@@ -112,7 +112,7 @@ const GestaoProjetosPage = () => {
 
   const notFor = [
     "Times que buscam nova ferramenta sem mudar como decisões são tomadas",
-    "Empresas que querem só otimizar um fluxo específico — nesse caso, oferecemos um sprint focado de 2 semanas",
+    "Empresas que querem só otimizar um fluxo específico — nesse caso, oferecemos um projeto focado de 2 semanas",
     "Organizações sem disposição para estabelecer cadências",
   ];
 
@@ -166,7 +166,7 @@ const GestaoProjetosPage = () => {
       link: "/retainer-governanca",
     },
     {
-      title: "Sprints de Otimização Pontuais",
+      title: "Otimizações Pontuais",
       description: "Otimizar fluxos específicos após o sistema de execução estar funcionando",
       link: "/sprint-otimizacao",
     },
@@ -174,8 +174,8 @@ const GestaoProjetosPage = () => {
 
   const faqs = [
     {
-      question: "Qual a diferença do Sprint de Otimização?",
-      answer: "O Sprint de Otimização resolve um fluxo específico que está travado em 2 semanas. Este serviço cria o sistema de como projetos são tocados na empresa. Um ataca sintomas pontuais, o outro estrutura a execução como um todo.",
+      question: "Qual a diferença da Otimização de Processo?",
+      answer: "A Otimização de Processo resolve um fluxo específico que está travado em 2 semanas. Este serviço cria o sistema de como projetos são tocados na empresa. Um ataca sintomas pontuais, o outro estrutura a execução como um todo.",
     },
     {
       question: "Preciso trocar de ferramenta?",
@@ -191,7 +191,7 @@ const GestaoProjetosPage = () => {
     },
     {
       question: "E se eu tiver só um fluxo problemático?",
-      answer: "Nesse caso, temos um sprint focado de 2 semanas para resolver esse fluxo específico. Este serviço faz sentido quando o problema é sistêmico — muitos projetos, pouca visibilidade, decisões confusas.",
+      answer: "Nesse caso, temos um projeto focado de 2 semanas para resolver esse fluxo específico. Este serviço faz sentido quando o problema é sistêmico — muitos projetos, pouca visibilidade, decisões confusas.",
     },
   ];
 

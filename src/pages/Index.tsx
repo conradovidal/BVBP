@@ -137,12 +137,12 @@ const Index = () => {
     cta: "Quero mapear meu gargalo",
     link: "/diagnostico-operacional"
   }, {
-    title: "Sprint de Otimização de Processo",
+    title: "Otimização de Processo",
     duration: "2 semanas",
     icon: Zap,
-    description: "Escolhemos 1 fluxo e fazemos um quick win real. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
+    description: "Escolhemos 1 fluxo e entregamos um resultado rápido e visível. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
     features: ["Diagnóstico rápido do fluxo e seus gargalos", "Redesenho do processo com acordos e regras simples", "Ajustes no jeito de trabalhar, entrada, saída, prioridade", "Validação e acompanhamento da implementação"],
-    details: ["1 fluxo por sprint, sem tentar arrumar a empresa", "Foco em reduzir fila e retrabalho", "Resultado visível em pouco tempo"],
+    details: ["1 fluxo por projeto, sem tentar arrumar a empresa", "Foco em reduzir fila e retrabalho", "Resultado visível em pouco tempo"],
     cta: "Quero destravar um fluxo",
     link: "/sprint-otimizacao"
   }, {
@@ -167,7 +167,7 @@ const Index = () => {
     title: "Programa Customizado de Melhoria",
     duration: "6 a 12 semanas",
     icon: Crown,
-    description: "Para quando precisa ir além do quick win. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
+    description: "Para quando precisa pensar no longo prazo. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
     features: ["Plano por ondas com escopo e sequência de execução", "Otimização de 2 a 3 fluxos críticos", "Implementação acompanhada para garantir adoção", "Capacitação do time para manter depois"],
     details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
     cta: "Quero um plano sob medida",
@@ -655,9 +655,9 @@ const Index = () => {
                           </SelectTrigger>
                           <SelectContent className="bg-background border-input z-50">
                             <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
-                            <SelectItem value="Sprint de Otimização de Processo">Sprint de Otimização de Processo</SelectItem>
+                            <SelectItem value="Otimização de Processo">Otimização de Processo</SelectItem>
                             <SelectItem value="Configuração de Gestão e Entrega de Projetos">Configuração de Gestão e Entrega de Projetos</SelectItem>
-                            <SelectItem value="Configuração de Governança de Execução">Configuração de Governança de Execução</SelectItem>
+                            <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
                             <SelectItem value="Programa Customizado de Melhoria">Programa Customizado de Melhoria</SelectItem>
                             <SelectItem value="Outro">Outro</SelectItem>
                           </SelectContent>

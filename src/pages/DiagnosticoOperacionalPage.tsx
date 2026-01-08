@@ -120,7 +120,7 @@ const DiagnosticoOperacionalPage = () => {
   ];
 
   const proximosPassos = [
-    { title: "Sprint de Otimização", description: "Resolver o fluxo identificado em 2 semanas focadas", link: "/sprint-otimizacao" },
+    { title: "Otimização de Processo", description: "Resolver o fluxo identificado em 2 semanas focadas", link: "/sprint-otimizacao" },
     { title: "Configuração de Gestão de Projetos", description: "Estruturar como a empresa toca projetos no geral", link: "/gestao-projetos" },
     { title: "Parar por aqui", description: "Às vezes o melhor próximo passo é não seguir — e isso também é um bom resultado", link: null },
   ];

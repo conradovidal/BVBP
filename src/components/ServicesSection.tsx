@@ -23,10 +23,10 @@ const ServicesSection = () => {
       cta: "Quero mapear meu gargalo"
     },
     {
-      title: "Sprint de Otimização de Processo",
+      title: "Otimização de Processo",
       duration: "2 semanas",
       icon: Zap,
-      description: "Escolhemos 1 fluxo e fazemos um quick win real. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
+      description: "Escolhemos 1 fluxo e entregamos um resultado rápido e visível. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
       features: [
         "Diagnóstico rápido do fluxo e seus gargalos",
         "Redesenho do processo com acordos e regras simples",
@@ -80,7 +80,7 @@ const ServicesSection = () => {
       title: "Programa Customizado de Melhoria",
       duration: "6 a 12 semanas",
       icon: Crown,
-      description: "Para quando precisa ir além do quick win. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
+      description: "Para quando precisa pensar no longo prazo. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
       features: [
         "Plano por ondas com escopo e sequência de execução",
         "Otimização de 2 a 3 fluxos críticos",
