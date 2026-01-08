@@ -97,8 +97,8 @@ const ProgramaCustomizadoPage = () => {
 
   const faqs = [
     {
-      question: "Qual a diferença do Sprint de Otimização?",
-      answer: "O Sprint ataca 1 fluxo em 2 semanas para um quick win rápido. O Programa Customizado vai além: otimiza 2-3 fluxos críticos em ondas, implementa governança mínima e capacita o time para sustentar. É para quem precisa de uma transformação mais profunda e duradoura."
+      question: "Qual a diferença da Otimização de Processo?",
+      answer: "A Otimização ataca 1 fluxo em 2 semanas para um resultado rápido. O Programa Customizado vai além: otimiza 2-3 fluxos críticos em ondas, implementa governança mínima e capacita o time para sustentar. É para quem precisa de uma transformação mais profunda e duradoura."
     },
     {
       question: "Preciso fazer o Diagnóstico Operacional antes?",
@@ -136,7 +136,7 @@ const ProgramaCustomizadoPage = () => {
                 <Crown className="w-16 h-16 mx-auto mb-6 text-white" />
                 <p className="text-white/80 text-lg mb-4">6 a 12 semanas · Múltiplos fluxos · Resultado duradouro</p>
                 <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-                  Para quando o quick win não é suficiente
+                  Para quando é hora de pensar no longo prazo
                 </h1>
                 <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
                   Otimizamos 2-3 fluxos críticos em ondas, implementamos governança mínima para sustentar e capacitamos o time para manter depois.
@@ -227,7 +227,7 @@ const ProgramaCustomizadoPage = () => {
                         {[
                           "Quem quer terceirizar execução — o time continua tocando",
                           "Empresas sem clareza do problema — comece pelo Diagnóstico",
-                          "Quem busca resultado em 2 semanas — para isso, Sprint é melhor",
+                          "Quem busca resultado em 2 semanas — para isso, Otimização é melhor",
                           "Organizações que não podem envolver o time na mudança"
                         ].map((item, index) => (
                           <li key={index} className="flex items-start gap-3">

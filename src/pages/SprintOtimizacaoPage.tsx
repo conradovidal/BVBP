@@ -44,7 +44,7 @@ const SprintOtimizacaoPage = () => {
     phone: "",
     company: "",
     role: "",
-    interest: "Sprint de Otimização de Processo",
+    interest: "Otimização de Processo",
     challenge: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,7 +64,7 @@ const SprintOtimizacaoPage = () => {
         phone: "",
         company: "",
         role: "",
-        interest: "Sprint de Otimização de Processo",
+        interest: "Otimização de Processo",
         challenge: ""
       });
     }, 1000);
@@ -79,7 +79,7 @@ const SprintOtimizacaoPage = () => {
 
   const funcionaBemPara = [
     "Já sabem qual fluxo trava, mas não têm tempo de arrumar",
-    "Precisam de um quick win visível para ganhar tração",
+    "Precisam de um resultado rápido e visível para ganhar tração",
     "Querem reduzir fila, retrabalho ou tempo de ciclo em um processo específico",
     "Buscam resultado prático em poucas semanas",
   ];
@@ -90,7 +90,7 @@ const SprintOtimizacaoPage = () => {
   ];
 
   const escopoItems = [
-    "1 fluxo operacional por sprint",
+    "1 fluxo operacional por projeto",
     "Diagnóstico rápido do estado atual",
     "Redesenho do processo com acordos e regras",
     "Ajustes implementados e acompanhados",
@@ -120,7 +120,7 @@ const SprintOtimizacaoPage = () => {
   ];
 
   const proximosPassos = [
-    { title: "Outro Sprint", description: "Para um segundo fluxo crítico que precisa de atenção", link: null },
+    { title: "Outra Otimização", description: "Para um segundo fluxo crítico que precisa de atenção", link: null },
     { title: "Configuração de Gestão de Projetos", description: "Estruturar como a empresa toca projetos no geral", link: "/gestao-projetos" },
     { title: "Programa Customizado", description: "Melhoria contínua de múltiplos fluxos ao longo do tempo", link: "/programa-customizado" },
   ];
@@ -129,12 +129,12 @@ const SprintOtimizacaoPage = () => {
     {
       question: "Qual a diferença do Diagnóstico?",
       answer:
-        "O Diagnóstico identifica onde está o problema. O Sprint resolve um fluxo específico com implementação acompanhada.",
+        "O Diagnóstico identifica onde está o problema. A Otimização resolve um fluxo específico com implementação acompanhada.",
     },
     {
-      question: "Posso fazer mais de um fluxo por sprint?",
+      question: "Posso fazer mais de um fluxo por projeto?",
       answer:
-        "Não. A regra é 1 fluxo por sprint para garantir profundidade e resultado real.",
+        "Não. A regra é 1 fluxo por projeto para garantir profundidade e resultado real.",
     },
     {
       question: "Preciso ter feito o Diagnóstico antes?",
@@ -149,22 +149,22 @@ const SprintOtimizacaoPage = () => {
     {
       question: "Quanto tempo leva para ver resultado?",
       answer:
-        "O sprint dura 2 semanas. Você já consegue medir diferença no final desse período.",
+        "O projeto dura 2 semanas. Você já consegue medir diferença no final desse período.",
     },
   ];
 
   const emails = [
-    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Sprint%20de%20Otimização" },
-    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Sprint%20de%20Otimização" }
+    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Otimização%20de%20Processo" },
+    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Otimização%20de%20Processo" }
   ];
 
   return (
     <>
       <Helmet>
-        <title>Sprint de Otimização de Processo | BVBP</title>
+        <title>Otimização de Processo | BVBP</title>
         <meta
           name="description"
-          content="Sprint focado para otimizar 1 fluxo crítico em 2 semanas. Menos fila, menos retrabalho, resultado visível."
+          content="Projeto focado para otimizar 1 fluxo crítico em 2 semanas. Menos fila, menos retrabalho, resultado visível."
         />
       </Helmet>
 
@@ -183,7 +183,7 @@ const SprintOtimizacaoPage = () => {
             <div className="max-w-4xl mx-auto text-center">
               <Zap className="w-16 h-16 mx-auto mb-6 text-white" />
               <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-                Sprint de Otimização de Processo
+                Otimização de Processo
               </h1>
               
               <p className="text-xl md:text-2xl text-white/90 mb-6 max-w-3xl mx-auto leading-relaxed italic">
@@ -206,7 +206,7 @@ const SprintOtimizacaoPage = () => {
               </div>
 
               <p className="text-lg text-white/80 font-medium">
-                Quick win real com implementação acompanhada.
+                Resultado rápido com implementação acompanhada.
               </p>
             </div>
           </div>
@@ -273,7 +273,7 @@ const SprintOtimizacaoPage = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto">
               <h2 className="font-heading text-3xl md:text-4xl font-bold text-bvbp-corporate mb-8 text-center">
-                Escopo do Sprint
+                Escopo do Projeto
               </h2>
 
               <ul className="space-y-4 mb-8">
