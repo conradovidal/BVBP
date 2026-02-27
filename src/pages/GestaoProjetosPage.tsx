@@ -305,7 +305,7 @@ const GestaoProjetosPage = () => {
                   <AlertTriangle className="w-5 h-5 mt-0.5 flex-shrink-0" />
                   <span>
                     <strong>Escopo definido:</strong> Otimizamos como projetos são executados, não fluxos individuais. 
-                    Para fluxos específicos, o Sprint de Otimização é mais adequado.
+                    Para fluxos específicos, a Otimização de Processo é mais adequada.
                   </span>
                 </p>
               </Card>
@@ -576,9 +576,9 @@ const GestaoProjetosPage = () => {
                         </SelectTrigger>
                         <SelectContent className="bg-background border-input z-50">
                           <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
-                          <SelectItem value="Sprint de Otimização de Processo">Sprint de Otimização de Processo</SelectItem>
+                          <SelectItem value="Otimização de Processo">Otimização de Processo</SelectItem>
                           <SelectItem value="Configuração de Gestão e Entrega de Projetos">Configuração de Gestão e Entrega de Projetos</SelectItem>
-                          <SelectItem value="Configuração de Governança de Execução">Configuração de Governança de Execução</SelectItem>
+                          <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
                           <SelectItem value="Programa Customizado de Melhoria">Programa Customizado de Melhoria</SelectItem>
                           <SelectItem value="Outro">Outro</SelectItem>
                         </SelectContent>

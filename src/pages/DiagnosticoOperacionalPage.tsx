@@ -413,7 +413,7 @@ const DiagnosticoOperacionalPage = () => {
                 Próximos passos
               </h2>
               <p className="text-lg text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
-                Dependendo do diagnóstico, o próximo passo pode ser um sprint de otimização, a configuração do sistema de projetos, ou nenhum próximo passo.
+                Dependendo do diagnóstico, o próximo passo pode ser uma Otimização de Processo, a configuração do sistema de projetos, ou nenhum próximo passo.
               </p>
 
               <div className="grid md:grid-cols-3 gap-6">
@@ -586,9 +586,9 @@ const DiagnosticoOperacionalPage = () => {
                         </SelectTrigger>
                         <SelectContent className="bg-background border-input z-50">
                           <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
-                          <SelectItem value="Sprint de Otimização de Processo">Sprint de Otimização de Processo</SelectItem>
+                          <SelectItem value="Otimização de Processo">Otimização de Processo</SelectItem>
                           <SelectItem value="Configuração de Gestão e Entrega de Projetos">Configuração de Gestão e Entrega de Projetos</SelectItem>
-                          <SelectItem value="Configuração de Governança de Execução">Configuração de Governança de Execução</SelectItem>
+                          <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
                           <SelectItem value="Programa Customizado de Melhoria">Programa Customizado de Melhoria</SelectItem>
                           <SelectItem value="Outro">Outro</SelectItem>
                         </SelectContent>
