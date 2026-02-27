@@ -73,15 +73,24 @@ const Footer = () => {
           <div>
             <h3 className="font-heading text-lg font-bold mb-4">Serviços</h3>
             <div className="space-y-2">
-              {services.map((service, index) => (
-                <a
-                  key={index}
-                  href={service === "Diagnóstico Operacional" ? "/diagnostico-operacional" : "/#servicos"}
-                  className="block text-white/80 hover:text-bvbp-growth transition-smooth"
-                >
-                  {service}
-                </a>
-              ))}
+              {services.map((service, index) => {
+                const links: Record<string, string> = {
+                  "Diagnóstico Operacional": "/diagnostico-operacional",
+                  "Otimização de Processos": "/sprint-otimizacao",
+                  "Gestão de Projetos": "/gestao-projetos",
+                  "Governança e Execução": "/retainer-governanca",
+                  "Programa Customizado": "/programa-customizado"
+                };
+                return (
+                  <a
+                    key={index}
+                    href={links[service] || "/#servicos"}
+                    className="block text-sm text-white/80 hover:text-bvbp-growth transition-smooth"
+                  >
+                    {service}
+                  </a>
+                );
+              })}
             </div>
           </div>
 

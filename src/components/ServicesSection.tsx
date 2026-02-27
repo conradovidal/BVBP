@@ -42,7 +42,7 @@ const ServicesSection = () => {
     },
     {
       title: "Configuração de Gestão e Entrega de Projetos",
-      duration: "2 semanas",
+      duration: "3-4 semanas",
       icon: Settings,
       description: "Criamos o sistema mínimo para tocar projetos com cadência, papéis claros e reporting que vira decisão.",
       features: [
