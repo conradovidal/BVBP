@@ -22,7 +22,7 @@ const CalculatorPage = () => {
     <>
       <Helmet>
         <title>Calculadora de Perdas Operacionais | BVBP - Descubra Quanto Está Perdendo</title>
-        <meta name="description" content="Calcule quanto sua empresa está perdendo mensalmente com processos ineficientes. Relatório personalizado gratuito em 3 minutos." />
+        <meta name="description" content="Calcule quanto sua empresa está perdendo mensalmente com processos ineficientes. Resultados instantâneos em 3 minutos." />
         <meta name="keywords" content="calculadora roi, perdas operacionais, eficiência empresarial, consultoria processos, BVBP" />
       </Helmet>
       

@@ -256,7 +256,7 @@ const ComparativoServicosPage = () => {
         <title>Comparativo de Serviços | Qual é o certo para você? | BVBP</title>
         <meta
           name="description"
-          content="Compare os serviços da BVBP e descubra qual é o mais adequado para sua situação. Diagnóstico, Sprint, Gestão de Projetos, Governança ou Programa Customizado."
+          content="Compare os serviços da BVBP e descubra qual é o mais adequado para sua situação. Diagnóstico, Otimização, Gestão de Projetos, Governança ou Programa Customizado."
         />
       </Helmet>
 

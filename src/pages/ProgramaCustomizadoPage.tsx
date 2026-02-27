@@ -158,7 +158,7 @@ const ProgramaCustomizadoPage = () => {
                       </h3>
                       <ul className="space-y-4">
                         {[
-                          "Empresas que já fizeram um Diagnóstico ou Sprint e viram resultado",
+                          "Empresas que já fizeram um Diagnóstico ou Otimização e viram resultado",
                           "Operação com múltiplos fluxos críticos que precisam de ajuste",
                           "Liderança que quer transformação estruturada, não pontual",
                           "Time que precisa de capacitação para manter os novos processos"
@@ -399,7 +399,7 @@ const ProgramaCustomizadoPage = () => {
                           </div>
                           <div>
                             <h3 className="font-heading font-bold text-lg text-bvbp-corporate mb-2">
-                              Sprints de Otimização adicionais
+                              Otimizações de Processo adicionais
                             </h3>
                             <p className="text-muted-foreground text-sm">
                               Para fluxos que ficaram fora do escopo inicial ou surgiram depois da transformação.
@@ -516,7 +516,7 @@ const ProgramaCustomizadoPage = () => {
                             <SelectContent>
                               <SelectItem value="Programa Customizado de Melhoria">Programa Customizado de Melhoria</SelectItem>
                               <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
-                              <SelectItem value="Sprint de Otimização">Sprint de Otimização</SelectItem>
+                              <SelectItem value="Otimização de Processo">Otimização de Processo</SelectItem>
                               <SelectItem value="Gestão de Projetos">Gestão de Projetos</SelectItem>
                               <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
                               <SelectItem value="Outro">Outro</SelectItem>
