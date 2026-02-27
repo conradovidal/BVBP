@@ -1,54 +1,63 @@
 
 
-## Revisao de Consistencia: Duracoes e Nomes dos Servicos
+## Revisao SEO e Consistencia de Nomenclatura
 
-### Referencia (fonte de verdade: Home + Comparativo + ServiceNavigation)
+### Problemas encontrados
 
-| Servico | Duracao correta | Nome correto |
-|---------|----------------|--------------|
-| Diagnostico Operacional | 1 semana | Diagnostico Operacional |
-| Otimizacao de Processo | 2 semanas | Otimizacao de Processo |
-| Gestao de Projetos | 3-4 semanas | Configuracao de Gestao e Entrega de Projetos |
-| Governanca | Mensal | Implementacao de Governanca de Execucao |
-| Programa Customizado | 6 a 12 semanas | Programa Customizado de Melhoria |
+Alem das meta descriptions, encontrei referencias antigas a "Sprint" e "Configuracao de Governanca" espalhadas pelos formularios e textos das paginas de servico.
 
 ---
 
-### Inconsistencias encontradas
+### 1. Meta descriptions a corrigir
 
-#### 1. `src/components/ServicesSection.tsx` (usada na LandingPage)
-- **Governanca**: duracao diz "2 semanas" -- deveria ser "Mensal"
-- **Governanca**: titulo diz "Configuracao de Governanca de Execucao" -- deveria ser "Implementacao de Governanca de Execucao"
-
-#### 2. `src/pages/DiagnosticoOperacionalPage.tsx`
-- **Hero badge**: diz "10-15 dias" -- deveria ser "1 semana"
-- **Card de prazo**: diz "10-15 dias" -- deveria ser "1 semana"
-- **Meta description**: menciona "plano de 2 semanas" (isso se refere ao plano de acao entregue, nao a duracao do servico -- OK, manter)
-
-#### 3. `src/components/calculator/CalculatorContactSection.tsx`
-- **Diagnostico**: duracao diz "2-3 semanas" -- deveria ser "1 semana"
-- **Otimizacao**: nome diz "Sprint de Otimizacao de Processo" -- deveria ser "Otimizacao de Processo"
-- **Otimizacao**: duracao diz "4-6 semanas" -- deveria ser "2 semanas"
-- **Programa**: duracao diz "Sob demanda" -- deveria ser "6 a 12 semanas"
-
-#### 4. Paginas consistentes (sem alteracao necessaria)
-- `GestaoProjetosPage.tsx`: 3-4 semanas -- OK
-- `RetainerGovernancaPage.tsx`: Mensal -- OK
-- `SprintOtimizacaoPage.tsx`: 2 semanas -- OK
-- `ProgramaCustomizadoPage.tsx`: 6 a 12 semanas -- OK
-- `ComparativoServicosPage.tsx`: todas corretas -- OK
-- `ServiceNavigation.tsx`: todas corretas -- OK
-- `Index.tsx`: todas corretas -- OK
+| Pagina | Problema | Correcao |
+|--------|----------|----------|
+| `CalculatorPage.tsx` (L25) | Menciona "Relatorio personalizado gratuito" (nao existe) | "Calcule quanto sua empresa esta perdendo mensalmente com processos ineficientes. Resultados instantaneos em 3 minutos." |
+| `ComparativoServicosPage.tsx` (L259) | Menciona "Sprint" | Trocar "Sprint" por "Otimizacao" |
+| `DiagnosticoOperacionalPage.tsx` (L162) | OK - consistente | Nenhuma alteracao |
+| `SprintOtimizacaoPage.tsx` (L163) | OK - consistente | Nenhuma alteracao |
+| `GestaoProjetosPage.tsx` (L200) | OK - consistente | Nenhuma alteracao |
+| `RetainerGovernancaPage.tsx` (L199) | OK - consistente | Nenhuma alteracao |
+| `ProgramaCustomizadoPage.tsx` (L81) | OK - consistente | Nenhuma alteracao |
 
 ---
 
-### Arquivos a modificar
+### 2. Select dropdowns nos formularios (nomenclatura antiga)
 
-| Arquivo | Alteracoes |
-|---------|-----------|
-| `src/components/ServicesSection.tsx` | Governanca: duracao "2 semanas" para "Mensal", titulo para "Implementacao de Governanca de Execucao" |
-| `src/pages/DiagnosticoOperacionalPage.tsx` | Hero e card de prazo: "10-15 dias" para "1 semana" (2 locais) |
-| `src/components/calculator/CalculatorContactSection.tsx` | Corrigir nome e duracao dos 3 servicos listados |
+Tres paginas usam "Sprint de Otimizacao de Processo" e "Configuracao de Governanca de Execucao" nos selects:
 
-### Total: 3 arquivos, 7 correcoes pontuais
+| Arquivo | Correcoes no Select |
+|---------|---------------------|
+| `DiagnosticoOperacionalPage.tsx` (L589-591) | "Sprint de Otimizacao de Processo" -> "Otimizacao de Processo"; "Configuracao de Governanca" -> "Implementacao de Governanca" |
+| `SprintOtimizacaoPage.tsx` (L590-592) | Idem |
+| `GestaoProjetosPage.tsx` (L579-581) | Idem |
+| `RetainerGovernancaPage.tsx` (L582-583) | "Sprint de Otimizacao de Processo" -> "Otimizacao de Processo" (Governanca ja esta OK neste) |
+| `ProgramaCustomizadoPage.tsx` (L519) | "Sprint de Otimizacao" -> "Otimizacao de Processo" |
+
+---
+
+### 3. Textos no corpo das paginas
+
+| Arquivo | Linha | Problema | Correcao |
+|---------|-------|----------|----------|
+| `DiagnosticoOperacionalPage.tsx` | L416 | "sprint de otimizacao" em texto descritivo | "uma Otimizacao de Processo" |
+| `GestaoProjetosPage.tsx` | L308 | "Sprint de Otimizacao" em texto | "a Otimizacao de Processo" |
+| `ProgramaCustomizadoPage.tsx` | L161 | "Diagnostico ou Sprint" | "Diagnostico ou Otimizacao" |
+| `ProgramaCustomizadoPage.tsx` | L402 | "Sprints de Otimizacao adicionais" | "Otimizacoes de Processo adicionais" |
+
+---
+
+### Resumo
+
+| Arquivo | Qtd alteracoes |
+|---------|---------------|
+| `CalculatorPage.tsx` | 1 (meta description) |
+| `ComparativoServicosPage.tsx` | 1 (meta description) |
+| `DiagnosticoOperacionalPage.tsx` | 3 (texto + 2 selects) |
+| `SprintOtimizacaoPage.tsx` | 2 (2 selects) |
+| `GestaoProjetosPage.tsx` | 3 (texto + 2 selects) |
+| `RetainerGovernancaPage.tsx` | 1 (1 select) |
+| `ProgramaCustomizadoPage.tsx` | 3 (texto x2 + 1 select) |
+
+**Total: 7 arquivos, 14 correcoes pontuais**
 
