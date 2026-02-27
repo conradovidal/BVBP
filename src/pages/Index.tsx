@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, Users, Zap, TrendingUp, Search, Sparkles, Check, Settings, Lightbulb, LinkedinIcon, Heart, Award, Clock, ArrowRight, Wrench, Rocket, Star, Crown, MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, HelpCircle } from "lucide-react";
+import { CheckCircle, Target, Users, Zap, TrendingUp, AlertTriangle, Sparkles, Check, X, Settings, Lightbulb, LinkedinIcon, Heart, Award, Clock, ArrowRight, Wrench, Rocket, Star, Crown, MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, HelpCircle, Search } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState, useEffect } from "react";
@@ -203,7 +203,7 @@ const Index = () => {
           <section id="inicio" ref={heroRef as React.RefObject<HTMLElement>} className={`relative py-20 lg:py-32 bg-gradient-hero overflow-hidden transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="absolute inset-0 bg-black/5"></div>
             <div className="container mx-auto px-4 relative z-10">
-              <div className="max-w-5xl mx-auto text-center space-y-12">
+              <div className="max-w-5xl mx-auto text-center space-y-8">
                 <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-relaxed">
                   <span className="block animate-fade-in">Você está deixando</span>
                   <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:150ms] opacity-0 [animation-fill-mode:forwards]">dinheiro na mesa</span>
@@ -227,15 +227,19 @@ const Index = () => {
                   </span>
                 </h1>
 
-                
+                <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto animate-fade-in [animation-delay:500ms] opacity-0 [animation-fill-mode:forwards]">
+                  Organizamos processos para CEOs que estão cansados de apagar incêndio
+                </p>
 
-                <div className="pt-8 animate-fade-in [animation-delay:400ms] flex flex-col gap-4 justify-center items-center">
+                <div className="pt-4 animate-fade-in [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards] flex flex-col gap-4 justify-center items-center">
                   <InteractiveHoverButton 
                     text="Quero parar de perder dinheiro" 
+                    className="min-w-[320px] text-lg"
                     onClick={() => document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' })}
                   />
                   <InteractiveHoverButton 
                     text="Calculadora ROI" 
+                    className="min-w-[320px] text-lg"
                     onClick={() => window.location.href = '/calculadora-roi'}
                   />
                 </div>
@@ -250,7 +254,7 @@ const Index = () => {
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-warning mb-8 shadow-warning">
-                    <Search className="h-8 w-8 text-white" />
+                    <AlertTriangle className="h-8 w-8 text-white" />
                   </div>
                   <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
                     Reconhece estes problemas?
@@ -273,10 +277,11 @@ const Index = () => {
                 }, {
                   title: "Dinheiro jogado fora com retrabalho",
                   description: "Processos confusos geram desperdício"
-                }].map((problem, index) => <div key={index} className="group p-6 bg-gradient-to-br from-gray-50 to-white rounded-lg border-2 border-gray-100 hover:border-bvbp-growth hover:shadow-strong transition-all duration-500 hover:-translate-y-2">
+                }].map((problem, index) => <div key={index} className={`group p-8 bg-gradient-to-br from-gray-50 to-white rounded-lg border-2 border-gray-100 hover:border-bvbp-growth hover:shadow-strong transition-all duration-500 hover:-translate-y-2 animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
                       <div className="flex items-start space-x-4">
-                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-gray-200 bg-gray-100 group-hover:bg-bvbp-growth group-hover:border-bvbp-growth transition-all duration-300">
-                          <Check className="h-6 w-6 text-gray-400 group-hover:text-white transition-all duration-300" />
+                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-red-200 bg-red-50 group-hover:bg-bvbp-growth group-hover:border-bvbp-growth transition-all duration-300">
+                          <X className="h-6 w-6 text-red-400 group-hover:opacity-0 absolute transition-all duration-300" />
+                          <Check className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 absolute transition-all duration-300" />
                         </div>
                         <div>
                           <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
@@ -291,7 +296,7 @@ const Index = () => {
                 </div>
 
                 <div className="text-center mt-16">
-                  <Card className="p-8 bg-white border-0 shadow-soft">
+                  <Card className="p-8 bg-white border-l-4 border-l-bvbp-growth shadow-soft">
                     <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">O custo real disso</h3>
                     <p className="text-lg text-foreground leading-relaxed mb-6">
                       Empresas médias perdem em média 20-30% de receita com retrabalho e processos confusos.
@@ -324,7 +329,7 @@ const Index = () => {
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {[{
                   icon: Search,
                   title: "Diagnóstico Claro",
@@ -341,16 +346,16 @@ const Index = () => {
                   icon: Lightbulb,
                   title: "Autonomia em 90 dias",
                   description: "Seu time ganha foco e autonomia, e você para de viver apagando incêndio."
-                }].map((diff, index) => <div key={index} className="group text-center p-8 hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-subtle relative overflow-hidden rounded-lg">
+                }].map((diff, index) => <div key={index} className={`group text-center p-8 hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-subtle relative overflow-hidden rounded-lg animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
                       <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                       <div className="relative z-10">
-                        <div className="w-20 h-20 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                          <diff.icon className="h-10 w-10 text-white" />
+                        <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
+                          <diff.icon className="h-8 w-8 text-white" />
                         </div>
-                        <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
+                        <h3 className="font-heading font-bold text-xl tracking-tight text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
                           {diff.title}
                         </h3>
-                        <p className="text-muted-foreground leading-relaxed">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                           {diff.description}
                         </p>
                       </div>
@@ -377,7 +382,7 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {services.slice(0, 3).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index} className="group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl">
+                  return <Card key={index} className={`group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
                         {/* Hover overlay */}
                         <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                         
@@ -391,12 +396,14 @@ const Index = () => {
                             {service.title}
                           </h3>
 
-                          <div className="flex items-center justify-center mb-4">
-                            <div className="text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4 inline mr-1" />
-                              {service.duration}
+                          {service.duration && (
+                            <div className="flex items-center justify-center mb-4">
+                              <span className="inline-flex items-center gap-1.5 text-sm text-bvbp-growth bg-muted/50 px-3 py-1 rounded-full">
+                                <Clock className="h-4 w-4" />
+                                {service.duration}
+                              </span>
                             </div>
-                          </div>
+                          )}
 
                           <p className="text-muted-foreground">
                             {service.description}
@@ -413,7 +420,7 @@ const Index = () => {
                         </div>
 
                         {/* Details */}
-                        <div className="relative bg-muted/30 p-4 rounded-lg mb-6">
+                        <div className="relative border-t border-gray-100 pt-4 mb-6">
                           <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
                           <div className="space-y-1">
                             {service.details.map((detail, detailIndex) => <div key={detailIndex} className="text-sm text-muted-foreground">
@@ -423,7 +430,7 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => {
+                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" onClick={() => {
                           if (service.link) {
                             window.location.href = service.link;
                           } else {
@@ -440,7 +447,7 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                   {services.slice(3, 6).map((service, index) => {
                   const IconComponent = service.icon;
-                  return <Card key={index + 3} className="group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl">
+                  return <Card key={index + 3} className={`group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${(index + 3) * 100}ms` }}>
                         {/* Hover overlay */}
                         <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                         
@@ -454,12 +461,14 @@ const Index = () => {
                             {service.title}
                           </h3>
 
-                          <div className="flex items-center justify-center mb-4">
-                            <div className="text-sm text-muted-foreground">
-                              <Clock className="h-4 w-4 inline mr-1" />
-                              {service.duration}
+                          {service.duration && (
+                            <div className="flex items-center justify-center mb-4">
+                              <span className="inline-flex items-center gap-1.5 text-sm text-bvbp-growth bg-muted/50 px-3 py-1 rounded-full">
+                                <Clock className="h-4 w-4" />
+                                {service.duration}
+                              </span>
                             </div>
-                          </div>
+                          )}
 
                           <p className="text-muted-foreground">
                             {service.description}
@@ -476,7 +485,7 @@ const Index = () => {
                         </div>
 
                         {/* Details */}
-                        <div className="relative bg-muted/30 p-4 rounded-lg mb-6">
+                        <div className="relative border-t border-gray-100 pt-4 mb-6">
                           <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
                           <div className="space-y-1">
                             {service.details.map((detail, detailIndex) => <div key={detailIndex} className="text-sm text-muted-foreground">
@@ -486,7 +495,7 @@ const Index = () => {
                         </div>
 
                         {/* CTA */}
-                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" size="lg" onClick={() => {
+                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" onClick={() => {
                           if (service.link) {
                             window.location.href = service.link;
                           } else {
@@ -526,8 +535,8 @@ const Index = () => {
               </div>
 
               {/* Nosso Time - Grid 2 colunas, cards verticais */}
-              <div className="max-w-6xl mx-auto mb-20">
-                <div className="text-center mb-12">
+              <div className="max-w-6xl mx-auto mb-14">
+                <div className="text-center mb-8">
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-hero mb-6 shadow-soft">
                     <Users className="h-8 w-8 text-white" />
                   </div>
@@ -537,8 +546,8 @@ const Index = () => {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-8">
-                  {team.map((member, index) => <Card key={index} className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white">
-                      <img src={member.photo} alt={member.name} className="w-48 h-48 rounded-xl object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300" />
+                  {team.map((member, index) => <Card key={index} className={`group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white border-t-4 border-t-bvbp-growth animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 150}ms` }}>
+                      <img src={member.photo} alt={member.name} className="w-56 h-56 rounded-xl object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300" />
                       <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-2">
                         {member.name}
                       </h3>
@@ -567,16 +576,16 @@ const Index = () => {
                 <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                   {values.map((value, index) => {
                   const IconComponent = value.icon;
-                  return <Card key={index} className="group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white relative overflow-hidden">
+                  return <Card key={index} className={`group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white relative overflow-hidden animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
                         <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
                         <div className="relative z-10">
-                          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-hero mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                            <IconComponent className="h-10 w-10 text-white" />
+                          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-hero mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
+                            <IconComponent className="h-7 w-7 text-white" />
                           </div>
                           <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
                             {value.title}
                           </h3>
-                          <p className="text-muted-foreground leading-relaxed text-lg">
+                          <p className="text-muted-foreground leading-relaxed">
                             {value.description}
                           </p>
                         </div>
@@ -680,7 +689,7 @@ const Index = () => {
                       </div>
 
                       <Button type="submit" variant="hero" size="xl" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "ENVIANDO..." : "QUERO AGENDAR CONVERSA"}
+                        {isSubmitting ? "Enviando..." : "Agendar minha conversa"}
                       </Button>
                     </form>
                   </Card>
@@ -688,7 +697,7 @@ const Index = () => {
 
                 {/* Contact Information */}
                 <div>
-                  <Card className="p-8">
+                  <Card className="p-8 bg-gradient-subtle border-0">
                     <div className="mb-6">
                       <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">
                         Fale Direto Conosco
@@ -698,7 +707,7 @@ const Index = () => {
                       </p>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-4 mb-8">
                       {emails.map((item, index) => (
                         <a 
                           key={index}
@@ -708,6 +717,16 @@ const Index = () => {
                           <MailIcon className="h-5 w-5" />
                           <span>{item.email}</span>
                         </a>
+                      ))}
+                    </div>
+
+                    {/* Benefits */}
+                    <div className="space-y-3">
+                      {benefits.map((benefit, index) => (
+                        <div key={index} className="flex items-center space-x-3">
+                          <CheckCircle className="h-5 w-5 text-bvbp-growth flex-shrink-0" />
+                          <span className="text-foreground">{benefit}</span>
+                        </div>
                       ))}
                     </div>
                   </Card>
