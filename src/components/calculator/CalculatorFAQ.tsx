@@ -4,10 +4,10 @@ import { MessageCircle, Calculator } from "lucide-react";
 const CalculatorFAQ = () => {
   const faqs = [{
     question: "Os dados são confidenciais?",
-    answer: "Totalmente. Usamos criptografia de ponta e armazenamos os dados apenas para gerar seu relatório personalizado. Nunca compartilhamos informações com terceiros e você pode solicitar a exclusão a qualquer momento."
+    answer: "Totalmente. Os dados inseridos na calculadora são usados apenas para gerar os resultados na tela. Nunca compartilhamos informações com terceiros e você pode solicitar a exclusão a qualquer momento."
   }, {
     question: "Vão me bombardear com ligações?",
-    answer: "Não. Nosso compromisso é com a qualidade, não com vendas agressivas. Você decide se quer conversar conosco. Enviamos apenas o relatório prometido e, opcionalmente, dicas valiosas por email (se você autorizar)."
+    answer: "Não. Nosso compromisso é com a qualidade, não com vendas agressivas. Você decide se quer conversar conosco. Só entramos em contato se você solicitar."
   }, {
     question: "É realmente gratuito?",
     answer: "Sim. A calculadora e o relatório são 100% gratuitos. Nosso diagnóstico completo PAGO tem mais profundidade e inclui visita presencial, mas você já recebe valor real sem pagar nada."
@@ -18,8 +18,8 @@ const CalculatorFAQ = () => {
     question: "E se minha empresa for muito específica?",
     answer: "A calculadora funciona para 90% das SMBs. Se seu negócio tem particularidades muito específicas, o relatório indicará isso e sugeriremos uma análise personalizada mais aprofundada."
   }, {
-    question: "Quanto tempo leva para receber o relatório?",
-    answer: "O relatório é gerado instantaneamente e enviado por email imediatamente após você completar o formulário. Se não receber em 5 minutos, verifique sua caixa de spam."
+    question: "Os resultados são instantâneos?",
+    answer: "Sim. Os cálculos aparecem na tela em tempo real, conforme você preenche os dados. Sem espera, sem cadastro prévio."
   }];
   return (
     <section className="py-16 bg-background">
