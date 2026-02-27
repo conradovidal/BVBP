@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { submitLead } from "@/lib/submitLead";
 import { 
   Search, 
   Zap, 
@@ -135,22 +136,17 @@ const ComparativoServicosPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      toast({
-        title: "Recebemos seus dados.",
-        description: "Responderemos em até 4 horas úteis."
-      });
-      setIsSubmitting(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        role: "",
-        interest: "",
-        challenge: ""
-      });
-    }, 1000);
+    
+    const result = await submitLead({ formData, source: 'comparativo-servicos' });
+    
+    if (result.success) {
+      toast({ title: "Recebemos seus dados.", description: "Responderemos em até 4 horas úteis." });
+      setFormData({ name: "", email: "", phone: "", company: "", role: "", interest: "", challenge: "" });
+    } else {
+      toast({ title: "Dados inválidos", description: result.errors?.join(", ") || "Verifique os campos.", variant: "destructive" });
+    }
+    
+    setIsSubmitting(false);
   };
 
   const handleInputChange = (field: string, value: string) => {

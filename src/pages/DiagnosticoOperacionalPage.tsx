@@ -18,6 +18,7 @@ import { XCircle, AlertTriangle, FileText, Map, ListChecks, Calendar, ArrowRight
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { submitLead } from "@/lib/submitLead";
 
 import { Link } from "react-router-dom";
 
@@ -52,22 +53,17 @@ const DiagnosticoOperacionalPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      toast({
-        title: "Recebemos seus dados.",
-        description: "Responderemos em até 4 horas úteis."
-      });
-      setIsSubmitting(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        role: "",
-        interest: "Diagnóstico Operacional",
-        challenge: ""
-      });
-    }, 1000);
+    
+    const result = await submitLead({ formData, source: 'diagnostico-operacional' });
+    
+    if (result.success) {
+      toast({ title: "Recebemos seus dados.", description: "Responderemos em até 4 horas úteis." });
+      setFormData({ name: "", email: "", phone: "", company: "", role: "", interest: "Diagnóstico Operacional", challenge: "" });
+    } else {
+      toast({ title: "Dados inválidos", description: result.errors?.join(", ") || "Verifique os campos.", variant: "destructive" });
+    }
+    
+    setIsSubmitting(false);
   };
 
   const handleInputChange = (field: string, value: string) => {
