@@ -82,7 +82,7 @@ serve(async (req) => {
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'BVBP Leads <onboarding@resend.dev>',
+        from: 'BVBP Leads <leads@contato.bvbp.com.br>',
         to: recipients,
         subject: `[BVBP Lead] ${name} — ${interest || 'Contato'}`,
         html: htmlBody,
