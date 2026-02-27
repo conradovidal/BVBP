@@ -11,8 +11,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { validateLeadData } from "@/lib/leadValidation";
+import { submitLead } from "@/lib/submitLead";
 import { Link } from "react-router-dom";
 
 const ProgramaCustomizadoPage = () => {
@@ -32,59 +31,16 @@ const ProgramaCustomizadoPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Validate form data before submitting
-    const dataToValidate = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone || null,
-      company: formData.company,
-      role: formData.role || null,
-      interest: formData.interest,
-      challenge: formData.challenge || null,
-      source: 'programa-customizado-page',
-      page_url: window.location.href
-    };
-
-    const validation = validateLeadData(dataToValidate);
+    const result = await submitLead({ formData, source: 'programa-customizado' });
     
-    if (!validation.success) {
-      toast({
-        title: "Dados inválidos",
-        description: validation.errors?.join(", ") || "Verifique os campos e tente novamente.",
-        variant: "destructive"
-      });
-      setIsSubmitting(false);
-      return;
+    if (result.success) {
+      toast({ title: "Recebemos seus dados.", description: "Responderemos em até 4 horas úteis." });
+      setFormData({ name: "", email: "", phone: "", company: "", role: "", interest: "Programa Customizado de Melhoria", challenge: "" });
+    } else {
+      toast({ title: "Dados inválidos", description: result.errors?.join(", ") || "Verifique os campos.", variant: "destructive" });
     }
-
-    try {
-      const { error } = await supabase.from('leads').insert(validation.data!);
-
-      if (error) throw error;
-
-      toast({
-        title: "Recebemos seus dados.",
-        description: "Responderemos em até 4 horas úteis."
-      });
-      
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        role: "",
-        interest: "Programa Customizado de Melhoria",
-        challenge: ""
-      });
-    } catch (error) {
-      toast({
-        title: "Erro ao enviar",
-        description: "Por favor, tente novamente.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    
+    setIsSubmitting(false);
   };
 
   const handleInputChange = (field: string, value: string) => {

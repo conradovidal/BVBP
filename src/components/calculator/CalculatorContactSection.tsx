@@ -7,9 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowRight, Send, Users, Target, Cog, Layers } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { CalculatorResults, ProcessCalculatorData } from "./CalculatorForm";
-import { validateLeadData } from "@/lib/leadValidation";
+import { submitLead } from "@/lib/submitLead";
 
 const services = [
   { 
@@ -60,58 +59,29 @@ const CalculatorContactSection = ({ calculatorData, results }: CalculatorContact
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Validate form data before submitting
-    const dataToValidate = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone || null,
-      company: formData.company,
-      role: formData.role || null,
-      interest: formData.interest,
-      challenge: formData.challenge || null,
+    const calcData = calculatorData && results ? {
+      ...calculatorData,
+      monthlyLoss: results.monthlyLoss,
+      annualLoss: results.annualLoss
+    } : null;
+    
+    const result = await submitLead({ 
+      formData, 
       source: 'calculator',
-      page_url: window.location.href,
-      calculator_data: calculatorData && results ? {
-        ...calculatorData,
-        monthlyLoss: results.monthlyLoss,
-        annualLoss: results.annualLoss
-      } : null
-    };
-
-    const validation = validateLeadData(dataToValidate);
+      calculatorData: calcData as Record<string, unknown> | null,
+    });
     
-    if (!validation.success) {
-      toast({
-        title: "Dados inválidos",
-        description: validation.errors?.join(", ") || "Verifique os campos e tente novamente.",
-        variant: "destructive"
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    const { error } = await supabase.from('leads').insert(validation.data!);
-    
-    if (error) {
-      toast({
-        title: "Erro ao enviar",
-        description: "Tente novamente ou entre em contato por e-mail.",
-        variant: "destructive"
-      });
-    } else {
+    if (result.success) {
       toast({
         title: "Mensagem enviada!",
         description: "Entraremos em contato em até 4 horas úteis.",
       });
-      
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        role: "",
-        interest: "",
-        challenge: ""
+      setFormData({ name: "", email: "", phone: "", company: "", role: "", interest: "", challenge: "" });
+    } else {
+      toast({
+        title: "Dados inválidos",
+        description: result.errors?.join(", ") || "Verifique os campos e tente novamente.",
+        variant: "destructive"
       });
     }
     
