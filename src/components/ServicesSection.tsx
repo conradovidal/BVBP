@@ -59,8 +59,8 @@ const ServicesSection = () => {
       cta: "Quero organizar meus projetos"
     },
     {
-      title: "Configuração de Governança de Execução",
-      duration: "2 semanas",
+      title: "Implementação de Governança de Execução",
+      duration: "Mensal",
       icon: TrendingUp,
       description: "Implementamos uma governança leve para dar ritmo, visibilidade e alinhamento sem burocracia.",
       features: [
