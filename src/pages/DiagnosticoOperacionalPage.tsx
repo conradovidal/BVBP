@@ -192,7 +192,7 @@ const DiagnosticoOperacionalPage = () => {
                 </span>
                 <span className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  10-15 dias
+                  1 semana
                 </span>
                 <span className="flex items-center gap-2">
                   <Lightbulb className="w-5 h-5" />
@@ -360,7 +360,7 @@ const DiagnosticoOperacionalPage = () => {
                   </h2>
                   <Card className="p-6 bg-bvbp-corporate text-white h-fit">
                     <Clock className="h-8 w-8 mb-4" />
-                    <p className="text-2xl font-bold mb-2">10–15 dias</p>
+                    <p className="text-2xl font-bold mb-2">1 semana</p>
                     <p className="text-white/80 text-sm">Escopo e ritmo definidos desde o início</p>
                   </Card>
                 </div>

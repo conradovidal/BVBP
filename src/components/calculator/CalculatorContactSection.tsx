@@ -13,19 +13,19 @@ import { submitLead } from "@/lib/submitLead";
 const services = [
   { 
     title: "Diagnóstico Operacional", 
-    duration: "2-3 semanas",
+    duration: "1 semana",
     icon: Target,
     link: "/diagnostico-operacional"
   },
   { 
-    title: "Sprint de Otimização de Processo", 
-    duration: "4-6 semanas",
+    title: "Otimização de Processo", 
+    duration: "2 semanas",
     icon: Cog,
     link: null
   },
   { 
     title: "Programa Customizado de Melhoria", 
-    duration: "Sob demanda",
+    duration: "6 a 12 semanas",
     icon: Layers,
     link: null
   },
