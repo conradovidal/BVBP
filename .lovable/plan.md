@@ -1,30 +1,32 @@
 
 
-## Corrigir FAQ da Calculadora
+## Corrigir remetente + Testar fluxo end-to-end
 
-### Problema
+### Problema encontrado
 
-Tres perguntas da FAQ fazem referencia a "envio de relatorio por email", funcionalidade que nao existe. Isso cria expectativa falsa no usuario.
+A edge function `notify-new-lead` ainda usa o remetente de teste do Resend (`onboarding@resend.dev`) na linha 85. Com o dominio `contato.bvbp.com.br` verificado, isso precisa ser atualizado para garantir entrega confiavel.
 
-**Trechos problematicos:**
+### Alteracao
 
-1. **"Os dados sao confidenciais?"** - menciona "gerar seu relatorio personalizado"
-2. **"Vao me bombardear com ligacoes?"** - menciona "Enviamos apenas o relatorio prometido"
-3. **"Quanto tempo leva para receber o relatorio?"** - inteiramente sobre envio de relatorio por email, incluindo "enviado por email imediatamente" e "verifique sua caixa de spam"
+**Arquivo:** `supabase/functions/notify-new-lead/index.ts`
 
-### Solucao
+- **Linha 85**: Trocar `from: 'BVBP Leads <onboarding@resend.dev>'` por `from: 'BVBP Leads <leads@contato.bvbp.com.br>'`
 
-Reescrever as 3 respostas para refletir o funcionamento real: a calculadora mostra os resultados na tela instantaneamente, e o usuario pode solicitar contato para aprofundar a analise.
+### Teste end-to-end
 
-| FAQ | Texto corrigido |
-|-----|-----------------|
-| "Os dados sao confidenciais?" | Remover referencia a "relatorio personalizado", focar em seguranca dos dados inseridos na calculadora |
-| "Vao me bombardear com ligacoes?" | Remover "relatorio prometido", manter foco em respeito ao usuario e contato apenas se solicitado |
-| "Quanto tempo leva para receber o relatorio?" | Reformular para "Os resultados sao instantaneos?" explicando que os calculos aparecem na tela em tempo real |
+Apos o deploy da edge function atualizada, testarei o fluxo completo:
 
-### Arquivo modificado
+1. Abrir o formulario de contato na pagina inicial
+2. Preencher com dados de teste (nome, email, empresa, interesse)
+3. Enviar o formulario
+4. Verificar toast de sucesso
+5. Confirmar que o lead foi salvo na tabela `leads` do Supabase
+6. Verificar logs da edge function para confirmar envio de email
+7. Reportar resultado
+
+### Resumo
 
 | Arquivo | Alteracao |
 |---------|-----------|
-| `src/components/calculator/CalculatorFAQ.tsx` | Corrigir textos das 3 FAQs (linhas 7, 10, 21-22) |
+| `supabase/functions/notify-new-lead/index.ts` | Atualizar remetente para `leads@contato.bvbp.com.br` |
 
