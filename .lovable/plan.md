@@ -1,104 +1,58 @@
 
 
-## Refinamento Estetico da Pagina Principal
+## Menu "Servicos" com destaque ativo e submenu hover
 
-### Diagnostico visual atual
+### Problema atual
+Quando o usuario esta em uma pagina de servico (ex: `/diagnostico-operacional`), o menu nao destaca nenhum item. Alem disso, nao existe submenu para navegar entre servicos diretamente pelo header.
 
-Apos analisar a pagina em desktop (1920px), identifiquei os seguintes pontos de melhoria:
+### Solucao
 
----
+#### 1. Detectar pagina de servico e destacar "Servicos"
 
-### 1. Hero Section - Espacamento e ritmo
+No `Header.tsx`, identificar se a rota atual corresponde a uma pagina de servico. Se sim, forcar `activeTab` para o indice de "Servicos" (indice 1).
 
-**Problema**: Espaco muito grande entre o titulo e os botoes (gap vazio onde o texto rotativo "some"). Botoes ficam soltos no centro sem contexto visual.
+Rotas de servico: `/diagnostico-operacional`, `/sprint-otimizacao`, `/gestao-projetos`, `/retainer-governanca`, `/programa-customizado`, `/comparativo-servicos`.
 
-**Correcoes**:
-- Reduzir `space-y-12` para `space-y-8` no container principal
-- Reduzir `pt-8` dos botoes para `pt-4`
-- Adicionar subtitulo/tagline abaixo do titulo rotativo para preencher o espaco e dar contexto ("Organizamos processos para CEOs que estao cansados de apagar incendio")
-- Botoes: aumentar levemente o tamanho do texto (`text-xl`) e adicionar `min-w-[320px]` para uniformidade
+#### 2. Submenu hover no item "Servicos" (desktop)
 
-### 2. Problem Section - Cards e icones
+Substituir o componente `<Tabs>` no Header por uma navegacao customizada que replica o mesmo estilo visual (underline animada, hover highlight) mas adiciona suporte a dropdown no item "Servicos".
 
-**Problema**: Icone generico (Search) no cabecalho da secao. Cards com muito espaco vazio e checkbox cinza pouco expressivo.
+O dropdown sera:
+- Ativado por hover (mouseEnter/mouseLeave com pequeno delay para evitar flickering)
+- Estilo minimalista: fundo branco, sombra suave, sem bordas pesadas
+- Lista dos 5 servicos principais + link "Comparar Servicos"
+- Cada item mostra titulo curto e duracao
+- Destaque visual no servico atual (se estiver em uma pagina de servico)
+- Animacao de entrada suave (fade-in + slight translate-y)
 
-**Correcoes**:
-- Trocar icone `Search` por `AlertTriangle` (mais semantico para "problemas")
-- Cards: aumentar padding interno de `p-6` para `p-8`
-- Icone do card: substituir `Check` por `X` (representando problema, nao solucao) com cor vermelha/laranja no estado default
-- No hover, transformar o `X` em `Check` verde (transicao visual de problema para solucao)
-- Card "O custo real disso": adicionar borda esquerda verde (`border-l-4 border-bvbp-growth`) para destaque
+Lista de servicos no dropdown:
+| Titulo curto | Rota | Duracao |
+|---|---|---|
+| Diagnostico Operacional | /diagnostico-operacional | 1 semana |
+| Otimizacao de Processo | /sprint-otimizacao | 2 semanas |
+| Gestao de Projetos | /gestao-projetos | 3-4 semanas |
+| Governanca de Execucao | /retainer-governanca | Mensal |
+| Programa Customizado | /programa-customizado | 6-12 semanas |
+| Comparar Servicos | /comparativo-servicos | - |
 
-### 3. Differentiation Section - Iconografia e hierarquia
+#### 3. Menu mobile - submenu em accordion
 
-**Problema**: Icones grandes (w-20 h-20) demais para o conteudo. Titulos e descricoes com tamanhos similares, sem hierarquia clara.
+No menu mobile, o item "Servicos" tera um sub-nivel expandivel (clique para abrir/fechar) mostrando os mesmos links de servico antes dos botoes CTA.
 
-**Correcoes**:
-- Reduzir icone container de `w-20 h-20` para `w-16 h-16` e icone interno de `h-10 w-10` para `h-8 w-8`
-- Titulo: manter `text-xl` mas adicionar `tracking-tight`
-- Descricao: reduzir de tamanho default para `text-sm` para criar contraste com o titulo
-- Adicionar `gap-6` entre os cards (atualmente `gap-8`, mais compacto)
+### Arquivos a modificar
 
-### 4. Services Section - Consistencia visual
+| Arquivo | Alteracao |
+|---------|----------|
+| `src/components/Header.tsx` | Logica de deteccao de pagina de servico, navegacao desktop customizada com dropdown, menu mobile com sub-items |
 
-**Problema**: Cards tem tamanhos muito variados por causa do conteudo. Secao "Detalhes" visualmente descolada dos features. Duracao da "Gestao de Projetos" no `ServicesSection.tsx` diz "2 semanas" (incorreto, deveria ser "3-4 semanas").
+O componente `vercel-tabs.tsx` nao sera alterado (continua disponivel para outros usos). A navegacao do Header passara a ser construida diretamente com elementos customizados que replicam o estilo visual mas com suporte a dropdown.
 
-**Correcoes**:
-- Corrigir duracao da Gestao de Projetos em `ServicesSection.tsx` (L46): "2 semanas" para "3-4 semanas"
-- Icone de duracao: aumentar de `h-4 w-4` para `h-4.5 w-4.5` e adicionar `text-bvbp-growth` para destaque
-- Badge de duracao: envolver em `bg-muted/50 px-3 py-1 rounded-full` para parecer um chip/tag
-- Secao "Detalhes": adicionar `border-t border-gray-100 pt-4` para separacao visual mais clara
-- Botao CTA: reduzir de `size="lg"` para `size="default"` para nao dominar o card
+### Detalhes tecnicos
 
-### 5. Quem Somos Section - Time e valores
-
-**Problema**: Fotos dos fundadores pequenas (w-48 h-48) para uma secao de destaque. Valores com icones excessivamente grandes. Muito espaco vertical entre missao e time.
-
-**Correcoes**:
-- Fotos: aumentar de `w-48 h-48` para `w-56 h-56`
-- Cards de time: adicionar `border-t-4 border-bvbp-growth` no topo para destaque
-- Valores: reduzir icone de `w-20 h-20` para `w-14 h-14` e interno de `h-10 w-10` para `h-7 w-7`
-- Reduzir `mb-20` entre time e valores para `mb-14`
-- Titulo "Nosso Time": reduzir `mb-12` para `mb-8`
-
-### 6. Contato Section - Formulario e informacoes
-
-**Problema**: Card "Fale Direto Conosco" (coluna direita) fica muito pequeno e desbalanceado em relacao ao formulario. Muito espaco desperdicado.
-
-**Correcoes**:
-- Card direito: adicionar beneficios abaixo dos emails (reutilizar array `benefits` que ja existe mas nao e renderizado)
-- Adicionar icone `CheckCircle` verde ao lado de cada beneficio
-- Card direito: adicionar `bg-gradient-subtle` e `border-0` para diferenciar visualmente do formulario
-- Botao submit: trocar texto todo-caps "QUERO AGENDAR CONVERSA" para "Agendar minha conversa" (menos agressivo, mais conversional)
-
-### 7. Footer - Refinamentos tipograficos
-
-**Problema**: Links de servicos nao apontam para as paginas corretas (apenas Diagnostico tem link proprio, os outros vao para `/#servicos`).
-
-**Correcoes**:
-- Corrigir links dos servicos no footer para apontar para as paginas dedicadas (`/sprint-otimizacao`, `/gestao-projetos`, `/retainer-governanca`, `/programa-customizado`)
-- Adicionar `text-sm` nos links para hierarquia
-
-### 8. Animacoes - Stagger nos cards
-
-**Problema**: Secoes inteiras aparecem de uma vez so (fade-in unico). Falta stagger nos cards.
-
-**Correcoes**:
-- Adicionar delays escalonados nos cards de servicos (`[animation-delay:100ms]`, `200ms`, `300ms`)
-- Adicionar delays nos cards de valores e diferenciais
-- Problema cards: stagger de `100ms` entre cada card
-
----
-
-### Resumo de arquivos
-
-| Arquivo | Alteracoes principais |
-|---------|----------------------|
-| `src/pages/Index.tsx` | Hero spacing, problem icons, diff sizing, team sizing, contact card, animation stagger |
-| `src/components/ServicesSection.tsx` | Duracao Gestao (bug), badge duracao, detalhes separator, CTA sizing |
-| `src/components/Footer.tsx` | Links corretos para paginas de servico |
-
-### Nota sobre inconsistencia encontrada
-
-Encontrei mais uma inconsistencia de duracao que escapou da revisao anterior: `ServicesSection.tsx` linha 46 mostra "2 semanas" para Gestao de Projetos, deveria ser "3-4 semanas". Sera corrigida junto.
+- Dropdown implementado com CSS/estado React puro (sem biblioteca extra)
+- `onMouseEnter`/`onMouseLeave` com `setTimeout` de ~150ms para evitar fechamento acidental
+- Dropdown posicionado com `absolute` abaixo do item "Servicos"
+- Transicao: `opacity` + `translateY(4px)` com `duration-200`
+- Z-index adequado (z-50 ja existe no header)
+- `useNavigate` para navegacao SPA nos links do dropdown
 
