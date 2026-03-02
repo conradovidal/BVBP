@@ -1,58 +1,118 @@
 
 
-## Menu "Servicos" com destaque ativo e submenu hover
+## Otimizacao para Answer Engine Optimization (AEO)
 
-### Problema atual
-Quando o usuario esta em uma pagina de servico (ex: `/diagnostico-operacional`), o menu nao destaca nenhum item. Alem disso, nao existe submenu para navegar entre servicos diretamente pelo header.
+O objetivo e fazer o site da BVBP aparecer como resposta citada em plataformas de IA (ChatGPT, Gemini, Perplexity, Copilot) quando alguem perguntar sobre consultoria de processos, otimizacao operacional ou problemas de gestao para SMBs no Brasil.
 
-### Solucao
+---
 
-#### 1. Detectar pagina de servico e destacar "Servicos"
+### O que e AEO e por que importa
 
-No `Header.tsx`, identificar se a rota atual corresponde a uma pagina de servico. Se sim, forcar `activeTab` para o indice de "Servicos" (indice 1).
+Diferente do SEO tradicional (rankear no Google), AEO foca em estruturar o conteudo para que IAs consigam extrair respostas claras e citar sua pagina como fonte. As IAs priorizam:
+- Conteudo em formato pergunta-resposta
+- Dados estruturados (Schema.org)
+- Textos claros e factuais (sem jargao vago)
+- Autoridade e E-E-A-T (experiencia, expertise, autoridade, confiabilidade)
 
-Rotas de servico: `/diagnostico-operacional`, `/sprint-otimizacao`, `/gestao-projetos`, `/retainer-governanca`, `/programa-customizado`, `/comparativo-servicos`.
+---
 
-#### 2. Submenu hover no item "Servicos" (desktop)
+### Alteracoes planejadas
 
-Substituir o componente `<Tabs>` no Header por uma navegacao customizada que replica o mesmo estilo visual (underline animada, hover highlight) mas adiciona suporte a dropdown no item "Servicos".
+#### 1. Schema.org estruturado rico (index.html + Helmet em cada pagina)
 
-O dropdown sera:
-- Ativado por hover (mouseEnter/mouseLeave com pequeno delay para evitar flickering)
-- Estilo minimalista: fundo branco, sombra suave, sem bordas pesadas
-- Lista dos 5 servicos principais + link "Comparar Servicos"
-- Cada item mostra titulo curto e duracao
-- Destaque visual no servico atual (se estiver em uma pagina de servico)
-- Animacao de entrada suave (fade-in + slight translate-y)
+**index.html** - Expandir o JSON-LD existente:
+- Adicionar `FAQPage` schema com as 8 perguntas do FAQ da home
+- Adicionar `Organization` schema com founders como `member` (nome, cargo, LinkedIn)
+- Adicionar `Service` schema para cada um dos 5 servicos (nome, descricao, preco, duracao)
+- Adicionar `Speakable` schema no bloco principal (permite assistentes de voz citarem o conteudo)
 
-Lista de servicos no dropdown:
-| Titulo curto | Rota | Duracao |
-|---|---|---|
-| Diagnostico Operacional | /diagnostico-operacional | 1 semana |
-| Otimizacao de Processo | /sprint-otimizacao | 2 semanas |
-| Gestao de Projetos | /gestao-projetos | 3-4 semanas |
-| Governanca de Execucao | /retainer-governanca | Mensal |
-| Programa Customizado | /programa-customizado | 6-12 semanas |
-| Comparar Servicos | /comparativo-servicos | - |
+**Cada pagina de servico** (via Helmet) - Adicionar JSON-LD inline:
+- `Service` schema especifico com nome canonico, duracao, preco, descricao
+- `FAQPage` schema com as FAQs da pagina (Diagnostico, Sprint, etc. ja tem FAQs proprias)
+- `BreadcrumbList` schema (Home > Servicos > Nome do Servico) para navegacao estruturada
 
-#### 3. Menu mobile - submenu em accordion
+**Calculadora** - Adicionar:
+- `WebApplication` schema (tipo: calculadora, descricao, preco: gratuito)
 
-No menu mobile, o item "Servicos" tera um sub-nivel expandivel (clique para abrir/fechar) mostrando os mesmos links de servico antes dos botoes CTA.
+#### 2. Conteudo otimizado para extracao por IA (Index.tsx)
 
-### Arquivos a modificar
+Adicionar uma secao "O que fazemos" logo apos o hero com texto corrido (nao so bullets) que responda diretamente as perguntas mais comuns:
+- "O que e a BVBP?" (1 paragrafo claro e factual)
+- "Quais servicos a BVBP oferece?" (lista com nomes canonicos e duracoes)
+- "Quanto custa uma consultoria de processos?" (faixa de preco transparente)
+- "Onde a BVBP atende?" (Brasil inteiro, presencial e remoto)
+
+Este bloco sera visualmente discreto (texto limpo, sem cards excessivos) mas rico em conteudo semantico. Formato: `<article>` com `<h2>` e `<p>` simples.
+
+#### 3. Meta tags otimizadas para citacao (todas as paginas)
+
+Cada pagina recebera via Helmet:
+- `<meta name="robots" content="max-snippet:-1, max-image-preview:large">` (permite snippets longos)
+- `<link rel="canonical">` com URL definitiva
+
+#### 4. robots.txt - Liberar crawlers de IA
+
+Atualizar `public/robots.txt` para permitir explicitamente os crawlers de IA:
+
+```text
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://bvbp.com.br/sitemap.xml
+```
+
+#### 5. Sitemap XML (novo arquivo)
+
+Criar `public/sitemap.xml` listando todas as paginas com prioridades:
+- `/` (prioridade 1.0)
+- `/calculadora-roi` (0.8)
+- Cada pagina de servico (0.9)
+- `/comparativo-servicos` (0.7)
+
+---
+
+### Resumo de arquivos
 
 | Arquivo | Alteracao |
 |---------|----------|
-| `src/components/Header.tsx` | Logica de deteccao de pagina de servico, navegacao desktop customizada com dropdown, menu mobile com sub-items |
+| `index.html` | Expandir JSON-LD: FAQPage, Organization com founders, Service array, Speakable |
+| `src/pages/Index.tsx` | Adicionar secao "O que fazemos" com conteudo AEO + meta robots no Helmet |
+| `src/pages/DiagnosticoOperacionalPage.tsx` | JSON-LD Service + FAQPage + BreadcrumbList via Helmet |
+| `src/pages/SprintOtimizacaoPage.tsx` | Idem |
+| `src/pages/GestaoProjetosPage.tsx` | Idem |
+| `src/pages/RetainerGovernancaPage.tsx` | Idem |
+| `src/pages/ProgramaCustomizadoPage.tsx` | Idem |
+| `src/pages/CalculatorPage.tsx` | JSON-LD WebApplication via Helmet |
+| `src/pages/ComparativoServicosPage.tsx` | JSON-LD BreadcrumbList via Helmet |
+| `public/robots.txt` | Adicionar crawlers de IA (GPTBot, ClaudeBot, PerplexityBot, etc.) |
+| `public/sitemap.xml` | Novo arquivo com mapa do site |
 
-O componente `vercel-tabs.tsx` nao sera alterado (continua disponivel para outros usos). A navegacao do Header passara a ser construida diretamente com elementos customizados que replicam o estilo visual mas com suporte a dropdown.
-
-### Detalhes tecnicos
-
-- Dropdown implementado com CSS/estado React puro (sem biblioteca extra)
-- `onMouseEnter`/`onMouseLeave` com `setTimeout` de ~150ms para evitar fechamento acidental
-- Dropdown posicionado com `absolute` abaixo do item "Servicos"
-- Transicao: `opacity` + `translateY(4px)` com `duration-200`
-- Z-index adequado (z-50 ja existe no header)
-- `useNavigate` para navegacao SPA nos links do dropdown
+**Total: 11 arquivos, sendo 1 novo (sitemap.xml)**
 
