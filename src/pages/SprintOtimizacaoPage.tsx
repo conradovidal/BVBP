@@ -157,11 +157,44 @@ const SprintOtimizacaoPage = () => {
   return (
     <>
       <Helmet>
-        <title>Otimização de Processo | BVBP</title>
-        <meta
-          name="description"
-          content="Projeto focado para otimizar 1 fluxo crítico em 2 semanas. Menos fila, menos retrabalho, resultado visível."
-        />
+        <title>Otimização de Processo | BVBP - Resultado visível em 2 semanas</title>
+        <meta name="description" content="Projeto focado para otimizar 1 fluxo crítico em 2 semanas. Menos fila, menos retrabalho, resultado visível. A partir de R$ 12.000." />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/sprint-otimizacao" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Service",
+              "name": "Otimização de Processo",
+              "description": "Projeto focado para otimizar 1 fluxo operacional em 2 semanas. Inclui diagnóstico rápido, redesenho do processo, implementação acompanhada e métricas de antes e depois.",
+              "provider": {"@type": "Organization", "name": "BVBP"},
+              "serviceType": "Otimização de Processos",
+              "areaServed": {"@type": "Country", "name": "Brazil"},
+              "url": "https://bvbp.com.br/sprint-otimizacao",
+              "offers": {"@type": "Offer", "price": "12000", "priceCurrency": "BRL"},
+              "termsOfService": "2 semanas de duração"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bvbp.com.br/"},
+                {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://bvbp.com.br/#servicos"},
+                {"@type": "ListItem", "position": 3, "name": "Otimização de Processo", "item": "https://bvbp.com.br/sprint-otimizacao"}
+              ]
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [
+                {"@type": "Question", "name": "Qual a diferença do Diagnóstico?", "acceptedAnswer": {"@type": "Answer", "text": "O Diagnóstico identifica onde está o problema. A Otimização resolve um fluxo específico com implementação acompanhada."}},
+                {"@type": "Question", "name": "Posso fazer mais de um fluxo por projeto?", "acceptedAnswer": {"@type": "Answer", "text": "Não. A regra é 1 fluxo por projeto para garantir profundidade e resultado real."}},
+                {"@type": "Question", "name": "Preciso ter feito o Diagnóstico antes?", "acceptedAnswer": {"@type": "Answer", "text": "Não é obrigatório, mas ajuda. Se você já sabe qual fluxo precisa de atenção, podemos começar direto."}},
+                {"@type": "Question", "name": "O que significa 'ajustes implementados'?", "acceptedAnswer": {"@type": "Answer", "text": "Significa que não entregamos só o desenho. Acompanhamos a adoção do novo processo e ajustamos conforme necessário."}},
+                {"@type": "Question", "name": "Quanto tempo leva para ver resultado?", "acceptedAnswer": {"@type": "Answer", "text": "O projeto dura 2 semanas. Você já consegue medir diferença no final desse período."}}
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <Header />

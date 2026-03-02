@@ -77,8 +77,44 @@ const ProgramaCustomizadoPage = () => {
   return (
     <>
       <Helmet>
-        <title>Programa Customizado de Melhoria | BVBP</title>
-        <meta name="description" content="Programa sob medida para otimizar 2-3 fluxos críticos em ondas, com implementação acompanhada e capacitação do time. 6 a 12 semanas para resultado duradouro." />
+        <title>Programa Customizado de Melhoria | BVBP - Transformação em 6-12 semanas</title>
+        <meta name="description" content="Programa sob medida para otimizar 2-3 fluxos críticos em ondas, com implementação acompanhada e capacitação do time. 6 a 12 semanas. Até R$ 22.000." />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/programa-customizado" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Service",
+              "name": "Programa Customizado de Melhoria",
+              "description": "Programa sob medida para otimizar 2-3 fluxos críticos em ondas, com implementação acompanhada, capacitação do time e governança mínima para sustentar os ganhos. 6 a 12 semanas.",
+              "provider": {"@type": "Organization", "name": "BVBP"},
+              "serviceType": "Transformação Operacional",
+              "areaServed": {"@type": "Country", "name": "Brazil"},
+              "url": "https://bvbp.com.br/programa-customizado",
+              "offers": {"@type": "Offer", "price": "22000", "priceCurrency": "BRL"},
+              "termsOfService": "6 a 12 semanas de duração"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bvbp.com.br/"},
+                {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://bvbp.com.br/#servicos"},
+                {"@type": "ListItem", "position": 3, "name": "Programa Customizado", "item": "https://bvbp.com.br/programa-customizado"}
+              ]
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [
+                {"@type": "Question", "name": "Qual a diferença da Otimização de Processo?", "acceptedAnswer": {"@type": "Answer", "text": "A Otimização ataca 1 fluxo em 2 semanas. O Programa Customizado otimiza 2-3 fluxos em ondas, implementa governança mínima e capacita o time."}},
+                {"@type": "Question", "name": "Preciso fazer o Diagnóstico Operacional antes?", "acceptedAnswer": {"@type": "Answer", "text": "Sim. O Diagnóstico é a porta de entrada. Ele mapeia os fluxos críticos e define a sequência de ondas."}},
+                {"@type": "Question", "name": "Como evitar que o programa vire infinito?", "acceptedAnswer": {"@type": "Answer", "text": "Escopo fechado desde o início. Definimos juntos quais fluxos, quantas ondas e critérios de sucesso."}},
+                {"@type": "Question", "name": "O time precisa parar para participar?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Trabalhamos em paralelo com a operação. Envolvemos as pessoas certas nos momentos certos."}},
+                {"@type": "Question", "name": "O que acontece depois do programa?", "acceptedAnswer": {"@type": "Answer", "text": "O time sai capacitado. Se quiserem suporte contínuo, oferecemos a Implementação de Governança de Execução."}}
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <div className="min-h-screen">

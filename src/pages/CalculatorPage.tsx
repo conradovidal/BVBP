@@ -22,8 +22,21 @@ const CalculatorPage = () => {
     <>
       <Helmet>
         <title>Calculadora de Perdas Operacionais | BVBP - Descubra Quanto Está Perdendo</title>
-        <meta name="description" content="Calcule quanto sua empresa está perdendo mensalmente com processos ineficientes. Resultados instantâneos em 3 minutos." />
+        <meta name="description" content="Calcule quanto sua empresa está perdendo mensalmente com processos ineficientes. Resultados instantâneos em 3 minutos. 100% gratuito." />
         <meta name="keywords" content="calculadora roi, perdas operacionais, eficiência empresarial, consultoria processos, BVBP" />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/calculadora-roi" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Calculadora de Perdas Operacionais BVBP",
+          "description": "Calculadora gratuita para estimar quanto sua empresa perde mensalmente com processos ineficientes, retrabalho e gargalos operacionais.",
+          "url": "https://bvbp.com.br/calculadora-roi",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "BRL"},
+          "provider": {"@type": "Organization", "name": "BVBP"}
+        })}</script>
       </Helmet>
       
       <div className="min-h-screen flex flex-col">
