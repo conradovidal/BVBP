@@ -254,10 +254,17 @@ const ComparativoServicosPage = () => {
     <>
       <Helmet>
         <title>Comparativo de Serviços | Qual é o certo para você? | BVBP</title>
-        <meta
-          name="description"
-          content="Compare os serviços da BVBP e descubra qual é o mais adequado para sua situação. Diagnóstico, Otimização, Gestão de Projetos, Governança ou Programa Customizado."
-        />
+        <meta name="description" content="Compare os serviços da BVBP e descubra qual é o mais adequado para sua situação. Diagnóstico, Otimização, Gestão de Projetos, Governança ou Programa Customizado." />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/comparativo-servicos" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bvbp.com.br/"},
+            {"@type": "ListItem", "position": 2, "name": "Comparativo de Serviços", "item": "https://bvbp.com.br/comparativo-servicos"}
+          ]
+        })}</script>
       </Helmet>
 
       <Header />

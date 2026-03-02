@@ -195,10 +195,43 @@ const GestaoProjetosPage = () => {
     <>
       <Helmet>
         <title>Configuração de Gestão e Entrega de Projetos | BVBP</title>
-        <meta
-          name="description"
-          content="Sistema mínimo de execução que traz visibilidade, cadência e clareza nas decisões. 3-4 semanas para saber o status real de todos os projetos."
-        />
+        <meta name="description" content="Sistema mínimo de execução que traz visibilidade, cadência e clareza nas decisões. 3-4 semanas para saber o status real de todos os projetos. A partir de R$ 16.000." />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/gestao-projetos" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Service",
+              "name": "Configuração de Gestão e Entrega de Projetos",
+              "description": "Sistema mínimo de execução com board, cadência de ritos, papéis definidos e modelo de reporting. Traz visibilidade real sobre todos os projetos ativos em 3-4 semanas.",
+              "provider": {"@type": "Organization", "name": "BVBP"},
+              "serviceType": "Gestão de Projetos",
+              "areaServed": {"@type": "Country", "name": "Brazil"},
+              "url": "https://bvbp.com.br/gestao-projetos",
+              "offers": {"@type": "Offer", "price": "16000", "priceCurrency": "BRL"},
+              "termsOfService": "3-4 semanas de duração"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bvbp.com.br/"},
+                {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://bvbp.com.br/#servicos"},
+                {"@type": "ListItem", "position": 3, "name": "Gestão de Projetos", "item": "https://bvbp.com.br/gestao-projetos"}
+              ]
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [
+                {"@type": "Question", "name": "Qual a diferença da Otimização de Processo?", "acceptedAnswer": {"@type": "Answer", "text": "A Otimização de Processo resolve um fluxo específico que está travado em 2 semanas. Este serviço cria o sistema de como projetos são tocados na empresa."}},
+                {"@type": "Question", "name": "Preciso trocar de ferramenta?", "acceptedAnswer": {"@type": "Answer", "text": "Não. O sistema é tool-agnostic. Adaptamos à ferramenta que vocês já usam (Jira, Asana, Monday, Notion, planilha)."}},
+                {"@type": "Question", "name": "Isso é implementação de Jira/Asana/Monday?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Isso é um sistema de decisão e execução. A ferramenta é só o meio. O problema não é a ferramenta."}},
+                {"@type": "Question", "name": "Preciso envolver todo o time?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Trabalhamos com a liderança para definir o sistema. O time é envolvido no handoff final."}},
+                {"@type": "Question", "name": "E se eu tiver só um fluxo problemático?", "acceptedAnswer": {"@type": "Answer", "text": "Nesse caso, temos um projeto focado de 2 semanas para resolver esse fluxo específico."}}
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <Header />

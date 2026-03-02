@@ -194,10 +194,42 @@ const RetainerGovernancaPage = () => {
     <>
       <Helmet>
         <title>Implementação de Governança de Execução | BVBP</title>
-        <meta
-          name="description"
-          content="Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões claras. Governança sem burocracia."
-        />
+        <meta name="description" content="Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões claras após projeto bem-sucedido. Governança sem burocracia." />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/retainer-governanca" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Service",
+              "name": "Implementação de Governança de Execução",
+              "description": "Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões claras. Inclui check-ins regulares, revisão de prioridades e suporte a decisões da liderança.",
+              "provider": {"@type": "Organization", "name": "BVBP"},
+              "serviceType": "Governança Operacional",
+              "areaServed": {"@type": "Country", "name": "Brazil"},
+              "url": "https://bvbp.com.br/retainer-governanca",
+              "termsOfService": "Acompanhamento mensal contínuo"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bvbp.com.br/"},
+                {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://bvbp.com.br/#servicos"},
+                {"@type": "ListItem", "position": 3, "name": "Governança de Execução", "item": "https://bvbp.com.br/retainer-governanca"}
+              ]
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [
+                {"@type": "Question", "name": "Por que não posso contratar direto?", "acceptedAnswer": {"@type": "Answer", "text": "A Implementação de Governança só faz sentido após um projeto bem-sucedido. Sem valor entregue antes, vira custo fixo sem referência de resultado."}},
+                {"@type": "Question", "name": "Vocês vão executar o trabalho?", "acceptedAnswer": {"@type": "Answer", "text": "Não. Governamos e orientamos. A execução continua sendo do time."}},
+                {"@type": "Question", "name": "Qual a frequência de reuniões?", "acceptedAnswer": {"@type": "Answer", "text": "O padrão é uma sessão semanal ou quinzenal de governança, mais check-ins assíncronos conforme necessário."}},
+                {"@type": "Question", "name": "Como evitar virar consultoria infinita?", "acceptedAnswer": {"@type": "Answer", "text": "Escopo claro de governança. Revisamos regularmente se ainda faz sentido. O objetivo é vocês precisarem menos de nós."}},
+                {"@type": "Question", "name": "Qual a diferença do Setup de Gestão de Projetos?", "acceptedAnswer": {"@type": "Answer", "text": "O Setup cria o sistema de execução. A Governança mantém a disciplina e evolui o sistema ao longo do tempo."}}
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <Header />

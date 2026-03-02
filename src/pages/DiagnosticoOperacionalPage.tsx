@@ -156,11 +156,44 @@ const DiagnosticoOperacionalPage = () => {
   return (
     <>
       <Helmet>
-        <title>Diagnóstico Operacional | BVBP</title>
-        <meta
-          name="description"
-          content="Diagnóstico curto e baseado em fatos para identificar onde a operação trava e o que corrigir primeiro. Escopo fixo, 1 fluxo crítico, plano de 2 semanas."
-        />
+        <title>Diagnóstico Operacional | BVBP - Mapeie seus gargalos em 1 semana</title>
+        <meta name="description" content="Diagnóstico curto e baseado em fatos para identificar onde a operação trava e o que corrigir primeiro. Escopo fixo, 1 fluxo crítico, plano de 2 semanas. A partir de R$ 6.500." />
+        <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
+        <link rel="canonical" href="https://bvbp.com.br/diagnostico-operacional" />
+        <script type="application/ld+json">{JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Service",
+              "name": "Diagnóstico Operacional",
+              "description": "Mapeamento de 1 fluxo crítico para identificar gargalos, retrabalho e próximos passos. Entrega: documento executivo, mapa do fluxo e plano de ação de 2 semanas.",
+              "provider": {"@type": "Organization", "name": "BVBP"},
+              "serviceType": "Consultoria em Processos",
+              "areaServed": {"@type": "Country", "name": "Brazil"},
+              "url": "https://bvbp.com.br/diagnostico-operacional",
+              "offers": {"@type": "Offer", "price": "6500", "priceCurrency": "BRL"},
+              "termsOfService": "1 semana de duração"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://bvbp.com.br/"},
+                {"@type": "ListItem", "position": 2, "name": "Serviços", "item": "https://bvbp.com.br/#servicos"},
+                {"@type": "ListItem", "position": 3, "name": "Diagnóstico Operacional", "item": "https://bvbp.com.br/diagnostico-operacional"}
+              ]
+            },
+            {
+              "@type": "FAQPage",
+              "mainEntity": [
+                {"@type": "Question", "name": "Isso é um trabalho de estratégia?", "acceptedAnswer": {"@type": "Answer", "text": "Não. É uma checagem de realidade operacional, com foco em um fluxo crítico e próximos passos claros."}},
+                {"@type": "Question", "name": "Quantas pessoas precisam participar?", "acceptedAnswer": {"@type": "Answer", "text": "Normalmente liderança e 1 a 2 papéis-chave do fluxo. Sem envolver toda a empresa."}},
+                {"@type": "Question", "name": "O que eu recebo no final?", "acceptedAnswer": {"@type": "Answer", "text": "Documento executivo, mapa do fluxo, top 3 gargalos e plano de 2 semanas."}},
+                {"@type": "Question", "name": "Preciso já ter ferramentas e processos maduros?", "acceptedAnswer": {"@type": "Answer", "text": "Não. A ideia é justamente trazer clareza mesmo em contextos desorganizados."}},
+                {"@type": "Question", "name": "E se a recomendação for não seguir?", "acceptedAnswer": {"@type": "Answer", "text": "Ótimo. Você evita investir tempo e dinheiro no lugar errado."}}
+              ]
+            }
+          ]
+        })}</script>
       </Helmet>
 
       <Header />

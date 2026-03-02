@@ -25,15 +25,16 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://bvbp.com.br" />
 
-    <!-- Structured Data -->
+    <!-- Organization Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "ProfessionalService",
+      "@type": "Organization",
       "name": "BVBP - Basso & Vidal Business Partners",
       "alternateName": "BVBP",
-      "description": "Consultoria boutique especializada em transformação de processos para SMBs em crescimento",
       "url": "https://bvbp.com.br",
+      "description": "Consultoria boutique especializada em organização de processos e redução de retrabalho para empresas de médio porte (50-200 funcionários, R$ 5-100MM de faturamento) no Brasil.",
+      "foundingDate": "2024",
       "telephone": "+55-51-99999-9999",
       "email": "contato@bvbp.com.br",
       "address": {
@@ -46,15 +47,208 @@
         "@type": "Country",
         "name": "Brazil"
       },
-      "serviceType": [
+      "member": [
+        {
+          "@type": "Person",
+          "name": "Cristiano Basso",
+          "jobTitle": "Sócio-Fundador",
+          "url": "https://www.linkedin.com/in/cristianobasso/",
+          "description": "10+ anos ajudando empresas a parar de perder dinheiro com retrabalho. Especialista em organizar processos confusos e dar autonomia para o time."
+        },
+        {
+          "@type": "Person",
+          "name": "Conrado Vidal",
+          "jobTitle": "Sócio-Fundador",
+          "url": "https://www.linkedin.com/in/conradovidal/",
+          "description": "9+ anos transformando operação caótica em processos claros. Especialista em fazer o time ganhar foco e o líder parar de apagar incêndio."
+        }
+      ],
+      "knowsAbout": [
         "Consultoria em Processos",
         "Otimização Operacional",
-        "Transformação Digital",
-        "Melhoria de Eficiência"
-      ],
-      "priceRange": "R$ 6500 - R$ 22000"
+        "Gestão de Projetos",
+        "Redução de Retrabalho",
+        "Eficiência Operacional para SMBs"
+      ]
     }
     </script>
+
+    <!-- Service Catalog Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Serviços de Consultoria BVBP",
+      "description": "Portfólio completo de serviços de consultoria em processos da BVBP para empresas de médio porte",
+      "numberOfItems": 5,
+      "itemListElement": [
+        {
+          "@type": "Service",
+          "position": 1,
+          "name": "Diagnóstico Operacional",
+          "description": "Mapeamento de 1 fluxo crítico para identificar gargalos, retrabalho e próximos passos. Entrega: documento executivo, mapa do fluxo e plano de ação de 2 semanas.",
+          "provider": {"@type": "Organization", "name": "BVBP"},
+          "serviceType": "Consultoria em Processos",
+          "areaServed": {"@type": "Country", "name": "Brazil"},
+          "url": "https://bvbp.com.br/diagnostico-operacional",
+          "offers": {
+            "@type": "Offer",
+            "price": "6500",
+            "priceCurrency": "BRL"
+          },
+          "termsOfService": "1 semana de duração"
+        },
+        {
+          "@type": "Service",
+          "position": 2,
+          "name": "Otimização de Processo",
+          "description": "Projeto focado para otimizar 1 fluxo operacional em 2 semanas. Inclui diagnóstico rápido, redesenho do processo, implementação acompanhada e métricas de antes e depois.",
+          "provider": {"@type": "Organization", "name": "BVBP"},
+          "serviceType": "Otimização de Processos",
+          "areaServed": {"@type": "Country", "name": "Brazil"},
+          "url": "https://bvbp.com.br/sprint-otimizacao",
+          "offers": {
+            "@type": "Offer",
+            "price": "12000",
+            "priceCurrency": "BRL"
+          },
+          "termsOfService": "2 semanas de duração"
+        },
+        {
+          "@type": "Service",
+          "position": 3,
+          "name": "Configuração de Gestão e Entrega de Projetos",
+          "description": "Sistema mínimo de execução com board, cadência de ritos, papéis definidos e modelo de reporting. Traz visibilidade real sobre todos os projetos ativos.",
+          "provider": {"@type": "Organization", "name": "BVBP"},
+          "serviceType": "Gestão de Projetos",
+          "areaServed": {"@type": "Country", "name": "Brazil"},
+          "url": "https://bvbp.com.br/gestao-projetos",
+          "offers": {
+            "@type": "Offer",
+            "price": "16000",
+            "priceCurrency": "BRL"
+          },
+          "termsOfService": "3-4 semanas de duração"
+        },
+        {
+          "@type": "Service",
+          "position": 4,
+          "name": "Implementação de Governança de Execução",
+          "description": "Acompanhamento mensal para manter disciplina de execução, visibilidade e decisões claras após um projeto bem-sucedido. Governança sem burocracia.",
+          "provider": {"@type": "Organization", "name": "BVBP"},
+          "serviceType": "Governança Operacional",
+          "areaServed": {"@type": "Country", "name": "Brazil"},
+          "url": "https://bvbp.com.br/retainer-governanca",
+          "termsOfService": "Acompanhamento mensal contínuo"
+        },
+        {
+          "@type": "Service",
+          "position": 5,
+          "name": "Programa Customizado de Melhoria",
+          "description": "Programa sob medida para otimizar 2-3 fluxos críticos em ondas, com implementação acompanhada, capacitação do time e governança mínima para sustentar os ganhos.",
+          "provider": {"@type": "Organization", "name": "BVBP"},
+          "serviceType": "Transformação Operacional",
+          "areaServed": {"@type": "Country", "name": "Brazil"},
+          "url": "https://bvbp.com.br/programa-customizado",
+          "offers": {
+            "@type": "Offer",
+            "price": "22000",
+            "priceCurrency": "BRL"
+          },
+          "termsOfService": "6 a 12 semanas de duração"
+        }
+      ]
+    }
+    </script>
+
+    <!-- FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Como vocês são diferentes das outras consultorias?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Não empurramos metodologia pronta. Cada solução é desenhada especificamente para sua empresa, considerando sua cultura, limitações e objetivos únicos. Em 90 dias você fica autônomo, não dependente. Outras consultorias criam dependência para manter contratos longos - nós fazemos o oposto."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "E se não funcionar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Começamos com diagnóstico gratuito. Se não identificarmos pelo menos R$ 30 mil em oportunidades de economia mensuráveis, nem cobramos o projeto. Além disso, acompanhamos todos os resultados com métricas transparentes desde o primeiro dia."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quanto tempo para ver resultados?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Primeiros quick wins em 30 dias (melhorias imediatas visíveis). Resultados mensuráveis e ROI comprovado em 60 dias. Autonomia completa da sua equipe em 90 dias. Diferente de outras consultorias que prometem resultados em 6-12 meses."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Atendem só em Porto Alegre?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Atendemos todo Brasil presencial ou remoto, conforme a necessidade do projeto. Internacional também via online. Temos experiência com empresas de todos os portes, de startups a corporações com 500+ funcionários."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Qual o investimento?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "De R$ 6.500 (Quick Win - 1 processo) a R$ 22.000 (Transformation - sistêmico completo). O ROI típico é 300%+ no primeiro ano. Muitos clientes recuperam o investimento apenas com a economia dos primeiros 2-3 meses."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Como garantem que os resultados vão se manter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Capacitamos sua equipe para ser autônoma. Documentamos todos os processos, criamos métricas de acompanhamento e treinamos seus colaboradores. Ao final dos 90 dias, vocês não precisam mais de nós - essa é nossa garantia de sucesso real."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Trabalham com empresas do meu setor?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sim. Nossa metodologia é agnóstica ao setor porque focamos em processos fundamentais que existem em qualquer empresa: gestão, operação, vendas, financeiro. Já atendemos tecnologia, manufatura, serviços, e-commerce, saúde e mais."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "E se minha empresa for muito pequena/grande?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Atendemos SMBs de 50-200 funcionários e faturamento R$ 5-100MM - esse é nosso sweet spot. Empresas menores ainda não têm complexidade suficiente; maiores já têm estruturas próprias. Nessa faixa é onde geramos mais impacto."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Speakable Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "BVBP - Consultoria de Processos para Empresas de Médio Porte",
+      "url": "https://bvbp.com.br",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["article", "h1", "h2"]
+      }
+    }
+    </script>
+
     <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/Tu3hQoqEBYhbvTS5tFefP98HXN53/uploads/1758554508886-Screenshot 2025-09-22 at 12.21.25.png">
 </head>
 
