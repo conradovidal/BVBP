@@ -221,6 +221,14 @@ const Header = () => {
               variant="outline"
               size="lg"
               className="px-4 py-2 text-sm whitespace-nowrap"
+              onClick={() => window.location.href = '/blog'}
+            >
+              Blog
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="px-4 py-2 text-sm whitespace-nowrap"
               onClick={() => window.location.href = '/calculadora-roi'}
             >
               Calculadora ROI
@@ -318,6 +326,17 @@ const Header = () => {
               );
             })}
             <div className="pt-3 space-y-2">
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full text-sm"
+                onClick={() => {
+                  window.location.href = '/blog';
+                  setIsMenuOpen(false);
+                }}
+              >
+                Blog
+              </Button>
               <Button
                 variant="outline"
                 size="lg"
