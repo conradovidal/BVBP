@@ -13,6 +13,11 @@ import GestaoProjetosPage from "./pages/GestaoProjetosPage";
 import RetainerGovernancaPage from "./pages/RetainerGovernancaPage";
 import ProgramaCustomizadoPage from "./pages/ProgramaCustomizadoPage";
 import ComparativoServicosPage from "./pages/ComparativoServicosPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminBlogPage from "./pages/AdminBlogPage";
+import AdminBlogEditorPage from "./pages/AdminBlogEditorPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +39,12 @@ const App = () => (
             <Route path="/retainer-governanca" element={<RetainerGovernancaPage />} />
             <Route path="/programa-customizado" element={<ProgramaCustomizadoPage />} />
             <Route path="/comparativo-servicos" element={<ComparativoServicosPage />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/blog" element={<AdminBlogPage />} />
+            <Route path="/admin/blog/novo" element={<AdminBlogEditorPage />} />
+            <Route path="/admin/blog/editar/:id" element={<AdminBlogEditorPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
