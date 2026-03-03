@@ -1,118 +1,106 @@
 
 
-## Otimizacao para Answer Engine Optimization (AEO)
+## Blog com Painel Admin
 
-O objetivo e fazer o site da BVBP aparecer como resposta citada em plataformas de IA (ChatGPT, Gemini, Perplexity, Copilot) quando alguem perguntar sobre consultoria de processos, otimizacao operacional ou problemas de gestao para SMBs no Brasil.
+### Visao geral
 
----
-
-### O que e AEO e por que importa
-
-Diferente do SEO tradicional (rankear no Google), AEO foca em estruturar o conteudo para que IAs consigam extrair respostas claras e citar sua pagina como fonte. As IAs priorizam:
-- Conteudo em formato pergunta-resposta
-- Dados estruturados (Schema.org)
-- Textos claros e factuais (sem jargao vago)
-- Autoridade e E-E-A-T (experiencia, expertise, autoridade, confiabilidade)
+Criar um sistema de blog completo: pagina publica para leitores, painel administrativo protegido por login para publicacao, e botao "Blog" no header ao lado de "Calculadora ROI".
 
 ---
 
-### Alteracoes planejadas
+### 1. Banco de dados (Supabase migrations)
 
-#### 1. Schema.org estruturado rico (index.html + Helmet em cada pagina)
+**Tabela `blog_posts`**:
+- `id` (uuid, PK)
+- `title` (text, NOT NULL)
+- `slug` (text, UNIQUE, NOT NULL) — URL amigavel
+- `excerpt` (text) — resumo para listagem
+- `content` (text, NOT NULL) — conteudo completo em markdown/HTML
+- `cover_image_url` (text) — imagem de capa
+- `author_id` (uuid, FK auth.users)
+- `status` (text, default 'draft') — 'draft' ou 'published'
+- `published_at` (timestamptz)
+- `created_at` (timestamptz, default now())
+- `updated_at` (timestamptz, default now())
+- `meta_description` (text) — SEO/AEO
+- `tags` (text[]) — categorias
 
-**index.html** - Expandir o JSON-LD existente:
-- Adicionar `FAQPage` schema com as 8 perguntas do FAQ da home
-- Adicionar `Organization` schema com founders como `member` (nome, cargo, LinkedIn)
-- Adicionar `Service` schema para cada um dos 5 servicos (nome, descricao, preco, duracao)
-- Adicionar `Speakable` schema no bloco principal (permite assistentes de voz citarem o conteudo)
+**Tabela `user_roles`** (seguranca):
+- `id` (uuid, PK)
+- `user_id` (uuid, FK auth.users, ON DELETE CASCADE)
+- `role` (app_role enum: 'admin', 'editor')
+- UNIQUE(user_id, role)
 
-**Cada pagina de servico** (via Helmet) - Adicionar JSON-LD inline:
-- `Service` schema especifico com nome canonico, duracao, preco, descricao
-- `FAQPage` schema com as FAQs da pagina (Diagnostico, Sprint, etc. ja tem FAQs proprias)
-- `BreadcrumbList` schema (Home > Servicos > Nome do Servico) para navegacao estruturada
+**Funcao `has_role`** (SECURITY DEFINER):
+- Verifica se usuario tem determinado role sem recursao RLS
 
-**Calculadora** - Adicionar:
-- `WebApplication` schema (tipo: calculadora, descricao, preco: gratuito)
+**RLS policies**:
+- `blog_posts` SELECT: qualquer pessoa pode ler posts com `status = 'published'`
+- `blog_posts` INSERT/UPDATE/DELETE: apenas usuarios com role 'admin' ou 'editor' (via `has_role`)
+- `user_roles` SELECT: apenas o proprio usuario ou admins
 
-#### 2. Conteudo otimizado para extracao por IA (Index.tsx)
+**Storage bucket** `blog-images`: para upload de imagens de capa
 
-Adicionar uma secao "O que fazemos" logo apos o hero com texto corrido (nao so bullets) que responda diretamente as perguntas mais comuns:
-- "O que e a BVBP?" (1 paragrafo claro e factual)
-- "Quais servicos a BVBP oferece?" (lista com nomes canonicos e duracoes)
-- "Quanto custa uma consultoria de processos?" (faixa de preco transparente)
-- "Onde a BVBP atende?" (Brasil inteiro, presencial e remoto)
+### 2. Paginas e componentes
 
-Este bloco sera visualmente discreto (texto limpo, sem cards excessivos) mas rico em conteudo semantico. Formato: `<article>` com `<h2>` e `<p>` simples.
+| Arquivo | Descricao |
+|---------|-----------|
+| `src/pages/BlogPage.tsx` | Listagem publica de posts (grid de cards com titulo, excerpt, imagem, data) |
+| `src/pages/BlogPostPage.tsx` | Post individual com conteudo completo, meta tags AEO |
+| `src/pages/AdminLoginPage.tsx` | Tela de login simples (email + senha via Supabase Auth) |
+| `src/pages/AdminBlogPage.tsx` | Dashboard: lista de posts (draft/published), botao criar novo |
+| `src/pages/AdminBlogEditorPage.tsx` | Editor de post: titulo, slug (auto-gerado), excerpt, conteudo (textarea), imagem, tags, status, botao publicar |
+| `src/components/blog/BlogCard.tsx` | Card individual para listagem |
+| `src/components/blog/BlogPostContent.tsx` | Renderizacao do conteudo do post |
+| `src/components/admin/AdminLayout.tsx` | Layout com sidebar simples e protecao de rota (redirect se nao autenticado/sem role) |
+| `src/components/admin/AdminGuard.tsx` | HOC que verifica autenticacao + role antes de renderizar |
 
-#### 3. Meta tags otimizadas para citacao (todas as paginas)
+### 3. Header — botao "Blog"
 
-Cada pagina recebera via Helmet:
-- `<meta name="robots" content="max-snippet:-1, max-image-preview:large">` (permite snippets longos)
-- `<link rel="canonical">` com URL definitiva
+No `Header.tsx`, adicionar botao "Blog" ao lado esquerdo de "Calculadora ROI", usando `variant="outline"` e `size="lg"` (mesmo formato). Aponta para `/blog`.
 
-#### 4. robots.txt - Liberar crawlers de IA
+### 4. Rotas (App.tsx)
 
-Atualizar `public/robots.txt` para permitir explicitamente os crawlers de IA:
+Novas rotas:
+- `/blog` — listagem publica
+- `/blog/:slug` — post individual
+- `/admin/login` — login do admin
+- `/admin/blog` — dashboard de posts (protegida)
+- `/admin/blog/novo` — editor novo post (protegida)
+- `/admin/blog/editar/:id` — editor post existente (protegida)
 
-```text
-User-agent: GPTBot
-Allow: /
+### 5. Fluxo de gestao de publicacao
 
-User-agent: ChatGPT-User
-Allow: /
+1. Admin acessa `/admin/login`, faz login com email/senha
+2. Sistema verifica se usuario tem role 'admin' ou 'editor' na tabela `user_roles`
+3. Se autorizado, acessa dashboard com lista de posts
+4. Pode criar novo post (salva como draft), editar, e publicar (muda status para 'published' + seta `published_at`)
+5. Posts publicados aparecem automaticamente em `/blog`
 
-User-agent: Google-Extended
-Allow: /
+Para adicionar o primeiro admin: inserir manualmente na tabela `user_roles` via Supabase Dashboard apos criar a conta.
 
-User-agent: PerplexityBot
-Allow: /
+### 6. AEO para blog
 
-User-agent: ClaudeBot
-Allow: /
+Cada post tera via Helmet:
+- `Article` schema JSON-LD (autor, data, descricao)
+- `BreadcrumbList` (Home > Blog > Titulo)
+- Meta tags otimizadas
 
-User-agent: Amazonbot
-Allow: /
+### Arquivos a criar/modificar
 
-User-agent: anthropic-ai
-Allow: /
+| Arquivo | Acao |
+|---------|------|
+| Migration SQL | Criar tabelas, enum, funcao, RLS, bucket |
+| `src/pages/BlogPage.tsx` | Novo |
+| `src/pages/BlogPostPage.tsx` | Novo |
+| `src/pages/AdminLoginPage.tsx` | Novo |
+| `src/pages/AdminBlogPage.tsx` | Novo |
+| `src/pages/AdminBlogEditorPage.tsx` | Novo |
+| `src/components/blog/BlogCard.tsx` | Novo |
+| `src/components/admin/AdminGuard.tsx` | Novo |
+| `src/components/Header.tsx` | Adicionar botao Blog |
+| `src/App.tsx` | Adicionar rotas |
+| `public/sitemap.xml` | Adicionar `/blog` |
 
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: *
-Allow: /
-
-Sitemap: https://bvbp.com.br/sitemap.xml
-```
-
-#### 5. Sitemap XML (novo arquivo)
-
-Criar `public/sitemap.xml` listando todas as paginas com prioridades:
-- `/` (prioridade 1.0)
-- `/calculadora-roi` (0.8)
-- Cada pagina de servico (0.9)
-- `/comparativo-servicos` (0.7)
-
----
-
-### Resumo de arquivos
-
-| Arquivo | Alteracao |
-|---------|----------|
-| `index.html` | Expandir JSON-LD: FAQPage, Organization com founders, Service array, Speakable |
-| `src/pages/Index.tsx` | Adicionar secao "O que fazemos" com conteudo AEO + meta robots no Helmet |
-| `src/pages/DiagnosticoOperacionalPage.tsx` | JSON-LD Service + FAQPage + BreadcrumbList via Helmet |
-| `src/pages/SprintOtimizacaoPage.tsx` | Idem |
-| `src/pages/GestaoProjetosPage.tsx` | Idem |
-| `src/pages/RetainerGovernancaPage.tsx` | Idem |
-| `src/pages/ProgramaCustomizadoPage.tsx` | Idem |
-| `src/pages/CalculatorPage.tsx` | JSON-LD WebApplication via Helmet |
-| `src/pages/ComparativoServicosPage.tsx` | JSON-LD BreadcrumbList via Helmet |
-| `public/robots.txt` | Adicionar crawlers de IA (GPTBot, ClaudeBot, PerplexityBot, etc.) |
-| `public/sitemap.xml` | Novo arquivo com mapa do site |
-
-**Total: 11 arquivos, sendo 1 novo (sitemap.xml)**
+**Total: 1 migration + 8 arquivos novos + 3 modificados**
 
