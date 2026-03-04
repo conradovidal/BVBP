@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           author_id: string | null
           content: string
+          cover_image_position: string
           cover_image_url: string | null
           created_at: string
           excerpt: string | null
@@ -33,6 +34,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           content: string
+          cover_image_position?: string
           cover_image_url?: string | null
           created_at?: string
           excerpt?: string | null
@@ -48,6 +50,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           content?: string
+          cover_image_position?: string
           cover_image_url?: string | null
           created_at?: string
           excerpt?: string | null

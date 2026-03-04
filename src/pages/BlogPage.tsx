@@ -11,6 +11,7 @@ interface BlogPost {
   slug: string;
   excerpt: string | null;
   cover_image_url: string | null;
+  cover_image_position: string | null;
   published_at: string | null;
   tags: string[] | null;
 }
@@ -23,7 +24,7 @@ const BlogPage = () => {
     const fetchPosts = async () => {
       const { data } = await supabase
         .from("blog_posts")
-        .select("id, title, slug, excerpt, cover_image_url, published_at, tags")
+        .select("id, title, slug, excerpt, cover_image_url, cover_image_position, published_at, tags")
         .eq("status", "published")
         .order("published_at", { ascending: false });
 
@@ -102,6 +103,7 @@ const BlogPage = () => {
                   slug={post.slug}
                   excerpt={post.excerpt}
                   coverImageUrl={post.cover_image_url}
+                  coverImagePosition={post.cover_image_position}
                   publishedAt={post.published_at}
                   tags={post.tags}
                 />
