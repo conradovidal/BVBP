@@ -1,39 +1,30 @@
 
 
-## Refinamentos do Blog Editor e Layout
+## Correções no Blog Post
 
-### 1. Editor WYSIWYG no Admin
+### Problema
+O `BlogPostContent` usa `prose prose-lg max-w-none`, que remove o limite de largura do prose. Combinado com o container `max-w-3xl`, o texto renderizado pelo Quill (que gera `<p>` sem quebras adequadas) pode extrapolar visualmente.
 
-Substituir o `<Textarea>` de HTML por um editor rich text. Usar a biblioteca **ReactQuill** (react-quill-new, compativel com React 18) — leve, popular, toolbar configuravel. O editor produz HTML diretamente, entao nao precisa mudar o banco nem o componente de renderizacao (`BlogPostContent` ja usa `dangerouslySetInnerHTML`).
+### Alterações
 
-**Toolbar**: headings (H1-H3), bold, italic, underline, listas, links, blockquote, imagem inline, alinhamento de texto.
+**1. `src/components/blog/BlogPostContent.tsx`**
+- Trocar `max-w-none` por `max-w-prose` (limite natural do Tailwind prose ~65ch) ou remover completamente (o default do prose já limita)
+- Adicionar `break-words` para garantir que textos longos quebrem
 
-**Arquivo**: `src/pages/AdminBlogEditorPage.tsx` — trocar o Textarea de conteudo pelo ReactQuill.
+**2. `src/pages/BlogPostPage.tsx`**
+- Remover `style={{ objectPosition }}` da imagem de capa — usar apenas `object-cover object-center` fixo
 
-### 2. Posicionamento/centralizacao da imagem de capa
+**3. `src/pages/AdminBlogEditorPage.tsx`**
+- Remover o Select de posição da imagem (cover_image_position)
 
-Adicionar um campo `cover_image_position` no editor (select com opcoes: `left`, `center`, `right`) que controla o `object-position` da imagem. Salvar como campo extra no banco.
+**4. Dimensões recomendadas para imagem de capa**
+O container tem `max-w-3xl` (768px) e a imagem usa `aspect-video` (16:9). Dimensão ideal: **1200 x 675px** (cabe perfeitamente, boa resolução em retina).
 
-**Alteracoes**:
-- **Migration SQL**: adicionar coluna `cover_image_position` (text, default 'center') na tabela `blog_posts`
-- **`AdminBlogEditorPage.tsx`**: adicionar Select para posicao da imagem
-- **`BlogCard.tsx`**: usar `object-position` dinamico na imagem
-- **`BlogPostPage.tsx`**: idem
+### Arquivos
 
-### 3. Tags movidas para baixo
-
-**`BlogCard.tsx`**: mover o bloco de tags para depois do excerpt/data (final do card).
-
-**`BlogPostPage.tsx`**: mover as tags para depois do conteudo do artigo (final da pagina, antes do footer).
-
-### Resumo de arquivos
-
-| Arquivo | Alteracao |
+| Arquivo | Alteração |
 |---------|----------|
-| Nova dependencia | `react-quill-new` |
-| Migration SQL | Adicionar `cover_image_position` |
-| `src/pages/AdminBlogEditorPage.tsx` | ReactQuill + select posicao imagem |
-| `src/components/blog/BlogCard.tsx` | Tags movidas para baixo + object-position dinamico |
-| `src/pages/BlogPostPage.tsx` | Tags movidas para final + object-position dinamico |
-| `src/integrations/supabase/types.ts` | Atualizar tipo blog_posts |
+| `src/components/blog/BlogPostContent.tsx` | `max-w-none` → remover (usar default do prose) + `break-words` |
+| `src/pages/BlogPostPage.tsx` | Remover `objectPosition` dinâmico da imagem |
+| `src/pages/AdminBlogEditorPage.tsx` | Remover bloco do Select de posição da imagem |
 
