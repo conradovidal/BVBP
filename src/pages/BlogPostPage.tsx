@@ -14,6 +14,7 @@ interface BlogPost {
   content: string;
   excerpt: string | null;
   cover_image_url: string | null;
+  cover_image_position: string | null;
   published_at: string | null;
   meta_description: string | null;
   tags: string[] | null;
@@ -126,16 +127,6 @@ const BlogPostPage = () => {
               Voltar ao blog
             </Link>
 
-            {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {post.tags.map((tag) => (
-                  <span key={tag} className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
             <h1 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
               {post.title}
             </h1>
@@ -152,10 +143,21 @@ const BlogPostPage = () => {
                 src={post.cover_image_url}
                 alt={post.title}
                 className="w-full rounded-lg mb-10 aspect-video object-cover"
+                style={{ objectPosition: post.cover_image_position || "center" }}
               />
             )}
 
             <BlogPostContent content={post.content} />
+
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-border">
+                {post.tags.map((tag) => (
+                  <span key={tag} className="text-sm px-3 py-1 rounded-full bg-secondary text-secondary-foreground">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </article>
       </main>

@@ -1,13 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Save, Send, Upload } from "lucide-react";
 import AdminGuard from "@/components/admin/AdminGuard";
 import { useToast } from "@/hooks/use-toast";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 const slugify = (text: string) =>
   text
@@ -30,10 +33,22 @@ const AdminBlogEditorPage = () => {
   const [metaDescription, setMetaDescription] = useState("");
   const [tags, setTags] = useState("");
   const [coverImageUrl, setCoverImageUrl] = useState("");
+  const [coverImagePosition, setCoverImagePosition] = useState("center");
   const [status, setStatus] = useState("draft");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  const quillModules = useMemo(() => ({
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["blockquote", "link", "image"],
+      ["clean"],
+    ],
+  }), []);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -52,6 +67,7 @@ const AdminBlogEditorPage = () => {
         setMetaDescription(data.meta_description || "");
         setTags((data.tags || []).join(", "));
         setCoverImageUrl(data.cover_image_url || "");
+        setCoverImagePosition(data.cover_image_position || "center");
         setStatus(data.status);
         setSlugManuallyEdited(true);
       }
@@ -100,6 +116,7 @@ const AdminBlogEditorPage = () => {
       meta_description: metaDescription.trim() || null,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       cover_image_url: coverImageUrl || null,
+      cover_image_position: coverImagePosition,
       author_id: session?.user.id,
       status: publishNow ? "published" : status,
       published_at: publishNow ? new Date().toISOString() : (status === "published" ? undefined : null),
@@ -180,15 +197,16 @@ const AdminBlogEditorPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="content">Conteúdo (HTML)</Label>
-              <Textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder="<p>Escreva seu artigo aqui...</p>"
-                rows={20}
-                className="font-mono text-sm"
-              />
+              <Label>Conteúdo</Label>
+              <div className="mt-1 [&_.ql-editor]:min-h-[400px] [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-toolbar]:border-input [&_.ql-container]:border-input [&_.ql-editor]:text-foreground [&_.ql-editor]:bg-background">
+                <ReactQuill
+                  theme="snow"
+                  value={content}
+                  onChange={setContent}
+                  modules={quillModules}
+                  placeholder="Escreva seu artigo aqui..."
+                />
+              </div>
             </div>
 
             <div>
@@ -202,7 +220,12 @@ const AdminBlogEditorPage = () => {
                   </div>
                 </label>
                 {coverImageUrl && (
-                  <img src={coverImageUrl} alt="Capa" className="h-16 rounded object-cover" />
+                  <img
+                    src={coverImageUrl}
+                    alt="Capa"
+                    className="h-16 rounded object-cover"
+                    style={{ objectPosition: coverImagePosition }}
+                  />
                 )}
               </div>
               <Input
@@ -211,6 +234,21 @@ const AdminBlogEditorPage = () => {
                 placeholder="Ou cole a URL da imagem"
                 className="mt-2"
               />
+              <div className="mt-2">
+                <Label>Posição da imagem</Label>
+                <Select value={coverImagePosition} onValueChange={setCoverImagePosition}>
+                  <SelectTrigger className="w-48 mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="left">Esquerda</SelectItem>
+                    <SelectItem value="center">Centro</SelectItem>
+                    <SelectItem value="right">Direita</SelectItem>
+                    <SelectItem value="top">Topo</SelectItem>
+                    <SelectItem value="bottom">Base</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div>

@@ -1,0 +1,1 @@
+ALTER TABLE public.blog_posts ADD COLUMN cover_image_position text NOT NULL DEFAULT 'center';
