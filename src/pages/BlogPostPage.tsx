@@ -142,8 +142,7 @@ const BlogPostPage = () => {
               <img
                 src={post.cover_image_url}
                 alt={post.title}
-                className="w-full rounded-lg mb-10 aspect-video object-cover"
-                style={{ objectPosition: post.cover_image_position || "center" }}
+                className="w-full rounded-lg mb-10 aspect-video object-cover object-center"
               />
             )}
 

@@ -234,21 +234,6 @@ const AdminBlogEditorPage = () => {
                 placeholder="Ou cole a URL da imagem"
                 className="mt-2"
               />
-              <div className="mt-2">
-                <Label>Posição da imagem</Label>
-                <Select value={coverImagePosition} onValueChange={setCoverImagePosition}>
-                  <SelectTrigger className="w-48 mt-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="left">Esquerda</SelectItem>
-                    <SelectItem value="center">Centro</SelectItem>
-                    <SelectItem value="right">Direita</SelectItem>
-                    <SelectItem value="top">Topo</SelectItem>
-                    <SelectItem value="bottom">Base</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
 
             <div>
