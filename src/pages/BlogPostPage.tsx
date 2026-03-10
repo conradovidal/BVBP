@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogPostContent from "@/components/blog/BlogPostContent";
+import BlogShareButtons from "@/components/blog/BlogShareButtons";
 
 interface BlogPost {
   id: string;
