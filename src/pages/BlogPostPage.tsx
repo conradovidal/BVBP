@@ -149,6 +149,8 @@ const BlogPostPage = () => {
 
             <BlogPostContent content={post.content} />
 
+            <BlogShareButtons title={post.title} url={`https://bvbp.com.br/blog/${post.slug}`} />
+
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-border">
                 {post.tags.map((tag) => (
