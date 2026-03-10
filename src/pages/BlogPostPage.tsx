@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogPostContent from "@/components/blog/BlogPostContent";
+import BlogShareButtons from "@/components/blog/BlogShareButtons";
 
 interface BlogPost {
   id: string;
@@ -147,6 +148,8 @@ const BlogPostPage = () => {
             )}
 
             <BlogPostContent content={post.content} />
+
+            <BlogShareButtons title={post.title} url={`https://bvbp.com.br/blog/${post.slug}`} />
 
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-border">
