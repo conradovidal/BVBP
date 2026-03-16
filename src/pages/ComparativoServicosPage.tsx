@@ -287,23 +287,6 @@ const ComparativoServicosPage = () => {
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
                 Compare os serviços, faça o quiz ou fale com a gente. Vamos encontrar o melhor caminho juntos.
               </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button 
-                  size="lg" 
-                  variant="secondary"
-                  onClick={() => document.getElementById("quiz")?.scrollIntoView({ behavior: "smooth" })}
-                >
-                  Fazer o Quiz
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-bvbp-corporate"
-                  onClick={() => document.getElementById("tabela")?.scrollIntoView({ behavior: "smooth" })}
-                >
-                  Ver Comparativo
-                </Button>
-              </div>
             </div>
           </div>
         </section>
