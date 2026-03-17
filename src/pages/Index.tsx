@@ -561,7 +561,7 @@ const Index = () => {
 
                 <div className="grid md:grid-cols-2 gap-8">
                   {team.map((member, index) => <Card key={index} className={`group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white border-t-4 border-t-bvbp-growth animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 150}ms` }}>
-                      <img src={member.photo} alt={member.name} className="w-56 h-56 rounded-xl object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300" />
+                      <img src={member.photo} alt={member.name} className="w-56 h-56 rounded-xl object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300 grayscale" />
                       <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-2">
                         {member.name}
                       </h3>
