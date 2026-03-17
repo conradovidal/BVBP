@@ -115,7 +115,7 @@ const Index = () => {
     role: "",
     bio: "9+ anos transformando operação caótica em processos claros. Especialista em fazer o time ganhar foco e o líder parar de apagar incêndio.",
     linkedin: "https://www.linkedin.com/in/conradovidal/",
-    photo: "/lovable-uploads/c237e246-d750-44a5-96a1-510e298e84ed.png"
+    photo: "/lovable-uploads/conrado-vidal.jpeg"
   }];
   const values = [{
     icon: Target,
