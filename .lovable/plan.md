@@ -1,30 +1,15 @@
 
 
-## Correções no Blog Post
-
-### Problema
-O `BlogPostContent` usa `prose prose-lg max-w-none`, que remove o limite de largura do prose. Combinado com o container `max-w-3xl`, o texto renderizado pelo Quill (que gera `<p>` sem quebras adequadas) pode extrapolar visualmente.
+## Substituir foto do Conrado
 
 ### Alterações
 
-**1. `src/components/blog/BlogPostContent.tsx`**
-- Trocar `max-w-none` por `max-w-prose` (limite natural do Tailwind prose ~65ch) ou remover completamente (o default do prose já limita)
-- Adicionar `break-words` para garantir que textos longos quebrem
+1. **Copiar imagem**: Copiar `user-uploads://CONRADO.jpeg` para `public/lovable-uploads/conrado-vidal.jpeg`
 
-**2. `src/pages/BlogPostPage.tsx`**
-- Remover `style={{ objectPosition }}` da imagem de capa — usar apenas `object-cover object-center` fixo
+2. **`src/pages/Index.tsx`** (linha ~118): Atualizar o path da foto do Conrado de `/lovable-uploads/c237e246-d750-44a5-96a1-510e298e84ed.png` para `/lovable-uploads/conrado-vidal.jpeg`
 
-**3. `src/pages/AdminBlogEditorPage.tsx`**
-- Remover o Select de posição da imagem (cover_image_position)
+3. **`src/pages/Index.tsx`** (linha ~564): Adicionar classe `grayscale` na tag `<img>` dos membros do time para aplicar o filtro preto e branco via CSS, mantendo consistência visual com as fotos existentes.
 
-**4. Dimensões recomendadas para imagem de capa**
-O container tem `max-w-3xl` (768px) e a imagem usa `aspect-video` (16:9). Dimensão ideal: **1200 x 675px** (cabe perfeitamente, boa resolução em retina).
-
-### Arquivos
-
-| Arquivo | Alteração |
-|---------|----------|
-| `src/components/blog/BlogPostContent.tsx` | `max-w-none` → remover (usar default do prose) + `break-words` |
-| `src/pages/BlogPostPage.tsx` | Remover `objectPosition` dinâmico da imagem |
-| `src/pages/AdminBlogEditorPage.tsx` | Remover bloco do Select de posição da imagem |
+### Nota
+Como as fotos atuais parecem já estar em preto e branco no arquivo original, aplicarei `grayscale` via CSS em todas as fotos do time para garantir uniformidade caso alguma nova foto colorida seja adicionada no futuro.
 
