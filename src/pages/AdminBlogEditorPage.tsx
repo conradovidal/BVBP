@@ -20,6 +20,9 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+const normalizeNbsp = (html: string) =>
+  html.replace(/&nbsp;/gi, " ").replace(/&#160;/g, " ").replace(/\u00A0/g, " ");
+
 const AdminBlogEditorPage = () => {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
@@ -112,7 +115,7 @@ const AdminBlogEditorPage = () => {
       title: title.trim(),
       slug: slug.trim(),
       excerpt: excerpt.trim() || null,
-      content,
+      content: normalizeNbsp(content),
       meta_description: metaDescription.trim() || null,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       cover_image_url: coverImageUrl || null,
