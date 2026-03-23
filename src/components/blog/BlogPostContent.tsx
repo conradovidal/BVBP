@@ -5,7 +5,8 @@ interface BlogPostContentProps {
 const BlogPostContent = ({ content }: BlogPostContentProps) => {
   return (
     <div
-      className="prose prose-lg max-w-prose break-words
+      lang="pt-BR"
+      className="prose prose-lg max-w-prose [overflow-wrap:anywhere] [hyphens:auto] [text-wrap:pretty]
         prose-headings:text-foreground prose-headings:font-heading
         prose-p:text-foreground/80
         prose-a:text-primary prose-a:no-underline hover:prose-a:underline
