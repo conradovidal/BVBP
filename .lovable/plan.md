@@ -1,22 +1,43 @@
 
+Objetivo: eliminar definitivamente a quebra de palavras no meio no conteúdo dos posts, fazendo a palavra inteira “escorregar” para a próxima linha.
 
-## Corrigir tipografia do blog post
+1) Corrigir a causa raiz no conteúdo (NBSP)
+- Arquivo: `src/components/blog/BlogPostContent.tsx`
+- Antes de renderizar, normalizar o HTML do post trocando espaços não separáveis por espaços normais:
+  - `&nbsp;`
+  - `&#160;`
+  - `\u00A0`
+- Isso remove o comportamento de “palavra colada” que força quebra feia no meio quando o navegador tenta encaixar o texto.
 
-### Problema
-O texto do blog está quebrando palavras de forma irregular no final das linhas (ex: "p rojetos", "estraté gicos", "cla reza"), criando uma aparência não profissional. Isso é causado pela classe `break-words` que força quebra de palavras em qualquer ponto.
+2) Ajustar tipografia para modo “nunca quebrar no meio”
+- Arquivo: `src/components/blog/BlogPostContent.tsx`
+- Atualizar classes do container `prose` para política estrita de quebra:
+  - remover fallback agressivo atual (`[overflow-wrap:anywhere]` e hifenização automática)
+  - aplicar:
+    - `[word-break:normal]`
+    - `[overflow-wrap:normal]`
+    - `[hyphens:none]`
+    - manter `[text-wrap:pretty]` para acabamento visual
+- Aplicar override explícito em parágrafos/listas/headings (`prose-p`, `prose-li`, `prose-headings`) para garantir consistência total.
 
-### Solução
+3) Prevenir reincidência em novos artigos
+- Arquivo: `src/pages/AdminBlogEditorPage.tsx`
+- Na rotina de salvar/publicar (`handleSave`), normalizar `content` com a mesma função antes de enviar ao Supabase.
+- Opcional complementar: normalizar também ao carregar post para edição, para “limpar” artigos antigos ao serem re-salvos.
 
-**`src/components/blog/BlogPostContent.tsx`**:
-- Remover `break-words` (causa quebras no meio de palavras)
-- Adicionar `overflow-wrap: anywhere` apenas como fallback para URLs longas, não para texto normal
-- Adicionar `hyphens: auto` com `lang="pt-BR"` para hifenização correta em português
-- Adicionar `text-pretty` (Tailwind v3.4+) ou `text-wrap: pretty` para balanceamento de linhas mais elegante nos parágrafos
+4) Validação de qualidade (fim a fim)
+- Verificar no post atual (`/blog/planejamento-de-2026-arquivado-em-março`) e no segundo post publicado.
+- Testar desktop + mobile para confirmar:
+  - nenhuma palavra comum quebrando no meio
+  - fluidez visual consistente
+  - sem regressão em títulos, listas, links e bloco de compartilhamento.
 
-Alterações na classe do container:
-- Trocar `break-words` por `[overflow-wrap:anywhere]` (só quebra quando necessário, não proativamente)
-- Adicionar `[hyphens:auto]` + atributo `lang="pt-BR"` no elemento para hifenização inteligente
-- Adicionar `[text-wrap:pretty]` para distribuição mais equilibrada do texto nas linhas
+Detalhes técnicos
+- Problema atual: conteúdo vindo com `&nbsp;` + regras de wrap permissivas (`anywhere`) => o navegador perde pontos de quebra naturais e acaba fragmentando palavras.
+- Estratégia: normalizar o conteúdo + forçar regras tipográficas conservadoras (`word-break/overflow-wrap/hyphens`) para comportamento editorial profissional e previsível.
+- Escopo de alteração: 2 arquivos (`BlogPostContent.tsx`, `AdminBlogEditorPage.tsx`), sem mudança de schema no banco.
 
-1 arquivo, mudanças mínimas de classes CSS.
-
+Critérios de aceite
+- Zero palavras quebradas no meio em texto corrido.
+- Quebra de linha sempre em fronteira natural entre palavras.
+- Novos posts já entram normalizados, sem voltar o problema.
