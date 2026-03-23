@@ -20,6 +20,9 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
+const normalizeNbsp = (html: string) =>
+  html.replace(/&nbsp;/gi, " ").replace(/&#160;/g, " ").replace(/\u00A0/g, " ");
+
 const AdminBlogEditorPage = () => {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
