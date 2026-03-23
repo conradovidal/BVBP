@@ -115,7 +115,7 @@ const AdminBlogEditorPage = () => {
       title: title.trim(),
       slug: slug.trim(),
       excerpt: excerpt.trim() || null,
-      content,
+      content: normalizeNbsp(content),
       meta_description: metaDescription.trim() || null,
       tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       cover_image_url: coverImageUrl || null,
