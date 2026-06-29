@@ -1,4 +1,19 @@
-# Welcome to your Lovable project
+# BVBP Portal
+
+Portal BVBP em React/Vite para site institucional, administração interna e workspace de Performance Operacional.
+
+## Uso interno
+
+O checklist de uso e validação do portal está em [`docs/bvbp-portal-checklist.md`](docs/bvbp-portal-checklist.md).
+
+Comandos principais:
+
+```sh
+npm install
+npm run dev
+npm run lint
+npm run build
+```
 
 ## Project info
 

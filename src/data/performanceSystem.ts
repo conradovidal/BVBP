@@ -1,0 +1,1438 @@
+export type PortalRole = "admin" | "editor" | "client";
+
+export interface PerformanceUser {
+  id: string;
+  name: string;
+  email: string;
+  role: PortalRole;
+  roleLabel: string;
+  companyIds: string[];
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  segment: string;
+  employees: number;
+  monthlyRevenue: number;
+  recurringRevenue: number;
+  monthlyOperationalCost: number;
+  contactName?: string;
+  contactEmail?: string;
+  status?: "Ativo" | "Onboarding" | "Pausado";
+}
+
+export interface Metric {
+  id: string;
+  companyId: string;
+  name: string;
+  value: number;
+  unit: "currency" | "percentage" | "count";
+  category: "financial" | "operational" | "risk";
+  confidenceLevel: string;
+}
+
+export interface CompanyPortfolioSignal {
+  companyId: string;
+  type?: "Cliente" | "Prospect" | "Parceiro" | "Lead interno" | "Workspace interno";
+  owner?: string;
+  actionLabel?: string;
+  criticalPointer: string;
+  mappedPotential: number;
+  nextAction: string;
+  activeCycles: number;
+  highRiskProjects: number;
+  projectsCount: number;
+  revenueAtRisk: number;
+  attention: boolean;
+}
+
+export interface Project {
+  id: string;
+  companyId: string;
+  name: string;
+  owner: string;
+  status: "Em andamento" | "Atrasado" | "Planejado";
+  value: number;
+  deadline: string;
+  risk: "Baixo" | "Médio" | "Alto";
+  bottleneck: string;
+}
+
+export interface InternalPortfolioItem {
+  id: string;
+  name: string;
+  type: "Cliente" | "Prospect" | "Parceiro" | "Lead interno" | "Workspace interno";
+  status: "Mapeado" | "Em diagnóstico" | "Proposta enviada" | "Em negociação" | "Ativo" | "Pausado" | "Perdido";
+  criticalPointer: string;
+  mappedPotential: number;
+  nextAction: string;
+  owner: string;
+  actionLabel: string;
+}
+
+export interface BvbpPillar {
+  id: string;
+  name: string;
+  score: number;
+  status: "Atenção" | "Em evolução" | "Base inicial";
+  description: string;
+}
+
+export interface MaturityScore {
+  id: string;
+  companyId: string;
+  dimension: string;
+  score: number;
+  description: string;
+}
+
+export interface OperationalLeak {
+  id: string;
+  companyId: string;
+  name: string;
+  affectedFlow: string;
+  affectedPointer: string;
+  hoursPerMonth: number;
+  estimatedCost: number;
+  severity: "Alta" | "Média" | "Baixa";
+  source: string;
+}
+
+export interface Improvement {
+  id: string;
+  companyId: string;
+  title: string;
+  affectedPointer: string;
+  affectedFlow: string;
+  hypothesis: string;
+  estimatedImpact: number;
+  ease: "Alta" | "Média" | "Baixa";
+  owner: string;
+  deadline: string;
+  pdcaStatus: "Planejar" | "Executar" | "Medir" | "Aprender" | "Padronizar" | "Pausar" | "Fazer agora" | "Em andamento" | "Aguardando" | "Concluído" | "Pausado";
+  priorityBucket: "Fazer agora" | "Planejar" | "Monitorar" | "Pausar";
+  nextDecision?: string;
+}
+
+export const pdcaStatuses = ["Planejar", "Executar", "Medir", "Aprender", "Padronizar", "Pausar"] as const;
+
+export type PdcaStatus = (typeof pdcaStatuses)[number];
+
+export const evidenceTypes = ["Dado", "Reunião", "Cliente", "Entrega", "Aprendizado", "Decisão"] as const;
+
+export type EvidenceType = (typeof evidenceTypes)[number];
+
+export const bvbpPointerOptions = [
+  "Receita mensal",
+  "Pipeline comercial",
+  "Diagnósticos agendados",
+  "Propostas enviadas",
+  "Taxa de conversão",
+  "Conteúdos publicados",
+  "Potencial mapeado",
+  "Ciclos ativos",
+] as const;
+
+export interface PdcaEvidence {
+  id: string;
+  date: string;
+  description: string;
+  type: EvidenceType;
+  observedValue?: string;
+  note?: string;
+}
+
+export interface PdcaLearning {
+  id: string;
+  date: string;
+  description: string;
+}
+
+export interface PdcaCycle {
+  id: string;
+  companyId: string;
+  title: string;
+  affectedPointer: string;
+  affectedFlow: string;
+  hypothesis: string;
+  plannedAction: string;
+  whyItMatters: string;
+  owner: string;
+  deadline: string;
+  pdcaStatus: PdcaStatus;
+  estimatedImpact: number;
+  nextDecision: string;
+  dataType: "Mockado" | "Estimado" | "Real";
+  evidences: PdcaEvidence[];
+  learnings: PdcaLearning[];
+}
+
+export interface FunnelMetric {
+  id: string;
+  name: string;
+  value: number;
+  unit: "currency" | "percentage" | "count";
+  helper: string;
+}
+
+export interface FunnelChannel {
+  id: string;
+  channel: string;
+  entry: number;
+  conversion: number;
+  estimatedRevenue: number;
+  status: "Forte" | "Atenção" | "Testar" | "Pausar";
+  observation: string;
+}
+
+export interface PipelineOpportunity {
+  id: string;
+  opportunity: string;
+  origin: "Networking" | "Indicação" | "LinkedIn" | "Site" | "Conteúdo" | "Parceiro" | "Relação profissional";
+  stage: "Mapeado" | "Contato inicial" | "Conversa marcada" | "Diagnóstico" | "Proposta" | "Negociação" | "Fechado" | "Perdido";
+  potential: number;
+  nextAction: string;
+  owner: string;
+  status: "Mapeado" | "Em diagnóstico" | "Proposta enviada" | "Em negociação" | "Ativo" | "Pausado" | "Perdido";
+}
+
+export interface WeeklySummaryItem {
+  label: string;
+  value: string;
+}
+
+export interface AutomationOpportunity {
+  id: string;
+  opportunity: string;
+  type: "Automação" | "IA" | "Dashboard" | "Banco de dados" | "Landing page" | "Governança documental" | "Aplicação interna";
+  affectedProcess: string;
+  hoursPerMonth: number;
+  estimatedImpact: number;
+  complexity: "Baixa" | "Média" | "Alta";
+  status: "Mapeada" | "Em desenho" | "Em andamento" | "Validar" | "Pausar";
+}
+
+export interface ImpactCycle {
+  id: string;
+  metric: string;
+  baseline: string;
+  target90Days: string;
+  current: string;
+  status: string;
+}
+
+export const mockPerformanceUser: PerformanceUser = {
+  id: "user-atlas-01",
+  name: "Ana Ribeiro",
+  email: "cliente@bvbp.com.br",
+  role: "client",
+  roleLabel: "Cliente",
+  companyIds: ["company-atlas"],
+};
+
+export const BVBP_COMPANY_ID = "company-bvbp";
+
+export const mockCompany: Company = {
+  id: "company-atlas",
+  name: "Atlas Serviços Profissionais",
+  segment: "Serviços B2B",
+  employees: 42,
+  monthlyRevenue: 280000,
+  recurringRevenue: 120000,
+  monthlyOperationalCost: 190000,
+  contactName: "Ana Ribeiro",
+  contactEmail: "cliente@bvbp.com.br",
+  status: "Ativo",
+};
+
+export const mockCompanies: Company[] = [
+  {
+    id: BVBP_COMPANY_ID,
+    name: "BVBP",
+    segment: "Consultoria boutique de performance operacional",
+    employees: 2,
+    monthlyRevenue: 0,
+    recurringRevenue: 0,
+    monthlyOperationalCost: 0,
+    contactName: "Conrado Vidal",
+    contactEmail: "conrado@bvbp.com.br",
+    status: "Ativo",
+  },
+  mockCompany,
+  {
+    id: "company-nortech",
+    name: "Nortech Operações",
+    segment: "Distribuição B2B",
+    employees: 68,
+    monthlyRevenue: 430000,
+    recurringRevenue: 160000,
+    monthlyOperationalCost: 310000,
+    contactName: "Paulo Martins",
+    contactEmail: "paulo@nortech.example",
+    status: "Onboarding",
+  },
+  {
+    id: "company-lumina",
+    name: "Lumina Educação Corporativa",
+    segment: "Serviços educacionais",
+    employees: 28,
+    monthlyRevenue: 190000,
+    recurringRevenue: 95000,
+    monthlyOperationalCost: 138000,
+    contactName: "Beatriz Costa",
+    contactEmail: "beatriz@lumina.example",
+    status: "Ativo",
+  },
+];
+
+export function isBvbpInternalWorkspace(company: Pick<Company, "id">) {
+  return company.id === BVBP_COMPANY_ID;
+}
+
+const portfolioSignalsByCompanyId: Record<string, Omit<CompanyPortfolioSignal, "companyId">> = {
+  [BVBP_COMPANY_ID]: {
+    type: "Workspace interno",
+    owner: "BVBP",
+    actionLabel: "Abrir workspace",
+    criticalPointer: "Cadência comercial",
+    mappedPotential: 42000,
+    nextAction: "Definir 10 diagnósticos prioritários",
+    activeCycles: 2,
+    highRiskProjects: 1,
+    projectsCount: 4,
+    revenueAtRisk: 0,
+    attention: true,
+  },
+  "company-atlas": {
+    criticalPointer: "Receita em risco",
+    mappedPotential: 38000,
+    nextAction: "Conectar funil e operação",
+    activeCycles: 3,
+    highRiskProjects: 2,
+    projectsCount: 8,
+    revenueAtRisk: 105000,
+    attention: true,
+  },
+  "company-nortech": {
+    criticalPointer: "Tempo de espera",
+    mappedPotential: 62000,
+    nextAction: "Priorizar vazamentos operacionais",
+    activeCycles: 2,
+    highRiskProjects: 1,
+    projectsCount: 5,
+    revenueAtRisk: 88000,
+    attention: true,
+  },
+  "company-lumina": {
+    criticalPointer: "Conversão por etapa",
+    mappedPotential: 26000,
+    nextAction: "Medir origem das oportunidades",
+    activeCycles: 1,
+    highRiskProjects: 0,
+    projectsCount: 4,
+    revenueAtRisk: 34000,
+    attention: false,
+  },
+};
+
+export const internalPortfolioItems: InternalPortfolioItem[] = [
+  {
+    id: "internal-bvbp",
+    name: "BVBP",
+    type: "Workspace interno",
+    status: "Ativo",
+    criticalPointer: "Cadência comercial",
+    mappedPotential: 42000,
+    nextAction: "Definir 10 diagnósticos prioritários",
+    owner: "BVBP",
+    actionLabel: "Abrir workspace",
+  },
+  {
+    id: "prospect-a",
+    name: "Prospect A",
+    type: "Prospect",
+    status: "Em diagnóstico",
+    criticalPointer: "Pipeline comercial",
+    mappedPotential: 18000,
+    nextAction: "Marcar conversa de diagnóstico",
+    owner: "Conrado",
+    actionLabel: "Acompanhar",
+  },
+  {
+    id: "prospect-b",
+    name: "Prospect B",
+    type: "Prospect",
+    status: "Mapeado",
+    criticalPointer: "Origem da oportunidade",
+    mappedPotential: 12000,
+    nextAction: "Validar dor operacional",
+    owner: "Cristiano",
+    actionLabel: "Qualificar",
+  },
+  {
+    id: "cliente-piloto",
+    name: "Cliente piloto",
+    type: "Cliente",
+    status: "Ativo",
+    criticalPointer: "Ciclo de melhoria",
+    mappedPotential: 22000,
+    nextAction: "Fechar próxima evidência",
+    owner: "BVBP",
+    actionLabel: "Revisar",
+  },
+  {
+    id: "parceiro-estrategico",
+    name: "Parceiro estratégico",
+    type: "Parceiro",
+    status: "Em negociação",
+    criticalPointer: "Indicações qualificadas",
+    mappedPotential: 15000,
+    nextAction: "Definir modelo de parceria",
+    owner: "Conrado",
+    actionLabel: "Alinhar",
+  },
+  {
+    id: "lead-interno-site",
+    name: "Lead interno",
+    type: "Lead interno",
+    status: "Mapeado",
+    criticalPointer: "Entrada pelo site",
+    mappedPotential: 8000,
+    nextAction: "Criar qualificação mínima",
+    owner: "Cristiano",
+    actionLabel: "Triar",
+  },
+];
+
+export function getInternalPortfolioSummary() {
+  return {
+    activeItems: internalPortfolioItems.filter((item) => item.status !== "Pausado" && item.status !== "Perdido").length,
+    opportunities: internalPortfolioItems.filter((item) => item.type === "Prospect" || item.type === "Lead interno").length,
+    mappedPotential: getBvbpPortfolioPotential(),
+    pendingActions: internalPortfolioItems.filter((item) => item.status !== "Ativo" && item.status !== "Perdido").length,
+  };
+}
+
+export function getBvbpWorkspacePotential() {
+  return portfolioSignalsByCompanyId[BVBP_COMPANY_ID].mappedPotential;
+}
+
+export function getBvbpPortfolioPotential() {
+  return internalPortfolioItems.reduce((sum, item) => sum + item.mappedPotential, 0);
+}
+
+export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSignal {
+  const stored = portfolioSignalsByCompanyId[company.id];
+
+  if (stored) {
+    return {
+      companyId: company.id,
+      ...stored,
+    };
+  }
+
+  const mappedPotential = Math.round(company.monthlyOperationalCost * 0.18);
+  const revenueAtRisk = Math.round(company.monthlyRevenue * 0.18);
+  const activeCycles = company.status === "Onboarding" ? 1 : 2;
+
+  return {
+    companyId: company.id,
+    criticalPointer: company.status === "Onboarding" ? "Dados sem linha de base" : "Potencial mapeado",
+    mappedPotential,
+    nextAction: company.status === "Onboarding" ? "Fechar diagnóstico inicial" : "Definir próxima decisão",
+    activeCycles,
+    highRiskProjects: company.status === "Onboarding" ? 1 : 0,
+    projectsCount: activeCycles + 2,
+    revenueAtRisk,
+    attention: company.status === "Onboarding" || revenueAtRisk > 50000,
+  };
+}
+
+export function createOverviewMetrics(company: Company): Metric[] {
+  if (isBvbpInternalWorkspace(company)) {
+    const pipelinePotential = getBvbpPipelinePotential();
+    const diagnostics = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
+    const proposals = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
+
+    return [
+      {
+        id: "metric-monthly-revenue",
+        companyId: company.id,
+        name: "Receita mensal",
+        value: 0,
+        unit: "currency",
+        category: "financial",
+        confidenceLevel: "Mockado controlado",
+      },
+      {
+        id: "metric-pipeline",
+        companyId: company.id,
+        name: "Pipeline comercial",
+        value: pipelinePotential,
+        unit: "currency",
+        category: "financial",
+        confidenceLevel: "Potencial estimado",
+      },
+      {
+        id: "metric-diagnostics",
+        companyId: company.id,
+        name: "Diagnósticos agendados",
+        value: diagnostics,
+        unit: "count",
+        category: "operational",
+        confidenceLevel: "Mockado",
+      },
+      {
+        id: "metric-proposals",
+        companyId: company.id,
+        name: "Propostas enviadas",
+        value: proposals,
+        unit: "count",
+        category: "operational",
+        confidenceLevel: "Mockado",
+      },
+      {
+        id: "metric-conversion",
+        companyId: company.id,
+        name: "Taxa de conversão",
+        value: 0,
+        unit: "percentage",
+        category: "financial",
+        confidenceLevel: "Base inicial",
+      },
+      {
+        id: "metric-content",
+        companyId: company.id,
+        name: "Conteúdos publicados",
+        value: 0,
+        unit: "count",
+        category: "operational",
+        confidenceLevel: "Mockado",
+      },
+      {
+        id: "metric-savings",
+        companyId: company.id,
+        name: "Potencial mapeado",
+        value: getBvbpWorkspacePotential(),
+        unit: "currency",
+        category: "operational",
+        confidenceLevel: "Estimado",
+      },
+      {
+        id: "metric-active-cycles",
+        companyId: company.id,
+        name: "Ciclos ativos",
+        value: 2,
+        unit: "count",
+        category: "operational",
+        confidenceLevel: "Mockado",
+      },
+    ];
+  }
+
+  const signal = getCompanyPortfolioSignal(company);
+  const margin = Math.max(8, Math.round(((company.monthlyRevenue - company.monthlyOperationalCost) / company.monthlyRevenue) * 100));
+
+  return [
+    {
+      id: "metric-monthly-revenue",
+      companyId: company.id,
+      name: "Receita mensal",
+      value: company.monthlyRevenue,
+      unit: "currency",
+      category: "financial",
+      confidenceLevel: "Informado pelo cliente",
+    },
+    {
+      id: "metric-margin",
+      companyId: company.id,
+      name: "Margem estimada",
+      value: margin,
+      unit: "percentage",
+      category: "financial",
+      confidenceLevel: "Estimado",
+    },
+    {
+      id: "metric-operational-cost",
+      companyId: company.id,
+      name: "Custo operacional mensal",
+      value: company.monthlyOperationalCost,
+      unit: "currency",
+      category: "financial",
+      confidenceLevel: "Informado pelo cliente",
+    },
+    {
+      id: "metric-savings",
+      companyId: company.id,
+      name: "Potencial de economia mapeado",
+      value: signal.mappedPotential,
+      unit: "currency",
+      category: "operational",
+      confidenceLevel: "Estimado a partir do diagnóstico",
+    },
+    {
+      id: "metric-revenue-risk",
+      companyId: company.id,
+      name: "Receita em risco",
+      value: signal.revenueAtRisk,
+      unit: "currency",
+      category: "risk",
+      confidenceLevel: "Estimado",
+    },
+    {
+      id: "metric-active-cycles",
+      companyId: company.id,
+      name: "Ciclos ativos",
+      value: signal.activeCycles,
+      unit: "count",
+      category: "operational",
+      confidenceLevel: "PDCA em acompanhamento",
+    },
+  ];
+}
+
+export const overviewMetrics: Metric[] = createOverviewMetrics(mockCompany);
+
+export const bvbpPillars: BvbpPillar[] = [
+  {
+    id: "money",
+    name: "Dinheiro",
+    score: 3,
+    status: "Em evolução",
+    description: "Receita, margem, custo, caixa, potencial de economia e receita em risco.",
+  },
+  {
+    id: "funnel",
+    name: "Funil",
+    score: 2,
+    status: "Atenção",
+    description: "Origem das oportunidades, conversão por etapa, ticket, pipeline e receita por canal.",
+  },
+  {
+    id: "operation",
+    name: "Operação",
+    score: 2,
+    status: "Atenção",
+    description: "Retrabalho, espera, aprovações lentas, relatórios manuais e custo de capacidade.",
+  },
+  {
+    id: "tech-ai",
+    name: "Tecnologia e IA",
+    score: 1,
+    status: "Base inicial",
+    description: "Automações, dados, IA e aplicações internas conectadas a ponteiros reais.",
+  },
+];
+
+export const internalBvbpPillars: BvbpPillar[] = [
+  {
+    id: "money",
+    name: "Dinheiro",
+    score: 1,
+    status: "Base inicial",
+    description: "Receita, pipeline e potencial ainda em validação comercial.",
+  },
+  {
+    id: "funnel",
+    name: "Funil",
+    score: 2,
+    status: "Em evolução",
+    description: "Networking, diagnósticos, propostas e cadência semanal.",
+  },
+  {
+    id: "operation",
+    name: "Operação",
+    score: 3,
+    status: "Em evolução",
+    description: "Método, rotina interna e ciclos mínimos de melhoria.",
+  },
+  {
+    id: "tech-ai",
+    name: "Tecnologia e IA",
+    score: 2,
+    status: "Em evolução",
+    description: "Plataforma própria, conteúdo e base operacional interna.",
+  },
+];
+
+export function getPillarsForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company) ? internalBvbpPillars : bvbpPillars;
+}
+
+export const diagnosticSignals = [
+  "Indicadores financeiros e operacionais ainda aparecem em lugares separados.",
+  "Tempo de espera elevado entre comercial e operação.",
+  "Funil comercial existe, mas não há clareza de conversão por etapa.",
+  "Tarefas manuais recorrentes têm potencial de automação.",
+  "Projetos ativos precisam de responsáveis e critérios de risco mais claros.",
+];
+
+export const internalDiagnosticSignals = [
+  "Método e plataforma avançaram mais rápido que a cadência comercial.",
+  "Pipeline inicial existe, mas ainda precisa de lista prioritária e rotina semanal.",
+  "Conteúdo deve funcionar como canal de autoridade e aquisição.",
+  "Diagnósticos precisam virar evidências e proposta simples de 90 dias.",
+];
+
+export function getDiagnosticSignalsForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company) ? internalDiagnosticSignals : diagnosticSignals;
+}
+
+export const internalWeeklySummary: WeeklySummaryItem[] = [
+  {
+    label: "Próxima decisão",
+    value: "Definir lista dos 10 primeiros diagnósticos prioritários.",
+  },
+  {
+    label: "Principal oportunidade",
+    value: "Converter networking próximo em conversas de diagnóstico.",
+  },
+  {
+    label: "Principal risco",
+    value: "Ter método e plataforma bons, mas baixa cadência comercial.",
+  },
+  {
+    label: "Ciclo em andamento",
+    value: "Estruturar pipeline mínimo da BVBP.",
+  },
+  {
+    label: "Última evidência",
+    value: "Modelo comercial simplificado em duas ofertas principais.",
+  },
+];
+
+export function getWeeklySummaryForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company) ? internalWeeklySummary : [];
+}
+
+export const maturityScores: MaturityScore[] = bvbpPillars.map((pillar) => ({
+  id: `score-${pillar.id}`,
+  companyId: mockCompany.id,
+  dimension: pillar.name,
+  score: pillar.score,
+  description: pillar.description,
+}));
+
+export const projectSummary = {
+  activeProjects: 8,
+  delayedProjects: 3,
+  projectsWithoutClearOwner: 2,
+  revenueAtRisk: 105000,
+};
+
+export const projects: Project[] = [
+  {
+    id: "project-commercial-flow",
+    companyId: mockCompany.id,
+    name: "Redesenho do fluxo comercial",
+    status: "Em andamento",
+    owner: "Mariana Alves",
+    value: 80000,
+    deadline: "30/07/2026",
+    risk: "Médio",
+    bottleneck: "Aprovação de proposta",
+  },
+  {
+    id: "project-financial-dashboard",
+    companyId: mockCompany.id,
+    name: "Implantação de dashboard financeiro",
+    status: "Atrasado",
+    owner: "João Pereira",
+    value: 45000,
+    deadline: "15/07/2026",
+    risk: "Alto",
+    bottleneck: "Falta de dados consolidados",
+  },
+  {
+    id: "project-followups",
+    companyId: mockCompany.id,
+    name: "Automação de follow-ups",
+    status: "Planejado",
+    owner: "Carla Mendes",
+    value: 25000,
+    deadline: "20/08/2026",
+    risk: "Baixo",
+    bottleneck: "Tarefas manuais recorrentes",
+  },
+  {
+    id: "project-standardization",
+    companyId: mockCompany.id,
+    name: "Padronização da gestão de projetos",
+    status: "Em andamento",
+    owner: "Roberto Lima",
+    value: 60000,
+    deadline: "10/08/2026",
+    risk: "Médio",
+    bottleneck: "Falta de responsáveis claros",
+  },
+];
+
+export function createFunnelMetrics(company: Company): FunnelMetric[] {
+  if (isBvbpInternalWorkspace(company)) {
+    const diagnostics = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
+    const proposals = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
+    const activeConversations = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage !== "Mapeado").length;
+
+    return [
+      { id: "leads", name: "Leads mapeados", value: bvbpPipelineOpportunities.length, unit: "count", helper: "Mockado" },
+      { id: "meetings", name: "Conversas iniciadas", value: activeConversations, unit: "count", helper: "Mockado" },
+      { id: "diagnostics", name: "Diagnósticos agendados", value: diagnostics, unit: "count", helper: "Mockado" },
+      { id: "proposals", name: "Propostas enviadas", value: proposals, unit: "count", helper: "Mockado" },
+      { id: "pipeline", name: "Potencial estimado", value: getBvbpPipelinePotential(), unit: "currency", helper: "Estimado" },
+      { id: "next-action", name: "Próxima ação pendente", value: getBvbpOpenPipelineActionCount(), unit: "count", helper: "Ações abertas" },
+    ];
+  }
+
+  const ticket = Math.round(company.monthlyRevenue * 0.08);
+
+  return [
+    { id: "leads", name: "Leads no mês", value: 186, unit: "count", helper: "Entradas registradas" },
+    { id: "meetings", name: "Reuniões realizadas", value: 42, unit: "count", helper: "Etapa comercial" },
+    { id: "proposals", name: "Propostas enviadas", value: 24, unit: "count", helper: "Com valor estimado" },
+    { id: "conversion", name: "Taxa de conversão", value: 18, unit: "percentage", helper: "Lead para venda" },
+    { id: "ticket", name: "Ticket médio", value: ticket, unit: "currency", helper: "Base recente" },
+    { id: "pipeline", name: "Receita em pipeline", value: Math.round(company.monthlyRevenue * 0.55), unit: "currency", helper: "Oportunidades abertas" },
+  ];
+}
+
+export const funnelChannels: FunnelChannel[] = [
+  {
+    id: "indication",
+    channel: "Indicação",
+    entry: 36,
+    conversion: 31,
+    estimatedRevenue: 92000,
+    status: "Forte",
+    observation: "Melhor ticket e decisão mais rápida.",
+  },
+  {
+    id: "whatsapp",
+    channel: "WhatsApp",
+    entry: 58,
+    conversion: 17,
+    estimatedRevenue: 48000,
+    status: "Atenção",
+    observation: "Muitos contatos sem qualificação mínima.",
+  },
+  {
+    id: "landing-page",
+    channel: "Landing page",
+    entry: 42,
+    conversion: 12,
+    estimatedRevenue: 36000,
+    status: "Testar",
+    observation: "Boa entrada, baixa clareza de origem.",
+  },
+  {
+    id: "cold-outreach",
+    channel: "Cold outreach",
+    entry: 22,
+    conversion: 8,
+    estimatedRevenue: 21000,
+    status: "Atenção",
+    observation: "Precisa segmentar ICP e cadência.",
+  },
+  {
+    id: "newsletter",
+    channel: "Newsletter",
+    entry: 18,
+    conversion: 10,
+    estimatedRevenue: 14000,
+    status: "Testar",
+    observation: "Ainda sem ponte clara para reunião.",
+  },
+  {
+    id: "paid-traffic",
+    channel: "Tráfego pago",
+    entry: 10,
+    conversion: 4,
+    estimatedRevenue: 8000,
+    status: "Pausar",
+    observation: "Custo alto sem evidência de conversão.",
+  },
+];
+
+export const bvbpPipelineOpportunities: PipelineOpportunity[] = [
+  {
+    id: "pipeline-prospect-a",
+    opportunity: "Prospect A",
+    origin: "Networking",
+    stage: "Diagnóstico",
+    potential: 18000,
+    nextAction: "Agendar diagnóstico inicial",
+    owner: "Conrado",
+    status: "Em diagnóstico",
+  },
+  {
+    id: "pipeline-prospect-b",
+    opportunity: "Prospect B",
+    origin: "Indicação",
+    stage: "Contato inicial",
+    potential: 12000,
+    nextAction: "Agendar primeira conversa",
+    owner: "Cristiano",
+    status: "Mapeado",
+  },
+  {
+    id: "pipeline-cliente-piloto",
+    opportunity: "Cliente piloto",
+    origin: "Relação profissional",
+    stage: "Proposta",
+    potential: 22000,
+    nextAction: "Aplicar template de proposta 90 dias",
+    owner: "BVBP",
+    status: "Proposta enviada",
+  },
+  {
+    id: "pipeline-parceiro",
+    opportunity: "Parceiro estratégico",
+    origin: "Parceiro",
+    stage: "Negociação",
+    potential: 15000,
+    nextAction: "Definir regra de indicação",
+    owner: "Conrado",
+    status: "Em negociação",
+  },
+  {
+    id: "pipeline-conteudo",
+    opportunity: "Lead interno",
+    origin: "Conteúdo",
+    stage: "Mapeado",
+    potential: 8000,
+    nextAction: "Criar qualificação mínima",
+    owner: "Cristiano",
+    status: "Mapeado",
+  },
+];
+
+export function getBvbpPipelinePotential() {
+  return bvbpPipelineOpportunities.reduce((sum, opportunity) => sum + opportunity.potential, 0);
+}
+
+export function getBvbpOpenPipelineActionCount() {
+  return bvbpPipelineOpportunities.filter((opportunity) => !["Fechado", "Perdido", "Pausado"].includes(opportunity.status)).length;
+}
+
+export function getPipelineOpportunitiesForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company) ? bvbpPipelineOpportunities : [];
+}
+
+export function getFunnelChannelsForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company) ? [] : funnelChannels;
+}
+
+export const funnelLeaks = [
+  "Leads entram por canais diferentes sem padrão mínimo de qualificação.",
+  "WhatsApp concentra demanda, mas não separa oportunidade real de atendimento.",
+  "Propostas ficam sem follow-up estruturado depois do envio.",
+  "Não há leitura simples de conversão por origem e etapa.",
+  "Receita em pipeline não conversa com capacidade operacional disponível.",
+];
+
+export const internalFunnelSignals = [
+  "Lista de prospects ainda precisa de prioridade objetiva.",
+  "Networking próximo deve virar rotina semanal de conversas.",
+  "Diagnóstico e proposta precisam de roteiro simples e repetível.",
+];
+
+export function getFunnelSignalsForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company) ? internalFunnelSignals : funnelLeaks;
+}
+
+export const operationalLeaks: OperationalLeak[] = [
+  {
+    id: "leak-approvals",
+    companyId: mockCompany.id,
+    name: "Retrabalho em aprovações",
+    affectedFlow: "Comercial -> Financeiro",
+    affectedPointer: "Margem estimada",
+    hoursPerMonth: 95,
+    estimatedCost: 14250,
+    severity: "Alta",
+    source: "Entrevistas e revisão de propostas",
+  },
+  {
+    id: "leak-between-areas",
+    companyId: mockCompany.id,
+    name: "Espera entre comercial e operação",
+    affectedFlow: "Venda -> Implantação",
+    affectedPointer: "Receita em risco",
+    hoursPerMonth: 130,
+    estimatedCost: 19500,
+    severity: "Alta",
+    source: "Agenda de passagem e relatos do time",
+  },
+  {
+    id: "leak-manual-reports",
+    companyId: mockCompany.id,
+    name: "Relatórios manuais",
+    affectedFlow: "Gestão -> Diretoria",
+    affectedPointer: "Ciclos ativos",
+    hoursPerMonth: 40,
+    estimatedCost: 6000,
+    severity: "Média",
+    source: "Rotina mensal informada",
+  },
+  {
+    id: "leak-meetings",
+    companyId: mockCompany.id,
+    name: "Reuniões sem decisão clara",
+    affectedFlow: "Governança",
+    affectedPointer: "Próxima decisão",
+    hoursPerMonth: 55,
+    estimatedCost: 8250,
+    severity: "Média",
+    source: "Análise de ritos e atas",
+  },
+  {
+    id: "leak-documents",
+    companyId: mockCompany.id,
+    name: "Documentos dispersos",
+    affectedFlow: "Operação -> Cliente",
+    affectedPointer: "Tempo de resposta",
+    hoursPerMonth: 34,
+    estimatedCost: 5100,
+    severity: "Média",
+    source: "Mapeamento de ferramentas",
+  },
+  {
+    id: "leak-owner",
+    companyId: mockCompany.id,
+    name: "Falta de responsável único",
+    affectedFlow: "Projetos internos",
+    affectedPointer: "Projetos em risco",
+    hoursPerMonth: 28,
+    estimatedCost: 4200,
+    severity: "Alta",
+    source: "Diagnóstico de execução",
+  },
+];
+
+export const improvements: Improvement[] = [
+  {
+    id: "improvement-approval-flow",
+    companyId: mockCompany.id,
+    title: "Criar fluxo único de aprovação comercial",
+    affectedPointer: "Receita em risco",
+    affectedFlow: "Comercial -> Financeiro",
+    hypothesis: "Reduzir retrabalho de aprovação encurta o ciclo de proposta.",
+    estimatedImpact: 12000,
+    ease: "Alta",
+    owner: "Mariana Alves",
+    deadline: "21 dias",
+    pdcaStatus: "Executar",
+    priorityBucket: "Fazer agora",
+  },
+  {
+    id: "improvement-followup",
+    companyId: mockCompany.id,
+    title: "Automatizar follow-up de propostas",
+    affectedPointer: "Conversão por etapa",
+    affectedFlow: "Proposta -> Fechamento",
+    hypothesis: "Follow-ups consistentes aumentam conversão sem aumentar volume de leads.",
+    estimatedImpact: 7500,
+    ease: "Média",
+    owner: "Carla Mendes",
+    deadline: "30 dias",
+    pdcaStatus: "Planejar",
+    priorityBucket: "Planejar",
+  },
+  {
+    id: "improvement-project-review",
+    companyId: mockCompany.id,
+    title: "Implantar ritual quinzenal de revisão de projetos",
+    affectedPointer: "Ciclos ativos",
+    affectedFlow: "Governança de execução",
+    hypothesis: "Cadência curta aumenta clareza de risco e próxima decisão.",
+    estimatedImpact: 15000,
+    ease: "Alta",
+    owner: "Roberto Lima",
+    deadline: "14 dias",
+    pdcaStatus: "Medir",
+    priorityBucket: "Fazer agora",
+  },
+  {
+    id: "improvement-financial-dashboard",
+    companyId: mockCompany.id,
+    title: "Consolidar dashboard financeiro-operacional",
+    affectedPointer: "Margem estimada",
+    affectedFlow: "Diretoria -> Operação",
+    hypothesis: "Unificar dinheiro e operação melhora priorização semanal.",
+    estimatedImpact: 18000,
+    ease: "Média",
+    owner: "João Pereira",
+    deadline: "45 dias",
+    pdcaStatus: "Aprender",
+    priorityBucket: "Planejar",
+  },
+  {
+    id: "improvement-doc-governance",
+    companyId: mockCompany.id,
+    title: "Criar governança mínima de documentos",
+    affectedPointer: "Tempo de resposta",
+    affectedFlow: "Operação -> Cliente",
+    hypothesis: "Documentos padronizados reduzem procura, dúvida e retrabalho.",
+    estimatedImpact: 5400,
+    ease: "Alta",
+    owner: "Ana Ribeiro",
+    deadline: "20 dias",
+    pdcaStatus: "Planejar",
+    priorityBucket: "Monitorar",
+  },
+  {
+    id: "improvement-pause-paid",
+    companyId: mockCompany.id,
+    title: "Pausar tráfego pago sem evidência de conversão",
+    affectedPointer: "Custo por oportunidade",
+    affectedFlow: "Marketing -> Comercial",
+    hypothesis: "Pausar canal fraco libera caixa para experimentos com melhor evidência.",
+    estimatedImpact: 4200,
+    ease: "Alta",
+    owner: "Mariana Alves",
+    deadline: "7 dias",
+    pdcaStatus: "Pausar",
+    priorityBucket: "Pausar",
+  },
+];
+
+export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
+  {
+    id: "bvbp-action-prospects",
+    companyId: BVBP_COMPANY_ID,
+    title: "Definir lista de 10 prospects prioritários",
+    affectedPointer: "Pipeline comercial",
+    affectedFlow: "Comercial interno",
+    hypothesis: "Uma lista curta aumenta foco e cadência de abordagem.",
+    plannedAction: "Selecionar 10 contas, registrar origem e definir próximo contato.",
+    whyItMatters: "Sem prioridade explícita, a cadência comercial tende a ficar reativa.",
+    owner: "Conrado",
+    deadline: "7 dias",
+    pdcaStatus: "Planejar",
+    estimatedImpact: 42000,
+    nextDecision: "Quais 10 contas entram na primeira rodada?",
+    dataType: "Estimado",
+    evidences: [
+      {
+        id: "evidence-prospects-1",
+        date: "2026-06-29",
+        type: "Decisão",
+        description: "Primeira lista de prospects definida como base do ciclo comercial.",
+        note: "Ainda precisa validar prioridade e cadência semanal.",
+      },
+    ],
+    learnings: [
+      {
+        id: "learning-prospects-1",
+        date: "2026-06-29",
+        description: "Lista curta ajuda a separar oportunidade real de relação ampla.",
+      },
+    ],
+  },
+  {
+    id: "bvbp-action-diagnostic-script",
+    companyId: BVBP_COMPANY_ID,
+    title: "Criar roteiro do diagnóstico inicial",
+    affectedPointer: "Diagnósticos agendados",
+    affectedFlow: "Diagnóstico -> Proposta",
+    hypothesis: "Um roteiro simples reduz improviso e melhora evidência.",
+    plannedAction: "Definir perguntas, evidências mínimas e saída esperada do diagnóstico.",
+    whyItMatters: "O diagnóstico precisa gerar decisão, não apenas conversa exploratória.",
+    owner: "Cristiano",
+    deadline: "10 dias",
+    pdcaStatus: "Executar",
+    estimatedImpact: 18000,
+    nextDecision: "Qual evidência mínima precisa sair do diagnóstico?",
+    dataType: "Estimado",
+    evidences: [
+      {
+        id: "evidence-diagnostic-1",
+        date: "2026-06-29",
+        type: "Entrega",
+        description: "Modelo comercial simplificado validado internamente.",
+        note: "Roteiro deve conectar ponteiros, hipótese e proposta 90 dias.",
+      },
+    ],
+    learnings: [
+      {
+        id: "learning-diagnostic-1",
+        date: "2026-06-29",
+        description: "Diagnóstico precisa terminar com próxima decisão clara.",
+      },
+    ],
+  },
+  {
+    id: "bvbp-action-site-offer",
+    companyId: BVBP_COMPANY_ID,
+    title: "Atualizar site com novo modelo comercial",
+    affectedPointer: "Conversas iniciadas",
+    affectedFlow: "Site -> Conversa",
+    hypothesis: "Oferta clara reduz fricção para iniciar diagnóstico.",
+    plannedAction: "Ajustar a narrativa para Sprint e Partnership, sem prometer ROI comprovado.",
+    whyItMatters: "O site precisa refletir a oferta que será usada nas conversas comerciais.",
+    owner: "Conrado",
+    deadline: "14 dias",
+    pdcaStatus: "Medir",
+    estimatedImpact: 12000,
+    nextDecision: "Quais duas ofertas ficam visíveis primeiro?",
+    dataType: "Mockado",
+    evidences: [
+      {
+        id: "evidence-site-1",
+        date: "2026-06-29",
+        type: "Aprendizado",
+        description: "Site ainda não reflete oferta Sprint e Partnership.",
+      },
+    ],
+    learnings: [
+      {
+        id: "learning-site-1",
+        date: "2026-06-29",
+        description: "A oferta precisa ser simples o bastante para virar CTA.",
+      },
+    ],
+  },
+  {
+    id: "bvbp-action-content",
+    companyId: BVBP_COMPANY_ID,
+    title: "Publicar conteúdo sobre funil e operação",
+    affectedPointer: "Conteúdos publicados",
+    affectedFlow: "Conteúdo -> Autoridade",
+    hypothesis: "Conteúdo recorrente cria contexto para conversas comerciais.",
+    plannedAction: "Publicar um conteúdo curto conectando funil, operação e execução.",
+    whyItMatters: "A autoridade precisa abrir conversas, não apenas educar em abstrato.",
+    owner: "Cristiano",
+    deadline: "14 dias",
+    pdcaStatus: "Aprender",
+    estimatedImpact: 8000,
+    nextDecision: "Qual tema abre a sequência editorial?",
+    dataType: "Mockado",
+    evidences: [
+      {
+        id: "evidence-content-1",
+        date: "2026-06-29",
+        type: "Aprendizado",
+        description: "Pipeline precisa de cadência semanal e narrativa pública consistente.",
+      },
+    ],
+    learnings: [
+      {
+        id: "learning-content-1",
+        date: "2026-06-29",
+        description: "Conteúdo deve nascer dos ciclos reais de diagnóstico.",
+      },
+    ],
+  },
+  {
+    id: "bvbp-action-proposal-template",
+    companyId: BVBP_COMPANY_ID,
+    title: "Criar template de proposta 90 dias",
+    affectedPointer: "Propostas enviadas",
+    affectedFlow: "Diagnóstico -> Proposta",
+    hypothesis: "Template reduz tempo entre diagnóstico e decisão.",
+    plannedAction: "Definir estrutura padrão com problema, hipótese, ciclo e decisão de 90 dias.",
+    whyItMatters: "A proposta precisa transformar evidência em decisão de continuidade.",
+    owner: "BVBP",
+    deadline: "10 dias",
+    pdcaStatus: "Executar",
+    estimatedImpact: 22000,
+    nextDecision: "Qual estrutura mínima da proposta?",
+    dataType: "Estimado",
+    evidences: [],
+    learnings: [
+      {
+        id: "learning-proposal-1",
+        date: "2026-06-29",
+        description: "Proposta 90 dias deve ser consequência direta do diagnóstico.",
+      },
+    ],
+  },
+  {
+    id: "bvbp-action-pipeline-base",
+    companyId: BVBP_COMPANY_ID,
+    title: "Estruturar base mínima de pipeline",
+    affectedPointer: "Pipeline comercial",
+    affectedFlow: "Comercial interno",
+    hypothesis: "Uma base única evita perda de oportunidades pequenas.",
+    plannedAction: "Manter oportunidade, origem, etapa, potencial, dono e próxima ação no mesmo lugar.",
+    whyItMatters: "Sem base mínima, o time perde cadência e contexto entre conversas.",
+    owner: "BVBP",
+    deadline: "7 dias",
+    pdcaStatus: "Padronizar",
+    estimatedImpact: 15000,
+    nextDecision: "Quais campos ficam obrigatórios?",
+    dataType: "Mockado",
+    evidences: [
+      {
+        id: "evidence-pipeline-1",
+        date: "2026-06-29",
+        type: "Entrega",
+        description: "Base mínima de pipeline estruturada no workspace interno.",
+      },
+    ],
+    learnings: [
+      {
+        id: "learning-pipeline-1",
+        date: "2026-06-29",
+        description: "Poucos campos são suficientes para começar a manter cadência.",
+      },
+    ],
+  },
+  {
+    id: "bvbp-action-method-page",
+    companyId: BVBP_COMPANY_ID,
+    title: "Criar página interna de método BVBP",
+    affectedPointer: "Ciclos ativos",
+    affectedFlow: "Método -> Execução",
+    hypothesis: "Método visível ajuda a repetir diagnóstico e execução.",
+    plannedAction: "Documentar somente depois dos primeiros diagnósticos gerarem evidências.",
+    whyItMatters: "Padronizar cedo demais pode cristalizar um método ainda não validado.",
+    owner: "Conrado",
+    deadline: "21 dias",
+    pdcaStatus: "Pausar",
+    estimatedImpact: 0,
+    nextDecision: "Esperar validação dos primeiros diagnósticos.",
+    dataType: "Mockado",
+    evidences: [],
+    learnings: [
+      {
+        id: "learning-method-1",
+        date: "2026-06-29",
+        description: "Método interno deve ser padronizado após evidência prática.",
+      },
+    ],
+  },
+];
+
+export const bvbpInternalActions: Improvement[] = bvbpPdcaCycleSeeds.map((cycle) => ({
+  id: cycle.id,
+  companyId: cycle.companyId,
+  title: cycle.title,
+  affectedPointer: cycle.affectedPointer,
+  affectedFlow: cycle.affectedFlow,
+  hypothesis: cycle.hypothesis,
+  estimatedImpact: cycle.estimatedImpact,
+  ease: "Média",
+  owner: cycle.owner,
+  deadline: cycle.deadline,
+  pdcaStatus: cycle.pdcaStatus,
+  priorityBucket: cycle.pdcaStatus === "Pausar" ? "Pausar" : cycle.pdcaStatus === "Padronizar" ? "Monitorar" : cycle.pdcaStatus === "Planejar" ? "Planejar" : "Fazer agora",
+  nextDecision: cycle.nextDecision,
+}));
+
+export function getImprovementsForCompany(company: Company) {
+  return isBvbpInternalWorkspace(company)
+    ? bvbpInternalActions
+    : improvements.filter((improvement) => improvement.companyId === mockCompany.id || improvement.companyId === company.id);
+}
+
+export const automationOpportunities: AutomationOpportunity[] = [
+  {
+    id: "automation-proposal-followup",
+    opportunity: "Follow-up automático de propostas",
+    type: "Automação",
+    affectedProcess: "Proposta -> Fechamento",
+    hoursPerMonth: 22,
+    estimatedImpact: 7500,
+    complexity: "Média",
+    status: "Em desenho",
+  },
+  {
+    id: "automation-financial-dashboard",
+    opportunity: "Dashboard financeiro-operacional",
+    type: "Dashboard",
+    affectedProcess: "Gestão semanal",
+    hoursPerMonth: 18,
+    estimatedImpact: 18000,
+    complexity: "Média",
+    status: "Mapeada",
+  },
+  {
+    id: "automation-database",
+    opportunity: "Base única de oportunidades e clientes",
+    type: "Banco de dados",
+    affectedProcess: "Comercial -> Operação",
+    hoursPerMonth: 30,
+    estimatedImpact: 12000,
+    complexity: "Alta",
+    status: "Validar",
+  },
+  {
+    id: "automation-doc-governance",
+    opportunity: "Governança documental mínima",
+    type: "Governança documental",
+    affectedProcess: "Documentos operacionais",
+    hoursPerMonth: 16,
+    estimatedImpact: 5400,
+    complexity: "Baixa",
+    status: "Mapeada",
+  },
+  {
+    id: "automation-ai-summary",
+    opportunity: "Resumo de reuniões com próxima decisão",
+    type: "IA",
+    affectedProcess: "Governança",
+    hoursPerMonth: 14,
+    estimatedImpact: 4200,
+    complexity: "Média",
+    status: "Em andamento",
+  },
+  {
+    id: "automation-landing",
+    opportunity: "Landing page com qualificação mínima",
+    type: "Landing page",
+    affectedProcess: "Entrada de leads",
+    hoursPerMonth: 10,
+    estimatedImpact: 9600,
+    complexity: "Baixa",
+    status: "Mapeada",
+  },
+  {
+    id: "automation-internal-app",
+    opportunity: "Aplicação interna para ciclos PDCA",
+    type: "Aplicação interna",
+    affectedProcess: "Execução de melhorias",
+    hoursPerMonth: 20,
+    estimatedImpact: 15000,
+    complexity: "Alta",
+    status: "Validar",
+  },
+];
+
+export function getAutomationOpportunitySummary(items: AutomationOpportunity[] = automationOpportunities) {
+  return {
+    opportunities: items.length,
+    manualHours: items.reduce((sum, item) => sum + item.hoursPerMonth, 0),
+    estimatedPotential: items.reduce((sum, item) => sum + item.estimatedImpact, 0),
+    running: items.filter((item) => item.status === "Em desenho" || item.status === "Em andamento").length,
+  };
+}
+
+export const impactCycles: ImpactCycle[] = [
+  {
+    id: "impact-revenue-risk",
+    metric: "Receita em risco",
+    baseline: "R$ 105 mil",
+    target90Days: "R$ 65 mil",
+    current: "R$ 105 mil",
+    status: "Planejar",
+  },
+  {
+    id: "impact-wait-time",
+    metric: "Tempo de espera",
+    baseline: "130h/mês",
+    target90Days: "70h/mês",
+    current: "130h/mês",
+    status: "Executar",
+  },
+  {
+    id: "impact-manual-tasks",
+    metric: "Tarefas manuais",
+    baseline: "40h/mês",
+    target90Days: "15h/mês",
+    current: "40h/mês",
+    status: "Medir",
+  },
+];
+
+export const priorityBuckets = ["Fazer agora", "Planejar", "Monitorar", "Pausar"] as const;

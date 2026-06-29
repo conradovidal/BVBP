@@ -12,13 +12,17 @@ const serviceRoutes = [
   "/comparativo-servicos",
 ];
 
-const serviceLinks = [
+type ServiceLink =
+  | { title: string; href: string; duration?: string; separator?: false }
+  | { separator: true; title?: never; href?: never; duration?: never };
+
+const serviceLinks: ServiceLink[] = [
   { title: "Diagnóstico Operacional", href: "/diagnostico-operacional", duration: "1 semana" },
   { title: "Otimização de Processo", href: "/sprint-otimizacao", duration: "2 semanas" },
   { title: "Gestão de Projetos", href: "/gestao-projetos", duration: "3-4 semanas" },
   { title: "Governança de Execução", href: "/retainer-governanca", duration: "Mensal" },
   { title: "Programa Customizado", href: "/programa-customizado", duration: "6-12 semanas" },
-  { separator: true } as any,
+  { separator: true },
   { title: "Comparar Serviços", href: "/comparativo-servicos" },
 ];
 
@@ -221,9 +225,17 @@ const Header = () => {
               variant="outline"
               size="lg"
               className="px-4 py-2 text-sm whitespace-nowrap"
+              onClick={() => window.location.href = '/login'}
+            >
+              Entrar
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="px-4 py-2 text-sm whitespace-nowrap"
               onClick={() => window.location.href = '/blog'}
             >
-              Blog
+              Conteúdo
             </Button>
             <Button
               variant="outline"
@@ -331,11 +343,22 @@ const Header = () => {
                 size="lg"
                 className="w-full text-sm"
                 onClick={() => {
+                  window.location.href = '/login';
+                  setIsMenuOpen(false);
+                }}
+              >
+                Entrar
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full text-sm"
+                onClick={() => {
                   window.location.href = '/blog';
                   setIsMenuOpen(false);
                 }}
               >
-                Blog
+                Conteúdo
               </Button>
               <Button
                 variant="outline"
