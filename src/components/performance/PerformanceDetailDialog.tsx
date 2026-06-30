@@ -37,9 +37,9 @@ function formatImpact(value: PerformanceDetail["estimatedImpact"]) {
 
 function DetailBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="rounded-[8px] border border-slate-200 bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#1B365D]/45">{title}</p>
-      <div className="mt-3 text-sm leading-6 text-slate-700">{children}</div>
+    <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
+      <p className="text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{title}</p>
+      <div className="mt-3 text-sm leading-6 text-bvbp-ink">{children}</div>
     </section>
   );
 }
@@ -47,13 +47,13 @@ function DetailBlock({ title, children }: { title: string; children: ReactNode }
 export function PerformanceDetailDialog({ detail, open, onOpenChange }: PerformanceDetailDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto bg-[#F7FAFC]">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto bg-bvbp-ivory">
         {detail && (
           <>
             <DialogHeader>
               <div className="flex flex-wrap items-start justify-between gap-3 pr-6">
                 <div>
-                  <DialogTitle className="font-heading text-2xl text-[#1B365D]">{detail.title}</DialogTitle>
+                  <DialogTitle className="font-heading text-2xl text-bvbp-ink">{detail.title}</DialogTitle>
                   {detail.subtitle && <DialogDescription className="mt-2">{detail.subtitle}</DialogDescription>}
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
@@ -66,17 +66,17 @@ export function PerformanceDetailDialog({ detail, open, onOpenChange }: Performa
             <div className="grid gap-3 sm:grid-cols-3">
               {detail.affectedPointer && (
                 <DetailBlock title="Ponteiro afetado">
-                  <p className="font-semibold text-[#1B365D]">{detail.affectedPointer}</p>
+                  <p className="font-semibold text-bvbp-ink">{detail.affectedPointer}</p>
                 </DetailBlock>
               )}
               {detail.estimatedImpact !== undefined && (
                 <DetailBlock title="Impacto estimado">
-                  <p className="font-semibold text-[#38A169]">{formatImpact(detail.estimatedImpact)}</p>
+                  <p className="font-semibold text-bvbp-positive">{formatImpact(detail.estimatedImpact)}</p>
                 </DetailBlock>
               )}
               {detail.nextDecision && (
                 <DetailBlock title="Próxima decisão">
-                  <p className="font-semibold text-[#1B365D]">{detail.nextDecision}</p>
+                  <p className="font-semibold text-bvbp-ink">{detail.nextDecision}</p>
                 </DetailBlock>
               )}
             </div>
@@ -100,9 +100,9 @@ export function PerformanceDetailDialog({ detail, open, onOpenChange }: Performa
               <DetailBlock title="Dados usados">
                 <div className="grid gap-2 sm:grid-cols-2">
                   {detail.facts.map((fact) => (
-                    <div key={`${fact.label}-${fact.value}`} className="rounded-md bg-slate-50 px-3 py-2">
-                      <p className="text-xs font-semibold uppercase text-slate-400">{fact.label}</p>
-                      <p className="mt-1 font-semibold text-[#1B365D]">{fact.value}</p>
+                    <div key={`${fact.label}-${fact.value}`} className="rounded-md bg-bvbp-inset px-3 py-2">
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">{fact.label}</p>
+                      <p className="mt-1 font-semibold text-bvbp-ink">{fact.value}</p>
                     </div>
                   ))}
                 </div>
@@ -114,26 +114,26 @@ export function PerformanceDetailDialog({ detail, open, onOpenChange }: Performa
                 {detail.evidence?.length ? (
                   <ul className="space-y-2">
                     {detail.evidence.map((item) => (
-                      <li key={item} className="rounded-md bg-slate-50 px-3 py-2">
+                      <li key={item} className="rounded-md bg-bvbp-inset px-3 py-2">
                         {item}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-slate-500">Nenhuma evidência registrada ainda.</p>
+                  <p className="text-bvbp-muted-ink">Nenhuma evidência registrada ainda.</p>
                 )}
               </DetailBlock>
               <DetailBlock title="Ações conectadas">
                 {detail.connectedActions?.length ? (
                   <ul className="space-y-2">
                     {detail.connectedActions.map((item) => (
-                      <li key={item} className="rounded-md bg-slate-50 px-3 py-2">
+                      <li key={item} className="rounded-md bg-bvbp-inset px-3 py-2">
                         {item}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-slate-500">Nenhuma ação conectada a este ponteiro.</p>
+                  <p className="text-bvbp-muted-ink">Nenhuma ação conectada a este ponteiro.</p>
                 )}
               </DetailBlock>
             </div>

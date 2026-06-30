@@ -16,20 +16,38 @@ function savePdcaCycles(cycles: PdcaCycle[]) {
   writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, cycles);
 }
 
+function normalizeAffectedPointer(pointer: string) {
+  if (["Pipeline comercial", "Funil comercial", "Funil", "Cadência comercial"].includes(pointer)) return "Comercial";
+  if (["Dinheiro", "Clareza financeira"].includes(pointer)) return "Finanças";
+  if (pointer === "Eficiência operacional") return "Operação";
+  if (["Tecnologia e IA", "Automações", "Automação aplicada"].includes(pointer)) return "Tecnologia";
+  return pointer;
+}
+
+function normalizeStoredCycle(cycle: PdcaCycle) {
+  const affectedPointer = normalizeAffectedPointer(cycle.affectedPointer);
+
+  return affectedPointer === cycle.affectedPointer ? cycle : { ...cycle, affectedPointer };
+}
+
 export function getBvbpPdcaCycles() {
   const { data: storedCycles } = readJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, isPdcaCycleList);
 
   if (storedCycles?.length) {
-    const storedIds = new Set(storedCycles.map((cycle) => cycle.id));
+    const normalizedStoredCycles = storedCycles.map(normalizeStoredCycle);
+    const hasNormalizedPointers = normalizedStoredCycles.some(
+      (cycle, index) => cycle.affectedPointer !== storedCycles[index].affectedPointer,
+    );
+    const storedIds = new Set(normalizedStoredCycles.map((cycle) => cycle.id));
     const missingSeeds = bvbpPdcaCycleSeeds.filter((cycle) => !storedIds.has(cycle.id));
 
-    if (missingSeeds.length) {
-      const mergedCycles = [...missingSeeds, ...storedCycles];
+    if (missingSeeds.length || hasNormalizedPointers) {
+      const mergedCycles = [...missingSeeds, ...normalizedStoredCycles];
       savePdcaCycles(mergedCycles);
       return mergedCycles;
     }
 
-    return storedCycles;
+    return normalizedStoredCycles;
   }
 
   savePdcaCycles(bvbpPdcaCycleSeeds);

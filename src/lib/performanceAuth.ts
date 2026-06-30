@@ -1,4 +1,4 @@
-import { type PerformanceUser } from "@/data/performanceSystem";
+import { PRISMA_DEMO_COMPANY_ID, type PerformanceUser } from "@/data/performanceSystem";
 
 const PERFORMANCE_SESSION_KEY = "bvbp-performance-session";
 
@@ -36,12 +36,12 @@ export const mockLoginAccounts: Array<PerformanceUser & { password: string }> = 
     password: "bvbp90",
   },
   {
-    id: "user-atlas-01",
-    name: "Ana Ribeiro",
+    id: "user-prisma-01",
+    name: "Marina Lopes",
     email: "cliente@bvbp.com.br",
     role: "client",
     roleLabel: "Cliente",
-    companyIds: ["company-atlas"],
+    companyIds: [PRISMA_DEMO_COMPANY_ID],
     password: "bvbp90",
   },
 ];

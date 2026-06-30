@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { BrandLockup } from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,56 +68,80 @@ const LoginPage = () => {
         />
       </Helmet>
 
-      <main className="flex min-h-screen items-center justify-center bg-[#F7FAFC] px-4 py-8 text-[#1B365D]">
-        <section className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-strong sm:p-8">
-          <Link
-            to="/"
-            className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-[#1B365D]"
-          >
-            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-            Site
-          </Link>
+      <main className="min-h-screen bg-bvbp-ivory px-4 py-8 text-bvbp-ink">
+        <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-5xl items-center gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <aside className="hidden h-full min-h-[560px] flex-col justify-between rounded-[8px] bg-bvbp-forest-dark p-8 text-bvbp-ivory lg:flex">
+            <div>
+              <BrandLockup tone="light" size="lg" />
+              <p className="mt-10 max-w-sm font-heading text-4xl font-medium leading-tight">
+                Método, clientes e ciclos em um só lugar.
+              </p>
+            </div>
+            <div className="grid gap-3 border-t border-bvbp-ivory/12 pt-6">
+              {["Ponteiros", "PDCA", "Evidências"].map((item) => (
+                <p key={item} className="font-label text-[11px] font-medium uppercase tracking-[0.12em] text-bvbp-ivory/65">
+                  {item}
+                </p>
+              ))}
+            </div>
+          </aside>
 
-          <div className="mb-6">
-            <p className="font-heading text-3xl font-bold text-[#1B365D]">BVBP</p>
-            <h1 className="mt-5 font-heading text-2xl font-bold text-[#1B365D]">Entrar</h1>
-            <p className="mt-2 text-sm text-slate-500">Portal BVBP e Performance Operacional.</p>
-          </div>
+          <div className="mx-auto w-full max-w-md rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-6 sm:p-8">
+            <Link
+              to="/"
+              className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink transition-colors hover:text-bvbp-ink"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Site
+            </Link>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="performance-email">E-mail</Label>
-              <Input
-                id="performance-email"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                placeholder={mockLoginCredentials.email}
-                required
-                autoComplete="email"
-              />
+            <div className="mb-7">
+              <BrandLockup tone="dark" size="md" />
+              <h1 className="mt-8 font-heading text-3xl font-medium text-bvbp-ink">Entrar no Portal BVBP</h1>
+              <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
+                Acesso para gestão interna e visão de performance dos clientes.
+              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="performance-password">Senha</Label>
-              <Input
-                id="performance-password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="bvbp90"
-                required
-                autoComplete="current-password"
-              />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="performance-email" className="text-bvbp-ink">
+                  E-mail
+                </Label>
+                <Input
+                  id="performance-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder={mockLoginCredentials.email}
+                  required
+                  autoComplete="email"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="performance-password" className="text-bvbp-ink">
+                  Senha
+                </Label>
+                <Input
+                  id="performance-password"
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder="bvbp90"
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
+            </form>
+
+            <div className="mt-6 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset p-3 text-xs leading-5 text-bvbp-muted-ink">
+              Admin: conrado@bvbp.com.br · Cliente: cliente@bvbp.com.br · Senha: bvbp90
             </div>
-
-            <Button type="submit" variant="corporate" className="w-full" disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
-            </Button>
-          </form>
-
-          <div className="mt-6 rounded-md bg-slate-50 p-3 text-xs leading-5 text-slate-500">
-            Admin: conrado@bvbp.com.br · Cliente: cliente@bvbp.com.br · Senha: bvbp90
           </div>
         </section>
       </main>

@@ -69,25 +69,29 @@ const AdminBlogEditorPortalPage = () => {
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link to="/app/admin/blog" className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-[#1B365D]">
+            <Link to="/app/admin/blog" className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink hover:text-bvbp-ink">
               <ArrowLeft className="h-4 w-4" />
               Conteúdo
             </Link>
-            <h1 className="font-heading text-2xl font-bold text-[#1B365D]">{draftId ? "Editar conteúdo" : "Novo conteúdo"}</h1>
+            <h1 className="font-heading text-2xl font-bold text-bvbp-ink">{draftId ? "Editar conteúdo" : "Novo conteúdo"}</h1>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleSave}>
               <Save className="h-4 w-4" />
               Rascunho
             </Button>
-            <Button variant="corporate" onClick={handleSave}>
+            <Button
+              variant="outline"
+              className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+              onClick={handleSave}
+            >
               <Send className="h-4 w-4" />
               Publicar
             </Button>
           </div>
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
           <div className="grid gap-5">
             <div className="space-y-2">
               <Label htmlFor="blog-title">Título</Label>
@@ -106,7 +110,7 @@ const AdminBlogEditorPortalPage = () => {
 
             <div className="space-y-2">
               <Label>Conteúdo</Label>
-              <div className="[&_.ql-container]:rounded-b-md [&_.ql-container]:border-input [&_.ql-editor]:min-h-[320px] [&_.ql-editor]:bg-white [&_.ql-toolbar]:rounded-t-md [&_.ql-toolbar]:border-input">
+              <div className="[&_.ql-container]:rounded-b-md [&_.ql-container]:border-input [&_.ql-editor]:min-h-[320px] [&_.ql-editor]:bg-bvbp-raised [&_.ql-toolbar]:rounded-t-md [&_.ql-toolbar]:border-input">
                 <ReactQuill theme="snow" value={content} onChange={setContent} modules={quillModules} />
               </div>
             </div>

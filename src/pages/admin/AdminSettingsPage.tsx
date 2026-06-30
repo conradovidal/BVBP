@@ -48,28 +48,28 @@ const AdminSettingsPage = () => {
 
       <div className="space-y-7">
         <section className="space-y-2">
-          <h1 className="font-heading text-2xl font-bold text-[#1B365D]">Configurações</h1>
-          <p className="text-sm text-slate-500">Estado local, dados de demonstração e preparação interna.</p>
+          <h1 className="font-heading text-2xl font-bold text-bvbp-ink">Configurações</h1>
+          <p className="text-sm text-bvbp-muted-ink">Estado local, dados de demonstração e preparação interna.</p>
         </section>
 
         <section className="grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <article className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+          <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
             <div className="flex items-start gap-3">
-              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#38A169]" aria-hidden="true" />
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-bvbp-positive" aria-hidden="true" />
               <div>
-                <h2 className="font-heading text-lg font-bold text-[#1B365D]">Modo atual</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <h2 className="font-heading text-lg font-bold text-bvbp-ink">Modo atual</h2>
+                <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
                   Portal com autenticação mockada e dados locais. Use como ferramenta interna, não como fonte financeira auditada.
                 </p>
               </div>
             </div>
           </article>
 
-          <article className="rounded-[8px] border border-slate-200 bg-white p-5 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+          <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="font-heading text-lg font-bold text-[#1B365D]">Dados de demonstração</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <h2 className="font-heading text-lg font-bold text-bvbp-ink">Dados de demonstração</h2>
+                <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
                   Restaura clientes seedados, workspace BVBP, ciclos PDCA e evidências locais.
                 </p>
               </div>
@@ -91,7 +91,7 @@ const AdminSettingsPage = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="reset-confirmation">
-                      Digite <span className="font-bold text-[#1B365D]">{RESET_CONFIRMATION}</span> para confirmar
+                      Digite <span className="font-bold text-bvbp-ink">{RESET_CONFIRMATION}</span> para confirmar
                     </Label>
                     <Input
                       id="reset-confirmation"
@@ -106,7 +106,7 @@ const AdminSettingsPage = () => {
                     <AlertDialogAction
                       disabled={!canReset}
                       onClick={handleReset}
-                      className="bg-red-600 text-white hover:bg-red-700 disabled:pointer-events-none disabled:opacity-50"
+                      className="bg-bvbp-risk text-bvbp-ivory hover:bg-bvbp-risk/90 disabled:pointer-events-none disabled:opacity-50"
                     >
                       Restaurar dados
                     </AlertDialogAction>

@@ -60,14 +60,14 @@ const PerformanceFunnelPage = () => {
   return (
     <>
       <Helmet>
-        <title>Funil | BVBP Performance System</title>
-        <meta name="description" content="Ponteiros do funil comercial e vazamentos de receita." />
+        <title>Comercial | BVBP Performance System</title>
+        <meta name="description" content="Ponteiros comerciais, pipeline e vazamentos de receita." />
       </Helmet>
 
       <div className="space-y-8">
         <section className="space-y-2">
-          <h1 className="font-heading text-2xl font-bold text-[#1B365D] sm:text-3xl">Funil</h1>
-          <p className="text-sm text-slate-500">{activeCompany.name}</p>
+          <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Comercial</h1>
+          <p className="text-sm text-bvbp-muted-ink">{activeCompany.name}</p>
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -106,14 +106,14 @@ const PerformanceFunnelPage = () => {
                   key={opportunity.id}
                   onClick={() => setDetail(pipelineOpportunityDetail(opportunity, cycles))}
                   className={cn(
-                    "rounded-[8px] border border-slate-200 bg-white p-4 text-left shadow-[0_1px_0_rgba(15,23,42,0.03)]",
-                    "transition hover:border-[#1B365D]/30 hover:bg-[#F8FBFD]"
+                    "rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-left shadow-none",
+                    "transition hover:border-bvbp-forest/30 hover:bg-bvbp-inset"
                   )}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-heading text-base font-bold text-[#1B365D]">{opportunity.opportunity}</h2>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-[#1B365D]/45">
+                      <h2 className="font-heading text-base font-bold text-bvbp-ink">{opportunity.opportunity}</h2>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
                         {opportunity.origin} · {opportunity.stage}
                       </p>
                     </div>
@@ -121,16 +121,16 @@ const PerformanceFunnelPage = () => {
                   </div>
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-400">Potencial</p>
-                      <p className="mt-1 font-semibold text-[#38A169]">{formatCurrency(opportunity.potential)}</p>
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Potencial</p>
+                      <p className="mt-1 font-semibold text-bvbp-positive">{formatCurrency(opportunity.potential)}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-400">Responsável</p>
-                      <p className="mt-1 font-semibold text-[#1B365D]">{opportunity.owner}</p>
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Responsável</p>
+                      <p className="mt-1 font-semibold text-bvbp-ink">{opportunity.owner}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-400">Próxima ação</p>
-                      <p className="mt-1 text-sm leading-5 text-slate-700">{opportunity.nextAction}</p>
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Próxima ação</p>
+                      <p className="mt-1 text-sm leading-5 text-bvbp-ink">{opportunity.nextAction}</p>
                     </div>
                   </div>
                 </button>
@@ -138,12 +138,12 @@ const PerformanceFunnelPage = () => {
             </div>
             ) : (
               <EmptyState
-                title="Nenhuma oportunidade no funil."
+                title="Nenhuma oportunidade comercial."
                 description="Cadastre uma oportunidade para conectar potencial, próxima ação e ciclo PDCA."
               />
             )
           ) : (
-          <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -159,14 +159,14 @@ const PerformanceFunnelPage = () => {
                 <TableBody>
                   {channels.length ? channels.map((channel) => (
                     <TableRow key={channel.id}>
-                      <TableCell className="min-w-[150px] font-semibold text-[#1B365D]">{channel.channel}</TableCell>
-                      <TableCell className="font-semibold text-[#1B365D]">{formatNumber(channel.entry)}</TableCell>
+                      <TableCell className="min-w-[150px] font-semibold text-bvbp-ink">{channel.channel}</TableCell>
+                      <TableCell className="font-semibold text-bvbp-ink">{formatNumber(channel.entry)}</TableCell>
                       <TableCell>{channel.conversion}%</TableCell>
-                      <TableCell className="font-semibold text-[#38A169]">{formatCurrency(channel.estimatedRevenue)}</TableCell>
+                      <TableCell className="font-semibold text-bvbp-positive">{formatCurrency(channel.estimatedRevenue)}</TableCell>
                       <TableCell>
                         <StatusBadge label={channel.status} />
                       </TableCell>
-                      <TableCell className="min-w-[260px] text-slate-700">{channel.observation}</TableCell>
+                      <TableCell className="min-w-[260px] text-bvbp-ink">{channel.observation}</TableCell>
                     </TableRow>
                   )) : null}
                 </TableBody>
@@ -175,7 +175,7 @@ const PerformanceFunnelPage = () => {
             {!channels.length && (
               <EmptyState
                 title="Nenhum canal registrado."
-                description="Registre entradas do funil para comparar origem, conversão e receita estimada."
+                description="Registre entradas comerciais para comparar origem, conversão e receita estimada."
                 className="m-4"
               />
             )}
@@ -184,11 +184,11 @@ const PerformanceFunnelPage = () => {
         </section>
 
         <section className="space-y-4">
-          <SectionHeader title={pipelineOpportunities.length ? "Sinais do pipeline" : "Vazamentos do funil"} />
+          <SectionHeader title={pipelineOpportunities.length ? "Sinais do pipeline" : "Vazamentos comerciais"} />
           {funnelSignals.length ? (
             <div className="grid gap-3 md:grid-cols-2">
               {funnelSignals.map((leak) => (
-              <article key={leak} className="rounded-lg border border-slate-200 bg-white p-4 text-sm leading-6 text-slate-700 shadow-sm">
+              <article key={leak} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-sm leading-6 text-bvbp-ink shadow-none">
                 {leak}
               </article>
               ))}

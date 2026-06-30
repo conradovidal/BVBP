@@ -39,8 +39,8 @@ const PerformanceOperationsPage = () => {
 
       <div className="space-y-8">
         <section className="space-y-2">
-          <h1 className="font-heading text-2xl font-bold text-[#1B365D] sm:text-3xl">Operação</h1>
-          <p className="text-sm text-slate-500">{activeCompany.name}</p>
+          <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Operação</h1>
+          <p className="text-sm text-bvbp-muted-ink">{activeCompany.name}</p>
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -71,12 +71,12 @@ const PerformanceOperationsPage = () => {
                   type="button"
                   key={leak.id}
                   onClick={() => setDetail(operationalLeakDetail(leak, cycles))}
-                  className="rounded-[8px] border border-slate-200 bg-white p-4 text-left shadow-[0_1px_0_rgba(15,23,42,0.03)] transition hover:border-[#1B365D]/30 hover:bg-[#F8FBFD]"
+                  className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-left shadow-none transition hover:border-bvbp-forest/30 hover:bg-bvbp-inset"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h2 className="font-heading text-base font-bold text-[#1B365D]">{leak.name}</h2>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-[#1B365D]/45">
+                      <h2 className="font-heading text-base font-bold text-bvbp-ink">{leak.name}</h2>
+                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
                         {leak.affectedFlow}
                       </p>
                     </div>
@@ -84,16 +84,16 @@ const PerformanceOperationsPage = () => {
                   </div>
                   <div className="mt-5 grid gap-3 sm:grid-cols-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-400">Ponteiro</p>
-                      <p className="mt-1 font-semibold text-[#1B365D]">{leak.affectedPointer}</p>
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Ponteiro</p>
+                      <p className="mt-1 font-semibold text-bvbp-ink">{leak.affectedPointer}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-400">Horas</p>
-                      <p className="mt-1 font-semibold text-[#1B365D]">{formatNumber(leak.hoursPerMonth)}h</p>
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Horas</p>
+                      <p className="mt-1 font-semibold text-bvbp-ink">{formatNumber(leak.hoursPerMonth)}h</p>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold uppercase text-slate-400">Impacto</p>
-                      <p className="mt-1 font-semibold text-[#38A169]">{formatCurrency(leak.estimatedCost)}/mês</p>
+                      <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Impacto</p>
+                      <p className="mt-1 font-semibold text-bvbp-positive">{formatCurrency(leak.estimatedCost)}/mês</p>
                     </div>
                   </div>
                 </button>
@@ -106,7 +106,7 @@ const PerformanceOperationsPage = () => {
               />
             )
           ) : (
-          <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -123,15 +123,15 @@ const PerformanceOperationsPage = () => {
                 <TableBody>
                   {operationalLeaks.length ? operationalLeaks.map((leak) => (
                     <TableRow key={leak.id}>
-                      <TableCell className="min-w-[220px] font-semibold text-[#1B365D]">{leak.name}</TableCell>
-                      <TableCell className="min-w-[170px] text-slate-700">{leak.affectedFlow}</TableCell>
-                      <TableCell className="min-w-[160px] text-slate-700">{leak.affectedPointer}</TableCell>
-                      <TableCell className="font-semibold text-[#1B365D]">{formatNumber(leak.hoursPerMonth)}h</TableCell>
-                      <TableCell className="font-semibold text-[#38A169]">{formatCurrency(leak.estimatedCost)}/mês</TableCell>
+                      <TableCell className="min-w-[220px] font-semibold text-bvbp-ink">{leak.name}</TableCell>
+                      <TableCell className="min-w-[170px] text-bvbp-ink">{leak.affectedFlow}</TableCell>
+                      <TableCell className="min-w-[160px] text-bvbp-ink">{leak.affectedPointer}</TableCell>
+                      <TableCell className="font-semibold text-bvbp-ink">{formatNumber(leak.hoursPerMonth)}h</TableCell>
+                      <TableCell className="font-semibold text-bvbp-positive">{formatCurrency(leak.estimatedCost)}/mês</TableCell>
                       <TableCell>
                         <StatusBadge label={leak.severity} />
                       </TableCell>
-                      <TableCell className="min-w-[240px] text-slate-700">{leak.source}</TableCell>
+                      <TableCell className="min-w-[240px] text-bvbp-ink">{leak.source}</TableCell>
                     </TableRow>
                   )) : null}
                 </TableBody>
@@ -148,9 +148,9 @@ const PerformanceOperationsPage = () => {
           )}
         </section>
 
-        <article className="flex gap-3 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <ShieldCheck className="mt-1 h-5 w-5 shrink-0 text-[#1B365D]" aria-hidden="true" />
-          <p className="text-sm leading-6 text-slate-700">Estimativas para priorizar melhorias, não auditoria financeira.</p>
+        <article className="flex gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
+          <ShieldCheck className="mt-1 h-5 w-5 shrink-0 text-bvbp-ink" aria-hidden="true" />
+          <p className="text-sm leading-6 text-bvbp-ink">Estimativas para priorizar melhorias, não auditoria financeira.</p>
         </article>
       </div>
       <PerformanceDetailDialog detail={detail} open={Boolean(detail)} onOpenChange={(open) => !open && setDetail(null)} />

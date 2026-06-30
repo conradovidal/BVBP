@@ -11,12 +11,24 @@ import type {
 } from "@/data/performanceSystem";
 import { formatCurrency, formatMetricValue, formatNumber } from "@/lib/performanceFormatters";
 
+function normalizePointerText(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/pipeline comercial|funil comercial|funil|cadência comercial/g, "comercial")
+    .replace(/dinheiro|clareza financeira/g, "finanças")
+    .replace(/eficiência operacional/g, "operação")
+    .replace(/tecnologia e ia|automações|automação aplicada/g, "tecnologia");
+}
+
 function cycleMatchesPointer(cycle: PdcaCycle, pointer: string) {
-  const normalizedPointer = pointer.toLowerCase();
+  const normalizedPointer = normalizePointerText(pointer);
+  const normalizedCyclePointer = normalizePointerText(cycle.affectedPointer);
+  const normalizedCycleTitle = normalizePointerText(cycle.title);
+
   return (
-    cycle.affectedPointer.toLowerCase().includes(normalizedPointer) ||
-    normalizedPointer.includes(cycle.affectedPointer.toLowerCase()) ||
-    cycle.title.toLowerCase().includes(normalizedPointer)
+    normalizedCyclePointer.includes(normalizedPointer) ||
+    normalizedPointer.includes(normalizedCyclePointer) ||
+    normalizedCycleTitle.includes(normalizedPointer)
   );
 }
 
@@ -47,7 +59,7 @@ export function metricDetail(metric: Metric, label: string, cycles: PdcaCycle[])
     description: `Leitura atual: ${formatMetricValue(metric)}.`,
     whyItMatters:
       metric.id === "metric-pipeline"
-        ? "Mostra a capacidade da BVBP de gerar receita futura com cadência comercial."
+        ? "Mostra a capacidade da BVBP de gerar receita futura com rotina comercial."
         : "Ajuda a priorizar decisões sem transformar a tela principal em diagnóstico completo.",
     facts: [
       { label: "Valor atual", value: metric.id === "metric-savings" ? `${formatMetricValue(metric)}/mês` : formatMetricValue(metric) },
@@ -123,7 +135,7 @@ export function funnelMetricDetail(metric: FunnelMetric, label: string, cycles: 
     affectedPointer: metric.name,
     estimatedImpact: metric.unit === "currency" ? metric.value : metric.value.toString(),
     dataType: metric.helper.includes("Estimado") ? "Estimado" : "Mockado",
-    description: `Leitura atual do funil: ${metric.unit === "currency" ? formatCurrency(metric.value) : metric.unit === "percentage" ? `${metric.value}%` : formatNumber(metric.value)}.`,
+    description: `Leitura atual do comercial: ${metric.unit === "currency" ? formatCurrency(metric.value) : metric.unit === "percentage" ? `${metric.value}%` : formatNumber(metric.value)}.`,
     whyItMatters: "Mantém a primeira leitura simples e permite investigar origem, etapa e decisão quando necessário.",
     evidence: evidenceForPointer(cycles, metric.name),
     connectedActions: connectedCycleNames(cycles, metric.name),
@@ -135,13 +147,13 @@ export function pipelineOpportunityDetail(opportunity: PipelineOpportunity, cycl
   const cycle =
     cycles.find((item) => opportunity.nextAction.toLowerCase().includes("diagnóstico") && item.affectedPointer === "Diagnósticos agendados") ||
     cycles.find((item) => opportunity.nextAction.toLowerCase().includes("proposta") && item.affectedPointer === "Propostas enviadas") ||
-    cycles.find((item) => item.affectedPointer === "Pipeline comercial");
+    cycles.find((item) => normalizePointerText(item.affectedPointer) === "comercial");
 
   return {
     title: opportunity.opportunity,
     subtitle: `${opportunity.origin} · ${opportunity.stage}`,
     status: opportunity.status,
-    affectedPointer: cycle?.affectedPointer || "Pipeline comercial",
+    affectedPointer: cycle?.affectedPointer || "Comercial",
     estimatedImpact: opportunity.potential,
     dataType: "Estimado",
     description: `Oportunidade em ${opportunity.stage.toLowerCase()} com origem em ${opportunity.origin.toLowerCase()}.`,
@@ -193,7 +205,7 @@ export function automationDetail(item: AutomationOpportunity, cycles: PdcaCycle[
     estimatedImpact: item.estimatedImpact,
     dataType: "Estimado",
     description: `${item.hoursPerMonth}h/mês de potencial operacional mapeado.`,
-    whyItMatters: "Tecnologia só faz sentido quando ajuda a mover um ponteiro real.",
+    whyItMatters: "Automação só faz sentido quando ajuda a mover um ponteiro real.",
     facts: [
       { label: "Complexidade", value: item.complexity },
       { label: "Tipo", value: item.type },

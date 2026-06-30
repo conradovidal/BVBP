@@ -3,11 +3,11 @@ import { cn } from "@/lib/utils";
 type Tone = "green" | "orange" | "red" | "blue" | "gray";
 
 const toneClasses: Record<Tone, string> = {
-  green: "text-[#2F855A] before:bg-[#38A169]",
-  orange: "text-[#C05621] before:bg-[#ED8936]",
-  red: "text-red-700 before:bg-red-500",
-  blue: "text-[#1B365D] before:bg-[#1B365D]",
-  gray: "text-slate-600 before:bg-slate-400",
+  green: "text-bvbp-positive before:bg-bvbp-positive",
+  orange: "text-bvbp-caution before:bg-bvbp-gold",
+  red: "text-bvbp-risk before:bg-bvbp-risk",
+  blue: "text-bvbp-forest before:bg-bvbp-forest",
+  gray: "text-bvbp-muted-ink before:bg-bvbp-muted-ink/45",
 };
 
 function toneForLabel(label: string): Tone {
@@ -31,7 +31,7 @@ export function StatusBadge({ label, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold leading-none",
+        "font-label inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] font-medium uppercase leading-none tracking-[0.04em]",
         "before:block before:h-1.5 before:w-1.5 before:rounded-full",
         toneClasses[toneForLabel(label)],
         className

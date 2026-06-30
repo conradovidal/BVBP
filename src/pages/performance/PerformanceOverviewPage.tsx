@@ -22,7 +22,7 @@ const metricLabels: Record<string, string> = {
   "metric-monthly-revenue": "Receita",
   "metric-margin": "Margem",
   "metric-operational-cost": "Custo",
-  "metric-pipeline": "Pipeline comercial",
+  "metric-pipeline": "Pipeline",
   "metric-diagnostics": "Diagnósticos",
   "metric-proposals": "Propostas",
   "metric-conversion": "Conversão",
@@ -48,20 +48,20 @@ const metricAccents: Record<string, "blue" | "green" | "orange" | "gray"> = {
 
 const pillarAccentClasses = {
   money: {
-    top: "border-t-[#38A169]",
-    rail: "bg-[#38A169]",
+    top: "border-t-bvbp-positive",
+    rail: "bg-bvbp-positive",
   },
   funnel: {
-    top: "border-t-[#ED8936]",
-    rail: "bg-[#ED8936]",
+    top: "border-t-bvbp-gold",
+    rail: "bg-bvbp-gold",
   },
   operation: {
-    top: "border-t-[#ED8936]",
-    rail: "bg-[#ED8936]",
+    top: "border-t-bvbp-gold",
+    rail: "bg-bvbp-gold",
   },
   "tech-ai": {
-    top: "border-t-[#1B365D]",
-    rail: "bg-[#1B365D]",
+    top: "border-t-bvbp-forest",
+    rail: "bg-bvbp-forest",
   },
 };
 
@@ -83,19 +83,19 @@ const PerformanceOverviewPage = () => {
   return (
     <>
       <Helmet>
-        <title>Overview | BVBP Performance System</title>
+        <title>Visão geral | BVBP Performance System</title>
         <meta name="description" content="Painel executivo do Método BVBP de Performance Operacional." />
       </Helmet>
 
       <div className="space-y-7">
         <section className="flex flex-col gap-1">
-          <p className="text-sm font-semibold text-slate-500">Método BVBP</p>
+          <p className="text-sm font-semibold text-bvbp-muted-ink">Método BVBP</p>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="font-heading text-2xl font-bold text-[#1B365D] sm:text-3xl">Overview</h1>
-              <p className="mt-1 text-sm text-slate-500">{activeCompany.name}</p>
+              <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Visão geral</h1>
+              <p className="mt-1 text-sm text-bvbp-muted-ink">{activeCompany.name}</p>
             </div>
-            <p className="text-sm font-medium text-slate-500">Síntese executiva</p>
+            <p className="text-sm font-medium text-bvbp-muted-ink">Síntese executiva</p>
           </div>
         </section>
 
@@ -109,12 +109,12 @@ const PerformanceOverviewPage = () => {
                   key={item.label}
                   onClick={() => isInternalWorkspace && setDetail(weeklySummaryDetail(item, cycles))}
                   className={cn(
-                    "rounded-[8px] border border-slate-200/80 bg-white p-4 text-left shadow-[0_1px_0_rgba(15,23,42,0.03)]",
-                    isInternalWorkspace && "transition hover:border-[#1B365D]/35 hover:bg-[#F8FBFD]"
+                    "rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-left shadow-none",
+                    isInternalWorkspace && "transition hover:border-bvbp-forest/35 hover:bg-bvbp-inset"
                   )}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#1B365D]/45">{item.label}</p>
-                  <p className="mt-3 text-sm font-semibold leading-6 text-[#1B365D]">{item.value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{item.label}</p>
+                  <p className="mt-3 text-sm font-semibold leading-6 text-bvbp-ink">{item.value}</p>
                 </button>
               ))}
             </div>
@@ -162,21 +162,21 @@ const PerformanceOverviewPage = () => {
                   key={pillar.id}
                   onClick={() => isInternalWorkspace && setDetail(pillarDetail(pillar, cycles))}
                   className={cn(
-                    "rounded-[8px] border border-t-2 border-slate-200/80 bg-white p-4 text-left shadow-[0_1px_0_rgba(15,23,42,0.03)]",
-                    isInternalWorkspace && "transition hover:border-x-[#1B365D]/25 hover:border-b-[#1B365D]/25",
+                    "rounded-[8px] border border-t-2 border-bvbp-ink/10 bg-bvbp-raised p-4 text-left shadow-none",
+                    isInternalWorkspace && "transition hover:border-x-bvbp-forest/25 hover:border-b-bvbp-forest/25",
                     accent.top
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h2 className="font-heading text-base font-bold text-[#1B365D]">{pillar.name}</h2>
+                    <h2 className="font-heading text-base font-bold text-bvbp-ink">{pillar.name}</h2>
                     <StatusBadge label={pillar.status} />
                   </div>
-                  <p className="mt-7 font-heading text-3xl font-bold leading-none text-[#1B365D]">{pillar.score}/5</p>
+                  <p className="mt-7 font-heading text-3xl font-bold leading-none text-bvbp-ink">{pillar.score}/5</p>
                   <div className="mt-4 flex gap-1.5" aria-label={`${pillar.name}: ${pillar.score} de 5`}>
                     {[1, 2, 3, 4, 5].map((step) => (
                       <span
                         key={step}
-                        className={cn("h-1 flex-1 rounded-full", step <= pillar.score ? accent.rail : "bg-slate-100")}
+                        className={cn("h-1 flex-1 rounded-full", step <= pillar.score ? accent.rail : "bg-bvbp-inset")}
                       />
                     ))}
                   </div>
@@ -188,19 +188,19 @@ const PerformanceOverviewPage = () => {
 
         <section className="space-y-4">
           <SectionHeader title="Principais sinais" />
-          <div className="rounded-[8px] border border-slate-200/80 bg-white shadow-[0_1px_0_rgba(15,23,42,0.03)]">
-            <ul className="divide-y divide-slate-100">
+          <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
+            <ul className="divide-y divide-bvbp-ink/10">
               {visibleSignals.map((signal, index) => (
                 <li key={signal}>
                   <button
                     type="button"
                     onClick={() => isInternalWorkspace && setDetail(signalDetail(signal, index, cycles))}
                     className={cn(
-                      "grid w-full gap-3 px-4 py-3 text-left text-sm leading-6 text-slate-700 sm:grid-cols-[32px_minmax(0,1fr)]",
-                      isInternalWorkspace && "transition hover:bg-[#F8FBFD]"
+                      "grid w-full gap-3 px-4 py-3 text-left text-sm leading-6 text-bvbp-ink sm:grid-cols-[32px_minmax(0,1fr)]",
+                      isInternalWorkspace && "transition hover:bg-bvbp-inset"
                     )}
                   >
-                    <span className="font-heading text-sm font-bold text-[#1B365D]/45">
+                    <span className="font-heading text-sm font-bold text-bvbp-muted-ink">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <span>{signal}</span>
@@ -209,7 +209,7 @@ const PerformanceOverviewPage = () => {
               ))}
             </ul>
           </div>
-          <p className="text-xs font-medium text-slate-500">A ausência de dados também é diagnóstico.</p>
+          <p className="text-xs font-medium text-bvbp-muted-ink">A ausência de dados também é diagnóstico.</p>
         </section>
       </div>
       <PerformanceDetailDialog detail={detail} open={Boolean(detail)} onOpenChange={(open) => !open && setDetail(null)} />

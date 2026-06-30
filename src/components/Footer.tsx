@@ -1,67 +1,65 @@
 import { Button } from "@/components/ui/button";
-import { MapPin, Mail, Linkedin, Instagram, ExternalLink } from "lucide-react";
+import { ExternalLink, Instagram, Linkedin, Mail, MapPin } from "lucide-react";
+import bvbpLockupDark from "@/assets/brand/bvbp-lockup-dark.svg";
 
 const Footer = () => {
   const services = [
-    "Diagnóstico Operacional",
-    "Otimização de Processos", 
-    "Gestão de Projetos",
-    "Governança e Execução",
-    "Programa Customizado"
+    "Performance Sprint",
+    "Performance Partnership",
+    "Método BVBP",
+    "Plataforma BVBP",
+    "Conteúdo",
   ];
 
-  const company = [
-    "Sobre Nós",
-    "Contato",
-    "Agendar uma Conversa"
-  ];
+  const links: Record<string, string> = {
+    "Performance Sprint": "/#ofertas",
+    "Performance Partnership": "/#ofertas",
+    "Método BVBP": "/#metodo",
+    "Plataforma BVBP": "/#plataforma",
+    Conteúdo: "/blog",
+  };
 
   return (
-    <footer className="bg-bvbp-corporate text-white">
-      {/* Main Footer */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
+    <footer className="bg-bvbp-forest-dark text-bvbp-ivory">
+      <div className="container mx-auto px-4 py-14">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2">
-            <div className="mb-6">
-              <div className="font-heading text-2xl font-bold mb-1">BVBP</div>
-              <div className="text-white/90 font-medium">
-                Basso & Vidal Business Partners
-              </div>
-            </div>
+            <img src={bvbpLockupDark} alt="BVBP - Basso & Vidal Business Partners" className="mb-7 h-12 w-auto" />
 
-            {/* Contact Info */}
+            <p className="mb-7 max-w-md text-sm leading-6 text-bvbp-ivory/72">
+              Performance operacional para empresas que querem crescer com controle.
+            </p>
+
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-bvbp-growth" />
-                <a href="mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" className="hover:text-bvbp-growth transition-smooth">
+                <Mail className="h-5 w-5 text-bvbp-gold" />
+                <a href="mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" className="transition-smooth hover:text-bvbp-gold">
                   conrado@bvbp.com.br
                 </a>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-bvbp-growth" />
-                <a href="mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" className="hover:text-bvbp-growth transition-smooth">
+                <Mail className="h-5 w-5 text-bvbp-gold" />
+                <a href="mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" className="transition-smooth hover:text-bvbp-gold">
                   cristiano@bvbp.com.br
                 </a>
               </div>
               <div className="flex items-center space-x-3">
-                <MapPin className="h-5 w-5 text-bvbp-growth" />
-                <span className="text-white/80">Porto Alegre, RS - Brasil</span>
+                <MapPin className="h-5 w-5 text-bvbp-gold" />
+                <span className="text-bvbp-ivory/72">Porto Alegre, RS - Brasil</span>
               </div>
             </div>
 
-            {/* Social Media */}
             <div className="flex space-x-4 mt-6">
-              <a 
-                href="#" 
-                className="p-2 rounded-full bg-white/10 hover:bg-bvbp-growth transition-smooth"
+              <a
+                href="#"
+                className="rounded-md border border-bvbp-ivory/10 p-2 text-bvbp-ivory/75 transition-smooth hover:border-bvbp-gold hover:text-bvbp-gold"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a 
-                href="#" 
-                className="p-2 rounded-full bg-white/10 hover:bg-bvbp-growth transition-smooth"
+              <a
+                href="#"
+                className="rounded-md border border-bvbp-ivory/10 p-2 text-bvbp-ivory/75 transition-smooth hover:border-bvbp-gold hover:text-bvbp-gold"
                 aria-label="Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -69,84 +67,69 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Services */}
           <div>
-            <h3 className="font-heading text-lg font-bold mb-4">Serviços</h3>
+            <h3 className="mb-4 font-label text-xs font-semibold uppercase text-bvbp-ivory/50">Método</h3>
             <div className="space-y-2">
-              {services.map((service, index) => {
-                const links: Record<string, string> = {
-                  "Diagnóstico Operacional": "/diagnostico-operacional",
-                  "Otimização de Processos": "/sprint-otimizacao",
-                  "Gestão de Projetos": "/gestao-projetos",
-                  "Governança e Execução": "/retainer-governanca",
-                  "Programa Customizado": "/programa-customizado"
-                };
-                return (
-                  <a
-                    key={index}
-                    href={links[service] || "/#servicos"}
-                    className="block text-sm text-white/80 hover:text-bvbp-growth transition-smooth"
-                  >
-                    {service}
-                  </a>
-                );
-              })}
+              {services.map((service) => (
+                <a
+                  key={service}
+                  href={links[service]}
+                  className="block text-sm text-bvbp-ivory/72 transition-smooth hover:text-bvbp-gold"
+                >
+                  {service}
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Company */}
           <div>
-            <h3 className="font-heading text-lg font-bold mb-4">Empresa</h3>
+            <h3 className="mb-4 font-label text-xs font-semibold uppercase text-bvbp-ivory/50">Empresa</h3>
             <div className="space-y-2">
-              <a href="/#quem-somos" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+              <a href="/#quem-somos" className="block text-bvbp-ivory/72 transition-smooth hover:text-bvbp-gold">
                 Sobre Nós
               </a>
-              <a href="/#contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
+              <a href="/#contato" className="block text-bvbp-ivory/72 transition-smooth hover:text-bvbp-gold">
                 Contato
               </a>
-              <a href="/#contato" className="block text-white/80 hover:text-bvbp-growth transition-smooth">
-Agendar uma Conversa
+              <a href="/app" className="block text-bvbp-ivory/72 transition-smooth hover:text-bvbp-gold">
+                Portal BVBP
               </a>
             </div>
           </div>
         </div>
       </div>
 
-      {/* CTA Strip */}
-      <div className="bg-bvbp-growth">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between">
+      <div className="border-y border-bvbp-ivory/10 bg-bvbp-forest">
+        <div className="container mx-auto px-4 py-7">
+          <div className="flex flex-col items-center justify-between gap-5 md:flex-row">
             <div className="mb-4 md:mb-0">
-              <h3 className="font-heading text-lg font-bold text-white mb-1">
-                Queremos ser parceiros do seu crescimento. Vamos conversar?
+              <h3 className="mb-1 font-heading text-2xl font-medium text-bvbp-ivory">
+                Vamos identificar o ponteiro certo?
               </h3>
-              <p className="text-white/90 text-sm">
-                Comece agendando uma conversa sem compromisso
+              <p className="text-sm text-bvbp-ivory/72">
+                Uma conversa curta já deve clarear dor, urgência e próximo passo.
               </p>
             </div>
-            <Button 
+            <Button
               variant="outline"
               size="lg"
-              className="border-white text-white bg-transparent hover:bg-white hover:text-bvbp-growth transition-smooth"
-              onClick={() => window.location.href = '/#contato'}
+              className="border-bvbp-ivory/60 bg-transparent text-bvbp-ivory transition-smooth hover:bg-bvbp-ivory hover:text-bvbp-forest"
+              onClick={() => {
+                window.location.href = "/#contato";
+              }}
             >
-              Agendar uma Conversa
+              Agendar conversa
               <ExternalLink className="h-4 w-4 ml-2" />
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="bg-bvbp-corporate-dark border-t border-white/10">
+      <div className="bg-bvbp-forest-dark">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row items-center justify-between text-sm text-white/60">
-            <div>
-              © 2026 BVBP - Basso & Vidal Business Partners. Todos os direitos reservados.
-            </div>
-            <div className="mt-2 md:mt-0">
-              <span>Feito com</span> <span className="text-red-400">♥</span> <span>em Porto Alegre</span>
-            </div>
+          <div className="flex flex-col items-center justify-between text-sm text-bvbp-ivory/45 md:flex-row">
+            <div>© 2026 BVBP - Basso & Vidal Business Partners. Todos os direitos reservados.</div>
+            <div className="mt-2 md:mt-0">Feito em Porto Alegre.</div>
           </div>
         </div>
       </div>

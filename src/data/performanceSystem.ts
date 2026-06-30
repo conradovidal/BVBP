@@ -125,7 +125,7 @@ export type EvidenceType = (typeof evidenceTypes)[number];
 
 export const bvbpPointerOptions = [
   "Receita mensal",
-  "Pipeline comercial",
+  "Comercial",
   "Diagnósticos agendados",
   "Propostas enviadas",
   "Taxa de conversão",
@@ -222,16 +222,17 @@ export interface ImpactCycle {
   status: string;
 }
 
+export const BVBP_COMPANY_ID = "company-bvbp";
+export const PRISMA_DEMO_COMPANY_ID = "company-prisma";
+
 export const mockPerformanceUser: PerformanceUser = {
-  id: "user-atlas-01",
-  name: "Ana Ribeiro",
+  id: "user-prisma-01",
+  name: "Marina Lopes",
   email: "cliente@bvbp.com.br",
   role: "client",
   roleLabel: "Cliente",
-  companyIds: ["company-atlas"],
+  companyIds: [PRISMA_DEMO_COMPANY_ID],
 };
-
-export const BVBP_COMPANY_ID = "company-bvbp";
 
 export const mockCompany: Company = {
   id: "company-atlas",
@@ -243,6 +244,19 @@ export const mockCompany: Company = {
   monthlyOperationalCost: 190000,
   contactName: "Ana Ribeiro",
   contactEmail: "cliente@bvbp.com.br",
+  status: "Ativo",
+};
+
+export const demoCompany: Company = {
+  id: PRISMA_DEMO_COMPANY_ID,
+  name: "Prisma Distribuição B2B",
+  segment: "Distribuição B2B em crescimento",
+  employees: 76,
+  monthlyRevenue: 620000,
+  recurringRevenue: 240000,
+  monthlyOperationalCost: 430000,
+  contactName: "Marina Lopes",
+  contactEmail: "marina@prisma.example",
   status: "Ativo",
 };
 
@@ -259,6 +273,7 @@ export const mockCompanies: Company[] = [
     contactEmail: "conrado@bvbp.com.br",
     status: "Ativo",
   },
+  demoCompany,
   mockCompany,
   {
     id: "company-nortech",
@@ -295,7 +310,7 @@ const portfolioSignalsByCompanyId: Record<string, Omit<CompanyPortfolioSignal, "
     type: "Workspace interno",
     owner: "BVBP",
     actionLabel: "Abrir workspace",
-    criticalPointer: "Cadência comercial",
+    criticalPointer: "Comercial",
     mappedPotential: 42000,
     nextAction: "Definir 10 diagnósticos prioritários",
     activeCycles: 2,
@@ -307,11 +322,21 @@ const portfolioSignalsByCompanyId: Record<string, Omit<CompanyPortfolioSignal, "
   "company-atlas": {
     criticalPointer: "Receita em risco",
     mappedPotential: 38000,
-    nextAction: "Conectar funil e operação",
+    nextAction: "Conectar comercial e operação",
     activeCycles: 3,
     highRiskProjects: 2,
     projectsCount: 8,
     revenueAtRisk: 105000,
+    attention: true,
+  },
+  [PRISMA_DEMO_COMPANY_ID]: {
+    criticalPointer: "Passagem venda -> implantação",
+    mappedPotential: 74000,
+    nextAction: "Priorizar gargalos entre comercial e operação",
+    activeCycles: 3,
+    highRiskProjects: 2,
+    projectsCount: 7,
+    revenueAtRisk: 118000,
     attention: true,
   },
   "company-nortech": {
@@ -342,7 +367,7 @@ export const internalPortfolioItems: InternalPortfolioItem[] = [
     name: "BVBP",
     type: "Workspace interno",
     status: "Ativo",
-    criticalPointer: "Cadência comercial",
+    criticalPointer: "Comercial",
     mappedPotential: 42000,
     nextAction: "Definir 10 diagnósticos prioritários",
     owner: "BVBP",
@@ -353,7 +378,7 @@ export const internalPortfolioItems: InternalPortfolioItem[] = [
     name: "Prospect A",
     type: "Prospect",
     status: "Em diagnóstico",
-    criticalPointer: "Pipeline comercial",
+    criticalPointer: "Comercial",
     mappedPotential: 18000,
     nextAction: "Marcar conversa de diagnóstico",
     owner: "Conrado",
@@ -597,45 +622,45 @@ export const overviewMetrics: Metric[] = createOverviewMetrics(mockCompany);
 export const bvbpPillars: BvbpPillar[] = [
   {
     id: "money",
-    name: "Dinheiro",
+    name: "Finanças",
     score: 3,
     status: "Em evolução",
-    description: "Receita, margem, custo, caixa, potencial de economia e receita em risco.",
+    description: "Receita, margem, custo, caixa, risco e potencial com leitura objetiva.",
   },
   {
     id: "funnel",
-    name: "Funil",
+    name: "Comercial",
     score: 2,
     status: "Atenção",
-    description: "Origem das oportunidades, conversão por etapa, ticket, pipeline e receita por canal.",
+    description: "Origem, conversão, pipeline, follow-up e proposta em uma rotina clara.",
   },
   {
     id: "operation",
     name: "Operação",
     score: 2,
     status: "Atenção",
-    description: "Retrabalho, espera, aprovações lentas, relatórios manuais e custo de capacidade.",
+    description: "Fluxo, espera, retrabalho, capacidade e entrega com menos atrito.",
   },
   {
     id: "tech-ai",
-    name: "Tecnologia e IA",
+    name: "Tecnologia",
     score: 1,
     status: "Base inicial",
-    description: "Automações, dados, IA e aplicações internas conectadas a ponteiros reais.",
+    description: "Dados, IA e sistemas apenas quando ajudam a mover um ponteiro real.",
   },
 ];
 
 export const internalBvbpPillars: BvbpPillar[] = [
   {
     id: "money",
-    name: "Dinheiro",
+    name: "Finanças",
     score: 1,
     status: "Base inicial",
     description: "Receita, pipeline e potencial ainda em validação comercial.",
   },
   {
     id: "funnel",
-    name: "Funil",
+    name: "Comercial",
     score: 2,
     status: "Em evolução",
     description: "Networking, diagnósticos, propostas e cadência semanal.",
@@ -649,7 +674,7 @@ export const internalBvbpPillars: BvbpPillar[] = [
   },
   {
     id: "tech-ai",
-    name: "Tecnologia e IA",
+    name: "Tecnologia",
     score: 2,
     status: "Em evolução",
     description: "Plataforma própria, conteúdo e base operacional interna.",
@@ -663,13 +688,13 @@ export function getPillarsForCompany(company: Company) {
 export const diagnosticSignals = [
   "Indicadores financeiros e operacionais ainda aparecem em lugares separados.",
   "Tempo de espera elevado entre comercial e operação.",
-  "Funil comercial existe, mas não há clareza de conversão por etapa.",
-  "Tarefas manuais recorrentes têm potencial de automação.",
+  "Pipeline existe, mas ainda falta clareza de conversão por etapa.",
+  "Tarefas manuais recorrentes têm potencial de tecnologia aplicada.",
   "Projetos ativos precisam de responsáveis e critérios de risco mais claros.",
 ];
 
 export const internalDiagnosticSignals = [
-  "Método e plataforma avançaram mais rápido que a cadência comercial.",
+  "Método e plataforma avançaram mais rápido que a rotina comercial.",
   "Pipeline inicial existe, mas ainda precisa de lista prioritária e rotina semanal.",
   "Conteúdo deve funcionar como canal de autoridade e aquisição.",
   "Diagnósticos precisam virar evidências e proposta simples de 90 dias.",
@@ -690,7 +715,7 @@ export const internalWeeklySummary: WeeklySummaryItem[] = [
   },
   {
     label: "Principal risco",
-    value: "Ter método e plataforma bons, mas baixa cadência comercial.",
+    value: "Ter método e plataforma bons, mas comercial ainda pouco consistente.",
   },
   {
     label: "Ciclo em andamento",
@@ -1058,7 +1083,7 @@ export const improvements: Improvement[] = [
     title: "Consolidar dashboard financeiro-operacional",
     affectedPointer: "Margem estimada",
     affectedFlow: "Diretoria -> Operação",
-    hypothesis: "Unificar dinheiro e operação melhora priorização semanal.",
+    hypothesis: "Unificar finanças e operação melhora priorização semanal.",
     estimatedImpact: 18000,
     ease: "Média",
     owner: "João Pereira",
@@ -1101,11 +1126,11 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     id: "bvbp-action-prospects",
     companyId: BVBP_COMPANY_ID,
     title: "Definir lista de 10 prospects prioritários",
-    affectedPointer: "Pipeline comercial",
+    affectedPointer: "Comercial",
     affectedFlow: "Comercial interno",
     hypothesis: "Uma lista curta aumenta foco e cadência de abordagem.",
     plannedAction: "Selecionar 10 contas, registrar origem e definir próximo contato.",
-    whyItMatters: "Sem prioridade explícita, a cadência comercial tende a ficar reativa.",
+    whyItMatters: "Sem prioridade explícita, o comercial tende a ficar reativo.",
     owner: "Conrado",
     deadline: "7 dias",
     pdcaStatus: "Planejar",
@@ -1168,7 +1193,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     affectedPointer: "Conversas iniciadas",
     affectedFlow: "Site -> Conversa",
     hypothesis: "Oferta clara reduz fricção para iniciar diagnóstico.",
-    plannedAction: "Ajustar a narrativa para Sprint e Partnership, sem prometer ROI comprovado.",
+    plannedAction: "Ajustar a narrativa para Sprint e Partnership, sem prometer retorno garantido.",
     whyItMatters: "O site precisa refletir a oferta que será usada nas conversas comerciais.",
     owner: "Conrado",
     deadline: "14 dias",
@@ -1195,11 +1220,11 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
   {
     id: "bvbp-action-content",
     companyId: BVBP_COMPANY_ID,
-    title: "Publicar conteúdo sobre funil e operação",
+    title: "Publicar conteúdo sobre comercial e operação",
     affectedPointer: "Conteúdos publicados",
     affectedFlow: "Conteúdo -> Autoridade",
     hypothesis: "Conteúdo recorrente cria contexto para conversas comerciais.",
-    plannedAction: "Publicar um conteúdo curto conectando funil, operação e execução.",
+    plannedAction: "Publicar um conteúdo curto conectando comercial, operação e execução.",
     whyItMatters: "A autoridade precisa abrir conversas, não apenas educar em abstrato.",
     owner: "Cristiano",
     deadline: "14 dias",
@@ -1251,7 +1276,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     id: "bvbp-action-pipeline-base",
     companyId: BVBP_COMPANY_ID,
     title: "Estruturar base mínima de pipeline",
-    affectedPointer: "Pipeline comercial",
+    affectedPointer: "Comercial",
     affectedFlow: "Comercial interno",
     hypothesis: "Uma base única evita perda de oportunidades pequenas.",
     plannedAction: "Manter oportunidade, origem, etapa, potencial, dono e próxima ação no mesmo lugar.",

@@ -52,16 +52,16 @@ const AdminClientNewPage = () => {
             <button
               type="button"
               onClick={() => navigate("/app/admin/clients")}
-              className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-[#1B365D]"
+              className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink hover:text-bvbp-ink"
             >
               <ArrowLeft className="h-4 w-4" />
               Clientes
             </button>
-            <h1 className="font-heading text-2xl font-bold text-[#1B365D]">Novo cliente</h1>
+            <h1 className="font-heading text-2xl font-bold text-bvbp-ink">Novo cliente</h1>
           </div>
         </section>
 
-        <form onSubmit={handleSubmit} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <form onSubmit={handleSubmit} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="name">Empresa</Label>
@@ -105,7 +105,11 @@ const AdminClientNewPage = () => {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <Button type="submit" variant="corporate">
+            <Button
+              type="submit"
+              variant="outline"
+              className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+            >
               <Save className="h-4 w-4" />
               Salvar cliente
             </Button>

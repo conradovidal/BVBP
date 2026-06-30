@@ -1,71 +1,169 @@
+import { FormEvent, useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Button } from "@/components/ui/button";
-import { InteractiveHoverButton } from "@/components/ui/interactive-hover-button";
-import { Card, CardContent } from "@/components/ui/card";
-import { TextRotate } from "@/components/ui/text-rotate";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Target, Users, Zap, TrendingUp, AlertTriangle, Sparkles, Check, X, Settings, Lightbulb, LinkedinIcon, Heart, Award, Clock, ArrowRight, Wrench, Rocket, Star, Crown, MailIcon, PhoneIcon, MapPinIcon, ClockIcon, MessageCircleIcon, HelpCircle, Search } from "lucide-react";
+import {
+  Bot,
+  CheckCircle,
+  Clock,
+  DollarSign,
+  Filter,
+  LinkedinIcon,
+  MailIcon,
+  Route,
+  Search,
+  Target,
+  Workflow,
+  Zap,
+} from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { submitLead } from "@/lib/submitLead";
+import portalPreviewImage from "@/assets/portal-preview.png";
+
+const pillars = [
+  {
+    title: "Finanças",
+    short: "Receita, margem, custo, caixa, risco e potencial sem ruído.",
+    icon: DollarSign,
+  },
+  {
+    title: "Comercial",
+    short: "Origem, conversão, pipeline, follow-up e proposta com ritmo.",
+    icon: Filter,
+  },
+  {
+    title: "Operação",
+    short: "Fluxo, espera, retrabalho, capacidade e entrega sob controle.",
+    icon: Workflow,
+  },
+  {
+    title: "Tecnologia",
+    short: "Dados, IA e sistemas apenas quando movem ponteiro real.",
+    icon: Bot,
+  },
+];
+
+const problems = [
+  {
+    title: "Decisão sem ponteiro",
+    description: "A reunião termina com tarefas, mas sem clareza sobre qual número precisa mudar.",
+  },
+  {
+    title: "Comercial disperso",
+    description: "Oportunidades dependem de memória, esforço manual e follow-up disperso.",
+  },
+  {
+    title: "Crescimento com atrito",
+    description: "Mais demanda vira fila, retrabalho, espera e perda de margem.",
+  },
+  {
+    title: "Automação sem ponteiro",
+    description: "Ferramentas entram antes da pergunta certa: qual ponteiro isso move?",
+  },
+];
+
+const offers = [
+  {
+    title: "BVBP Performance Sprint",
+    duration: "90 dias",
+    mode: "Entrada intensiva",
+    description: "Para empresas com dor clara, urgência e necessidade de destravar performance rapidamente.",
+    features: [
+      "Ponteiros prioritários",
+      "Mapa comercial e operacional",
+      "Backlog de alavancas",
+      "Ciclos PDCA semanais",
+      "Devolutiva executiva",
+    ],
+    cta: "Quero discutir um Sprint",
+  },
+  {
+    title: "BVBP Performance Partnership",
+    duration: "12 meses",
+    mode: "Parceria contínua",
+    description: "Para empresas que querem construir uma gestão de performance contínua, lado a lado com a BVBP.",
+    features: [
+      "Rotina mensal de performance",
+      "Acompanhamento de ponteiros",
+      "Ciclos contínuos de melhoria",
+      "Evolução da plataforma",
+      "Governança de evidências",
+    ],
+    cta: "Quero discutir parceria",
+  },
+];
+
+const methodSteps = [
+  { title: "Entender o jogo", description: "Modelo, margem, dor e travas de crescimento.", icon: Search },
+  { title: "Escolher ponteiros", description: "Poucos indicadores conectados à decisão do dono.", icon: Target },
+  { title: "Mapear fluxos críticos", description: "Como a receita nasce e como a entrega acontece.", icon: Route },
+  { title: "Priorizar alavancas", description: "O que move número com mais impacto e confiança.", icon: Zap },
+  { title: "Executar ciclos PDCA", description: "Planejar, executar, medir, aprender e ajustar.", icon: Clock },
+  { title: "Automatizar o que vale", description: "Automação só entra quando move ponteiro real.", icon: Bot },
+  { title: "Sustentar a gestão", description: "Rotina, evidência e autonomia para continuar evoluindo.", icon: CheckCircle },
+];
+
+const platformSignals = [
+  "Ponteiros",
+  "Comercial",
+  "Gargalos",
+  "PDCA",
+  "Tecnologia",
+  "Evidências",
+];
+
+const automationExamples = [
+  "Organizar documentos, bases e evidências para reduzir busca manual.",
+  "Dar visibilidade a finanças, comercial e operação.",
+  "Apoiar follow-up comercial quando a cadência estiver clara.",
+  "Gerar relatórios executivos a partir de dados confiáveis.",
+  "Criar formulários, aplicações internas e fluxos de aprovação quando houver ponteiro claro.",
+  "Usar IA para triagem, classificação ou análise quando houver decisão conectada.",
+];
+
+const team = [
+  {
+    name: "Cristiano Basso",
+    bio: "Estrutura operação, governança e execução para transformar intenção em rotina.",
+    linkedin: "https://www.linkedin.com/in/cristianobasso/",
+    photo: "/lovable-uploads/5308fe52-0ff8-4f9d-8040-99ff6ff89d35.png",
+  },
+  {
+    name: "Conrado Vidal",
+    bio: "Conecta estratégia, dados, produto e tecnologia para mover ponteiros reais.",
+    linkedin: "https://www.linkedin.com/in/conradovidal/",
+    photo: "/lovable-uploads/conrado-vidal.jpeg",
+  },
+];
+
+const values = [
+  {
+    title: "Número antes da ferramenta",
+    description: "Tecnologia entra quando existe clareza sobre o ponteiro que precisa melhorar.",
+  },
+  {
+    title: "Ciclo antes da apresentação",
+    description: "A rotina precisa testar hipóteses, medir efeito e registrar aprendizado.",
+  },
+  {
+    title: "Evidência para decidir",
+    description: "Toda melhoria precisa deixar rastro: hipótese, ação, resultado observado e próxima decisão.",
+  },
+];
+
+const emails = [
+  { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
+  { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" },
+];
+
 const Index = () => {
-  const {
-    toast
-  } = useToast();
-
-  // Scroll animations for each section
-  const {
-    ref: heroRef,
-    isVisible: heroVisible
-  } = useScrollAnimation(0.1);
-  const {
-    ref: problemRef,
-    isVisible: problemVisible
-  } = useScrollAnimation(0.1);
-  const {
-    ref: differentialRef,
-    isVisible: differentialVisible
-  } = useScrollAnimation(0.1);
-  const {
-    ref: aboutRef,
-    isVisible: aboutVisible
-  } = useScrollAnimation(0.1);
-  const {
-    ref: servicesRef,
-    isVisible: servicesVisible
-  } = useScrollAnimation(0.1);
-  const {
-    ref: storyRef,
-    isVisible: storyVisible
-  } = useScrollAnimation(0.1);
-  const {
-    ref: contactRef,
-    isVisible: contactVisible
-  } = useScrollAnimation(0.1);
-
-  // Scroll to section based on URL hash when page loads
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      setTimeout(() => {
-        const targetId = hash.replace('#', '');
-        const element = document.getElementById(targetId);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, []);
-
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -73,684 +171,545 @@ const Index = () => {
     company: "",
     role: "",
     interest: "",
-    challenge: ""
+    challenge: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash) return;
+
+    window.setTimeout(() => {
+      document.getElementById(hash.replace("#", ""))?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  }, []);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setIsSubmitting(true);
-    
-    const result = await submitLead({ formData, source: 'homepage' });
-    
+
+    const result = await submitLead({ formData, source: "homepage" });
+
     if (result.success) {
       toast({
         title: "Recebemos seus dados.",
-        description: "Responderemos em até 4 horas úteis."
+        description: "Responderemos em até 4 horas úteis.",
       });
       setFormData({ name: "", email: "", phone: "", company: "", role: "", interest: "", challenge: "" });
     } else {
       toast({
         title: "Dados inválidos",
         description: result.errors?.join(", ") || "Verifique os campos e tente novamente.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
-    
+
     setIsSubmitting(false);
   };
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+
+  const scrollToContact = () => {
+    document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
   };
-  const team = [{
-    name: "Cristiano Basso",
-    role: "",
-    bio: "10+ anos ajudando empresas a parar de perder dinheiro com retrabalho. Especialista em organizar processos confusos e dar autonomia para o time.",
-    linkedin: "https://www.linkedin.com/in/cristianobasso/",
-    photo: "/lovable-uploads/5308fe52-0ff8-4f9d-8040-99ff6ff89d35.png"
-  }, {
-    name: "Conrado Vidal",
-    role: "",
-    bio: "9+ anos transformando operação caótica em processos claros. Especialista em fazer o time ganhar foco e o líder parar de apagar incêndio.",
-    linkedin: "https://www.linkedin.com/in/conradovidal/",
-    photo: "/lovable-uploads/conrado-vidal.jpeg"
-  }];
-  const values = [{
-    icon: Target,
-    title: "Orientação a Resultado",
-    description: "Não vendemos PowerPoint. Mostramos onde você perde dinheiro e ajudamos a parar a sangria."
-  }, {
-    icon: Heart,
-    title: "Honestidade",
-    description: "Se não conseguirmos ajudar, falamos na lata. Só trabalhamos onde vemos chance real de cortar retrabalho."
-  }, {
-    icon: Award,
-    title: "Qualidade",
-    description: "Entregamos processos claros e sustentáveis. Seu time ganha autonomia, não dependência."
-  }];
-  const services = [{
-    title: "Diagnóstico Operacional",
-    duration: "1 semana",
-    icon: Search,
-    description: "Mapeamos onde o fluxo trava, onde o retrabalho aparece e quais são os próximos passos mais efetivos.",
-    features: ["Conversa com o líder para entender contexto e objetivo", "Mapeamento de 1 fluxo crítico de ponta a ponta", "Baseline simples, filas, retrabalho e pontos de decisão", "Plano de 2 semanas com prioridades e sequência sugerida"],
-    details: ["2 a 3 encontros ao longo da semana", "Sem necessidade de envolver toda a equipe", "Entrega objetiva, sem burocracia"],
-    cta: "Quero mapear meu gargalo",
-    link: "/diagnostico-operacional"
-  }, {
-    title: "Otimização de Processo",
-    duration: "2 semanas",
-    icon: Zap,
-    description: "Escolhemos 1 fluxo e entregamos um resultado rápido e visível. Menos fila, menos retrabalho, mais clareza do que está em andamento.",
-    features: ["Diagnóstico rápido do fluxo e seus gargalos", "Redesenho do processo com acordos e regras simples", "Ajustes no jeito de trabalhar, entrada, saída, prioridade", "Validação e acompanhamento da implementação"],
-    details: ["1 fluxo por projeto, sem tentar arrumar a empresa", "Foco em reduzir fila e retrabalho", "Resultado visível em pouco tempo"],
-    cta: "Quero destravar um fluxo",
-    link: "/sprint-otimizacao"
-  }, {
-    title: "Configuração de Gestão e Entrega de Projetos",
-    duration: "3-4 semanas",
-    icon: Settings,
-    description: "Criamos o sistema mínimo para tocar projetos com cadência, papéis claros e reporting que vira decisão.",
-    features: ["Board mínimo e padrão de organização de projetos", "Cadência de ritos, alinhamentos e checkpoints", "Definição de papéis, responsabilidades e acordos", "Modelo de reporte simples para dar visibilidade"],
-    details: ["Adaptado à ferramenta que vocês já usam", "Menos status, mais clareza e decisão", "Pronto para escalar com o time"],
-    cta: "Quero organizar meus projetos",
-    link: "/gestao-projetos"
-  }, {
-    title: "Implementação de Governança de Execução",
-    duration: "Mensal",
-    icon: TrendingUp,
-    description: "Acompanhamento contínuo para manter disciplina de execução, visibilidade e decisões — sem virar burocracia.",
-    features: ["Check-ins regulares de execução e governança", "Revisão de prioridades, progresso e bloqueios", "Suporte a decisões da liderança", "Advisory sobre riscos de execução"],
-    details: ["Após projeto bem-sucedido (Diagnóstico, Sprint ou Setup)", "Governança, não execução — o time continua tocando", "Objetivo: vocês precisarem menos de nós"],
-    cta: "Quero manter a disciplina",
-    link: "/retainer-governanca"
-  }, {
-    title: "Programa Customizado de Melhoria",
-    duration: "6 a 12 semanas",
-    icon: Crown,
-    description: "Para quando precisa pensar no longo prazo. Melhoramos 2 a 3 fluxos críticos e deixamos governança mínima para sustentar.",
-    features: ["Plano por ondas com escopo e sequência de execução", "Otimização de 2 a 3 fluxos críticos", "Implementação acompanhada para garantir adoção", "Capacitação do time para manter depois"],
-    details: ["Entrada via Diagnóstico Operacional", "Escopo controlado, sem virar infinito", "Foco em resultado prático e sustentação"],
-    cta: "Quero um plano sob medida",
-    link: "/programa-customizado"
-  }, {
-    title: "Qual serviço é para mim?",
-    duration: "",
-    icon: HelpCircle,
-    description: "Compare todos os serviços lado a lado e descubra qual é o melhor ponto de partida para sua empresa.",
-    features: ["Tabela comparativa completa", "Quiz para identificar seu perfil", "Recomendação personalizada"],
-    details: ["Sem compromisso", "Ajuda a escolher o próximo passo"],
-    cta: "Ver comparativo",
-    link: "/comparativo-servicos"
-  }];
-  const emails = [
-    { email: "conrado@bvbp.com.br", link: "mailto:conrado@bvbp.com.br?subject=Contato%20BVBP" },
-    { email: "cristiano@bvbp.com.br", link: "mailto:cristiano@bvbp.com.br?subject=Contato%20BVBP" }
-  ];
-  const benefits = ["Diagnóstico gratuito", "Resposta em até 4 horas úteis", "Sem compromisso", "Mostramos onde você está perdendo dinheiro"];
-  return <>
+
+  return (
+    <>
       <Helmet>
-        <title>BVBP - Pare de perder dinheiro com retrabalho e processos confusos</title>
-        <meta name="description" content="A BVBP é uma consultoria boutique que organiza processos para empresas de médio porte (50-200 funcionários). Diagnóstico em 1 semana, resultados em 90 dias. De R$ 6.500 a R$ 22.000. Atendimento presencial e remoto em todo o Brasil." />
+        <title>BVBP | Performance operacional com controle</title>
+        <meta
+          name="description"
+          content="Método BVBP de performance operacional para conectar finanças, comercial, operação, tecnologia, ciclos PDCA, evidências e próxima decisão."
+        />
         <meta name="robots" content="max-snippet:-1, max-image-preview:large" />
         <link rel="canonical" href="https://bvbp.com.br/" />
       </Helmet>
 
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink">
         <Header />
         <main>
-          {/* AEO Section - Structured content for AI extraction (visually hidden, semantically rich) */}
           <article className="sr-only" aria-hidden="false">
             <h2>O que é a BVBP?</h2>
-            <p>A BVBP (Basso &amp; Vidal Business Partners) é uma consultoria boutique brasileira especializada em organização de processos para empresas de médio porte. Fundada por Cristiano Basso e Conrado Vidal, com mais de 19 anos de experiência combinada, a BVBP ajuda empresas com 50 a 200 funcionários e faturamento entre R$ 5 e R$ 100 milhões a reduzir retrabalho, eliminar gargalos operacionais e ganhar autonomia em 90 dias. A sede fica em Porto Alegre (RS), mas o atendimento é presencial e remoto em todo o Brasil.</p>
-            <h2>Quais serviços a BVBP oferece?</h2>
-            <p>A BVBP oferece 5 serviços de consultoria em processos: Diagnóstico Operacional (1 semana, a partir de R$ 6.500), Otimização de Processo (2 semanas, a partir de R$ 12.000), Configuração de Gestão e Entrega de Projetos (3-4 semanas, a partir de R$ 16.000), Implementação de Governança de Execução (mensal), e Programa Customizado de Melhoria (6 a 12 semanas, até R$ 22.000).</p>
-            <h2>Quanto custa uma consultoria de processos na BVBP?</h2>
-            <p>Os serviços da BVBP custam de R$ 6.500 (Diagnóstico Operacional, 1 semana) a R$ 22.000 (Programa Customizado, 6-12 semanas). O ROI típico é de 300% ou mais no primeiro ano. Muitos clientes recuperam o investimento com a economia dos primeiros 2-3 meses.</p>
-            <h2>Onde a BVBP atende?</h2>
-            <p>A BVBP atende todo o Brasil, presencial e remoto. A sede fica em Porto Alegre (RS), mas projetos podem ser conduzidos inteiramente online.</p>
+            <p>
+              A BVBP conecta finanças, comercial, operação e tecnologia para transformar crescimento em
+              rotina de gestão. O método combina ponteiros, fluxos, alavancas, ciclos PDCA, automação conectada a
+              indicador e evidências para a próxima decisão.
+            </p>
+            <h2>Quais ofertas a BVBP oferece?</h2>
+            <p>
+              As ofertas principais são o BVBP Performance Sprint, de 90 dias, e o BVBP Performance Partnership,
+              de 12 meses. Ambas partem de potencial mapeado, baseline e execução assistida.
+            </p>
           </article>
 
-          {/* Hero Section */}
-          <section id="inicio" ref={heroRef as React.RefObject<HTMLElement>} className={`relative py-20 lg:py-32 bg-gradient-hero overflow-hidden transition-all duration-700 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="absolute inset-0 bg-black/5"></div>
-            <div className="container mx-auto px-4 relative z-10">
-              <div className="max-w-5xl mx-auto text-center space-y-8">
-                <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-relaxed">
-                  <span className="block animate-fade-in">Você está deixando</span>
-                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:150ms] opacity-0 [animation-fill-mode:forwards]">dinheiro na mesa</span>
-                  <span className="block animate-fade-in [animation-delay:300ms] opacity-0 [animation-fill-mode:forwards]">todo mês devido a</span>
-                  <span className="block text-bvbp-growth font-bold animate-fade-in [animation-delay:450ms] opacity-0 [animation-fill-mode:forwards] pb-2">
-                    <TextRotate
-                      texts={[
-                        "planejamentos mal feitos",
-                        "processos ineficientes",
-                        "priorizações confusas",
-                        "gestão desorganizada",
-                        "comunicação falha",
-                        "operação bagunçada",
-                        "alinhamento superficial"
-                      ]}
-                      rotationInterval={2500}
-                      splitBy="none"
-                      mainClassName="inline-flex justify-center"
-                      elementLevelClassName="inline-block"
-                    />
-                  </span>
+          <section
+            id="inicio"
+            className="relative overflow-hidden bg-bvbp-ivory py-16 lg:py-24"
+          >
+            <div className="container relative z-10 mx-auto grid items-center gap-12 px-4 lg:grid-cols-[1.02fr_0.98fr]">
+              <div className="space-y-9">
+                <h1 className="max-w-4xl font-heading text-5xl font-medium leading-[1.02] text-bvbp-ink md:text-6xl lg:text-7xl">
+                  Crescer com clareza sobre qual ponteiro mover e qual decisão tomar.
                 </h1>
 
-                <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto animate-fade-in [animation-delay:500ms] opacity-0 [animation-fill-mode:forwards]">
-                  Organizamos processos para CEOs que estão cansados de apagar incêndio
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button
+                    className="h-12 rounded-md bg-bvbp-forest px-6 text-sm font-semibold text-bvbp-ivory shadow-none hover:bg-bvbp-forest-dark"
+                    onClick={scrollToContact}
+                  >
+                    Falar com a BVBP
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 rounded-md border-bvbp-forest/45 bg-transparent px-6 text-sm font-semibold text-bvbp-forest hover:bg-bvbp-inset"
+                    onClick={() => document.getElementById("metodo")?.scrollIntoView({ behavior: "smooth" })}
+                  >
+                    Conhecer o método
+                  </Button>
+                </div>
+              </div>
+
+              <div className="relative">
+                <article className="overflow-hidden rounded-[10px] border border-bvbp-ink/10 bg-bvbp-raised shadow-[0_18px_50px_rgba(26,25,23,0.08)]">
+                  <div className="h-0.5 bg-bvbp-gold" aria-hidden="true" />
+                  <div className="p-5 sm:p-6">
+                    <div className="mb-8 flex items-start justify-between gap-4">
+                      <div>
+                        <h2 className="font-heading text-3xl font-medium leading-none text-bvbp-ink">
+                          Método BVBP
+                        </h2>
+                      </div>
+                      <div className="rounded-md bg-bvbp-forest px-3 py-2 text-right text-bvbp-ivory">
+                        <p className="font-label text-[10px] uppercase text-bvbp-ivory/60">Pilares</p>
+                        <p className="font-heading text-3xl leading-none">4</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      {pillars.map((pillar, index) => {
+                        const Icon = pillar.icon;
+                        return (
+                          <div
+                            key={pillar.title}
+                            className="group flex min-h-[130px] flex-col justify-between rounded-md border border-bvbp-ink/10 bg-bvbp-ivory p-4 text-left text-bvbp-ink transition-colors duration-200 hover:border-bvbp-gold hover:bg-bvbp-inset"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="font-label text-[11px] font-medium text-bvbp-muted-ink">
+                                {String(index + 1).padStart(2, "0")}
+                              </span>
+                              <Icon className="h-4 w-4 shrink-0 text-bvbp-forest transition-colors group-hover:text-bvbp-gold" aria-hidden="true" />
+                            </div>
+                            <h3 className="font-heading text-xl font-medium leading-tight">{pillar.title}</h3>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-3 gap-3 border-t border-bvbp-ink/10 pt-5 text-sm">
+                      <div>
+                        <p className="font-heading text-xl leading-none text-bvbp-forest sm:text-2xl">7 etapas</p>
+                        <p className="mt-1 font-label text-[10px] uppercase text-bvbp-muted-ink">do modelo de negócio à gestão</p>
+                      </div>
+                      <div>
+                        <p className="font-heading text-xl leading-none text-bvbp-forest sm:text-2xl">Ponteiros</p>
+                        <p className="mt-1 font-label text-[10px] uppercase text-bvbp-muted-ink">clareza sobre o que mover</p>
+                      </div>
+                      <div>
+                        <p className="font-heading text-xl leading-none text-bvbp-forest sm:text-2xl">Evidências</p>
+                        <p className="mt-1 font-label text-[10px] uppercase text-bvbp-muted-ink">base para tomada de decisão</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section
+            id="metodo"
+            className="bg-bvbp-raised py-16 lg:py-20"
+          >
+            <div className="container mx-auto px-4">
+              <div className="mx-auto mb-12 max-w-4xl">
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">
+                  Método BVBP
                 </p>
-
-                <div className="pt-4 animate-fade-in [animation-delay:600ms] opacity-0 [animation-fill-mode:forwards] flex flex-col gap-4 justify-center items-center">
-                  <InteractiveHoverButton 
-                    text="Quero parar de perder dinheiro" 
-                    className="min-w-[320px] text-lg"
-                    onClick={() => document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' })}
-                  />
-                  <InteractiveHoverButton 
-                    text="Calculadora ROI" 
-                    className="min-w-[320px] text-lg"
-                    onClick={() => window.location.href = '/calculadora-roi'}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Problem Section */}
-          <section ref={problemRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 relative transition-all duration-700 ${problemVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-warning"></div>
-            <div className="container mx-auto px-4">
-              <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-16">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-warning mb-8 shadow-warning">
-                    <AlertTriangle className="h-8 w-8 text-white" />
-                  </div>
-                  <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                    Reconhece estes problemas?
-                  </h2>
-                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    A gente sabe como é frustrante ver o time se esforçar e, mesmo assim, as coisas não andarem.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  {[{
-                  title: "Você passa o dia apagando incêndio",
-                  description: "Sem tempo para o negócio"
-                }, {
-                  title: "Reuniões que não levam a nada",
-                  description: "Horas perdidas sem resultado"
-                }, {
-                  title: "Operação travando o crescimento",
-                  description: "A receita sobe, a eficiência despenca"
-                }, {
-                  title: "Dinheiro jogado fora com retrabalho",
-                  description: "Processos confusos geram desperdício"
-                }].map((problem, index) => <div key={index} className={`group p-8 bg-gradient-to-br from-gray-50 to-white rounded-lg border-2 border-gray-100 hover:border-bvbp-growth hover:shadow-strong transition-all duration-500 hover:-translate-y-2 animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
-                      <div className="flex items-start space-x-4">
-                        <div className="relative inline-flex items-center justify-center w-12 h-12 aspect-square rounded-full border-2 border-red-200 bg-red-50 group-hover:bg-bvbp-growth group-hover:border-bvbp-growth transition-all duration-300">
-                          <X className="h-6 w-6 text-red-400 group-hover:opacity-0 absolute transition-all duration-300" />
-                          <Check className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 absolute transition-all duration-300" />
-                        </div>
-                        <div>
-                          <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-3 group-hover:text-bvbp-growth transition-colors duration-300">
-                            {problem.title}
-                          </h3>
-                          <p className="text-muted-foreground leading-relaxed">
-                            {problem.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>)}
-                </div>
-
-                <div className="text-center mt-16">
-                  <Card className="p-8 bg-white border-l-4 border-l-bvbp-growth shadow-soft">
-                    <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">O custo real disso</h3>
-                    <p className="text-lg text-foreground leading-relaxed mb-6">
-                      Empresas médias perdem em média 20-30% de receita com retrabalho e processos confusos.
-                    </p>
-                    <Button variant="success" size="lg" className="bg-bvbp-growth hover:bg-bvbp-growth/90" onClick={() => document.getElementById('contato')?.scrollIntoView({
-                    behavior: 'smooth'
-                  })}>
-                      Quero parar de perder dinheiro agora
-                    </Button>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Differentiation Section */}
-          <section ref={differentialRef as React.RefObject<HTMLElement>} className={`py-20 bg-white relative transition-all duration-700 ${differentialVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-success"></div>
-            <div className="container mx-auto px-4">
-              <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-16">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bvbp-growth mb-8 shadow-success">
-                    <Sparkles className="h-8 w-8 text-white" />
-                  </div>
-                  <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                    Como a BVBP resolve isso
-                  </h2>
-                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue.
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {[{
-                  icon: Search,
-                  title: "Diagnóstico Claro",
-                  description: "Mostramos exatamente onde você perde dinheiro com retrabalho."
-                }, {
-                  icon: Target,
-                  title: "Processos na Medida",
-                  description: "Não empurramos método pronto. Criamos o jeito de trabalhar que funciona para você."
-                }, {
-                  icon: Zap,
-                  title: "Execução Lado a Lado",
-                  description: "Não entregamos PowerPoint. Colocamos a mão na massa junto com seu time."
-                }, {
-                  icon: Lightbulb,
-                  title: "Autonomia em 90 dias",
-                  description: "Seu time ganha foco e autonomia, e você para de viver apagando incêndio."
-                }].map((diff, index) => <div key={index} className={`group text-center p-8 hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-gradient-subtle relative overflow-hidden rounded-lg animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
-                      <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
-                      <div className="relative z-10">
-                        <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                          <diff.icon className="h-8 w-8 text-white" />
-                        </div>
-                        <h3 className="font-heading font-bold text-xl tracking-tight text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
-                          {diff.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {diff.description}
-                        </p>
-                      </div>
-                    </div>)}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Serviços Section */}
-          <section id="servicos" ref={servicesRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${servicesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-16">
-                <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                  Serviços
+                <h2 className="max-w-3xl font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
+                  Do número certo à rotina que sustenta melhoria.
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Ofertas enxutas para tirar gargalos do caminho e dar previsibilidade para a operação.
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-muted-ink">
+                  Começamos pelo ponteiro do negócio, mapeamos onde ele nasce e executamos ciclos curtos até haver
+                  evidência para decidir.
                 </p>
               </div>
 
-              <div className="space-y-8 max-w-7xl mx-auto">
-                {/* First row - 3 cards */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  {services.slice(0, 3).map((service, index) => {
-                  const IconComponent = service.icon;
-                  return <Card key={index} className={`group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
-                        {/* Hover overlay */}
-                        <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
-                        
-                        {/* Header */}
-                        <div className="relative text-center mb-6">
-                          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
-                            <IconComponent className="h-6 w-6 md:h-8 md:w-8 text-white" />
-                          </div>
-
-                          <h3 className="font-heading text-xl md:text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
-                            {service.title}
-                          </h3>
-
-                          {service.duration && (
-                            <div className="flex items-center justify-center mb-4">
-                              <span className="inline-flex items-center gap-1.5 text-sm text-bvbp-growth bg-muted/50 px-3 py-1 rounded-full">
-                                <Clock className="h-4 w-4" />
-                                {service.duration}
-                              </span>
-                            </div>
-                          )}
-
-                          <p className="text-muted-foreground">
-                            {service.description}
-                          </p>
-                        </div>
-
-                        {/* Features */}
-                        <div className="relative space-y-3 mb-6 flex-1">
-                          <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
-                          {service.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-start space-x-2">
-                              <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                              <span className="text-sm text-foreground">{feature}</span>
-                            </div>)}
-                        </div>
-
-                        {/* Details */}
-                        <div className="relative border-t border-gray-100 pt-4 mb-6">
-                          <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
-                          <div className="space-y-1">
-                            {service.details.map((detail, detailIndex) => <div key={detailIndex} className="text-sm text-muted-foreground">
-                                • {detail}
-                              </div>)}
-                          </div>
-                        </div>
-
-                        {/* CTA */}
-                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" onClick={() => {
-                          if (service.link) {
-                            window.location.href = service.link;
-                          } else {
-                            document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
-                          }
-                        }}>
-                          {service.cta}
-                        </Button>
-                      </Card>;
+              <div className="relative grid gap-5 md:grid-cols-2 xl:grid-cols-7">
+                <div className="absolute left-0 right-0 top-8 hidden h-px bg-bvbp-ink/10 xl:block" aria-hidden="true" />
+                {methodSteps.map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <div
+                      key={step.title}
+                      className="group relative rounded-md border border-bvbp-ink/10 bg-bvbp-raised p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-bvbp-gold hover:bg-bvbp-ivory"
+                    >
+                      <div className="mb-5 flex items-center justify-between gap-3">
+                        <span className="font-label text-xs font-medium text-bvbp-gold">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <Icon className="h-5 w-5 text-bvbp-forest transition-colors group-hover:text-bvbp-gold" aria-hidden="true" />
+                      </div>
+                      <h3 className="font-heading text-xl font-medium leading-tight text-bvbp-ink">{step.title}</h3>
+                      <p className="mt-3 text-sm leading-6 text-bvbp-muted-ink">{step.description}</p>
+                    </div>
+                  );
                 })}
-                </div>
-
-                {/* Second row - 3 cards */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  {services.slice(3, 6).map((service, index) => {
-                  const IconComponent = service.icon;
-                  return <Card key={index + 3} className={`group relative p-6 md:p-8 h-full flex flex-col shadow-soft hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border border-gray-100 bg-white overflow-hidden rounded-xl animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${(index + 3) * 100}ms` }}>
-                        {/* Hover overlay */}
-                        <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
-                        
-                        {/* Header */}
-                        <div className="relative text-center mb-6">
-                          <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full mb-4 bg-gradient-hero shadow-soft group-hover:scale-110 transition-transform duration-300">
-                            <IconComponent className="h-6 w-6 md:h-8 md:w-8 text-white" />
-                          </div>
-
-                          <h3 className="font-heading text-xl md:text-2xl font-bold text-bvbp-corporate mb-2 group-hover:text-bvbp-growth transition-colors duration-300">
-                            {service.title}
-                          </h3>
-
-                          {service.duration && (
-                            <div className="flex items-center justify-center mb-4">
-                              <span className="inline-flex items-center gap-1.5 text-sm text-bvbp-growth bg-muted/50 px-3 py-1 rounded-full">
-                                <Clock className="h-4 w-4" />
-                                {service.duration}
-                              </span>
-                            </div>
-                          )}
-
-                          <p className="text-muted-foreground">
-                            {service.description}
-                          </p>
-                        </div>
-
-                        {/* Features */}
-                        <div className="relative space-y-3 mb-6 flex-1">
-                          <h4 className="font-semibold text-bvbp-corporate">O que está incluído:</h4>
-                          {service.features.map((feature, featureIndex) => <div key={featureIndex} className="flex items-start space-x-2">
-                              <CheckCircle className="h-4 w-4 text-bvbp-growth mt-0.5 flex-shrink-0" />
-                              <span className="text-sm text-foreground">{feature}</span>
-                            </div>)}
-                        </div>
-
-                        {/* Details */}
-                        <div className="relative border-t border-gray-100 pt-4 mb-6">
-                          <h4 className="font-semibold text-bvbp-corporate mb-2">Detalhes:</h4>
-                          <div className="space-y-1">
-                            {service.details.map((detail, detailIndex) => <div key={detailIndex} className="text-sm text-muted-foreground">
-                                • {detail}
-                              </div>)}
-                          </div>
-                        </div>
-
-                        {/* CTA */}
-                        <Button variant="hero" className="relative w-full px-4 py-2 text-center" onClick={() => {
-                          if (service.link) {
-                            window.location.href = service.link;
-                          } else {
-                            document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
-                          }
-                        }}>
-                          {service.cta}
-                        </Button>
-                      </Card>;
-                })}
-                </div>
-
-                {/* Garantia de ROI */}
-                
               </div>
             </div>
           </section>
 
-          {/* Authority & Story Section */}
-          
-
-          {/* Quem Somos Section */}
-          <section id="quem-somos" ref={aboutRef as React.RefObject<HTMLElement>} className={`py-20 bg-gray-50 transition-all duration-700 ${aboutVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <section className="bg-bvbp-ivory py-16 lg:py-20">
             <div className="container mx-auto px-4">
-              {/* Nossa Missão - Minimalista com tipografia forte */}
-              <div className="max-w-4xl mx-auto mb-16">
-                <h2 className="font-heading text-2xl md:text-4xl lg:text-5xl font-bold text-bvbp-corporate leading-snug text-center mb-8 max-w-5xl mx-auto text-balance">
-                  Você volta a ter tempo para pensar no <span className="text-bvbp-growth inline-block animate-pulse-subtle hover:scale-110 transition-transform duration-300">negócio</span>, não só na operação.
+              <div className="mx-auto mb-12 max-w-4xl">
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">Sinais de perda</p>
+                <h2 className="max-w-3xl font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
+                  Onde a performance costuma escapar
                 </h2>
-                <Card className="bg-white border-gray-200 shadow-soft hover:shadow-strong transition-all duration-300">
-                  <CardContent className="p-8">
-                    <p className="text-muted-foreground leading-relaxed text-center">
-                      A BVBP organiza seus processos e monta um jeito claro de trabalhar que todo mundo segue. Não criamos dependência, criamos autonomia.
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-muted-ink">
+                  O problema raramente é esforço. Normalmente falta conexão entre finanças, comercial, operação,
+                  tecnologia e próxima decisão.
+                </p>
+              </div>
+
+              <div className="mx-auto grid max-w-6xl border-t border-bvbp-ink/10 md:grid-cols-2 lg:grid-cols-4">
+                {problems.map((problem, index) => (
+                  <div
+                    key={problem.title}
+                    className="group border-b border-bvbp-ink/10 py-6 transition-colors hover:bg-bvbp-raised md:px-5 lg:border-b-0 lg:border-r lg:border-bvbp-ink/10 lg:last:border-r-0"
+                  >
+                    <p className="font-label text-xs font-medium text-bvbp-gold">
+                      {String(index + 1).padStart(2, "0")}
                     </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Nosso Time - Grid 2 colunas, cards verticais */}
-              <div className="max-w-6xl mx-auto mb-14">
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-hero mb-6 shadow-soft">
-                    <Users className="h-8 w-8 text-white" />
+                    <h3 className="mt-7 font-heading text-2xl font-medium leading-tight text-bvbp-ink">
+                      {problem.title}
+                    </h3>
+                    <p className="mt-4 text-sm leading-6 text-bvbp-muted-ink">{problem.description}</p>
                   </div>
-                  <h3 className="font-heading text-2xl md:text-3xl font-bold text-bvbp-corporate mb-4">
-                    Nosso Time
-                  </h3>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-8">
-                  {team.map((member, index) => <Card key={index} className={`group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 bg-white border-t-4 border-t-bvbp-growth animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 150}ms` }}>
-                      <img src={member.photo} alt={member.name} className="w-56 h-56 rounded-xl object-cover mx-auto mb-6 shadow-soft group-hover:shadow-strong transition-all duration-300 grayscale" />
-                      <h3 className="font-heading font-bold text-xl text-bvbp-corporate mb-2">
-                        {member.name}
-                      </h3>
-                      <p className="text-muted-foreground leading-relaxed mb-4">
-                        {member.bio}
-                      </p>
-                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-bvbp-growth hover:text-bvbp-growth/80 transition-colors font-medium">
-                        <LinkedinIcon className="h-5 w-5" />
-                        <span>LinkedIn</span>
-                      </a>
-                    </Card>)}
-                </div>
+                ))}
               </div>
+            </div>
+          </section>
 
-              {/* Values */}
+          <section
+            id="plataforma"
+            className="bg-bvbp-raised py-16 lg:py-20"
+          >
+            <div className="container mx-auto grid items-center gap-12 px-4 lg:grid-cols-[0.82fr_1.18fr]">
               <div>
-                <div className="text-center mb-16">
-                  <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                    Nossos Valores
-                  </h2>
-                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Os princípios que guiam cada decisão e ação
-                  </p>
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">Plataforma BVBP</p>
+                <h2 className="font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
+                  A visão de cliente para acompanhar decisão, execução e evidência.
+                </h2>
+                <p className="mt-5 text-lg leading-8 text-bvbp-muted-ink">
+                  O preview mostra uma empresa fictícia em crescimento, com números saudáveis e gargalos reais de
+                  escala. A aplicação organiza ponteiros de finanças, comercial, operação, tecnologia, ciclos PDCA e próximas decisões.
+                </p>
+                <div className="mt-8 grid border-t border-bvbp-ink/10 sm:grid-cols-2">
+                  {platformSignals.map((signal, index) => (
+                    <div key={signal} className="flex items-center gap-3 border-b border-bvbp-ink/10 py-3 text-sm font-medium text-bvbp-ink">
+                      <span className="font-label text-[11px] text-bvbp-gold">{String(index + 1).padStart(2, "0")}</span>
+                      <span>{signal}</span>
+                    </div>
+                  ))}
                 </div>
+                <Button
+                  className="mt-8 h-12 rounded-md bg-bvbp-forest px-6 text-sm font-semibold text-bvbp-ivory shadow-none hover:bg-bvbp-forest-dark"
+                  onClick={() => {
+                    window.location.href = "/app";
+                  }}
+                >
+                  Acessar preview do portal
+                </Button>
+              </div>
 
-                <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                  {values.map((value, index) => {
-                  const IconComponent = value.icon;
-                  return <Card key={index} className={`group p-8 text-center hover:shadow-strong transition-all duration-500 hover:-translate-y-2 border-0 bg-white relative overflow-hidden animate-fade-in opacity-0 [animation-fill-mode:forwards]`} style={{ animationDelay: `${index * 100}ms` }}>
-                        <div className="absolute inset-0 bg-gradient-success opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
-                        <div className="relative z-10">
-                          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-hero mb-6 group-hover:scale-110 transition-transform duration-300 shadow-soft">
-                            <IconComponent className="h-7 w-7 text-white" />
-                          </div>
-                          <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4 group-hover:text-bvbp-growth transition-colors duration-300">
-                            {value.title}
-                          </h3>
-                          <p className="text-muted-foreground leading-relaxed">
-                            {value.description}
-                          </p>
+              <figure className="overflow-hidden rounded-md border border-bvbp-ink/10 bg-bvbp-ivory p-3 shadow-[0_18px_50px_rgba(26,25,23,0.08)]">
+                <img
+                  src={portalPreviewImage}
+                  alt="Preview real da visão de cliente do portal BVBP"
+                  className="h-auto w-full rounded-sm border border-bvbp-ink/10"
+                />
+                <figcaption className="mt-3 font-label text-[11px] uppercase text-bvbp-muted-ink">
+                  Visão de cliente - Prisma Distribuição B2B
+                </figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <section
+            id="ofertas"
+            className="bg-bvbp-ivory py-16 lg:py-20"
+          >
+            <div className="container mx-auto px-4">
+              <div className="mx-auto mb-12 max-w-4xl">
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">Ofertas</p>
+                <h2 className="font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
+                  Duas formas de instalar o método.
+                </h2>
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-muted-ink">
+                  Duas entradas comerciais para momentos diferentes. Sem promessa artificial: potencial mapeado,
+                  baseline e evidência guiam a conversa.
+                </p>
+              </div>
+
+              <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+                {offers.map((offer) => (
+                  <article key={offer.title} className="group flex h-full flex-col rounded-md border border-bvbp-ink/10 bg-bvbp-raised p-6 transition-colors hover:border-bvbp-gold lg:p-8">
+                    <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <h3 className="font-heading text-3xl font-medium leading-tight text-bvbp-ink">{offer.title}</h3>
+                        <p className="mt-3 text-sm leading-6 text-bvbp-muted-ink">{offer.description}</p>
+                      </div>
+                      <div className="shrink-0 rounded-md border border-bvbp-ink/10 bg-bvbp-ivory p-4 text-left sm:text-right">
+                        <p className="font-label text-xs font-medium uppercase text-bvbp-gold">{offer.duration}</p>
+                        <p className="mt-2 font-heading text-xl font-medium text-bvbp-ink">{offer.mode}</p>
+                      </div>
+                    </div>
+
+                    <div className="grid flex-1 border-t border-bvbp-ink/10 sm:grid-cols-2">
+                      {offer.features.map((feature) => (
+                        <div key={feature} className="border-b border-bvbp-ink/10 py-3 text-sm leading-6 text-bvbp-ink sm:pr-4">
+                          {feature}
                         </div>
-                      </Card>;
-                })}
-                </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      className="mt-8 h-12 w-full rounded-md bg-bvbp-forest px-6 text-sm font-semibold text-bvbp-ivory shadow-none hover:bg-bvbp-forest-dark"
+                      onClick={scrollToContact}
+                    >
+                      {offer.cta}
+                    </Button>
+                  </article>
+                ))}
               </div>
             </div>
           </section>
 
-          {/* Contato Section */}
-          <section id="contato" ref={contactRef as React.RefObject<HTMLElement>} className={`py-20 bg-white transition-all duration-700 ${contactVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <section className="bg-bvbp-forest py-16 text-bvbp-ivory lg:py-20">
             <div className="container mx-auto px-4">
-              <div className="text-center mb-16">
-                <h2 className="font-heading text-3xl md:text-5xl font-bold text-bvbp-corporate mb-6">
-                  Está deixando dinheiro na mesa?
+              <div className="mx-auto mb-12 max-w-4xl">
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-ivory/60">Automação com tese</p>
+                <h2 className="font-heading text-4xl font-medium leading-tight md:text-5xl">
+                  IA e automação sem hype.
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Vamos conversar. Organizamos seus processos para que seu time ganhe foco e você volte a ter tempo para pensar no negócio.
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-ivory/72">
+                  Usamos tecnologia para reduzir trabalho manual, organizar informação e aumentar visibilidade. Só
+                  automatizamos o que tem conexão clara com um ponteiro do negócio.
                 </p>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                {/* Contact Form */}
-                <div>
-                  <Card className="p-8">
-                    <div className="mb-6">
-                      <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">
-                        Envie sua Mensagem
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Preencha o formulário abaixo e entraremos em contato em até 4 horas úteis
+              <div className="mx-auto grid max-w-6xl border-t border-bvbp-ivory/18 md:grid-cols-2">
+                {automationExamples.map((example, index) => (
+                  <div
+                    key={example}
+                    className="group border-b border-bvbp-ivory/18 py-5 transition-colors hover:bg-bvbp-ivory/[0.04] md:px-5"
+                  >
+                    <div className="flex items-start gap-5">
+                      <span className="font-label text-xs font-medium text-bvbp-gold">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <p className="text-base font-medium leading-7 text-bvbp-ivory/86 transition-colors group-hover:text-bvbp-ivory">
+                        {example}
                       </p>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Nome completo *</Label>
-                        <Input id="name" value={formData.name} onChange={e => handleInputChange("name", e.target.value)} placeholder="Seu nome completo" required />
-                      </div>
+          <section
+            id="quem-somos"
+            className="bg-bvbp-raised py-16 lg:py-20"
+          >
+            <div className="container mx-auto px-4">
+              <div className="mx-auto mb-12 max-w-4xl">
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">Quem somos</p>
+                <h2 className="font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
+                  Você volta a ter tempo para pensar no negócio, não só na operação.
+                </h2>
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-muted-ink">
+                  A BVBP cria uma rotina em que decisões, execução e evidências caminham juntas. O objetivo é clareza
+                  para o time sustentar melhoria.
+                </p>
+              </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
-                        <Input id="email" type="email" value={formData.email} onChange={e => handleInputChange("email", e.target.value)} placeholder="seu@email.com" required />
-                      </div>
+              <div className="mx-auto mb-14 grid max-w-5xl gap-8 md:grid-cols-2">
+                {team.map((member) => (
+                  <article key={member.name} className="rounded-md border border-bvbp-ink/10 bg-bvbp-ivory p-6 text-center transition-colors hover:border-bvbp-gold lg:p-8">
+                    <img
+                      src={member.photo}
+                      alt={member.name}
+                      className="mx-auto mb-6 h-52 w-52 rounded-md border border-bvbp-ink/10 object-cover grayscale"
+                    />
+                    <h3 className="font-heading text-2xl font-medium text-bvbp-ink">{member.name}</h3>
+                    <p className="mt-3 leading-7 text-bvbp-muted-ink">{member.bio}</p>
+                    <a
+                      href={member.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-5 inline-flex items-center gap-2 font-medium text-bvbp-forest transition-colors hover:text-bvbp-gold"
+                    >
+                      <LinkedinIcon className="h-5 w-5" aria-hidden="true" />
+                      <span>LinkedIn</span>
+                    </a>
+                  </article>
+                ))}
+              </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Telefone *</Label>
-                        <Input id="phone" value={formData.phone} onChange={e => handleInputChange("phone", e.target.value)} placeholder="+55 51 99999-9999" required />
-                      </div>
+              <div className="mx-auto grid max-w-6xl border-t border-bvbp-ink/10 lg:grid-cols-3">
+                {values.map((value, index) => (
+                  <div key={value.title} className="border-b border-bvbp-ink/10 py-6 lg:border-b-0 lg:border-r lg:border-bvbp-ink/10 lg:px-6 lg:last:border-r-0">
+                    <p className="font-label text-xs font-medium text-bvbp-gold">
+                      {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="mt-5 font-heading text-2xl font-medium text-bvbp-ink">{value.title}</h3>
+                    <p className="mt-3 leading-7 text-bvbp-muted-ink">{value.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="company">Empresa</Label>
-                        <Input id="company" value={formData.company} onChange={e => handleInputChange("company", e.target.value)} placeholder="Nome da sua empresa" />
-                      </div>
+          <section
+            id="contato"
+            className="bg-bvbp-ivory py-16 lg:py-20"
+          >
+            <div className="container mx-auto px-4">
+              <div className="mb-12">
+                <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">Contato</p>
+                <h2 className="max-w-4xl font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
+                  Vamos entender qual ponteiro precisa mover.
+                </h2>
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-muted-ink">
+                  Conte o contexto em poucas linhas. A primeira conversa serve para entender dor, urgência e se o
+                  melhor próximo passo é Sprint, Partnership ou uma decisão interna mais clara.
+                </p>
+              </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="role">Cargo/Função</Label>
-                        <Select value={formData.role} onValueChange={value => handleInputChange("role", value)}>
-                          <SelectTrigger className="bg-background border-input">
-                            <SelectValue placeholder="Selecione seu cargo" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-background border-input z-50">
-                            <SelectItem value="ceo">CEO/Founder</SelectItem>
-                            <SelectItem value="diretor">Diretor/Executivo</SelectItem>
-                            <SelectItem value="gerente">Gerente/Coordenador</SelectItem>
-                            <SelectItem value="analista">Analista/Especialista</SelectItem>
-                            <SelectItem value="consultor">Consultor</SelectItem>
-                            <SelectItem value="outro">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+              <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-2">
+                <div className="rounded-md border border-bvbp-ink/10 bg-bvbp-raised p-6 lg:p-8">
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="name" className="text-bvbp-ink">Nome completo *</Label>
+                      <Input id="name" value={formData.name} onChange={(event) => handleInputChange("name", event.target.value)} placeholder="Seu nome completo" required className="border-bvbp-ink/15 bg-bvbp-ivory focus-visible:ring-bvbp-gold" />
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="interest">Serviço ou produto de interesse</Label>
-                        <Select value={formData.interest} onValueChange={value => handleInputChange("interest", value)}>
-                          <SelectTrigger className="bg-background border-input">
-                            <SelectValue placeholder="Selecione um serviço" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-background border-input z-50">
-                            <SelectItem value="Diagnóstico Operacional">Diagnóstico Operacional</SelectItem>
-                            <SelectItem value="Otimização de Processo">Otimização de Processo</SelectItem>
-                            <SelectItem value="Configuração de Gestão e Entrega de Projetos">Configuração de Gestão e Entrega de Projetos</SelectItem>
-                            <SelectItem value="Implementação de Governança de Execução">Implementação de Governança de Execução</SelectItem>
-                            <SelectItem value="Programa Customizado de Melhoria">Programa Customizado de Melhoria</SelectItem>
-                            <SelectItem value="Outro">Outro</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="email" className="text-bvbp-ink">Email *</Label>
+                      <Input id="email" type="email" value={formData.email} onChange={(event) => handleInputChange("email", event.target.value)} placeholder="seu@email.com" required className="border-bvbp-ink/15 bg-bvbp-ivory focus-visible:ring-bvbp-gold" />
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="challenge">Maior desafio operacional atual? *</Label>
-                        <Textarea id="challenge" value={formData.challenge} onChange={e => handleInputChange("challenge", e.target.value)} placeholder="Conte-nos sobre seus principais desafios operacionais..." rows={4} required />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="phone" className="text-bvbp-ink">Telefone *</Label>
+                      <Input id="phone" value={formData.phone} onChange={(event) => handleInputChange("phone", event.target.value)} placeholder="+55 51 99999-9999" required className="border-bvbp-ink/15 bg-bvbp-ivory focus-visible:ring-bvbp-gold" />
+                    </div>
 
-                      <div className="flex items-center space-x-3">
-                        <Checkbox id="consent" required />
-                        <Label htmlFor="consent" className="text-sm text-muted-foreground">
-                          Concordo que a BVBP entre em contato sobre minha solicitação.
-                        </Label>
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="company" className="text-bvbp-ink">Empresa</Label>
+                      <Input id="company" value={formData.company} onChange={(event) => handleInputChange("company", event.target.value)} placeholder="Nome da sua empresa" className="border-bvbp-ink/15 bg-bvbp-ivory focus-visible:ring-bvbp-gold" />
+                    </div>
 
-                      <Button type="submit" variant="hero" size="xl" className="w-full" disabled={isSubmitting}>
-                        {isSubmitting ? "Enviando..." : "Agendar minha conversa"}
-                      </Button>
-                    </form>
-                  </Card>
+                    <div className="space-y-2">
+                      <Label htmlFor="role" className="text-bvbp-ink">Cargo/Função</Label>
+                      <Select value={formData.role} onValueChange={(value) => handleInputChange("role", value)}>
+                        <SelectTrigger className="border-bvbp-ink/15 bg-bvbp-ivory focus:ring-bvbp-gold">
+                          <SelectValue placeholder="Selecione seu cargo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ceo">CEO/Founder</SelectItem>
+                          <SelectItem value="diretor">Diretor/Executivo</SelectItem>
+                          <SelectItem value="gerente">Gerente/Coordenador</SelectItem>
+                          <SelectItem value="especialista">Especialista</SelectItem>
+                          <SelectItem value="outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="interest" className="text-bvbp-ink">Interesse</Label>
+                      <Select value={formData.interest} onValueChange={(value) => handleInputChange("interest", value)}>
+                        <SelectTrigger className="border-bvbp-ink/15 bg-bvbp-ivory focus:ring-bvbp-gold">
+                          <SelectValue placeholder="Selecione uma oferta" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="BVBP Performance Sprint">BVBP Performance Sprint</SelectItem>
+                          <SelectItem value="BVBP Performance Partnership">BVBP Performance Partnership</SelectItem>
+                          <SelectItem value="Portal BVBP">Portal BVBP</SelectItem>
+                          <SelectItem value="Outro">Outro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="challenge" className="text-bvbp-ink">O que precisa melhorar? *</Label>
+                      <Textarea id="challenge" value={formData.challenge} onChange={(event) => handleInputChange("challenge", event.target.value)} placeholder="Ex.: margem, comercial, retrabalho, acompanhamento de execução..." rows={4} required className="border-bvbp-ink/15 bg-bvbp-ivory focus-visible:ring-bvbp-gold" />
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <Checkbox id="consent" required />
+                      <Label htmlFor="consent" className="text-sm text-bvbp-muted-ink">
+                        Concordo que a BVBP entre em contato sobre minha solicitação.
+                      </Label>
+                    </div>
+
+                    <Button type="submit" className="h-12 w-full rounded-md bg-bvbp-forest px-6 text-sm font-semibold text-bvbp-ivory shadow-none hover:bg-bvbp-forest-dark" disabled={isSubmitting}>
+                      {isSubmitting ? "Enviando..." : "Agendar conversa"}
+                    </Button>
+                  </form>
                 </div>
 
-                {/* Contact Information */}
-                <div>
-                  <Card className="p-8 bg-gradient-subtle border-0">
-                    <div className="mb-6">
-                      <h3 className="font-heading text-2xl font-bold text-bvbp-corporate mb-4">
-                        Fale Direto Conosco
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Resposta em até 4 horas úteis
-                      </p>
-                    </div>
+                <aside className="rounded-md border border-bvbp-ink/10 bg-bvbp-raised p-8">
+                  <h3 className="font-heading text-3xl font-medium text-bvbp-ink">Fale direto conosco</h3>
+                  <p className="mt-3 text-bvbp-muted-ink">Resposta em até 4 horas úteis.</p>
 
-                    <div className="space-y-4 mb-8">
-                      {emails.map((item, index) => (
-                        <a 
-                          key={index}
-                          href={item.link}
-                          className="flex items-center space-x-3 text-lg font-medium text-bvbp-corporate hover:text-bvbp-growth transition-colors"
-                        >
-                          <MailIcon className="h-5 w-5" />
-                          <span>{item.email}</span>
-                        </a>
-                      ))}
-                    </div>
+                  <div className="my-8 space-y-4">
+                    {emails.map((item) => (
+                      <a
+                        key={item.email}
+                        href={item.link}
+                        className="flex items-center gap-3 text-lg font-medium text-bvbp-forest transition-colors hover:text-bvbp-gold"
+                      >
+                        <MailIcon className="h-5 w-5" aria-hidden="true" />
+                        <span>{item.email}</span>
+                      </a>
+                    ))}
+                  </div>
 
-                    {/* Benefits */}
-                    <div className="space-y-3">
-                      {benefits.map((benefit, index) => (
-                        <div key={index} className="flex items-center space-x-3">
-                          <CheckCircle className="h-5 w-5 text-bvbp-growth flex-shrink-0" />
-                          <span className="text-foreground">{benefit}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </div>
+                  <div className="space-y-3">
+                    {[
+                      "Primeira conversa sem compromisso",
+                      "Diagnóstico do contexto antes de qualquer ferramenta",
+                      "Foco em potencial mapeado, evidência e próxima decisão",
+                    ].map((benefit) => (
+                      <div key={benefit} className="border-t border-bvbp-ink/10 py-3">
+                        <span className="text-bvbp-ink">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </aside>
               </div>
             </div>
           </section>
         </main>
         <Footer />
       </div>
-    </>;
+    </>
+  );
 };
+
 export default Index;

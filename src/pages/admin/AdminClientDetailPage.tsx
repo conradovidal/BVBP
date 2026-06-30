@@ -46,17 +46,21 @@ const AdminClientDetailPage = () => {
       <div className="space-y-6">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link to="/app/admin/clients" className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-[#1B365D]">
+            <Link to="/app/admin/clients" className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink hover:text-bvbp-ink">
               <ArrowLeft className="h-4 w-4" />
               Clientes
             </Link>
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-heading text-2xl font-bold text-[#1B365D]">{company.name}</h1>
+              <h1 className="font-heading text-2xl font-bold text-bvbp-ink">{company.name}</h1>
               <StatusBadge label={company.status || "Ativo"} />
             </div>
-            <p className="mt-1 text-sm text-slate-500">{company.segment}</p>
+            <p className="mt-1 text-sm text-bvbp-muted-ink">{company.segment}</p>
           </div>
-          <Button variant="corporate" onClick={openPerformance}>
+          <Button
+            variant="outline"
+            className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+            onClick={openPerformance}
+          >
             <BarChart3 className="h-4 w-4" />
             Abrir workspace
           </Button>
@@ -80,20 +84,20 @@ const AdminClientDetailPage = () => {
           ))}
         </section>
 
-        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="font-heading text-lg font-bold text-[#1B365D]">Acesso do cliente</h2>
+        <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
+          <h2 className="font-heading text-lg font-bold text-bvbp-ink">Acesso do cliente</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div>
-              <p className="text-xs font-semibold uppercase text-slate-500">Contato</p>
-              <p className="mt-1 text-sm font-bold text-[#1B365D]">{company.contactName || "Não informado"}</p>
+              <p className="text-xs font-semibold uppercase text-bvbp-muted-ink">Contato</p>
+              <p className="mt-1 text-sm font-bold text-bvbp-ink">{company.contactName || "Não informado"}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase text-slate-500">E-mail</p>
-              <p className="mt-1 text-sm font-bold text-[#1B365D]">{company.contactEmail || "Não informado"}</p>
+              <p className="text-xs font-semibold uppercase text-bvbp-muted-ink">E-mail</p>
+              <p className="mt-1 text-sm font-bold text-bvbp-ink">{company.contactEmail || "Não informado"}</p>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase text-slate-500">Escopo</p>
-              <p className="mt-1 text-sm font-bold text-[#1B365D]">Performance System</p>
+              <p className="text-xs font-semibold uppercase text-bvbp-muted-ink">Escopo</p>
+              <p className="mt-1 text-sm font-bold text-bvbp-ink">Performance System</p>
             </div>
           </div>
         </section>

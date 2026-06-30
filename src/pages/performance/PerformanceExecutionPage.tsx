@@ -57,7 +57,7 @@ import { cn } from "@/lib/utils";
 
 const blankCycleForm: PdcaCycleInput = {
   title: "",
-  affectedPointer: "Pipeline comercial",
+  affectedPointer: "Comercial",
   affectedFlow: "",
   hypothesis: "",
   plannedAction: "",
@@ -114,8 +114,8 @@ function ExternalExecutionView({ activeCompany }: { activeCompany: Company }) {
   return (
     <div className="space-y-8">
       <section className="space-y-2">
-        <h1 className="font-heading text-2xl font-bold text-[#1B365D] sm:text-3xl">Execução</h1>
-        <p className="text-sm text-slate-500">{activeCompany.name}</p>
+        <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">PDCA</h1>
+        <p className="text-sm text-bvbp-muted-ink">{activeCompany.name}</p>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -138,14 +138,14 @@ function ExternalExecutionView({ activeCompany }: { activeCompany: Company }) {
                 type="button"
                 onClick={() => setSelectedBucket(isSelected ? "Todos" : bucket)}
                 className={cn(
-                  "rounded-lg border p-4 text-left shadow-sm transition-colors",
+                  "rounded-[8px] border p-4 text-left shadow-none transition-colors",
                   isSelected
-                    ? "border-[#1B365D] bg-[#1B365D] text-white"
-                    : "border-slate-200 bg-white text-[#1B365D] hover:border-[#1B365D]/40"
+                    ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory"
+                    : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink hover:border-bvbp-forest/40"
                 )}
               >
                 <h2 className="font-heading text-lg font-bold">{bucket}</h2>
-                <p className={cn("mt-3 text-sm", isSelected ? "text-white/80" : "text-slate-500")}>
+                <p className={cn("mt-3 text-sm", isSelected ? "text-bvbp-ivory/80" : "text-bvbp-muted-ink")}>
                   {bucketItems.length} iniciativa(s)
                 </p>
                 <p className="mt-2 text-sm font-bold">{bucketImpact ? `${formatCurrency(bucketImpact)}/mês` : "Sem itens"}</p>
@@ -157,7 +157,7 @@ function ExternalExecutionView({ activeCompany }: { activeCompany: Company }) {
 
       <section className="space-y-4">
         <SectionHeader title="Ciclos PDCA" />
-        <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -176,16 +176,16 @@ function ExternalExecutionView({ activeCompany }: { activeCompany: Company }) {
               <TableBody>
                 {visibleImprovements.map((improvement) => (
                   <TableRow key={improvement.id}>
-                    <TableCell className="min-w-[260px] font-semibold text-[#1B365D]">{improvement.title}</TableCell>
-                    <TableCell className="min-w-[160px] text-slate-700">{improvement.affectedPointer}</TableCell>
-                    <TableCell className="min-w-[170px] text-slate-700">{improvement.affectedFlow}</TableCell>
-                    <TableCell className="min-w-[300px] text-slate-700">{improvement.hypothesis}</TableCell>
-                    <TableCell className="font-semibold text-[#38A169]">{formatCurrency(improvement.estimatedImpact)}/mês</TableCell>
+                    <TableCell className="min-w-[260px] font-semibold text-bvbp-ink">{improvement.title}</TableCell>
+                    <TableCell className="min-w-[160px] text-bvbp-ink">{improvement.affectedPointer}</TableCell>
+                    <TableCell className="min-w-[170px] text-bvbp-ink">{improvement.affectedFlow}</TableCell>
+                    <TableCell className="min-w-[300px] text-bvbp-ink">{improvement.hypothesis}</TableCell>
+                    <TableCell className="font-semibold text-bvbp-positive">{formatCurrency(improvement.estimatedImpact)}/mês</TableCell>
                     <TableCell>
                       <StatusBadge label={improvement.ease} />
                     </TableCell>
-                    <TableCell className="min-w-[140px] text-slate-700">{improvement.owner}</TableCell>
-                    <TableCell className="text-slate-700">{improvement.deadline}</TableCell>
+                    <TableCell className="min-w-[140px] text-bvbp-ink">{improvement.owner}</TableCell>
+                    <TableCell className="text-bvbp-ink">{improvement.deadline}</TableCell>
                     <TableCell>
                       <StatusBadge label={improvement.pdcaStatus} />
                     </TableCell>
@@ -226,7 +226,7 @@ const PerformanceExecutionPage = () => {
     return (
       <>
         <Helmet>
-          <title>Execução | BVBP Performance System</title>
+          <title>PDCA | BVBP Performance System</title>
           <meta name="description" content="Ciclos PDCA e hipóteses de melhoria priorizadas." />
         </Helmet>
         <ExternalExecutionView activeCompany={activeCompany} />
@@ -294,17 +294,21 @@ const PerformanceExecutionPage = () => {
   return (
     <>
       <Helmet>
-        <title>Execução | BVBP Performance System</title>
+        <title>PDCA | BVBP Performance System</title>
         <meta name="description" content="Board de ciclos PDCA da BVBP." />
       </Helmet>
 
       <div className="space-y-8">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-heading text-2xl font-bold text-[#1B365D] sm:text-3xl">Execução</h1>
-            <p className="mt-1 text-sm text-slate-500">Ciclos PDCA conectados a ponteiros, decisões e evidências.</p>
+            <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">PDCA</h1>
+            <p className="mt-1 text-sm text-bvbp-muted-ink">Ciclos PDCA conectados a ponteiros, decisões e evidências.</p>
           </div>
-          <Button variant="corporate" onClick={openNewCycle}>
+          <Button
+            variant="outline"
+            className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+            onClick={openNewCycle}
+          >
             <Plus className="h-4 w-4" />
             Nova iniciativa
           </Button>
@@ -323,35 +327,35 @@ const PerformanceExecutionPage = () => {
               const statusCycles = cycles.filter((cycle) => cycle.pdcaStatus === status);
 
               return (
-                <section key={status} className="rounded-[8px] border border-slate-200/80 bg-white p-3 shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                <section key={status} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-3 shadow-none">
                   <div className="mb-3 flex items-center justify-between gap-3">
-                    <h2 className="font-heading text-base font-bold text-[#1B365D]">{status}</h2>
-                    <span className="text-xs font-bold text-slate-400">{statusCycles.length}</span>
+                    <h2 className="font-heading text-base font-bold text-bvbp-ink">{status}</h2>
+                    <span className="text-xs font-bold text-bvbp-muted-ink/70">{statusCycles.length}</span>
                   </div>
                   <div className="space-y-3">
                     {statusCycles.map((cycle) => (
                       <article
                         key={cycle.id}
-                        className="rounded-[8px] border border-slate-200 bg-slate-50/70 p-3"
+                        className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset/70 p-3"
                       >
                         <button type="button" className="block w-full text-left" onClick={() => openCycle(cycle)}>
-                          <p className="font-heading text-sm font-bold leading-5 text-[#1B365D]">{cycle.title}</p>
-                          <p className="mt-2 text-xs font-semibold text-slate-500">{cycle.affectedPointer}</p>
-                          <p className="mt-3 text-xs leading-5 text-slate-600">{cycle.nextDecision}</p>
+                          <p className="font-heading text-sm font-bold leading-5 text-bvbp-ink">{cycle.title}</p>
+                          <p className="mt-2 text-xs font-semibold text-bvbp-muted-ink">{cycle.affectedPointer}</p>
+                          <p className="mt-3 text-xs leading-5 text-bvbp-muted-ink">{cycle.nextDecision}</p>
                         </button>
-                        <div className="mt-3 grid gap-2 text-xs text-slate-500">
+                        <div className="mt-3 grid gap-2 text-xs text-bvbp-muted-ink">
                           <div className="flex items-center justify-between gap-2">
                             <span>{cycle.owner}</span>
                             <span>{cycle.deadline}</span>
                           </div>
                           <div className="flex items-center justify-between gap-2">
                             <StatusBadge label={cycle.dataType} />
-                            <span className="font-semibold text-[#38A169]">{formatImpact(cycle.estimatedImpact)}</span>
+                            <span className="font-semibold text-bvbp-positive">{formatImpact(cycle.estimatedImpact)}</span>
                           </div>
                         </div>
                         <div className="mt-3">
                           <Select value={cycle.pdcaStatus} onValueChange={(value) => changeCycleStatus(cycle.id, value as PdcaStatus)}>
-                            <SelectTrigger className="h-8 bg-white text-xs">
+                            <SelectTrigger className="h-8 bg-bvbp-raised text-xs">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -366,7 +370,7 @@ const PerformanceExecutionPage = () => {
                       </article>
                     ))}
                     {!statusCycles.length && (
-                      <p className="rounded-[8px] border border-dashed border-slate-200 px-3 py-5 text-center text-xs font-medium text-slate-400">
+                      <p className="rounded-[8px] border border-dashed border-bvbp-ink/10 px-3 py-5 text-center text-xs font-medium text-bvbp-muted-ink/70">
                         Nenhum ciclo ativo ainda.
                       </p>
                     )}
@@ -475,7 +479,7 @@ const PerformanceExecutionPage = () => {
                 <Label htmlFor="cycle-decision">Próxima decisão</Label>
                 <Input id="cycle-decision" value={cycleForm.nextDecision} onChange={(event) => setCycleForm({ ...cycleForm, nextDecision: event.target.value })} />
               </div>
-              {formError && <p className="text-sm font-semibold text-red-600 md:col-span-2">{formError}</p>}
+              {formError && <p className="text-sm font-semibold text-bvbp-risk md:col-span-2">{formError}</p>}
             </div>
           ) : selectedCycle ? (
             <div className="space-y-6">
@@ -486,60 +490,60 @@ const PerformanceExecutionPage = () => {
                 <MetricCard title="Dado" value={selectedCycle.dataType} accent="gray" />
               </section>
               <section className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-[8px] border border-slate-200 p-4">
-                  <p className="text-xs font-semibold uppercase text-slate-400">Hipótese</p>
-                  <p className="mt-2 text-sm leading-6 text-[#1B365D]">{selectedCycle.hypothesis}</p>
+                <div className="rounded-[8px] border border-bvbp-ink/10 p-4">
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Hipótese</p>
+                  <p className="mt-2 text-sm leading-6 text-bvbp-ink">{selectedCycle.hypothesis}</p>
                 </div>
-                <div className="rounded-[8px] border border-slate-200 p-4">
-                  <p className="text-xs font-semibold uppercase text-slate-400">Ação planejada</p>
-                  <p className="mt-2 text-sm leading-6 text-[#1B365D]">{selectedCycle.plannedAction}</p>
+                <div className="rounded-[8px] border border-bvbp-ink/10 p-4">
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Ação planejada</p>
+                  <p className="mt-2 text-sm leading-6 text-bvbp-ink">{selectedCycle.plannedAction}</p>
                 </div>
-                <div className="rounded-[8px] border border-slate-200 p-4">
-                  <p className="text-xs font-semibold uppercase text-slate-400">Por que importa</p>
-                  <p className="mt-2 text-sm leading-6 text-[#1B365D]">{selectedCycle.whyItMatters}</p>
+                <div className="rounded-[8px] border border-bvbp-ink/10 p-4">
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Por que importa</p>
+                  <p className="mt-2 text-sm leading-6 text-bvbp-ink">{selectedCycle.whyItMatters}</p>
                 </div>
-                <div className="rounded-[8px] border border-slate-200 p-4">
-                  <p className="text-xs font-semibold uppercase text-slate-400">Próxima decisão</p>
-                  <p className="mt-2 text-sm leading-6 text-[#1B365D]">{selectedCycle.nextDecision}</p>
+                <div className="rounded-[8px] border border-bvbp-ink/10 p-4">
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Próxima decisão</p>
+                  <p className="mt-2 text-sm leading-6 text-bvbp-ink">{selectedCycle.nextDecision}</p>
                 </div>
               </section>
               <section className="grid gap-4 md:grid-cols-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase text-slate-400">Responsável</p>
-                  <p className="mt-1 text-sm font-bold text-[#1B365D]">{selectedCycle.owner}</p>
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Responsável</p>
+                  <p className="mt-1 text-sm font-bold text-bvbp-ink">{selectedCycle.owner}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase text-slate-400">Prazo</p>
-                  <p className="mt-1 text-sm font-bold text-[#1B365D]">{selectedCycle.deadline}</p>
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Prazo</p>
+                  <p className="mt-1 text-sm font-bold text-bvbp-ink">{selectedCycle.deadline}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase text-slate-400">Frente</p>
-                  <p className="mt-1 text-sm font-bold text-[#1B365D]">{selectedCycle.affectedFlow}</p>
+                  <p className="text-xs font-semibold uppercase text-bvbp-muted-ink/70">Frente</p>
+                  <p className="mt-1 text-sm font-bold text-bvbp-ink">{selectedCycle.affectedFlow}</p>
                 </div>
               </section>
               <section className="space-y-3">
                 <SectionHeader title="Evidências" />
                 <div className="space-y-2">
                   {selectedCycle.evidences.map((evidence) => (
-                    <article key={evidence.id} className="rounded-[8px] border border-slate-200 p-3">
+                    <article key={evidence.id} className="rounded-[8px] border border-bvbp-ink/10 p-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <StatusBadge label={evidence.type} />
-                        <span className="text-xs font-semibold text-slate-400">{evidence.date}</span>
-                        {evidence.observedValue && <span className="text-xs font-semibold text-[#38A169]">{evidence.observedValue}</span>}
+                        <span className="text-xs font-semibold text-bvbp-muted-ink/70">{evidence.date}</span>
+                        {evidence.observedValue && <span className="text-xs font-semibold text-bvbp-positive">{evidence.observedValue}</span>}
                       </div>
-                      <p className="mt-2 text-sm leading-6 text-[#1B365D]">{evidence.description}</p>
-                      {evidence.note && <p className="mt-1 text-xs leading-5 text-slate-500">{evidence.note}</p>}
+                      <p className="mt-2 text-sm leading-6 text-bvbp-ink">{evidence.description}</p>
+                      {evidence.note && <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">{evidence.note}</p>}
                     </article>
                   ))}
                   {!selectedCycle.evidences.length && (
-                    <p className="text-sm leading-6 text-slate-500">
+                    <p className="text-sm leading-6 text-bvbp-muted-ink">
                       Nenhuma evidência registrada. Registre aprendizados para sustentar a próxima decisão.
                     </p>
                   )}
                 </div>
-                <div className="grid gap-3 rounded-[8px] border border-slate-200 bg-slate-50 p-3 md:grid-cols-[160px_minmax(0,1fr)]">
+                <div className="grid gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset p-3 md:grid-cols-[160px_minmax(0,1fr)]">
                   <Select value={evidenceForm.type} onValueChange={(value) => setEvidenceForm({ ...evidenceForm, type: value as EvidenceType })}>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-bvbp-raised">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -574,12 +578,12 @@ const PerformanceExecutionPage = () => {
                 <SectionHeader title="Aprendizados" />
                 <div className="space-y-2">
                   {selectedCycle.learnings.map((learning) => (
-                    <p key={learning.id} className="rounded-[8px] border border-slate-200 px-3 py-2 text-sm leading-6 text-slate-700">
-                      <span className="mr-2 font-semibold text-slate-400">{learning.date}</span>
+                    <p key={learning.id} className="rounded-[8px] border border-bvbp-ink/10 px-3 py-2 text-sm leading-6 text-bvbp-ink">
+                      <span className="mr-2 font-semibold text-bvbp-muted-ink/70">{learning.date}</span>
                       {learning.description}
                     </p>
                   ))}
-                  {!selectedCycle.learnings.length && <p className="text-sm text-slate-500">Nenhum aprendizado registrado.</p>}
+                  {!selectedCycle.learnings.length && <p className="text-sm text-bvbp-muted-ink">Nenhum aprendizado registrado.</p>}
                 </div>
               </section>
             </div>
@@ -591,7 +595,11 @@ const PerformanceExecutionPage = () => {
                 <Button variant="outline" onClick={() => (selectedCycle ? setIsEditing(false) : setIsCycleDialogOpen(false))}>
                   Cancelar
                 </Button>
-                <Button variant="corporate" onClick={saveCycle}>
+                <Button
+                  variant="outline"
+                  className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+                  onClick={saveCycle}
+                >
                   Salvar ciclo
                 </Button>
               </>
@@ -601,7 +609,11 @@ const PerformanceExecutionPage = () => {
                   Fechar
                 </Button>
                 {selectedCycle && (
-                  <Button variant="corporate" onClick={() => setIsEditing(true)}>
+                  <Button
+                    variant="outline"
+                    className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+                    onClick={() => setIsEditing(true)}
+                  >
                     Editar iniciativa
                   </Button>
                 )}

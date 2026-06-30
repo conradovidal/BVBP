@@ -15,10 +15,14 @@ const AdminBlogHubPage = () => {
       <div className="space-y-6">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-heading text-2xl font-bold text-[#1B365D]">Conteúdo</h1>
-            <p className="mt-1 text-sm text-slate-500">Temas estratégicos do Método BVBP.</p>
+            <h1 className="font-heading text-2xl font-bold text-bvbp-ink">Conteúdo</h1>
+            <p className="mt-1 text-sm text-bvbp-muted-ink">Temas estratégicos do Método BVBP.</p>
           </div>
-          <Button asChild variant="corporate">
+          <Button
+            asChild
+            variant="outline"
+            className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+          >
             <Link to="/app/admin/content/new">
               <Plus className="h-4 w-4" />
               Novo conteúdo
@@ -26,13 +30,13 @@ const AdminBlogHubPage = () => {
           </Button>
         </section>
 
-        <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
-          <div className="divide-y divide-slate-100">
+        <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
+          <div className="divide-y divide-bvbp-ink/10">
             {blogDrafts.map((post) => (
               <div key={post.title} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="font-semibold text-[#1B365D]">{post.title}</p>
-                  <p className="text-sm text-slate-500">Atualizado: {post.updated}</p>
+                  <p className="font-semibold text-bvbp-ink">{post.title}</p>
+                  <p className="text-sm text-bvbp-muted-ink">Atualizado: {post.updated}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <StatusBadge label={post.status} />

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -34,34 +34,54 @@ html {
     --bvbp-growth: 142 69% 58%; /* #38A169 - Verde Crescimento */
     --bvbp-growth-light: 142 80% 95%; /* Light green background */
     --bvbp-growth-dark: 142 69% 48%; /* Darker green for hover */
+
+    /* BVBP Brand System v1.0 */
+    --bvbp-forest: 162 49% 15%; /* #143B2F */
+    --bvbp-forest-dark: 163 50% 11%; /* #0E2A22 */
+    --bvbp-gold: 40 46% 60%; /* #C8A96A */
+    --bvbp-ivory: 40 27% 96%; /* #F7F5F1 */
+    --bvbp-raised: 45 33% 98%; /* #FBFAF7 */
+    --bvbp-inset: 40 26% 93%; /* #F2EFE9 */
+    --bvbp-ink: 40 6% 10%; /* #1A1917 */
+    --bvbp-muted-ink: 37 6% 41%; /* #6F6A62 */
+    --bvbp-positive: 154 63% 29%; /* #1C7A52 */
+    --bvbp-caution: 38 71% 40%; /* #B07A1E */
+    --bvbp-risk: 10 56% 42%; /* #A8432F */
+    --bvbp-signal: 193 37% 27%; /* #2C5560 */
     
-    /* Semantic colors */
-    --background: 0 0% 100%; /* #FFFFFF - Branco Puro */
-    --foreground: 214 31% 20%; /* #1B365D - Azul Corporativo */
-    
-    --card: 0 0% 100%; /* #FFFFFF - Branco Puro */
-    --card-foreground: 214 31% 20%; /* #1B365D - Azul Corporativo */
-    
-    --primary: 142 69% 58%; /* #38A169 - Verde Crescimento */
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 0 0% 96%; /* Light gray background */
-    --secondary-foreground: 214 31% 20%; /* #1B365D - Azul Corporativo */
-    
-    --success: 142 69% 58%; /* #38A169 - Verde Crescimento */
-    --success-foreground: 0 0% 100%;
-    
-    --muted: 0 0% 96%; /* Light gray background */
-    --muted-foreground: 210 18% 35%; /* #4A5568 - Cinza Executivo */
-    
-    --accent: 142 69% 58%; /* #38A169 - Verde Crescimento */
-    --accent-foreground: 0 0% 100%;
-    
-    --border: 210 15% 90%;
-    --input: 210 15% 90%;
-    --ring: 142 69% 58%; /* #38A169 - Verde Crescimento */
-    
-    --radius: 0.75rem;
+    /* Semantic colors aligned to BVBP Brand System v1.0 */
+    --background: 40 27% 96%; /* #F7F5F1 */
+    --foreground: 40 6% 10%; /* #1A1917 */
+
+    --card: 45 33% 98%; /* #FBFAF7 */
+    --card-foreground: 40 6% 10%; /* #1A1917 */
+
+    --popover: 45 33% 98%; /* #FBFAF7 */
+    --popover-foreground: 40 6% 10%; /* #1A1917 */
+
+    --primary: 162 49% 15%; /* #143B2F */
+    --primary-foreground: 40 27% 96%; /* #F7F5F1 */
+
+    --secondary: 40 26% 93%; /* #F2EFE9 */
+    --secondary-foreground: 40 6% 10%; /* #1A1917 */
+
+    --success: 154 63% 29%; /* #1C7A52 */
+    --success-foreground: 40 27% 96%;
+
+    --muted: 40 26% 93%; /* #F2EFE9 */
+    --muted-foreground: 37 6% 41%; /* #6F6A62 */
+
+    --accent: 40 26% 93%; /* #F2EFE9 */
+    --accent-foreground: 40 6% 10%; /* #1A1917 */
+
+    --destructive: 10 56% 42%; /* #A8432F */
+    --destructive-foreground: 40 27% 96%;
+
+    --border: 38 15% 84%;
+    --input: 38 15% 84%;
+    --ring: 40 46% 60%; /* #C8A96A */
+
+    --radius: 0.5rem;
     
     /* Custom gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--bvbp-corporate)), hsl(var(--bvbp-corporate-light)));
@@ -169,7 +189,15 @@ html {
   
   /* Typography Classes */
   .font-heading {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Newsreader', Georgia, serif;
+  }
+
+  .font-ui {
+    font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  }
+
+  .font-label {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
   }
   
   .text-bvbp-corporate {

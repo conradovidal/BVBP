@@ -27,11 +27,8 @@ import AdminClientNewPage from "./pages/admin/AdminClientNewPage";
 import AdminClientsPage from "./pages/admin/AdminClientsPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
-import PerformanceAutomationsPage from "./pages/performance/PerformanceAutomationsPage";
 import PerformanceExecutionPage from "./pages/performance/PerformanceExecutionPage";
-import PerformanceFunnelPage from "./pages/performance/PerformanceFunnelPage";
 import PerformanceOverviewPage from "./pages/performance/PerformanceOverviewPage";
-import PerformanceOperationsPage from "./pages/performance/PerformanceOperationsPage";
 import PerformancePointersPage from "./pages/performance/PerformancePointersPage";
 import NotFound from "./pages/NotFound";
 
@@ -88,12 +85,13 @@ const App = () => (
                 <Route index element={<Navigate to="/app/performance/overview" replace />} />
                 <Route path="overview" element={<PerformanceOverviewPage />} />
                 <Route path="pointers" element={<PerformancePointersPage />} />
-                <Route path="funnel" element={<PerformanceFunnelPage />} />
-                <Route path="operations" element={<PerformanceOperationsPage />} />
-                <Route path="execution" element={<PerformanceExecutionPage />} />
-                <Route path="automations" element={<PerformanceAutomationsPage />} />
+                <Route path="pdca" element={<PerformanceExecutionPage />} />
+                <Route path="funnel" element={<Navigate to="/app/performance/pointers?pillar=commercial" replace />} />
+                <Route path="operations" element={<Navigate to="/app/performance/pointers?pillar=operation" replace />} />
+                <Route path="execution" element={<Navigate to="/app/performance/pdca" replace />} />
+                <Route path="automations" element={<Navigate to="/app/performance/pointers?pillar=technology" replace />} />
                 <Route path="projects" element={<Navigate to="/app/performance/overview" replace />} />
-                <Route path="improvements" element={<Navigate to="/app/performance/execution" replace />} />
+                <Route path="improvements" element={<Navigate to="/app/performance/pdca" replace />} />
               </Route>
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
