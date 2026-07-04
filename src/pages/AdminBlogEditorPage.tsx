@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Save, Send, Upload } from "lucide-react";
 import AdminGuard from "@/components/admin/AdminGuard";
 import { useToast } from "@/hooks/use-toast";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 
 const slugify = (text: string) =>
   text
@@ -41,17 +39,6 @@ const AdminBlogEditorPage = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
-
-  const quillModules = useMemo(() => ({
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }],
-      ["blockquote", "link", "image"],
-      ["clean"],
-    ],
-  }), []);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -200,16 +187,15 @@ const AdminBlogEditorPage = () => {
             </div>
 
             <div>
-              <Label>Conteúdo</Label>
-              <div className="mt-1 [&_.ql-editor]:min-h-[400px] [&_.ql-toolbar]:rounded-t-md [&_.ql-container]:rounded-b-md [&_.ql-toolbar]:border-input [&_.ql-container]:border-input [&_.ql-editor]:text-foreground [&_.ql-editor]:bg-background">
-                <ReactQuill
-                  theme="snow"
-                  value={content}
-                  onChange={setContent}
-                  modules={quillModules}
-                  placeholder="Escreva seu artigo aqui..."
-                />
-              </div>
+              <Label htmlFor="content">Conteúdo</Label>
+              <Textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Escreva ou edite o conteúdo em texto simples. HTML existente pode ser ajustado manualmente por enquanto."
+                rows={18}
+                className="mt-1 min-h-[400px] resize-y font-mono text-sm leading-6"
+              />
             </div>
 
             <div>

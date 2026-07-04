@@ -1,9 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Save, Send } from "lucide-react";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,19 +35,6 @@ const AdminBlogEditorPortalPage = () => {
   const [content, setContent] = useState(draft.content);
   const [metaDescription, setMetaDescription] = useState(draft.metaDescription);
   const [tags, setTags] = useState(draft.tags);
-
-  const quillModules = useMemo(
-    () => ({
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["blockquote", "link"],
-        ["clean"],
-      ],
-    }),
-    []
-  );
 
   const updateTitle = (value: string) => {
     setTitle(value);
@@ -109,10 +94,15 @@ const AdminBlogEditorPortalPage = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Conteúdo</Label>
-              <div className="[&_.ql-container]:rounded-b-md [&_.ql-container]:border-input [&_.ql-editor]:min-h-[320px] [&_.ql-editor]:bg-bvbp-raised [&_.ql-toolbar]:rounded-t-md [&_.ql-toolbar]:border-input">
-                <ReactQuill theme="snow" value={content} onChange={setContent} modules={quillModules} />
-              </div>
+              <Label htmlFor="blog-content">Conteúdo</Label>
+              <Textarea
+                id="blog-content"
+                value={content}
+                onChange={(event) => setContent(event.target.value)}
+                rows={16}
+                className="min-h-[320px] resize-y font-mono text-sm leading-6"
+                placeholder="Escreva ou edite o conteúdo em texto simples. HTML existente pode ser ajustado manualmente por enquanto."
+              />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
