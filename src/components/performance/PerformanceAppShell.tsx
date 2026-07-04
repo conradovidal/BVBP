@@ -1,5 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
+  Check,
+  ChevronsUpDown,
   LayoutDashboard,
   ListChecks,
   LogOut,
@@ -9,24 +11,135 @@ import {
 import { useState } from "react";
 import { BrandLockup } from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
-import bvbpMark from "@/assets/brand/bvbp-mark.svg";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { type Company } from "@/data/performanceSystem";
 import { getPerformanceSession, isBvbpStaff, signOutPerformanceUser } from "@/lib/performanceAuth";
-import { getAccessibleCompanies, getActiveCompanyForSession, setActiveCompanyId } from "@/lib/clientPortalStore";
+import { getAccessibleClientCompanies, getActiveClientCompanyForSession, setActiveCompanyId } from "@/lib/clientPortalStore";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Visão geral", href: "/app/performance/overview", icon: LayoutDashboard },
   { label: "Ponteiros", href: "/app/performance/pointers", icon: Target },
-  { label: "PDCA", href: "/app/performance/pdca", icon: ListChecks },
+  { label: "Iniciativas", href: "/app/performance/pdca", icon: ListChecks },
 ];
+
+interface WorkspaceSwitcherProps {
+  activeCompany: Company;
+  companies: Company[];
+  onCompanyChange: (companyId: string) => void;
+  variant: "dark" | "light";
+}
+
+function WorkspaceSwitcher({ activeCompany, companies, onCompanyChange, variant }: WorkspaceSwitcherProps) {
+  const canSwitchWorkspace = companies.length > 1;
+  const isDark = variant === "dark";
+
+  if (!canSwitchWorkspace) {
+    return (
+      <div
+        className={cn(
+          "rounded-[8px] border p-3",
+          isDark
+            ? "border-bvbp-ivory/12 bg-bvbp-ivory/8 text-bvbp-ivory"
+            : "border-bvbp-ink/10 bg-bvbp-ivory text-bvbp-ink",
+        )}
+      >
+        <p
+          className={cn(
+            "font-label text-[10px] font-medium uppercase tracking-[0.12em]",
+            isDark ? "text-bvbp-ivory/50" : "text-bvbp-muted-ink",
+          )}
+        >
+          Cliente
+        </p>
+        <p className="mt-1 truncate text-sm font-semibold">{activeCompany.name}</p>
+        <p className={cn("mt-0.5 truncate text-xs", isDark ? "text-bvbp-ivory/58" : "text-bvbp-muted-ink")}>
+          {activeCompany.segment}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "h-auto w-full justify-between gap-3 rounded-[8px] px-3 py-3 text-left shadow-none",
+            isDark
+              ? "border-bvbp-ivory/15 bg-bvbp-ivory/8 text-bvbp-ivory hover:bg-bvbp-ivory/12 hover:text-bvbp-ivory"
+              : "border-bvbp-ink/10 bg-bvbp-ivory text-bvbp-ink hover:bg-bvbp-inset",
+          )}
+          aria-label="Trocar cliente"
+        >
+          <span className="min-w-0 flex-1">
+            <span
+              className={cn(
+                "block font-label text-[10px] font-medium uppercase tracking-[0.12em]",
+                isDark ? "text-bvbp-ivory/50" : "text-bvbp-muted-ink",
+              )}
+            >
+              Cliente
+            </span>
+            <span className="mt-1 block truncate text-sm font-semibold leading-tight">{activeCompany.name}</span>
+            <span className={cn("mt-0.5 block truncate text-xs", isDark ? "text-bvbp-ivory/58" : "text-bvbp-muted-ink")}>
+              {activeCompany.segment}
+            </span>
+          </span>
+          <ChevronsUpDown className={cn("h-4 w-4 shrink-0", isDark ? "text-bvbp-ivory/55" : "text-bvbp-muted-ink")} aria-hidden="true" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="w-[min(92vw,360px)] rounded-[8px] border-bvbp-ink/10 bg-bvbp-raised p-2 text-bvbp-ink shadow-[0_18px_50px_rgba(26,25,23,0.12)]"
+      >
+        <DropdownMenuLabel className="font-label text-[10px] font-medium uppercase tracking-[0.14em] text-bvbp-muted-ink">
+          Trocar cliente
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-bvbp-ink/10" />
+        <DropdownMenuGroup>
+          {companies.map((company) => {
+            const isActive = company.id === activeCompany.id;
+
+            return (
+              <DropdownMenuItem
+                key={company.id}
+                onClick={() => onCompanyChange(company.id)}
+                className="cursor-pointer items-start gap-3 rounded-[8px] px-3 py-3 focus:bg-bvbp-inset focus:text-bvbp-ink"
+              >
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-bvbp-ink/15 text-bvbp-forest">
+                  {isActive && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold text-bvbp-ink">{company.name}</span>
+                  <span className="mt-0.5 block truncate text-xs text-bvbp-muted-ink">{company.segment}</span>
+                </span>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export function PerformanceAppShell() {
   const navigate = useNavigate();
   const session = getPerformanceSession();
-  const accessibleCompanies = getAccessibleCompanies(session);
-  const [activeCompany, setActiveCompany] = useState<Company>(() => getActiveCompanyForSession(session));
+  const accessibleCompanies = getAccessibleClientCompanies(session);
+  const [activeCompany, setActiveCompany] = useState<Company>(() => getActiveClientCompanyForSession(session));
+  const canSwitchWorkspace = accessibleCompanies.length > 1;
+  const isStaff = isBvbpStaff(session);
 
   const handleLogout = () => {
     signOutPerformanceUser();
@@ -49,11 +162,10 @@ export function PerformanceAppShell() {
           <a href="/" aria-label="Voltar para o site BVBP">
             <BrandLockup tone="light" size="lg" />
           </a>
-          <p className="mt-3 text-sm leading-5 text-bvbp-ivory/65">Performance operacional</p>
         </div>
 
-        <nav className="flex-1 space-y-1 px-3 py-5">
-          {isBvbpStaff(session) && (
+        <nav className="flex-1 px-3 py-5">
+          {isStaff && (
             <NavLink
               to="/app/admin"
               className="mb-3 flex items-center gap-3 rounded-[8px] border border-bvbp-ivory/15 px-3 py-2.5 text-sm font-semibold text-bvbp-ivory transition-colors hover:bg-bvbp-ivory/10"
@@ -62,69 +174,65 @@ export function PerformanceAppShell() {
               Portal BVBP
             </NavLink>
           )}
-          {navItems.map((item) => {
-            const Icon = item.icon;
 
-            return (
-              <NavLink
-                key={item.href}
-                to={item.href}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 rounded-[8px] px-3 py-2.5 text-sm font-semibold transition-colors",
-                    isActive
-                      ? "bg-bvbp-ivory text-bvbp-forest-dark"
-                      : "text-bvbp-ivory/72 hover:bg-bvbp-ivory/10 hover:text-bvbp-ivory"
-                  )
-                }
-              >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-                {item.label}
-              </NavLink>
-            );
-          })}
-        </nav>
-
-        <div className="border-t border-bvbp-ivory/10 p-4">
-          <div className="rounded-[8px] border border-bvbp-ivory/10 bg-bvbp-ivory/8 p-4">
-            <p className="font-label text-[10px] font-medium uppercase tracking-[0.08em] text-bvbp-ivory/55">Empresa</p>
-            <p className="mt-2 text-sm font-semibold text-bvbp-ivory">{activeCompany.name}</p>
-            <p className="mt-1 text-xs text-bvbp-ivory/60">
-              {activeCompany.segment} · {formatNumber(activeCompany.employees)} funcionários
-            </p>
+          <div className="mb-5">
+            <WorkspaceSwitcher
+              activeCompany={activeCompany}
+              companies={accessibleCompanies}
+              onCompanyChange={handleCompanyChange}
+              variant="dark"
+            />
           </div>
-        </div>
+
+          <div className="space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 rounded-[8px] px-3 py-2.5 text-sm font-semibold transition-colors",
+                      isActive
+                        ? "bg-bvbp-ivory text-bvbp-forest-dark"
+                        : "text-bvbp-ivory/72 hover:bg-bvbp-ivory/10 hover:text-bvbp-ivory"
+                    )
+                  }
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  {item.label}
+                </NavLink>
+              );
+            })}
+          </div>
+        </nav>
       </aside>
 
       <div className="min-w-0">
         <header className="sticky top-0 z-40 border-b border-bvbp-ink/10 bg-bvbp-raised/95 backdrop-blur">
-          <div className="flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="flex min-h-16 flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
             <div className="min-w-0">
-              <div className="flex items-center gap-2 lg:hidden">
-                <a href="/" aria-label="Voltar para o site BVBP">
-                  <img src={bvbpMark} alt="BVBP" className="h-8 w-8" />
-                </a>
-                <span className="h-1 w-1 rounded-full bg-bvbp-gold/70" />
-                <span className="text-sm font-semibold text-bvbp-muted-ink">Performance</span>
-              </div>
-              <div className="mt-1 flex flex-col gap-2 lg:mt-0 lg:flex-row lg:items-center">
+              <p className="font-label text-[10px] font-medium uppercase tracking-[0.14em] text-bvbp-muted-ink">
+                Cliente
+              </p>
+              <div className="mt-1 hidden lg:block">
                 <p className="truncate font-heading text-lg font-semibold text-bvbp-ink">{activeCompany.name}</p>
-                {accessibleCompanies.length > 1 && (
-                  <select
-                    value={activeCompany.id}
-                    onChange={(event) => handleCompanyChange(event.target.value)}
-                    className="h-9 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory px-3 text-sm font-semibold text-bvbp-ink outline-none focus:ring-2 focus:ring-bvbp-gold/30"
-                    aria-label="Selecionar cliente"
-                  >
-                    {accessibleCompanies.map((company) => (
-                      <option key={company.id} value={company.id}>
-                        {company.name}
-                      </option>
-                    ))}
-                  </select>
+              </div>
+              <div className="mt-2 lg:hidden">
+                {canSwitchWorkspace ? (
+                  <WorkspaceSwitcher
+                    activeCompany={activeCompany}
+                    companies={accessibleCompanies}
+                    onCompanyChange={handleCompanyChange}
+                    variant="light"
+                  />
+                ) : (
+                  <p className="truncate font-heading text-lg font-semibold text-bvbp-ink">{activeCompany.name}</p>
                 )}
               </div>
-              <p className="text-sm text-bvbp-muted-ink">
+              <p className="mt-1 text-sm text-bvbp-muted-ink">
                 {activeCompany.segment} · {formatNumber(activeCompany.employees)} funcionários ·{" "}
                 {formatCurrency(activeCompany.monthlyRevenue)}
               </p>
@@ -148,6 +256,15 @@ export function PerformanceAppShell() {
           </div>
 
           <nav className="flex gap-2 overflow-x-auto border-t border-bvbp-ink/10 px-4 py-2 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden lg:hidden">
+            {isStaff && (
+              <NavLink
+                to="/app/admin"
+                className="inline-flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-sm font-semibold text-bvbp-muted-ink transition-colors hover:bg-bvbp-inset hover:text-bvbp-ink"
+              >
+                <UsersRound className="h-4 w-4" aria-hidden="true" />
+                Portal BVBP
+              </NavLink>
+            )}
             {navItems
               .map((item) => {
                 const Icon = item.icon;

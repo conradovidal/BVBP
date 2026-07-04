@@ -1,106 +1,31 @@
+import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, BarChart3 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { MetricCard } from "@/components/performance/MetricCard";
-import { StatusBadge } from "@/components/performance/StatusBadge";
-import { createOverviewMetrics, getCompanyPortfolioSignal, isBvbpInternalWorkspace } from "@/data/performanceSystem";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { BVBP_COMPANY_ID } from "@/data/performanceSystem";
 import { getCompanyById, setActiveCompanyId } from "@/lib/clientPortalStore";
-import { formatCurrency, formatMetricValue, formatNumber } from "@/lib/performanceFormatters";
-import { getBvbpPdcaCycles } from "@/lib/pdcaCycleStore";
-
-const metricLabels: Record<string, string> = {
-  "metric-monthly-revenue": "Receita",
-  "metric-margin": "Margem",
-  "metric-operational-cost": "Custo",
-  "metric-savings": "Potencial",
-  "metric-revenue-risk": "Risco",
-  "metric-active-cycles": "Ciclos",
-};
 
 const AdminClientDetailPage = () => {
   const { companyId } = useParams<{ companyId: string }>();
   const navigate = useNavigate();
   const company = getCompanyById(companyId);
 
-  if (!company) return <Navigate to="/app/admin/clients" replace />;
+  useEffect(() => {
+    if (!company || company.id === BVBP_COMPANY_ID) return;
 
-  const isInternalWorkspace = isBvbpInternalWorkspace(company);
-  const cycles = isInternalWorkspace ? getBvbpPdcaCycles() : [];
-  const activeCycleCount = cycles.filter((cycle) => !["Padronizar", "Pausar"].includes(cycle.pdcaStatus)).length;
-  const metrics = createOverviewMetrics(company).map((metric) =>
-    isInternalWorkspace && metric.id === "metric-active-cycles" ? { ...metric, value: activeCycleCount } : metric
-  );
-  const signal = getCompanyPortfolioSignal(company);
-  const openPerformance = () => {
     setActiveCompanyId(company.id);
-    navigate("/app/performance/overview");
-  };
+    navigate("/app/performance/overview", { replace: true });
+  }, [company, navigate]);
+
+  if (!company) return <Navigate to="/app/admin/clients" replace />;
+  if (company.id === BVBP_COMPANY_ID) return <Navigate to="/app/admin" replace />;
 
   return (
     <>
       <Helmet>
-        <title>{company.name} | Portal BVBP</title>
+        <title>Abrindo workspace | Portal BVBP</title>
       </Helmet>
-
-      <div className="space-y-6">
-        <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <Link to="/app/admin/clients" className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink hover:text-bvbp-ink">
-              <ArrowLeft className="h-4 w-4" />
-              Clientes
-            </Link>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="font-heading text-2xl font-bold text-bvbp-ink">{company.name}</h1>
-              <StatusBadge label={company.status || "Ativo"} />
-            </div>
-            <p className="mt-1 text-sm text-bvbp-muted-ink">{company.segment}</p>
-          </div>
-          <Button
-            variant="outline"
-            className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-            onClick={openPerformance}
-          >
-            <BarChart3 className="h-4 w-4" />
-            Abrir workspace
-          </Button>
-        </section>
-
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard title="Crítico" value={signal.criticalPointer} accent="orange" />
-          <MetricCard title="Potencial" value={`${formatCurrency(signal.mappedPotential)}/mês`} accent="green" />
-          <MetricCard title="Alto risco" value={formatNumber(signal.highRiskProjects)} accent="orange" />
-          <MetricCard title="Ciclos" value={formatNumber(isInternalWorkspace ? activeCycleCount : signal.activeCycles)} accent="blue" />
-        </section>
-
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {metrics.slice(0, 6).map((metric) => (
-            <MetricCard
-              key={metric.id}
-              title={metricLabels[metric.id] || metric.name}
-              value={metric.id === "metric-savings" ? `${formatMetricValue(metric)}/mês` : formatMetricValue(metric)}
-              accent={metric.category === "risk" ? "orange" : metric.category === "operational" ? "green" : "blue"}
-            />
-          ))}
-        </section>
-
-        <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
-          <h2 className="font-heading text-lg font-bold text-bvbp-ink">Acesso do cliente</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div>
-              <p className="text-xs font-semibold uppercase text-bvbp-muted-ink">Contato</p>
-              <p className="mt-1 text-sm font-bold text-bvbp-ink">{company.contactName || "Não informado"}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase text-bvbp-muted-ink">E-mail</p>
-              <p className="mt-1 text-sm font-bold text-bvbp-ink">{company.contactEmail || "Não informado"}</p>
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase text-bvbp-muted-ink">Escopo</p>
-              <p className="mt-1 text-sm font-bold text-bvbp-ink">Performance System</p>
-            </div>
-          </div>
-        </section>
+      <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 text-sm text-bvbp-muted-ink">
+        Abrindo workspace de {company.name}...
       </div>
     </>
   );

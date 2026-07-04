@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useNavigate } from "react-router-dom";
-import { RotateCcw, ShieldCheck } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Pencil, RotateCcw, ShieldCheck } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +61,12 @@ const AdminSettingsPage = () => {
                 <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
                   Portal com autenticação mockada e dados locais. Use como ferramenta interna, não como fonte financeira auditada.
                 </p>
+                <Button asChild variant="outline" className="mt-4 rounded-[8px]">
+                  <Link to="/app/admin/clients/company-bvbp/edit">
+                    <Pencil className="h-4 w-4" aria-hidden="true" />
+                    Editar workspace BVBP
+                  </Link>
+                </Button>
               </div>
             </div>
           </article>
@@ -70,7 +76,7 @@ const AdminSettingsPage = () => {
               <div>
                 <h2 className="font-heading text-lg font-bold text-bvbp-ink">Dados de demonstração</h2>
                 <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
-                  Restaura clientes seedados, workspace BVBP, ciclos PDCA e evidências locais.
+                  Restaura clientes seedados, workspace BVBP, configurações, iniciativas e evidências locais.
                 </p>
               </div>
 
@@ -85,7 +91,7 @@ const AdminSettingsPage = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Restaurar dados de demonstração?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esta ação recria clientes, workspace BVBP, ciclos PDCA e evidências locais. A sessão atual será preservada.
+                      Esta ação recria clientes, workspace BVBP, configurações, iniciativas e evidências locais. A sessão atual será preservada.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
 

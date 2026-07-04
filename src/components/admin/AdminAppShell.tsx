@@ -1,13 +1,16 @@
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { FileText, LayoutDashboard, LogOut, Settings, UsersRound } from "lucide-react";
+import { FileText, LayoutDashboard, ListChecks, LogOut, Settings, Target, UsersRound } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
+import { getBvbpWorkspaceCompany } from "@/lib/clientPortalStore";
 import { getPerformanceSession, isBvbpStaff, signOutPerformanceUser } from "@/lib/performanceAuth";
 import { cn } from "@/lib/utils";
 
 const adminNavItems = [
   { label: "Visão geral", href: "/app/admin", icon: LayoutDashboard },
-  { label: "Clientes", href: "/app/admin/clients", icon: UsersRound },
+  { label: "Ponteiros", href: "/app/admin/pointers", icon: Target },
+  { label: "Iniciativas", href: "/app/admin/pdca", icon: ListChecks },
+  { label: "CRM", href: "/app/admin/clients", icon: UsersRound },
   { label: "Conteúdo", href: "/app/admin/content", icon: FileText },
   { label: "Configurações", href: "/app/admin/settings", icon: Settings },
 ];
@@ -15,6 +18,7 @@ const adminNavItems = [
 export function AdminAppShell() {
   const session = getPerformanceSession();
   const navigate = useNavigate();
+  const activeCompany = getBvbpWorkspaceCompany();
 
   if (!isBvbpStaff(session)) {
     return <Navigate to="/app/performance/overview" replace />;
@@ -71,7 +75,7 @@ export function AdminAppShell() {
           <div className="flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
             <div>
               <p className="font-heading text-lg font-semibold text-bvbp-ink">Portal BVBP</p>
-              <p className="text-sm text-bvbp-muted-ink">Carteira, ponteiros e conteúdo estratégico.</p>
+              <p className="text-sm text-bvbp-muted-ink">CRM, ponteiros e conteúdo estratégico.</p>
             </div>
 
             <div className="flex items-center justify-between gap-3 lg:justify-end">
@@ -119,7 +123,7 @@ export function AdminAppShell() {
         </header>
 
         <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <Outlet />
+          <Outlet context={{ activeCompany }} />
         </main>
       </div>
     </div>

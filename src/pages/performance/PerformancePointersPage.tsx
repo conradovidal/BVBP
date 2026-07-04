@@ -9,6 +9,8 @@ import { SectionHeader } from "@/components/performance/SectionHeader";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import {
   automationOpportunities,
+  type BvbpPillarId,
+  type ClientMetricConfig,
   createFunnelMetrics,
   createOverviewMetrics,
   getAutomationOpportunitySummary,
@@ -23,12 +25,13 @@ import {
   type FunnelMetric,
   type Metric,
 } from "@/data/performanceSystem";
+import { clientMetricDataTypeLabels, getSelectedClientMetricsByPillar } from "@/lib/clientConfigurationStore";
 import { automationDetail, funnelMetricDetail, metricDetail, operationalLeakDetail, pipelineOpportunityDetail } from "@/lib/performanceDetails";
 import { formatCurrency, formatMetricValue, formatNumber } from "@/lib/performanceFormatters";
-import { getBvbpPdcaCycles } from "@/lib/pdcaCycleStore";
+import { getPdcaCyclesForCompany } from "@/lib/pdcaCycleStore";
 import { cn } from "@/lib/utils";
 
-type PointerPillarId = "financial" | "commercial" | "operation" | "technology";
+type PointerPillarId = BvbpPillarId;
 
 const pointerPillars: Array<{
   id: PointerPillarId;
@@ -56,8 +59,8 @@ const pointerPillars: Array<{
   },
   {
     id: "technology",
-    title: "Tecnologia",
-    description: "Dados, IA e sistemas quando movem ponteiro real.",
+    title: "Automação",
+    description: "IA, sistemas e automações quando movem ponteiro real.",
     icon: Bot,
   },
 ];
@@ -112,6 +115,35 @@ function formatOverviewMetric(metric: Metric) {
   return metric.id === "metric-savings" ? `${formatMetricValue(metric)}/mês` : formatMetricValue(metric);
 }
 
+function formatClientMetric(metric: ClientMetricConfig) {
+  if (metric.currentValue === undefined) return "Sem valor";
+  if (metric.unit === "currency") return formatCurrency(metric.currentValue);
+  if (metric.unit === "percentage") return `${metric.currentValue}%`;
+  if (metric.unit === "hours") return `${formatNumber(metric.currentValue)}h`;
+  if (metric.unit === "days") return `${formatNumber(metric.currentValue)} dias`;
+  return formatNumber(metric.currentValue);
+}
+
+function clientMetricDetail(metric: ClientMetricConfig): PerformanceDetail {
+  return {
+    title: metric.name,
+    subtitle: metric.custom ? "Métrica customizada" : "Catálogo BVBP",
+    status: clientMetricDataTypeLabels[metric.dataType],
+    affectedPointer: metric.name,
+    estimatedImpact: metric.currentValue === undefined ? "Sem valor" : formatClientMetric(metric),
+    dataType: clientMetricDataTypeLabels[metric.dataType],
+    description: metric.description,
+    whyItMatters: "Métrica selecionada na configuração local do cliente.",
+    facts: [
+      { label: "Valor atual", value: formatClientMetric(metric) },
+      { label: "Meta", value: metric.target || "Sem meta" },
+      { label: "Fonte", value: metric.source || "Não informada" },
+      { label: "Frequência", value: metric.frequency || "Não definida" },
+    ],
+    nextDecision: "Definir baseline, responsável e próxima leitura.",
+  };
+}
+
 function getActivePillar(value: string | null): PointerPillarId {
   if (!value) return "financial";
   return pillarAliases[value] || (pointerPillars.some((pillar) => pillar.id === value) ? (value as PointerPillarId) : "financial");
@@ -127,10 +159,11 @@ const PerformancePointersPage = () => {
   const activePillarId = getActivePillar(searchParams.get("pillar"));
   const activePillar = pointerPillars.find((pillar) => pillar.id === activePillarId) || pointerPillars[0];
   const isInternalWorkspace = isBvbpInternalWorkspace(activeCompany);
-  const pdcaCycles = isInternalWorkspace ? getBvbpPdcaCycles() : [];
-  const connectedCycles = isInternalWorkspace ? pdcaCycles : impactCycles;
+  const pdcaCycles = getPdcaCyclesForCompany(activeCompany);
+  const connectedCycles = pdcaCycles.length ? pdcaCycles : impactCycles;
   const activeCycleCount = pdcaCycles.filter((cycle) => !["Padronizar", "Pausar"].includes(cycle.pdcaStatus)).length;
   const signal = getCompanyPortfolioSignal(activeCompany);
+  const configuredMetrics = getSelectedClientMetricsByPillar(activeCompany, activePillarId);
 
   const overviewMetrics = useMemo(
     () =>
@@ -209,7 +242,7 @@ const PerformancePointersPage = () => {
           </article>
 
           <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
-            <SectionHeader title="Ciclos conectados" />
+            <SectionHeader title="Iniciativas conectadas" />
             <div className="mt-4 grid gap-3 md:grid-cols-2">
               {connectedCycles.slice(0, 4).map((cycle) => (
                 <div key={cycle.id} className="rounded-md bg-bvbp-inset p-3">
@@ -225,7 +258,7 @@ const PerformancePointersPage = () => {
               {!connectedCycles.length && (
                 <EmptyState
                   title="Nenhum ciclo ativo ainda."
-                  description="Crie uma iniciativa PDCA conectada a um ponteiro."
+                  description="Crie uma iniciativa conectada a um ponteiro."
                   className="md:col-span-2"
                 />
               )}
@@ -235,6 +268,32 @@ const PerformancePointersPage = () => {
 
         <section className="space-y-4">
           <SectionHeader title={activePillar.title} description={activePillar.description} />
+
+          {configuredMetrics.length ? (
+            <div className="space-y-3">
+              <p className="font-label text-xs font-medium uppercase tracking-[0.12em] text-bvbp-muted-ink">
+                Métricas configuradas
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {configuredMetrics.map((metric) => (
+                  <button
+                    type="button"
+                    key={metric.id}
+                    onClick={() => setDetail(clientMetricDetail(metric))}
+                    className="text-left transition hover:-translate-y-0.5"
+                  >
+                    <MetricCard
+                      title={metric.name}
+                      value={formatClientMetric(metric)}
+                      accent={metric.dataType === "real" ? "green" : metric.dataType === "mock" ? "gray" : "blue"}
+                      helper={`${clientMetricDataTypeLabels[metric.dataType]}${metric.source ? ` · ${metric.source}` : ""}`}
+                      showHelper
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           {activePillarId === "financial" && (
             <div className="space-y-5">
@@ -370,7 +429,7 @@ const PerformancePointersPage = () => {
                 <MetricCard title="Em andamento" value={formatNumber(automationSummary.running)} accent="gray" />
               </div>
               <article className="rounded-[8px] border border-bvbp-forest/15 bg-bvbp-raised p-5 text-sm font-semibold text-bvbp-ink">
-                Tecnologia só entra quando ajuda a mover um ponteiro real.
+                Automação só entra quando ajuda a mover um ponteiro real.
               </article>
               <div className="grid gap-3 lg:grid-cols-2">
                 {automationOpportunities.map((item) => (

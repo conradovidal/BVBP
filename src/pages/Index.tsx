@@ -73,7 +73,7 @@ const offers = [
     title: "BVBP Performance Sprint",
     duration: "90 dias",
     mode: "Entrada intensiva",
-    description: "Para empresas com dor clara, urgência e necessidade de destravar performance rapidamente.",
+    description: "Implementação assistida para empresas com dor clara, urgência e necessidade de destravar performance rapidamente.",
     features: [
       "Ponteiros prioritários",
       "Mapa comercial e operacional",
@@ -87,7 +87,7 @@ const offers = [
     title: "BVBP Performance Partnership",
     duration: "12 meses",
     mode: "Parceria contínua",
-    description: "Para empresas que querem construir uma gestão de performance contínua, lado a lado com a BVBP.",
+    description: "Implementação contínua, lado a lado com o cliente, para sustentar rotina de performance.",
     features: [
       "Rotina mensal de performance",
       "Acompanhamento de ponteiros",
@@ -457,11 +457,11 @@ const Index = () => {
               <div className="mx-auto mb-12 max-w-4xl">
                 <p className="mb-4 font-label text-xs font-medium uppercase text-bvbp-muted-ink">Ofertas</p>
                 <h2 className="font-heading text-4xl font-medium leading-tight text-bvbp-ink md:text-5xl">
-                  Duas formas de instalar o método.
+                  Duas formas de implementar o método.
                 </h2>
                 <p className="mt-5 max-w-2xl text-lg leading-8 text-bvbp-muted-ink">
-                  Duas entradas comerciais para momentos diferentes. Sem promessa artificial: potencial mapeado,
-                  baseline e evidência guiam a conversa.
+                  Duas entradas para momentos diferentes. Sem promessa artificial: potencial mapeado, baseline,
+                  rotina de execução e evidência guiam a conversa.
                 </p>
               </div>
 

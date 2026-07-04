@@ -1,9 +1,18 @@
-import { BVBP_COMPANY_ID, type Company, bvbpPdcaCycleSeeds, mockCompanies, type PdcaCycle } from "@/data/performanceSystem";
+import {
+  BVBP_COMPANY_ID,
+  type ClientConfiguration,
+  type Company,
+  bvbpPdcaCycleSeeds,
+  createDefaultClientConfiguration,
+  mockCompanies,
+  type PdcaCycle,
+} from "@/data/performanceSystem";
 
 export const PORTAL_STORAGE_KEYS = {
   clients: "bvbp-portal-clients",
   activeCompany: "bvbp-active-company",
   pdcaCycles: "bvbp-pdca-cycles",
+  clientConfigurations: "bvbp-client-configurations",
 } as const;
 
 export interface StorageParseResult<T> {
@@ -83,8 +92,40 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
   });
 }
 
+export function isClientConfigurationList(value: unknown): value is ClientConfiguration[] {
+  return Array.isArray(value) && value.every((item) => {
+    if (!item || typeof item !== "object") return false;
+    const config = item as Partial<ClientConfiguration>;
+
+    const hasValidPillars = Array.isArray(config.pillars) && config.pillars.every((pillar) => (
+      !!pillar &&
+      typeof pillar.pillar === "string" &&
+      typeof pillar.maturityLevel === "number" &&
+      typeof pillar.currentLevelName === "string" &&
+      typeof pillar.nextLevel === "number" &&
+      typeof pillar.advancementCriteria === "string" &&
+      Array.isArray(pillar.selectedMetricIds) &&
+      Array.isArray(pillar.pains) &&
+      typeof pillar.notes === "string"
+    ));
+    const hasValidMetrics = Array.isArray(config.metrics) && config.metrics.every((metric) => (
+      !!metric &&
+      typeof metric.id === "string" &&
+      typeof metric.name === "string" &&
+      typeof metric.pillar === "string" &&
+      typeof metric.description === "string" &&
+      typeof metric.unit === "string" &&
+      typeof metric.dataType === "string" &&
+      typeof metric.custom === "boolean"
+    ));
+
+    return typeof config.companyId === "string" && hasValidPillars && hasValidMetrics;
+  });
+}
+
 export function resetPortalDemoData() {
   writeJsonStorage(PORTAL_STORAGE_KEYS.clients, mockCompanies);
+  writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, mockCompanies.map(createDefaultClientConfiguration));
   writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, bvbpPdcaCycleSeeds);
   window.localStorage.setItem(PORTAL_STORAGE_KEYS.activeCompany, BVBP_COMPANY_ID);
 }

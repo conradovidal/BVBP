@@ -186,7 +186,7 @@ export function operationalLeakDetail(leak: OperationalLeak, cycles: PdcaCycle[]
       { label: "Horas/mês", value: `${formatNumber(leak.hoursPerMonth)}h` },
       { label: "Fonte", value: leak.source },
       { label: "Hipótese de causa", value: "Falta de rotina, dono claro ou passagem de contexto." },
-      { label: "Possível ação", value: cycle?.title || "Criar ciclo PDCA conectado ao ponteiro." },
+      { label: "Possível ação", value: cycle?.title || "Criar iniciativa conectada ao ponteiro." },
     ],
     evidence: cycle?.evidences.map((evidence) => evidence.description),
     connectedActions: cycle ? [cycle.title] : [],

@@ -23,9 +23,9 @@ import { ProtectedPerformanceRoute } from "./components/performance/ProtectedPer
 import AdminBlogHubPage from "./pages/admin/AdminBlogHubPage";
 import AdminBlogEditorPortalPage from "./pages/admin/AdminBlogEditorPortalPage";
 import AdminClientDetailPage from "./pages/admin/AdminClientDetailPage";
+import AdminClientEditPage from "./pages/admin/AdminClientEditPage";
 import AdminClientNewPage from "./pages/admin/AdminClientNewPage";
 import AdminClientsPage from "./pages/admin/AdminClientsPage";
-import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
 import PerformanceExecutionPage from "./pages/performance/PerformanceExecutionPage";
 import PerformanceOverviewPage from "./pages/performance/PerformanceOverviewPage";
@@ -68,9 +68,13 @@ const App = () => (
             >
               <Route index element={<PortalEntryRedirect />} />
               <Route path="admin" element={<AdminAppShell />}>
-                <Route index element={<AdminDashboardPage />} />
+                <Route index element={<PerformanceOverviewPage />} />
+                <Route path="pointers" element={<PerformancePointersPage />} />
+                <Route path="pdca" element={<PerformanceExecutionPage />} />
                 <Route path="clients" element={<AdminClientsPage />} />
                 <Route path="clients/new" element={<AdminClientNewPage />} />
+                <Route path="clients/:companyId/edit" element={<AdminClientEditPage />} />
+                <Route path="clients/company-bvbp" element={<Navigate to="/app/admin" replace />} />
                 <Route path="clients/:companyId" element={<AdminClientDetailPage />} />
                 <Route path="projects" element={<Navigate to="/app/admin/clients" replace />} />
                 <Route path="blog" element={<Navigate to="/app/admin/content" replace />} />

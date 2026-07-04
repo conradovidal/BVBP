@@ -2,10 +2,16 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MetricCard } from "@/components/performance/MetricCard";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { blogDrafts } from "@/data/blogDrafts";
+import { formatNumber } from "@/lib/performanceFormatters";
 
 const AdminBlogHubPage = () => {
+  const publishedCount = blogDrafts.filter((post) => post.status === "Publicado").length;
+  const reviewCount = blogDrafts.filter((post) => post.status === "Revisão").length;
+  const draftCount = blogDrafts.filter((post) => post.status === "Rascunho").length;
+
   return (
     <>
       <Helmet>
@@ -28,6 +34,12 @@ const AdminBlogHubPage = () => {
               Novo conteúdo
             </Link>
           </Button>
+        </section>
+
+        <section className="grid gap-4 sm:grid-cols-3">
+          <MetricCard title="Publicados" value={formatNumber(publishedCount)} accent="green" />
+          <MetricCard title="Em revisão" value={formatNumber(reviewCount)} accent="orange" />
+          <MetricCard title="Rascunhos" value={formatNumber(draftCount)} accent="gray" />
         </section>
 
         <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">

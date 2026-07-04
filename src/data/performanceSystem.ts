@@ -9,6 +9,16 @@ export interface PerformanceUser {
   companyIds: string[];
 }
 
+export const relationshipStatuses = ["Prospect", "Em diagnóstico", "Onboarding", "Ativo", "Pausado", "Encerrado"] as const;
+
+export type ClientRelationshipStatus = (typeof relationshipStatuses)[number];
+
+export type BvbpPillarId = "financial" | "commercial" | "operation" | "technology";
+
+export type ClientMetricDataType = "real" | "estimated" | "mock";
+
+export type ClientMetricUnit = "currency" | "percentage" | "hours" | "count" | "days" | "text";
+
 export interface Company {
   id: string;
   name: string;
@@ -17,9 +27,47 @@ export interface Company {
   monthlyRevenue: number;
   recurringRevenue: number;
   monthlyOperationalCost: number;
+  description?: string;
+  bvbpOwner?: string;
+  companySize?: string;
+  reportedRevenue?: number;
+  startDate?: string;
   contactName?: string;
   contactEmail?: string;
-  status?: "Ativo" | "Onboarding" | "Pausado";
+  status?: ClientRelationshipStatus;
+  relationshipStatus?: ClientRelationshipStatus;
+}
+
+export interface ClientMetricConfig {
+  id: string;
+  name: string;
+  pillar: BvbpPillarId;
+  description: string;
+  unit: ClientMetricUnit;
+  dataType: ClientMetricDataType;
+  currentValue?: number;
+  target?: string;
+  source?: string;
+  frequency?: string;
+  owner?: string;
+  custom: boolean;
+}
+
+export interface ClientPillarConfig {
+  pillar: BvbpPillarId;
+  maturityLevel: 1 | 2 | 3 | 4 | 5;
+  currentLevelName: string;
+  nextLevel: 1 | 2 | 3 | 4 | 5;
+  advancementCriteria: string;
+  selectedMetricIds: string[];
+  pains: string[];
+  notes: string;
+}
+
+export interface ClientConfiguration {
+  companyId: string;
+  pillars: ClientPillarConfig[];
+  metrics: ClientMetricConfig[];
 }
 
 export interface Metric {
@@ -30,6 +78,26 @@ export interface Metric {
   unit: "currency" | "percentage" | "count";
   category: "financial" | "operational" | "risk";
   confidenceLevel: string;
+}
+
+export interface OverviewPillarHighlight {
+  id: "financial" | "commercial" | "operational" | "automation";
+  companyId: string;
+  pillar: "Financeiro" | "Comercial" | "Operacional" | "Automação";
+  metricLabel: string;
+  value?: number;
+  unit: ClientMetricUnit;
+  helper: string;
+  dataType: "Real" | "Estimado" | "Interno" | "Mockado";
+  source: string;
+  description: string;
+  metrics: Array<{
+    label: string;
+    value?: number;
+    unit: ClientMetricUnit;
+    dataType: "Real" | "Estimado" | "Interno" | "Mockado";
+    source: string;
+  }>;
 }
 
 export interface CompanyPortfolioSignal {
@@ -79,6 +147,14 @@ export interface BvbpPillar {
   description: string;
 }
 
+export interface MaturityMapItem extends BvbpPillar {
+  currentLevelLabel: string;
+  nextLevel: number;
+  nextLevelLabel: string;
+  currentMeaning: string;
+  advancementCriteria: string[];
+}
+
 export interface MaturityScore {
   id: string;
   companyId: string;
@@ -123,6 +199,8 @@ export const evidenceTypes = ["Dado", "Reunião", "Cliente", "Entrega", "Aprendi
 
 export type EvidenceType = (typeof evidenceTypes)[number];
 
+export type PdcaActionStatus = "Aberta" | "Em andamento" | "Concluída" | "Bloqueada";
+
 export const bvbpPointerOptions = [
   "Receita mensal",
   "Comercial",
@@ -149,6 +227,14 @@ export interface PdcaLearning {
   description: string;
 }
 
+export interface PdcaAction {
+  id: string;
+  title: string;
+  owner: string;
+  deadline: string;
+  status: PdcaActionStatus;
+}
+
 export interface PdcaCycle {
   id: string;
   companyId: string;
@@ -164,6 +250,12 @@ export interface PdcaCycle {
   estimatedImpact: number;
   nextDecision: string;
   dataType: "Mockado" | "Estimado" | "Real";
+  startDate?: string;
+  endDate?: string;
+  baseline?: string;
+  target?: string;
+  priorityOrder?: number;
+  actions?: PdcaAction[];
   evidences: PdcaEvidence[];
   learnings: PdcaLearning[];
 }
@@ -221,6 +313,140 @@ export interface ImpactCycle {
   current: string;
   status: string;
 }
+
+export const bvbpPillarLabels: Record<BvbpPillarId, string> = {
+  financial: "Finanças",
+  commercial: "Comercial",
+  operation: "Operação",
+  technology: "Tecnologia",
+};
+
+export const bvbpPillarIds: BvbpPillarId[] = ["financial", "commercial", "operation", "technology"];
+
+export const maturityLevels = [
+  {
+    level: 1,
+    name: "Base dispersa",
+    description: "Dados soltos, baixa confiabilidade e ausência de rotina clara.",
+  },
+  {
+    level: 2,
+    name: "Leitura mínima",
+    description: "Alguns dados existem, mas ainda com baixa conexão com decisão.",
+  },
+  {
+    level: 3,
+    name: "Gestão ativa",
+    description: "Indicadores acompanhados com alguma cadência e responsáveis definidos.",
+  },
+  {
+    level: 4,
+    name: "Evidência consistente",
+    description: "Indicadores conectados a iniciativas, evidências e decisões recorrentes.",
+  },
+  {
+    level: 5,
+    name: "Sistema otimizado",
+    description: "Rotina consolidada, melhoria contínua e dados confiáveis para decisão.",
+  },
+] as const;
+
+export const painCatalogByPillar: Record<BvbpPillarId, string[]> = {
+  financial: [
+    "Baixa clareza de margem",
+    "Custo operacional alto",
+    "Receita em risco",
+    "Falta de visão de caixa",
+  ],
+  commercial: [
+    "Baixa conversão",
+    "Pouca clareza de origem dos leads",
+    "Propostas sem follow-up",
+    "Pipeline desorganizado",
+  ],
+  operation: [
+    "Retrabalho",
+    "Espera entre áreas",
+    "Falta de responsável",
+    "Documentos dispersos",
+    "Atrasos recorrentes",
+  ],
+  technology: [
+    "Dados espalhados",
+    "Trabalho manual recorrente",
+    "Falta de dashboard",
+    "Sistemas sem integração",
+    "Oportunidade de automação",
+  ],
+};
+
+function makeMetricCatalogItem(
+  pillar: BvbpPillarId,
+  slug: string,
+  name: string,
+  unit: ClientMetricUnit,
+  description: string,
+): ClientMetricConfig {
+  return {
+    id: `${pillar}-${slug}`,
+    name,
+    pillar,
+    description,
+    unit,
+    dataType: "estimated",
+    custom: false,
+  };
+}
+
+export const metricCatalogByPillar: Record<BvbpPillarId, ClientMetricConfig[]> = {
+  financial: [
+    makeMetricCatalogItem("financial", "faturamento", "Faturamento", "currency", "Receita mensal informada ou estimada."),
+    makeMetricCatalogItem("financial", "margem", "Margem", "percentage", "Leitura de margem operacional."),
+    makeMetricCatalogItem("financial", "custo-operacional", "Custo operacional", "currency", "Custo operacional mensal."),
+    makeMetricCatalogItem("financial", "caixa", "Caixa", "currency", "Disponibilidade ou fôlego financeiro."),
+    makeMetricCatalogItem("financial", "receita-em-risco", "Receita em risco", "currency", "Receita potencialmente comprometida por gargalos."),
+    makeMetricCatalogItem("financial", "potencial-mapeado", "Potencial mapeado", "currency", "Potencial estimado para priorizar iniciativas."),
+    makeMetricCatalogItem("financial", "ticket-medio", "Ticket médio", "currency", "Valor médio por venda ou contrato."),
+    makeMetricCatalogItem("financial", "inadimplencia", "Inadimplência", "percentage", "Percentual de receita em atraso."),
+    makeMetricCatalogItem("financial", "prazo-medio-recebimento", "Prazo médio de recebimento", "days", "Tempo médio até receber."),
+  ],
+  commercial: [
+    makeMetricCatalogItem("commercial", "leads", "Leads", "count", "Entradas comerciais mapeadas."),
+    makeMetricCatalogItem("commercial", "conversas-iniciadas", "Conversas iniciadas", "count", "Conversas comerciais abertas."),
+    makeMetricCatalogItem("commercial", "diagnosticos-agendados", "Diagnósticos agendados", "count", "Diagnósticos marcados."),
+    makeMetricCatalogItem("commercial", "reunioes-realizadas", "Reuniões realizadas", "count", "Reuniões comerciais feitas."),
+    makeMetricCatalogItem("commercial", "propostas-enviadas", "Propostas enviadas", "count", "Propostas enviadas no ciclo."),
+    makeMetricCatalogItem("commercial", "taxa-conversao", "Taxa de conversão", "percentage", "Conversão entre etapas ou lead para cliente."),
+    makeMetricCatalogItem("commercial", "ticket-medio", "Ticket médio", "currency", "Ticket médio comercial."),
+    makeMetricCatalogItem("commercial", "pipeline", "Pipeline", "currency", "Valor estimado em oportunidades abertas."),
+    makeMetricCatalogItem("commercial", "origem-leads", "Origem dos leads", "count", "Leitura de origem e qualidade das entradas."),
+    makeMetricCatalogItem("commercial", "ciclo-venda", "Ciclo de venda", "days", "Tempo médio entre entrada e fechamento."),
+  ],
+  operation: [
+    makeMetricCatalogItem("operation", "lead-time", "Lead time", "days", "Tempo total do fluxo."),
+    makeMetricCatalogItem("operation", "cycle-time", "Cycle time", "days", "Tempo de execução ativa."),
+    makeMetricCatalogItem("operation", "retrabalho", "Retrabalho", "count", "Ocorrências ou volume de retrabalho."),
+    makeMetricCatalogItem("operation", "horas-manuais", "Horas manuais", "hours", "Horas gastas em tarefas manuais."),
+    makeMetricCatalogItem("operation", "custo-operacional-mensal", "Custo operacional mensal", "currency", "Custo mensal da operação."),
+    makeMetricCatalogItem("operation", "gargalos-mapeados", "Gargalos mapeados", "count", "Gargalos conhecidos no fluxo."),
+    makeMetricCatalogItem("operation", "capacidade-time", "Capacidade do time", "count", "Capacidade operacional disponível."),
+    makeMetricCatalogItem("operation", "tempo-espera", "Tempo de espera", "days", "Espera entre áreas ou etapas."),
+    makeMetricCatalogItem("operation", "sla", "SLA", "percentage", "Cumprimento de acordos de entrega."),
+    makeMetricCatalogItem("operation", "entregas-atraso", "Entregas em atraso", "count", "Entregas fora do prazo."),
+  ],
+  technology: [
+    makeMetricCatalogItem("technology", "automacoes-mapeadas", "Automações mapeadas", "count", "Oportunidades de automação já identificadas."),
+    makeMetricCatalogItem("technology", "horas-automatizaveis", "Horas automatizáveis", "hours", "Horas com potencial de automação."),
+    makeMetricCatalogItem("technology", "sistemas-criticos", "Sistemas críticos", "count", "Sistemas importantes para a operação."),
+    makeMetricCatalogItem("technology", "dados-estruturados", "Dados estruturados", "percentage", "Nível de organização dos dados."),
+    makeMetricCatalogItem("technology", "bases-dispersas", "Bases dispersas", "count", "Bases ou planilhas separadas."),
+    makeMetricCatalogItem("technology", "relatorios-manuais", "Relatórios manuais", "count", "Relatórios montados manualmente."),
+    makeMetricCatalogItem("technology", "integracoes-necessarias", "Integrações necessárias", "count", "Integrações relevantes para o fluxo."),
+    makeMetricCatalogItem("technology", "impacto-estimado-automacao", "Impacto estimado de automação", "currency", "Ganho estimado com automação."),
+    makeMetricCatalogItem("technology", "governanca-documental", "Governança documental", "count", "Itens críticos de documentação e governança."),
+    makeMetricCatalogItem("technology", "uso-ia", "Uso de IA", "count", "Casos de uso de IA em operação."),
+  ],
+};
 
 export const BVBP_COMPANY_ID = "company-bvbp";
 export const PRISMA_DEMO_COMPANY_ID = "company-prisma";
@@ -300,6 +526,121 @@ export const mockCompanies: Company[] = [
     status: "Ativo",
   },
 ];
+
+const defaultSelectedMetricIdsByPillar: Record<BvbpPillarId, string[]> = {
+  financial: [
+    "financial-faturamento",
+    "financial-margem",
+    "financial-custo-operacional",
+    "financial-potencial-mapeado",
+  ],
+  commercial: [
+    "commercial-leads",
+    "commercial-taxa-conversao",
+    "commercial-pipeline",
+  ],
+  operation: [
+    "operation-lead-time",
+    "operation-horas-manuais",
+    "operation-custo-operacional-mensal",
+  ],
+  technology: [
+    "technology-automacoes-mapeadas",
+    "technology-horas-automatizaveis",
+    "technology-impacto-estimado-automacao",
+  ],
+};
+
+function getDefaultMaturityLevel(company: Company, pillar: BvbpPillarId): 1 | 2 | 3 | 4 | 5 {
+  if (company.id === BVBP_COMPANY_ID) {
+    const levels: Record<BvbpPillarId, 1 | 2 | 3 | 4 | 5> = {
+      financial: 1,
+      commercial: 2,
+      operation: 3,
+      technology: 2,
+    };
+
+    return levels[pillar];
+  }
+
+  const levels: Record<BvbpPillarId, 1 | 2 | 3 | 4 | 5> = {
+    financial: 3,
+    commercial: 2,
+    operation: 2,
+    technology: 1,
+  };
+
+  return levels[pillar];
+}
+
+function getMaturityLevel(level: number) {
+  return maturityLevels.find((item) => item.level === level) || maturityLevels[0];
+}
+
+function getDefaultMetricValue(company: Company, metricId: string) {
+  const signal = getCompanyPortfolioSignal(company);
+  const margin =
+    company.monthlyRevenue > 0
+      ? Math.max(0, Math.round(((company.monthlyRevenue - company.monthlyOperationalCost) / company.monthlyRevenue) * 100))
+      : undefined;
+
+  const valueByMetric: Record<string, number | undefined> = {
+    "financial-faturamento": company.reportedRevenue || company.monthlyRevenue || undefined,
+    "financial-margem": margin,
+    "financial-custo-operacional": company.monthlyOperationalCost || undefined,
+    "financial-receita-em-risco": signal.revenueAtRisk || undefined,
+    "financial-potencial-mapeado": signal.mappedPotential || undefined,
+    "commercial-taxa-conversao": company.id === BVBP_COMPANY_ID ? undefined : 18,
+    "commercial-pipeline": company.id === BVBP_COMPANY_ID ? getBvbpPipelinePotential() : Math.round(company.monthlyRevenue * 0.55),
+    "operation-horas-manuais": company.id === BVBP_COMPANY_ID ? undefined : 146,
+    "operation-custo-operacional-mensal": company.monthlyOperationalCost || undefined,
+    "operation-gargalos-mapeados": signal.highRiskProjects || undefined,
+    "technology-automacoes-mapeadas": company.id === BVBP_COMPANY_ID ? 2 : 4,
+    "technology-horas-automatizaveis": company.id === BVBP_COMPANY_ID ? undefined : 72,
+    "technology-impacto-estimado-automacao": getAutomationOpportunitySummary().estimatedPotential,
+  };
+
+  return valueByMetric[metricId];
+}
+
+function buildDefaultMetricForCompany(company: Company, metric: ClientMetricConfig): ClientMetricConfig {
+  const currentValue = getDefaultMetricValue(company, metric.id);
+
+  return {
+    ...metric,
+    dataType: currentValue === undefined ? "estimated" : metric.id.includes("faturamento") || metric.id.includes("custo-operacional") ? "real" : "estimated",
+    currentValue,
+    source: currentValue === undefined ? undefined : metric.id.includes("faturamento") || metric.id.includes("custo-operacional") ? "Cadastro do cliente" : "Seed local",
+    owner: company.bvbpOwner || "BVBP",
+  };
+}
+
+export function createDefaultClientConfiguration(company: Company): ClientConfiguration {
+  const metrics = bvbpPillarIds.flatMap((pillar) =>
+    metricCatalogByPillar[pillar].map((metric) => buildDefaultMetricForCompany(company, metric)),
+  );
+
+  return {
+    companyId: company.id,
+    metrics,
+    pillars: bvbpPillarIds.map((pillar) => {
+      const maturityLevel = getDefaultMaturityLevel(company, pillar);
+      const currentLevel = getMaturityLevel(maturityLevel);
+      const nextLevel = Math.min(maturityLevel + 1, 5) as 1 | 2 | 3 | 4 | 5;
+
+      return {
+        pillar,
+        maturityLevel,
+        currentLevelName: currentLevel.name,
+        nextLevel,
+        advancementCriteria: "Definir baseline, responsável e próxima rotina de acompanhamento.",
+        selectedMetricIds: defaultSelectedMetricIdsByPillar[pillar],
+        pains: [],
+        notes: "",
+      };
+    }),
+  };
+}
 
 export function isBvbpInternalWorkspace(company: Pick<Company, "id">) {
   return company.id === BVBP_COMPANY_ID;
@@ -429,6 +770,45 @@ export const internalPortfolioItems: InternalPortfolioItem[] = [
     actionLabel: "Triar",
   },
 ];
+
+export interface AdminClientPortfolioItem extends InternalPortfolioItem {
+  companyId?: string;
+  segment?: string;
+}
+
+export function getAdminClientPortfolioItems(companies: Company[]): AdminClientPortfolioItem[] {
+  const clientItems = companies
+    .filter((company) => company.id !== BVBP_COMPANY_ID)
+    .map((company) => {
+      const signal = getCompanyPortfolioSignal(company);
+
+      return {
+        id: `client-${company.id}`,
+        companyId: company.id,
+        name: company.name,
+        type: company.status === "Onboarding" ? "Cliente em onboarding" : "Cliente",
+        status: company.status || "Ativo",
+        criticalPointer: signal.criticalPointer,
+        mappedPotential: signal.mappedPotential,
+        nextAction: signal.nextAction,
+        owner: company.contactName || "BVBP",
+        actionLabel: "Abrir workspace",
+        segment: company.segment,
+      };
+    });
+  const opportunityItems = internalPortfolioItems.filter((item) => item.id !== "internal-bvbp");
+
+  return [...clientItems, ...opportunityItems];
+}
+
+export function getAdminClientPortfolioSummary(items: AdminClientPortfolioItem[]) {
+  return {
+    clients: items.filter((item) => item.type.includes("Cliente")).length,
+    opportunities: items.filter((item) => item.type === "Prospect" || item.type === "Lead interno" || item.type === "Parceiro").length,
+    mappedPotential: items.reduce((sum, item) => sum + item.mappedPotential, 0),
+    pendingActions: items.filter((item) => item.status !== "Perdido" && item.nextAction).length,
+  };
+}
 
 export function getInternalPortfolioSummary() {
   return {
@@ -617,6 +997,169 @@ export function createOverviewMetrics(company: Company): Metric[] {
   ];
 }
 
+export function getOverviewPillarHighlights(company: Company): OverviewPillarHighlight[] {
+  const signal = getCompanyPortfolioSignal(company);
+  const automationSummary = getAutomationOpportunitySummary();
+  const isInternal = isBvbpInternalWorkspace(company);
+  const commercialPipeline = isInternal ? getBvbpPipelinePotential() : Math.round(company.monthlyRevenue * 0.55);
+  const funnelMetricsForCompany = createFunnelMetrics(company);
+  const conversionMetric = funnelMetricsForCompany.find((metric) => metric.id === "conversion");
+  const operationalPotential = isInternal
+    ? bvbpPdcaCycleSeeds.reduce((sum, cycle) => sum + cycle.estimatedImpact, 0)
+    : operationalLeaks.reduce((sum, leak) => sum + leak.estimatedCost, 0);
+  const financialValue = isInternal ? getBvbpWorkspacePotential() : company.monthlyRevenue;
+  const financialMetricLabel = isInternal ? "Potencial mapeado" : "Faturamento mensal";
+  const financialHelper = isInternal ? "Estimativa interna" : "Dado de entrada";
+  const commercialValue = conversionMetric && !isInternal ? conversionMetric.value : commercialPipeline;
+  const commercialUnit = conversionMetric && !isInternal ? "percentage" : "currency";
+  const commercialMetricLabel = conversionMetric && !isInternal ? "Taxa de conversão" : "Pipeline aberto";
+  const operationalValue = isInternal ? operationalPotential : company.monthlyOperationalCost;
+  const operationalMetricLabel = isInternal ? "Gargalo mapeado" : "Custo operacional mensal";
+
+  return [
+    {
+      id: "financial",
+      companyId: company.id,
+      pillar: "Financeiro",
+      metricLabel: financialMetricLabel,
+      value: financialValue,
+      unit: "currency",
+      helper: financialHelper,
+      dataType: isInternal ? "Interno" : "Real",
+      source: isInternal ? "Carteira e pipeline BVBP" : "Cadastro do workspace",
+      description: "Receita, margem, custo, caixa, risco e potencial.",
+      metrics: [
+        {
+          label: financialMetricLabel,
+          value: financialValue,
+          unit: "currency",
+          dataType: isInternal ? "Interno" : "Real",
+          source: isInternal ? "Carteira BVBP" : "Cadastro do workspace",
+        },
+        {
+          label: "Potencial mapeado",
+          value: isInternal ? getBvbpWorkspacePotential() : signal.mappedPotential,
+          unit: "currency",
+          dataType: "Estimado",
+          source: isInternal ? "Estimativa interna" : "Diagnóstico executivo",
+        },
+        {
+          label: "Receita em risco",
+          value: signal.revenueAtRisk,
+          unit: "currency",
+          dataType: "Estimado",
+          source: "Leitura executiva",
+        },
+      ],
+    },
+    {
+      id: "commercial",
+      companyId: company.id,
+      pillar: "Comercial",
+      metricLabel: commercialMetricLabel,
+      value: commercialValue,
+      unit: commercialUnit,
+      helper: isInternal ? "Pipeline BVBP" : "Oportunidades abertas",
+      dataType: "Estimado",
+      source: isInternal ? "CRM BVBP" : "Funil mockado",
+      description: "Origem, conversão, pipeline, follow-up e proposta.",
+      metrics: [
+        {
+          label: "Pipeline aberto",
+          value: commercialPipeline,
+          unit: "currency",
+          dataType: "Estimado",
+          source: isInternal ? "CRM BVBP" : "Funil comercial",
+        },
+        {
+          label: "Taxa de conversão",
+          value: conversionMetric?.value || 0,
+          unit: "percentage",
+          dataType: isInternal ? "Mockado" : "Estimado",
+          source: isInternal ? "Base inicial" : "Funil comercial",
+        },
+        {
+          label: "Próximas ações abertas",
+          value: isInternal ? getBvbpOpenPipelineActionCount() : 0,
+          unit: "count",
+          dataType: isInternal ? "Interno" : "Mockado",
+          source: isInternal ? "CRM BVBP" : "Workspace cliente",
+        },
+      ],
+    },
+    {
+      id: "operational",
+      companyId: company.id,
+      pillar: "Operacional",
+      metricLabel: operationalMetricLabel,
+      value: operationalValue,
+      unit: "currency",
+      helper: isInternal ? "Rotina interna" : "Vazamentos estimados",
+      dataType: isInternal ? "Estimado" : "Real",
+      source: isInternal ? "Iniciativas internas" : "Cadastro do workspace",
+      description: "Fluxo, espera, retrabalho, capacidade e entrega.",
+      metrics: [
+        {
+          label: operationalMetricLabel,
+          value: operationalValue,
+          unit: "currency",
+          dataType: isInternal ? "Estimado" : "Real",
+          source: isInternal ? "Iniciativas internas" : "Cadastro do workspace",
+        },
+        {
+          label: "Gargalo mapeado",
+          value: operationalPotential,
+          unit: "currency",
+          dataType: "Estimado",
+          source: isInternal ? "PDCA interno" : "Vazamentos operacionais",
+        },
+        {
+          label: "Custo operacional mensal",
+          value: company.monthlyOperationalCost,
+          unit: "currency",
+          dataType: isInternal ? "Interno" : "Real",
+          source: "Cadastro do workspace",
+        },
+      ],
+    },
+    {
+      id: "automation",
+      companyId: company.id,
+      pillar: "Automação",
+      metricLabel: "Ganho estimado com automação",
+      value: automationSummary.estimatedPotential,
+      unit: "currency",
+      helper: "Só quando move ponteiro real",
+      dataType: "Estimado",
+      source: "Oportunidades de automação",
+      description: "IA, sistemas e automações conectados a decisão.",
+      metrics: [
+        {
+          label: "Ganho estimado com automação",
+          value: automationSummary.estimatedPotential,
+          unit: "currency",
+          dataType: "Estimado",
+          source: "Oportunidades de automação",
+        },
+        {
+          label: "Horas manuais mapeadas",
+          value: automationSummary.manualHours,
+          unit: "count",
+          dataType: "Estimado",
+          source: "Leitura operacional",
+        },
+        {
+          label: "Automações em desenho",
+          value: automationSummary.running,
+          unit: "count",
+          dataType: "Interno",
+          source: "Backlog BVBP",
+        },
+      ],
+    },
+  ];
+}
+
 export const overviewMetrics: Metric[] = createOverviewMetrics(mockCompany);
 
 export const bvbpPillars: BvbpPillar[] = [
@@ -643,7 +1186,7 @@ export const bvbpPillars: BvbpPillar[] = [
   },
   {
     id: "tech-ai",
-    name: "Tecnologia",
+    name: "Automação",
     score: 1,
     status: "Base inicial",
     description: "Dados, IA e sistemas apenas quando ajudam a mover um ponteiro real.",
@@ -674,7 +1217,7 @@ export const internalBvbpPillars: BvbpPillar[] = [
   },
   {
     id: "tech-ai",
-    name: "Tecnologia",
+    name: "Automação",
     score: 2,
     status: "Em evolução",
     description: "Plataforma própria, conteúdo e base operacional interna.",
@@ -683,6 +1226,60 @@ export const internalBvbpPillars: BvbpPillar[] = [
 
 export function getPillarsForCompany(company: Company) {
   return isBvbpInternalWorkspace(company) ? internalBvbpPillars : bvbpPillars;
+}
+
+const maturityLevelLabels = {
+  1: "Base dispersa",
+  2: "Leitura mínima",
+  3: "Gestão ativa",
+  4: "Evidência consistente",
+  5: "Sistema escalável",
+} as const;
+
+const maturityLevelMeanings = {
+  1: "Dados existem, mas estão manuais, soltos ou pouco confiáveis.",
+  2: "Ponteiros principais definidos e atualizados com alguma cadência.",
+  3: "Rotina de análise, responsáveis e iniciativas conectadas aos ponteiros.",
+  4: "Decisões baseadas em histórico, baseline, metas e aprendizados.",
+  5: "Operação previsível, automações úteis e melhoria contínua sustentada.",
+} as const;
+
+const maturityCriteriaByPillar: Record<string, string[]> = {
+  money: [
+    "Definir ponteiro financeiro principal e baseline.",
+    "Separar dado real, estimado e hipótese.",
+    "Conectar potencial financeiro às iniciativas abertas.",
+  ],
+  funnel: [
+    "Organizar origem, etapa e próxima ação do pipeline.",
+    "Medir conversão mínima por etapa.",
+    "Conectar follow-up a uma rotina semanal.",
+  ],
+  operation: [
+    "Mapear fluxo crítico e gargalo atual.",
+    "Medir custo, espera ou retrabalho com baseline.",
+    "Definir responsável pela melhoria do fluxo.",
+  ],
+  "tech-ai": [
+    "Priorizar automações por ponteiro movido.",
+    "Validar evidência do gargalo antes de automatizar.",
+    "Medir ganho estimado após cada ciclo.",
+  ],
+};
+
+export function getMaturityMapForCompany(company: Company): MaturityMapItem[] {
+  return getPillarsForCompany(company).map((pillar) => {
+    const nextLevel = Math.min(pillar.score + 1, 5);
+
+    return {
+      ...pillar,
+      currentLevelLabel: maturityLevelLabels[pillar.score as keyof typeof maturityLevelLabels],
+      nextLevel,
+      nextLevelLabel: maturityLevelLabels[nextLevel as keyof typeof maturityLevelLabels],
+      currentMeaning: maturityLevelMeanings[pillar.score as keyof typeof maturityLevelMeanings],
+      advancementCriteria: maturityCriteriaByPillar[pillar.id] || maturityCriteriaByPillar.money,
+    };
+  });
 }
 
 export const diagnosticSignals = [

@@ -52,7 +52,7 @@ const LoginPage = () => {
 
       toast({
         title: "Acesso liberado",
-        description: "Bem-vindo ao portal BVBP.",
+        description: "Bem-vindo ao seu workspace.",
       });
       navigate(from === defaultRedirect ? getDefaultRouteForSession(session) : from, { replace: true });
     }, 250);
@@ -64,7 +64,7 @@ const LoginPage = () => {
         <title>Login | Portal BVBP</title>
         <meta
           name="description"
-          content="Acesse o portal BVBP para visualizar conteúdo, clientes e ponteiros de performance."
+          content="Acesse o Portal BVBP para acompanhar workspace, ponteiros, ciclos PDCA e evidências de performance."
         />
       </Helmet>
 
@@ -74,7 +74,7 @@ const LoginPage = () => {
             <div>
               <BrandLockup tone="light" size="lg" />
               <p className="mt-10 max-w-sm font-heading text-4xl font-medium leading-tight">
-                Método, clientes e ciclos em um só lugar.
+                Ponteiros, ciclos e evidências para decidir melhor.
               </p>
             </div>
             <div className="grid gap-3 border-t border-bvbp-ivory/12 pt-6">
@@ -99,7 +99,7 @@ const LoginPage = () => {
               <BrandLockup tone="dark" size="md" />
               <h1 className="mt-8 font-heading text-3xl font-medium text-bvbp-ink">Entrar no Portal BVBP</h1>
               <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
-                Acesso para gestão interna e visão de performance dos clientes.
+                Acompanhe ponteiros, ciclos PDCA e evidências do seu workspace.
               </p>
             </div>
 
@@ -140,7 +140,7 @@ const LoginPage = () => {
             </form>
 
             <div className="mt-6 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset p-3 text-xs leading-5 text-bvbp-muted-ink">
-              Admin: conrado@bvbp.com.br · Cliente: cliente@bvbp.com.br · Senha: bvbp90
+              Equipe BVBP: conrado@bvbp.com.br · Usuário demo: cliente@bvbp.com.br · Senha: bvbp90
             </div>
           </div>
         </section>
