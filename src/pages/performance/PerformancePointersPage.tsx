@@ -116,7 +116,7 @@ function formatOverviewMetric(metric: Metric) {
 }
 
 function formatClientMetric(metric: ClientMetricConfig) {
-  if (metric.currentValue === undefined) return "Sem valor";
+  if (metric.currentValue === undefined) return "Sem baseline";
   if (metric.unit === "currency") return formatCurrency(metric.currentValue);
   if (metric.unit === "percentage") return `${metric.currentValue}%`;
   if (metric.unit === "hours") return `${formatNumber(metric.currentValue)}h`;
@@ -130,7 +130,7 @@ function clientMetricDetail(metric: ClientMetricConfig): PerformanceDetail {
     subtitle: metric.custom ? "Métrica customizada" : "Catálogo BVBP",
     status: clientMetricDataTypeLabels[metric.dataType],
     affectedPointer: metric.name,
-    estimatedImpact: metric.currentValue === undefined ? "Sem valor" : formatClientMetric(metric),
+    estimatedImpact: metric.currentValue === undefined ? "Sem baseline" : formatClientMetric(metric),
     dataType: clientMetricDataTypeLabels[metric.dataType],
     description: metric.description,
     whyItMatters: "Métrica selecionada na configuração local do cliente.",
