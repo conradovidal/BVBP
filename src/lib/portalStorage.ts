@@ -12,6 +12,7 @@ export const PORTAL_STORAGE_KEYS = {
   clients: "bvbp-portal-clients",
   activeCompany: "bvbp-active-company",
   pdcaCycles: "bvbp-pdca-cycles",
+  initiativeActivities: "bvbp-initiative-activities",
   clientConfigurations: "bvbp-client-configurations",
 } as const;
 
@@ -127,5 +128,6 @@ export function resetPortalDemoData() {
   writeJsonStorage(PORTAL_STORAGE_KEYS.clients, mockCompanies);
   writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, mockCompanies.map(createDefaultClientConfiguration));
   writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, bvbpPdcaCycleSeeds);
+  writeJsonStorage(PORTAL_STORAGE_KEYS.initiativeActivities, []);
   window.localStorage.setItem(PORTAL_STORAGE_KEYS.activeCompany, BVBP_COMPANY_ID);
 }

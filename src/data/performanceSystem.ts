@@ -209,7 +209,7 @@ export const bvbpPointerOptions = [
   "Taxa de conversão",
   "Conteúdos publicados",
   "Potencial mapeado",
-  "Ciclos ativos",
+  "Iniciativas ativas",
 ] as const;
 
 export interface PdcaEvidence {
@@ -927,7 +927,7 @@ export function createOverviewMetrics(company: Company): Metric[] {
       {
         id: "metric-active-cycles",
         companyId: company.id,
-        name: "Ciclos ativos",
+        name: "Iniciativas ativas",
         value: 2,
         unit: "count",
         category: "operational",
@@ -988,11 +988,11 @@ export function createOverviewMetrics(company: Company): Metric[] {
     {
       id: "metric-active-cycles",
       companyId: company.id,
-      name: "Ciclos ativos",
+      name: "Iniciativas ativas",
       value: signal.activeCycles,
       unit: "count",
       category: "operational",
-      confidenceLevel: "PDCA em acompanhamento",
+      confidenceLevel: "Iniciativas em acompanhamento",
     },
   ];
 }
@@ -1315,7 +1315,7 @@ export const internalWeeklySummary: WeeklySummaryItem[] = [
     value: "Ter método e plataforma bons, mas comercial ainda pouco consistente.",
   },
   {
-    label: "Ciclo em andamento",
+    label: "Iniciativa em andamento",
     value: "Estruturar pipeline mínimo da BVBP.",
   },
   {
@@ -1590,7 +1590,7 @@ export const operationalLeaks: OperationalLeak[] = [
     companyId: mockCompany.id,
     name: "Relatórios manuais",
     affectedFlow: "Gestão -> Diretoria",
-    affectedPointer: "Ciclos ativos",
+    affectedPointer: "Iniciativas ativas",
     hoursPerMonth: 40,
     estimatedCost: 6000,
     severity: "Média",
@@ -1664,7 +1664,7 @@ export const improvements: Improvement[] = [
     id: "improvement-project-review",
     companyId: mockCompany.id,
     title: "Implantar ritual quinzenal de revisão de projetos",
-    affectedPointer: "Ciclos ativos",
+    affectedPointer: "Iniciativas ativas",
     affectedFlow: "Governança de execução",
     hypothesis: "Cadência curta aumenta clareza de risco e próxima decisão.",
     estimatedImpact: 15000,
@@ -1904,7 +1904,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     id: "bvbp-action-method-page",
     companyId: BVBP_COMPANY_ID,
     title: "Criar página interna de método BVBP",
-    affectedPointer: "Ciclos ativos",
+    affectedPointer: "Iniciativas ativas",
     affectedFlow: "Método -> Execução",
     hypothesis: "Método visível ajuda a repetir diagnóstico e execução.",
     plannedAction: "Documentar somente depois dos primeiros diagnósticos gerarem evidências.",

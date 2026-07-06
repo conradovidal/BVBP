@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Visão geral", href: "/app/performance/overview", icon: LayoutDashboard },
   { label: "Ponteiros", href: "/app/performance/pointers", icon: Target },
-  { label: "Iniciativas", href: "/app/performance/pdca", icon: ListChecks },
+  { label: "Iniciativas", href: "/app/performance/initiatives", icon: ListChecks },
 ];
 
 interface WorkspaceSwitcherProps {

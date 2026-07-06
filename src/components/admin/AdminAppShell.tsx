@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const adminNavItems = [
   { label: "Visão geral", href: "/app/admin", icon: LayoutDashboard },
   { label: "Ponteiros", href: "/app/admin/pointers", icon: Target },
-  { label: "Iniciativas", href: "/app/admin/pdca", icon: ListChecks },
+  { label: "Iniciativas", href: "/app/admin/initiatives", icon: ListChecks },
   { label: "CRM", href: "/app/admin/clients", icon: UsersRound },
   { label: "Conteúdo", href: "/app/admin/content", icon: FileText },
   { label: "Configurações", href: "/app/admin/settings", icon: Settings },

@@ -248,7 +248,7 @@ function maturityLevelInfo(level: number) {
   return maturityLevels.find((item) => item.level === level) || maturityLevels[0];
 }
 
-function isCycleActive(cycle: PdcaCycle) {
+export function isOverviewCycleActive(cycle: PdcaCycle) {
   return cycle.pdcaStatus !== "Padronizar" && cycle.pdcaStatus !== "Pausar";
 }
 
@@ -262,10 +262,10 @@ function parseDeadlineValue(deadline: string) {
   return Number.MAX_SAFE_INTEGER;
 }
 
-export function getPrioritizedOverviewInitiatives(cycles: PdcaCycle[]) {
+export function sortOverviewInitiatives(cycles: PdcaCycle[]) {
   return [...cycles]
     .sort((a, b) => {
-      const activeDiff = Number(isCycleActive(b)) - Number(isCycleActive(a));
+      const activeDiff = Number(isOverviewCycleActive(b)) - Number(isOverviewCycleActive(a));
       if (activeDiff) return activeDiff;
 
       const impactDiff = (b.estimatedImpact || 0) - (a.estimatedImpact || 0);
@@ -278,8 +278,11 @@ export function getPrioritizedOverviewInitiatives(cycles: PdcaCycle[]) {
       if (deadlineDiff) return deadlineDiff;
 
       return (a.priorityOrder || 0) - (b.priorityOrder || 0);
-    })
-    .slice(0, 5);
+    });
+}
+
+export function getPrioritizedOverviewInitiatives(cycles: PdcaCycle[]) {
+  return sortOverviewInitiatives(cycles).slice(0, 5);
 }
 
 function cycleMatchesPillar(cycle: PdcaCycle, pillarId: BvbpPillarId) {

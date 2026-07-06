@@ -48,6 +48,7 @@ function normalizeAffectedPointer(pointer: string) {
   if (["Dinheiro", "Clareza financeira"].includes(pointer)) return "Finanças";
   if (pointer === "Eficiência operacional") return "Operação";
   if (["Tecnologia e IA", "Automações", "Automação aplicada", "Tecnologia"].includes(pointer)) return "Automação";
+  if (pointer === "Ciclos ativos") return "Iniciativas ativas";
   return pointer;
 }
 
@@ -104,7 +105,7 @@ function cycleFromImprovement(improvement: Improvement, company: Company, index:
       affectedFlow: improvement.affectedFlow,
       hypothesis: improvement.hypothesis,
       plannedAction: improvement.nextDecision || improvement.hypothesis,
-      whyItMatters: "Este ciclo foi seedado a partir dos sinais priorizados para o workspace.",
+      whyItMatters: "Esta iniciativa foi seedada a partir dos sinais priorizados para o workspace.",
       owner: improvement.owner,
       deadline: improvement.deadline,
       pdcaStatus: normalizePdcaStatus(improvement.pdcaStatus),
@@ -114,7 +115,7 @@ function cycleFromImprovement(improvement: Improvement, company: Company, index:
       startDate: "2026-06-30",
       endDate: improvement.deadline,
       baseline: improvement.affectedPointer,
-      target: `Reduzir impacto estimado em ${improvement.estimatedImpact ? "90 dias" : "um ciclo"}.`,
+      target: `Reduzir impacto estimado em ${improvement.estimatedImpact ? "90 dias" : "uma rodada"}.`,
       priorityOrder: index,
       actions: [
         {
@@ -286,13 +287,13 @@ export function buildBvbpWeeklySummary(cycles: PdcaCycle[]) {
   const latestEvidence = cycles
     .flatMap((cycle) => cycle.evidences.map((evidence) => ({ cycle, evidence })))
     .sort((a, b) => b.evidence.date.localeCompare(a.evidence.date))[0];
-  const nextDecision = activeCycle?.nextDecision || "Definir a próxima decisão do ciclo ativo.";
+  const nextDecision = activeCycle?.nextDecision || "Definir a próxima decisão da iniciativa ativa.";
 
   return [
     { label: "Próxima decisão", value: nextDecision },
     { label: "Principal oportunidade", value: "Converter pipeline mapeado em diagnósticos com evidência." },
     { label: "Principal risco", value: "Executar ações sem medir aprendizado suficiente para padronizar." },
-    { label: "Ciclo em andamento", value: activeCycle?.title || "Nenhum ciclo ativo registrado." },
+    { label: "Iniciativa em andamento", value: activeCycle?.title || "Nenhuma iniciativa ativa registrada." },
     { label: "Última evidência", value: latestEvidence?.evidence.description || "Nenhuma evidência registrada." },
   ];
 }
