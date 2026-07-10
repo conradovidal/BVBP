@@ -433,7 +433,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
       const synced = await syncCompanyToSupabase(buildCompanySnapshot(company.id, state));
 
       if (!synced) {
-        throw new Error("sync_failed");
+        throw new Error("Sessão expirada ou sem permissão. Entre novamente com uma conta BVBP.");
       }
 
       const updatedContact = await sendClientContactAccessAction(company.id, contact.id, action);
@@ -444,10 +444,12 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
           ? `${contact.name} não acessa mais este workspace.`
           : `${contact.name} recebeu um convite para definir a senha.`,
       });
-    } catch {
+    } catch (error) {
       toast({
         title: "Não foi possível atualizar o acesso",
-        description: "Confirme a sessão Supabase da equipe BVBP e tente novamente.",
+        description: error instanceof Error
+          ? error.message
+          : "Sessão expirada ou sem permissão. Entre novamente com uma conta BVBP.",
         variant: "destructive",
       });
     } finally {

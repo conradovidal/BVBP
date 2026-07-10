@@ -9,6 +9,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import type { Json } from "@/integrations/supabase/types";
 import type { InitiativeActivity } from "@/lib/initiativeActivityStore";
+import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 import {
   PORTAL_STORAGE_KEYS,
   isClientConfigurationList,
@@ -37,6 +38,9 @@ interface InviteClientContactResponse {
   contact: ClientContact;
 }
 
+const expiredSessionMessage = "Sessão expirada. Entre novamente para enviar o convite.";
+const forbiddenInviteMessage = "Sessão expirada ou sem permissão. Entre novamente com uma conta BVBP.";
+
 function toJson(value: unknown): Json {
   return JSON.parse(JSON.stringify(value)) as Json;
 }
@@ -59,6 +63,13 @@ function toClientContact(contact: RemoteContact): ClientContact {
 function mergeById<T extends { id: string }>(remoteItems: T[], localItems: T[]) {
   const remoteIds = new Set(remoteItems.map((item) => item.id));
   return [...remoteItems, ...localItems.filter((item) => !remoteIds.has(item.id))];
+}
+
+function getFunctionErrorStatus(error: unknown) {
+  if (!error || typeof error !== "object" || !("context" in error)) return undefined;
+
+  const context = (error as { context?: { status?: unknown } }).context;
+  return typeof context?.status === "number" ? context.status : undefined;
 }
 
 async function getCurrentUserId() {
@@ -318,11 +329,29 @@ export async function sendClientContactAccessAction(
   contactId: string,
   action: ContactAccessAction,
 ) {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+
+  if (!accessToken) {
+    throw new Error(expiredSessionMessage);
+  }
+
   const { data, error } = await supabase.functions.invoke<InviteClientContactResponse>("invite-client-contact", {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      apikey: portalRuntimeConfig.supabasePublishableKey,
+      "Content-Type": "application/json",
+    },
     body: { workspaceId, contactId, action },
   });
 
   if (error) {
+    const status = getFunctionErrorStatus(error);
+
+    if (status === 401 || status === 403) {
+      throw new Error(forbiddenInviteMessage);
+    }
+
     throw new Error(error.message || "Não foi possível atualizar o acesso do contato.");
   }
 
