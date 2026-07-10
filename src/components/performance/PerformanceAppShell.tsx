@@ -23,7 +23,6 @@ import {
 import { type Company } from "@/data/performanceSystem";
 import { getPerformanceSession, isBvbpStaff, signOutPerformanceUser } from "@/lib/performanceAuth";
 import { getAccessibleClientCompanies, getActiveClientCompanyForSession, setActiveCompanyId } from "@/lib/clientPortalStore";
-import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -137,7 +136,7 @@ export function PerformanceAppShell() {
   const navigate = useNavigate();
   const session = getPerformanceSession();
   const accessibleCompanies = getAccessibleClientCompanies(session);
-  const [activeCompany, setActiveCompany] = useState<Company>(() => getActiveClientCompanyForSession(session));
+  const [activeCompany, setActiveCompany] = useState<Company | undefined>(() => getActiveClientCompanyForSession(session));
   const canSwitchWorkspace = accessibleCompanies.length > 1;
   const isStaff = isBvbpStaff(session);
 
@@ -154,6 +153,31 @@ export function PerformanceAppShell() {
     setActiveCompanyId(nextCompany.id);
     setActiveCompany(nextCompany);
   };
+
+  if (!activeCompany) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bvbp-ivory px-4 text-bvbp-ink">
+        <section className="w-full max-w-md rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-6">
+          <BrandLockup tone="dark" size="md" />
+          <h1 className="mt-8 font-heading text-2xl font-bold text-bvbp-ink">Nenhum workspace ativo</h1>
+          <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
+            Este usuário ainda não tem um workspace de cliente liberado ou o acesso foi desativado.
+          </p>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            {isStaff ? (
+              <Button asChild variant="outline" className="rounded-[8px]">
+                <NavLink to="/app/admin">Portal BVBP</NavLink>
+              </Button>
+            ) : null}
+            <Button variant="outline" className="rounded-[8px]" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              Sair
+            </Button>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -233,8 +257,7 @@ export function PerformanceAppShell() {
                 )}
               </div>
               <p className="mt-1 text-sm text-bvbp-muted-ink">
-                {activeCompany.segment} · {formatNumber(activeCompany.employees)} funcionários ·{" "}
-                {formatCurrency(activeCompany.monthlyRevenue)}
+                {activeCompany.segment || "Workspace de performance"}
               </p>
             </div>
 

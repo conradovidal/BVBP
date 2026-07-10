@@ -15,9 +15,16 @@ export type ClientRelationshipStatus = (typeof relationshipStatuses)[number];
 
 export type BvbpPillarId = "financial" | "commercial" | "operation" | "technology";
 
-export type ClientMetricDataType = "real" | "estimated" | "mock";
-
 export type ClientMetricUnit = "currency" | "percentage" | "hours" | "count" | "days" | "text";
+export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
+
+export interface ClientContact {
+  id: string;
+  name: string;
+  email: string;
+  isPrimary: boolean;
+  accessStatus: "planned" | "invited" | "active" | "disabled";
+}
 
 export interface Company {
   id: string;
@@ -34,8 +41,13 @@ export interface Company {
   startDate?: string;
   contactName?: string;
   contactEmail?: string;
+  contacts?: ClientContact[];
   status?: ClientRelationshipStatus;
   relationshipStatus?: ClientRelationshipStatus;
+}
+
+export function getCompanyRelationshipStatus(company: Pick<Company, "relationshipStatus" | "status">): ClientRelationshipStatus {
+  return company.relationshipStatus || company.status || "Ativo";
 }
 
 export interface ClientMetricConfig {
@@ -44,30 +56,53 @@ export interface ClientMetricConfig {
   pillar: BvbpPillarId;
   description: string;
   unit: ClientMetricUnit;
-  dataType: ClientMetricDataType;
+  formula: string;
   currentValue?: number;
   target?: string;
   source?: string;
-  frequency?: string;
   owner?: string;
   custom: boolean;
 }
 
 export interface ClientPillarConfig {
   pillar: BvbpPillarId;
-  maturityLevel: 1 | 2 | 3 | 4 | 5;
-  currentLevelName: string;
-  nextLevel: 1 | 2 | 3 | 4 | 5;
-  advancementCriteria: string;
+  completedMaturityCriterionIds: string[];
   selectedMetricIds: string[];
   pains: string[];
   notes: string;
 }
 
 export interface ClientConfiguration {
+  schemaVersion: 2;
   companyId: string;
   pillars: ClientPillarConfig[];
   metrics: ClientMetricConfig[];
+}
+
+export interface MaturityCriterionDefinition {
+  id: string;
+  label: string;
+}
+
+export interface MaturityLevelDefinition {
+  level: MaturityLevel;
+  name: string;
+  description: string;
+  criteria: MaturityCriterionDefinition[];
+}
+
+export interface PillarMaturityDefinition {
+  pillar: BvbpPillarId;
+  levels: MaturityLevelDefinition[];
+}
+
+export interface PillarMaturityState {
+  level: MaturityLevel;
+  current: MaturityLevelDefinition;
+  next?: MaturityLevelDefinition;
+  completedCurrentCriteria: number;
+  completedCriteria: number;
+  totalCriteria: number;
 }
 
 export interface Metric {
@@ -323,33 +358,254 @@ export const bvbpPillarLabels: Record<BvbpPillarId, string> = {
 
 export const bvbpPillarIds: BvbpPillarId[] = ["financial", "commercial", "operation", "technology"];
 
-export const maturityLevels = [
-  {
-    level: 1,
-    name: "Base dispersa",
-    description: "Dados soltos, baixa confiabilidade e ausência de rotina clara.",
+function criterion(id: string, label: string): MaturityCriterionDefinition {
+  return { id, label };
+}
+
+export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDefinition> = {
+  financial: {
+    pillar: "financial",
+    levels: [
+      {
+        level: 1,
+        name: "Base dispersa",
+        description: "Informações financeiras existem, mas ainda estão fragmentadas ou sem rotina confiável.",
+        criteria: [
+          criterion("financial-1-revenue-cost-source", "Faturamento e custos estão registrados com fonte definida."),
+          criterion("financial-1-cash-commitments", "Caixa disponível e compromissos financeiros são conhecidos."),
+          criterion("financial-1-update-owner", "Existe um responsável pela atualização das informações financeiras."),
+        ],
+      },
+      {
+        level: 2,
+        name: "Visibilidade financeira",
+        description: "A empresa enxerga sua situação atual e começa a conectar números a decisões.",
+        criteria: [
+          criterion("financial-2-margin-validated", "A margem operacional está calculada e validada."),
+          criterion("financial-2-goals-routine", "Metas financeiras são acompanhadas em uma rotina definida."),
+          criterion("financial-2-deviation-actions", "Desvios geram ações com responsável e prazo."),
+        ],
+      },
+      {
+        level: 3,
+        name: "Gestão de resultado",
+        description: "Os ponteiros financeiros orientam prioridades, ações e alocação de recursos.",
+        criteria: [
+          criterion("financial-3-projection-updated", "A projeção de caixa e receita é atualizada regularmente."),
+          criterion("financial-3-risk-scenarios", "Riscos e cenários financeiros são avaliados antes das decisões."),
+          criterion("financial-3-investment-history", "Decisões de investimento consideram o histórico dos ponteiros."),
+        ],
+      },
+      {
+        level: 4,
+        name: "Previsibilidade",
+        description: "Projeções e realizado são comparados para antecipar riscos e oportunidades.",
+        criteria: [
+          criterion("financial-4-forecast-actual", "O forecast é comparado sistematicamente com o realizado."),
+          criterion("financial-4-return-risk", "Recursos são priorizados considerando retorno e risco."),
+          criterion("financial-4-proven-impact", "Ciclos de melhoria comprovam impacto financeiro."),
+        ],
+      },
+      {
+        level: 5,
+        name: "Otimização de valor",
+        description: "A gestão financeira sustenta decisões previsíveis e melhoria contínua de valor.",
+        criteria: [],
+      },
+    ],
   },
-  {
-    level: 2,
-    name: "Leitura mínima",
-    description: "Alguns dados existem, mas ainda com baixa conexão com decisão.",
+  commercial: {
+    pillar: "commercial",
+    levels: [
+      {
+        level: 1,
+        name: "Atuação dispersa",
+        description: "O esforço comercial acontece sem um funil consistente ou uma leitura compartilhada.",
+        criteria: [
+          criterion("commercial-1-funnel-stages", "As etapas e os critérios do funil estão definidos."),
+          criterion("commercial-1-qualified-origin", "Leads qualificados são registrados com sua origem."),
+          criterion("commercial-1-owner-next-action", "Oportunidades possuem responsável e próxima ação."),
+        ],
+      },
+      {
+        level: 2,
+        name: "Funil visível",
+        description: "A empresa enxerga oportunidades, etapas e responsabilidades do processo comercial.",
+        criteria: [
+          criterion("commercial-2-conversion-cycle", "Conversão e ciclo de vendas possuem baseline."),
+          criterion("commercial-2-pipeline-routine", "O pipeline é revisado em uma rotina definida."),
+          criterion("commercial-2-loss-reasons", "Perdas são registradas com seus motivos."),
+        ],
+      },
+      {
+        level: 3,
+        name: "Gestão comercial",
+        description: "Metas e gargalos do funil orientam a atuação do time comercial.",
+        criteria: [
+          criterion("commercial-3-stage-goals", "Existem metas definidas por etapa do funil."),
+          criterion("commercial-3-forecast-updated", "O forecast comercial é atualizado regularmente."),
+          criterion("commercial-3-bottleneck-actions", "Ações comerciais atacam os gargalos identificados."),
+        ],
+      },
+      {
+        level: 4,
+        name: "Receita previsível",
+        description: "Histórico e forecast permitem antecipar receita e ajustar a estratégia.",
+        criteria: [
+          criterion("commercial-4-forecast-accuracy", "A acurácia do forecast é medida."),
+          criterion("commercial-4-channel-comparison", "Canais de aquisição são comparados por resultado."),
+          criterion("commercial-4-playbook", "Aprendizados comerciais estão consolidados em um playbook."),
+        ],
+      },
+      {
+        level: 5,
+        name: "Crescimento replicável",
+        description: "O processo comercial é previsível, mensurável e replicável.",
+        criteria: [],
+      },
+    ],
   },
-  {
-    level: 3,
-    name: "Gestão ativa",
-    description: "Indicadores acompanhados com alguma cadência e responsáveis definidos.",
+  operation: {
+    pillar: "operation",
+    levels: [
+      {
+        level: 1,
+        name: "Operação reativa",
+        description: "A operação reage às demandas sem uma visão clara do fluxo e de seus responsáveis.",
+        criteria: [
+          criterion("operation-1-critical-flow", "O fluxo operacional crítico está mapeado."),
+          criterion("operation-1-roles", "Papéis e responsáveis do fluxo estão definidos."),
+          criterion("operation-1-baseline", "Lead time ou entregas em atraso possuem baseline."),
+        ],
+      },
+      {
+        level: 2,
+        name: "Fluxo visível",
+        description: "Etapas, responsabilidades e problemas recorrentes são conhecidos.",
+        criteria: [
+          criterion("operation-2-rework", "O retrabalho é medido."),
+          criterion("operation-2-management-routine", "Existe uma rotina ativa de acompanhamento operacional."),
+          criterion("operation-2-bottleneck-actions", "Gargalos geram ações com responsável."),
+        ],
+      },
+      {
+        level: 3,
+        name: "Gestão do fluxo",
+        description: "Capacidade, demanda e desempenho orientam as decisões operacionais.",
+        criteria: [
+          criterion("operation-3-capacity-demand", "Capacidade e demanda são comparadas."),
+          criterion("operation-3-sla", "O cumprimento de SLA é acompanhado."),
+          criterion("operation-3-risk-anticipation", "Riscos operacionais são antecipados."),
+        ],
+      },
+      {
+        level: 4,
+        name: "Operação previsível",
+        description: "A operação mantém padrões, antecipa desvios e sustenta seus ganhos.",
+        criteria: [
+          criterion("operation-4-before-after", "Melhorias mensuram resultados antes e depois."),
+          criterion("operation-4-standards", "Padrões operacionais estão documentados."),
+          criterion("operation-4-sustained-gains", "Os ganhos permanecem após o encerramento do ciclo."),
+        ],
+      },
+      {
+        level: 5,
+        name: "Melhoria contínua",
+        description: "A operação aprende, padroniza e melhora continuamente com base em evidências.",
+        criteria: [],
+      },
+    ],
   },
-  {
-    level: 4,
-    name: "Evidência consistente",
-    description: "Indicadores conectados a iniciativas, evidências e decisões recorrentes.",
+  technology: {
+    pillar: "technology",
+    levels: [
+      {
+        level: 1,
+        name: "Ferramentas dispersas",
+        description: "Ferramentas, acessos e dados existem sem uma organização compartilhada.",
+        criteria: [
+          criterion("technology-1-inventory", "Ferramentas e dados críticos estão inventariados."),
+          criterion("technology-1-owners", "Existem responsáveis definidos pelas soluções críticas."),
+          criterion("technology-1-access", "Acessos estão organizados e revisados."),
+        ],
+      },
+      {
+        level: 2,
+        name: "Base organizada",
+        description: "A empresa conhece sua base tecnológica e começa a aplicá-la aos gargalos prioritários.",
+        criteria: [
+          criterion("technology-2-automations", "Existem automações em produção."),
+          criterion("technology-2-integrations", "Integrações removem etapas manuais do processo."),
+          criterion("technology-2-baseline", "Horas manuais ou erros possuem baseline."),
+        ],
+      },
+      {
+        level: 3,
+        name: "Tecnologia aplicada",
+        description: "Soluções digitais removem gargalos e possuem responsáveis claros.",
+        criteria: [
+          criterion("technology-3-adoption-incidents", "Adoção e incidentes são medidos."),
+          criterion("technology-3-monitoring", "As soluções críticas são monitoradas."),
+          criterion("technology-3-business-pointers", "Resultados tecnológicos estão conectados a ponteiros do negócio."),
+        ],
+      },
+      {
+        level: 4,
+        name: "Adoção mensurada",
+        description: "A tecnologia é priorizada por impacto, adoção e continuidade.",
+        criteria: [
+          criterion("technology-4-impact-portfolio", "O portfólio tecnológico é priorizado por impacto."),
+          criterion("technology-4-continuity-governance", "Continuidade e governança estão definidas."),
+          criterion("technology-4-measured-cycles", "A evolução ocorre em ciclos com resultados mensurados."),
+        ],
+      },
+      {
+        level: 5,
+        name: "Evolução contínua",
+        description: "Tecnologia, adoção e impacto evoluem de forma contínua e mensurável.",
+        criteria: [],
+      },
+    ],
   },
-  {
-    level: 5,
-    name: "Sistema otimizado",
-    description: "Rotina consolidada, melhoria contínua e dados confiáveis para decisão.",
-  },
-] as const;
+};
+
+export function getPillarMaturityState(
+  pillarId: BvbpPillarId,
+  completedMaturityCriterionIds: string[],
+): PillarMaturityState {
+  const definition = maturityDefinitionsByPillar[pillarId];
+  const completedIds = new Set(completedMaturityCriterionIds);
+  let level: MaturityLevel = 1;
+
+  for (const levelDefinition of definition.levels.slice(0, -1)) {
+    const isTransitionComplete = levelDefinition.criteria.every((item) => completedIds.has(item.id));
+    if (!isTransitionComplete) break;
+    level = Math.min(levelDefinition.level + 1, 5) as MaturityLevel;
+  }
+
+  const current = definition.levels[level - 1];
+  const next = definition.levels[level];
+  const totalCriteria = definition.levels.reduce((sum, item) => sum + item.criteria.length, 0);
+  const completedCriteria = definition.levels.reduce(
+    (sum, item) => sum + item.criteria.filter((criterionItem) => completedIds.has(criterionItem.id)).length,
+    0,
+  );
+
+  return {
+    level,
+    current,
+    next,
+    completedCurrentCriteria: current.criteria.filter((item) => completedIds.has(item.id)).length,
+    completedCriteria,
+    totalCriteria,
+  };
+}
+
+export function getMaturityCriterionIdsForLevel(pillarId: BvbpPillarId, level: MaturityLevel) {
+  return maturityDefinitionsByPillar[pillarId].levels
+    .filter((item) => item.level < level)
+    .flatMap((item) => item.criteria.map((criterionItem) => criterionItem.id));
+}
 
 export const painCatalogByPillar: Record<BvbpPillarId, string[]> = {
   financial: [
@@ -386,6 +642,7 @@ function makeMetricCatalogItem(
   name: string,
   unit: ClientMetricUnit,
   description: string,
+  formula: string,
 ): ClientMetricConfig {
   return {
     id: `${pillar}-${slug}`,
@@ -393,58 +650,38 @@ function makeMetricCatalogItem(
     pillar,
     description,
     unit,
-    dataType: "estimated",
+    formula,
     custom: false,
   };
 }
 
 export const metricCatalogByPillar: Record<BvbpPillarId, ClientMetricConfig[]> = {
   financial: [
-    makeMetricCatalogItem("financial", "faturamento", "Faturamento", "currency", "Receita mensal informada ou estimada."),
-    makeMetricCatalogItem("financial", "margem", "Margem", "percentage", "Leitura de margem operacional."),
-    makeMetricCatalogItem("financial", "custo-operacional", "Custo operacional", "currency", "Custo operacional mensal."),
-    makeMetricCatalogItem("financial", "caixa", "Caixa", "currency", "Disponibilidade ou fôlego financeiro."),
-    makeMetricCatalogItem("financial", "receita-em-risco", "Receita em risco", "currency", "Receita potencialmente comprometida por gargalos."),
-    makeMetricCatalogItem("financial", "potencial-mapeado", "Potencial mapeado", "currency", "Potencial estimado para priorizar iniciativas."),
-    makeMetricCatalogItem("financial", "ticket-medio", "Ticket médio", "currency", "Valor médio por venda ou contrato."),
-    makeMetricCatalogItem("financial", "inadimplencia", "Inadimplência", "percentage", "Percentual de receita em atraso."),
-    makeMetricCatalogItem("financial", "prazo-medio-recebimento", "Prazo médio de recebimento", "days", "Tempo médio até receber."),
+    makeMetricCatalogItem("financial", "faturamento", "Faturamento", "currency", "Receita reconhecida no período.", "Soma das receitas reconhecidas no período"),
+    makeMetricCatalogItem("financial", "margem", "Margem operacional", "percentage", "Resultado operacional em relação ao faturamento.", "(Faturamento - custo operacional) / faturamento × 100"),
+    makeMetricCatalogItem("financial", "custo-operacional", "Custo operacional", "currency", "Custos necessários para manter a operação.", "Soma dos custos operacionais do período"),
+    makeMetricCatalogItem("financial", "caixa", "Caixa disponível", "currency", "Recursos disponíveis para uso imediato.", "Soma dos saldos disponíveis em caixa e contas"),
+    makeMetricCatalogItem("financial", "inadimplencia", "Inadimplência", "percentage", "Percentual do faturamento vencido e não recebido.", "Valores vencidos / faturamento do período × 100"),
   ],
   commercial: [
-    makeMetricCatalogItem("commercial", "leads", "Leads", "count", "Entradas comerciais mapeadas."),
-    makeMetricCatalogItem("commercial", "conversas-iniciadas", "Conversas iniciadas", "count", "Conversas comerciais abertas."),
-    makeMetricCatalogItem("commercial", "diagnosticos-agendados", "Diagnósticos agendados", "count", "Diagnósticos marcados."),
-    makeMetricCatalogItem("commercial", "reunioes-realizadas", "Reuniões realizadas", "count", "Reuniões comerciais feitas."),
-    makeMetricCatalogItem("commercial", "propostas-enviadas", "Propostas enviadas", "count", "Propostas enviadas no ciclo."),
-    makeMetricCatalogItem("commercial", "taxa-conversao", "Taxa de conversão", "percentage", "Conversão entre etapas ou lead para cliente."),
-    makeMetricCatalogItem("commercial", "ticket-medio", "Ticket médio", "currency", "Ticket médio comercial."),
-    makeMetricCatalogItem("commercial", "pipeline", "Pipeline", "currency", "Valor estimado em oportunidades abertas."),
-    makeMetricCatalogItem("commercial", "origem-leads", "Origem dos leads", "count", "Leitura de origem e qualidade das entradas."),
-    makeMetricCatalogItem("commercial", "ciclo-venda", "Ciclo de venda", "days", "Tempo médio entre entrada e fechamento."),
+    makeMetricCatalogItem("commercial", "leads-qualificados", "Leads qualificados", "count", "Entradas que atendem aos critérios comerciais.", "Contagem de leads qualificados no período"),
+    makeMetricCatalogItem("commercial", "taxa-conversao", "Taxa de conversão", "percentage", "Conversão de leads qualificados em clientes.", "Clientes conquistados / leads qualificados × 100"),
+    makeMetricCatalogItem("commercial", "pipeline", "Pipeline aberto", "currency", "Valor das oportunidades comerciais abertas.", "Soma dos valores das oportunidades abertas"),
+    makeMetricCatalogItem("commercial", "ticket-medio", "Ticket médio", "currency", "Valor médio das vendas fechadas.", "Receita das vendas fechadas / número de vendas"),
+    makeMetricCatalogItem("commercial", "ciclo-venda", "Ciclo de vendas", "days", "Tempo médio entre qualificação e fechamento.", "Média de dias entre qualificação e fechamento"),
   ],
   operation: [
-    makeMetricCatalogItem("operation", "lead-time", "Lead time", "days", "Tempo total do fluxo."),
-    makeMetricCatalogItem("operation", "cycle-time", "Cycle time", "days", "Tempo de execução ativa."),
-    makeMetricCatalogItem("operation", "retrabalho", "Retrabalho", "count", "Ocorrências ou volume de retrabalho."),
-    makeMetricCatalogItem("operation", "horas-manuais", "Horas manuais", "hours", "Horas gastas em tarefas manuais."),
-    makeMetricCatalogItem("operation", "custo-operacional-mensal", "Custo operacional mensal", "currency", "Custo mensal da operação."),
-    makeMetricCatalogItem("operation", "gargalos-mapeados", "Gargalos mapeados", "count", "Gargalos conhecidos no fluxo."),
-    makeMetricCatalogItem("operation", "capacidade-time", "Capacidade do time", "count", "Capacidade operacional disponível."),
-    makeMetricCatalogItem("operation", "tempo-espera", "Tempo de espera", "days", "Espera entre áreas ou etapas."),
-    makeMetricCatalogItem("operation", "sla", "SLA", "percentage", "Cumprimento de acordos de entrega."),
-    makeMetricCatalogItem("operation", "entregas-atraso", "Entregas em atraso", "count", "Entregas fora do prazo."),
+    makeMetricCatalogItem("operation", "lead-time", "Lead time", "days", "Tempo total entre solicitação e entrega.", "Média de dias entre solicitação e entrega"),
+    makeMetricCatalogItem("operation", "retrabalho", "Retrabalho", "count", "Ocorrências que exigiram refazer uma entrega.", "Contagem de ocorrências de retrabalho no período"),
+    makeMetricCatalogItem("operation", "horas-manuais", "Horas manuais", "hours", "Horas dedicadas a tarefas manuais recorrentes.", "Soma das horas registradas em tarefas manuais"),
+    makeMetricCatalogItem("operation", "sla", "SLA", "percentage", "Percentual de entregas realizadas dentro do acordo.", "Entregas no prazo / total de entregas × 100"),
+    makeMetricCatalogItem("operation", "entregas-atraso", "Entregas em atraso", "count", "Entregas concluídas ou abertas fora do prazo.", "Contagem de entregas fora do prazo no período"),
   ],
   technology: [
-    makeMetricCatalogItem("technology", "automacoes-mapeadas", "Automações mapeadas", "count", "Oportunidades de automação já identificadas."),
-    makeMetricCatalogItem("technology", "horas-automatizaveis", "Horas automatizáveis", "hours", "Horas com potencial de automação."),
-    makeMetricCatalogItem("technology", "sistemas-criticos", "Sistemas críticos", "count", "Sistemas importantes para a operação."),
-    makeMetricCatalogItem("technology", "dados-estruturados", "Dados estruturados", "percentage", "Nível de organização dos dados."),
-    makeMetricCatalogItem("technology", "bases-dispersas", "Bases dispersas", "count", "Bases ou planilhas separadas."),
-    makeMetricCatalogItem("technology", "relatorios-manuais", "Relatórios manuais", "count", "Relatórios montados manualmente."),
-    makeMetricCatalogItem("technology", "integracoes-necessarias", "Integrações necessárias", "count", "Integrações relevantes para o fluxo."),
-    makeMetricCatalogItem("technology", "impacto-estimado-automacao", "Impacto estimado de automação", "currency", "Ganho estimado com automação."),
-    makeMetricCatalogItem("technology", "governanca-documental", "Governança documental", "count", "Itens críticos de documentação e governança."),
-    makeMetricCatalogItem("technology", "uso-ia", "Uso de IA", "count", "Casos de uso de IA em operação."),
+    makeMetricCatalogItem("technology", "automacoes-producao", "Automações em produção", "count", "Automações ativas no fluxo real.", "Contagem de automações ativas em produção"),
+    makeMetricCatalogItem("technology", "horas-economizadas", "Horas economizadas", "hours", "Tempo efetivamente reduzido por tecnologia.", "Horas manuais do baseline - horas manuais atuais"),
+    makeMetricCatalogItem("technology", "taxa-adocao", "Taxa de adoção", "percentage", "Uso efetivo da solução pelo público esperado.", "Usuários ativos / usuários previstos × 100"),
+    makeMetricCatalogItem("technology", "erros-incidentes", "Erros e incidentes", "count", "Falhas observadas no processo apoiado por tecnologia.", "Contagem de erros e incidentes no período"),
   ],
 };
 
@@ -532,10 +769,9 @@ const defaultSelectedMetricIdsByPillar: Record<BvbpPillarId, string[]> = {
     "financial-faturamento",
     "financial-margem",
     "financial-custo-operacional",
-    "financial-potencial-mapeado",
   ],
   commercial: [
-    "commercial-leads",
+    "commercial-leads-qualificados",
     "commercial-taxa-conversao",
     "commercial-pipeline",
   ],
@@ -545,9 +781,9 @@ const defaultSelectedMetricIdsByPillar: Record<BvbpPillarId, string[]> = {
     "operation-custo-operacional-mensal",
   ],
   technology: [
-    "technology-automacoes-mapeadas",
-    "technology-horas-automatizaveis",
-    "technology-impacto-estimado-automacao",
+    "technology-automacoes-producao",
+    "technology-horas-economizadas",
+    "technology-taxa-adocao",
   ],
 };
 
@@ -573,12 +809,13 @@ function getDefaultMaturityLevel(company: Company, pillar: BvbpPillarId): 1 | 2 
   return levels[pillar];
 }
 
-function getMaturityLevel(level: number) {
-  return maturityLevels.find((item) => item.level === level) || maturityLevels[0];
-}
-
 function getDefaultMetricValue(company: Company, metricId: string) {
-  const signal = getCompanyPortfolioSignal(company);
+  const hasCompanyBaseline = Boolean(company.reportedRevenue) || company.monthlyRevenue > 0 || company.monthlyOperationalCost > 0;
+
+  if (company.id !== BVBP_COMPANY_ID && !hasCompanyBaseline) {
+    return undefined;
+  }
+
   const margin =
     company.monthlyRevenue > 0
       ? Math.max(0, Math.round(((company.monthlyRevenue - company.monthlyOperationalCost) / company.monthlyRevenue) * 100))
@@ -588,16 +825,10 @@ function getDefaultMetricValue(company: Company, metricId: string) {
     "financial-faturamento": company.reportedRevenue || company.monthlyRevenue || undefined,
     "financial-margem": margin,
     "financial-custo-operacional": company.monthlyOperationalCost || undefined,
-    "financial-receita-em-risco": signal.revenueAtRisk || undefined,
-    "financial-potencial-mapeado": signal.mappedPotential || undefined,
     "commercial-taxa-conversao": company.id === BVBP_COMPANY_ID ? undefined : 18,
     "commercial-pipeline": company.id === BVBP_COMPANY_ID ? getBvbpPipelinePotential() : Math.round(company.monthlyRevenue * 0.55),
     "operation-horas-manuais": company.id === BVBP_COMPANY_ID ? undefined : 146,
-    "operation-custo-operacional-mensal": company.monthlyOperationalCost || undefined,
-    "operation-gargalos-mapeados": signal.highRiskProjects || undefined,
-    "technology-automacoes-mapeadas": company.id === BVBP_COMPANY_ID ? 2 : 4,
-    "technology-horas-automatizaveis": company.id === BVBP_COMPANY_ID ? undefined : 72,
-    "technology-impacto-estimado-automacao": getAutomationOpportunitySummary().estimatedPotential,
+    "technology-automacoes-producao": company.id === BVBP_COMPANY_ID ? 2 : 4,
   };
 
   return valueByMetric[metricId];
@@ -608,33 +839,32 @@ function buildDefaultMetricForCompany(company: Company, metric: ClientMetricConf
 
   return {
     ...metric,
-    dataType: currentValue === undefined ? "estimated" : metric.id.includes("faturamento") || metric.id.includes("custo-operacional") ? "real" : "estimated",
     currentValue,
     source: currentValue === undefined ? undefined : metric.id.includes("faturamento") || metric.id.includes("custo-operacional") ? "Cadastro do cliente" : "Seed local",
     owner: company.bvbpOwner || "BVBP",
   };
 }
 
-export function createDefaultClientConfiguration(company: Company): ClientConfiguration {
+export function createDefaultClientConfiguration(
+  company: Company,
+  options: { selectDefaults?: boolean } = {},
+): ClientConfiguration {
+  const { selectDefaults = true } = options;
   const metrics = bvbpPillarIds.flatMap((pillar) =>
     metricCatalogByPillar[pillar].map((metric) => buildDefaultMetricForCompany(company, metric)),
   );
 
   return {
+    schemaVersion: 2,
     companyId: company.id,
     metrics,
     pillars: bvbpPillarIds.map((pillar) => {
-      const maturityLevel = getDefaultMaturityLevel(company, pillar);
-      const currentLevel = getMaturityLevel(maturityLevel);
-      const nextLevel = Math.min(maturityLevel + 1, 5) as 1 | 2 | 3 | 4 | 5;
+      const maturityLevel = selectDefaults ? getDefaultMaturityLevel(company, pillar) : 1;
 
       return {
         pillar,
-        maturityLevel,
-        currentLevelName: currentLevel.name,
-        nextLevel,
-        advancementCriteria: "Definir baseline, responsável e próxima rotina de acompanhamento.",
-        selectedMetricIds: defaultSelectedMetricIdsByPillar[pillar],
+        completedMaturityCriterionIds: getMaturityCriterionIdsForLevel(pillar, maturityLevel),
+        selectedMetricIds: selectDefaults ? defaultSelectedMetricIdsByPillar[pillar] : [],
         pains: [],
         notes: "",
       };
@@ -771,9 +1001,10 @@ export const internalPortfolioItems: InternalPortfolioItem[] = [
   },
 ];
 
-export interface AdminClientPortfolioItem extends InternalPortfolioItem {
+export interface AdminClientPortfolioItem extends Omit<InternalPortfolioItem, "status"> {
   companyId?: string;
   segment?: string;
+  status: InternalPortfolioItem["status"] | ClientRelationshipStatus;
 }
 
 export function getAdminClientPortfolioItems(companies: Company[]): AdminClientPortfolioItem[] {
@@ -781,17 +1012,18 @@ export function getAdminClientPortfolioItems(companies: Company[]): AdminClientP
     .filter((company) => company.id !== BVBP_COMPANY_ID)
     .map((company) => {
       const signal = getCompanyPortfolioSignal(company);
+      const relationshipStatus = getCompanyRelationshipStatus(company);
 
       return {
         id: `client-${company.id}`,
         companyId: company.id,
         name: company.name,
-        type: company.status === "Onboarding" ? "Cliente em onboarding" : "Cliente",
-        status: company.status || "Ativo",
+        type: "Cliente" as const,
+        status: relationshipStatus,
         criticalPointer: signal.criticalPointer,
         mappedPotential: signal.mappedPotential,
         nextAction: signal.nextAction,
-        owner: company.contactName || "BVBP",
+        owner: company.bvbpOwner || signal.owner || "BVBP",
         actionLabel: "Abrir workspace",
         segment: company.segment,
       };
@@ -829,6 +1061,7 @@ export function getBvbpPortfolioPotential() {
 
 export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSignal {
   const stored = portfolioSignalsByCompanyId[company.id];
+  const relationshipStatus = getCompanyRelationshipStatus(company);
 
   if (stored) {
     return {
@@ -839,18 +1072,18 @@ export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSig
 
   const mappedPotential = Math.round(company.monthlyOperationalCost * 0.18);
   const revenueAtRisk = Math.round(company.monthlyRevenue * 0.18);
-  const activeCycles = company.status === "Onboarding" ? 1 : 2;
+  const activeCycles = relationshipStatus === "Onboarding" ? 1 : 2;
 
   return {
     companyId: company.id,
-    criticalPointer: company.status === "Onboarding" ? "Dados sem linha de base" : "Potencial mapeado",
+    criticalPointer: relationshipStatus === "Onboarding" ? "Dados sem linha de base" : "Potencial mapeado",
     mappedPotential,
-    nextAction: company.status === "Onboarding" ? "Fechar diagnóstico inicial" : "Definir próxima decisão",
+    nextAction: relationshipStatus === "Onboarding" ? "Fechar diagnóstico inicial" : "Definir próxima decisão",
     activeCycles,
-    highRiskProjects: company.status === "Onboarding" ? 1 : 0,
+    highRiskProjects: relationshipStatus === "Onboarding" ? 1 : 0,
     projectsCount: activeCycles + 2,
     revenueAtRisk,
-    attention: company.status === "Onboarding" || revenueAtRisk > 50000,
+    attention: relationshipStatus === "Onboarding" || revenueAtRisk > 50000,
   };
 }
 

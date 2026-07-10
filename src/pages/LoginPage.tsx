@@ -11,8 +11,10 @@ import {
   getDefaultRouteForSession,
   getPerformanceSession,
   mockLoginCredentials,
+  requestPerformancePasswordReset,
   signInPerformanceUser,
 } from "@/lib/performanceAuth";
+import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 
 const defaultRedirect = "/app/performance/overview";
 
@@ -20,6 +22,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -33,29 +36,56 @@ const LoginPage = () => {
     }
   }, [from, navigate]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
 
-    window.setTimeout(() => {
-      const session = signInPerformanceUser(email, password);
+    const session = await signInPerformanceUser(email, password);
 
-      if (!session) {
-        toast({
-          title: "Credenciais inválidas",
-          description: "Use o login mockado definido para o MVP.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
-
+    if (!session) {
       toast({
-        title: "Acesso liberado",
-        description: "Bem-vindo ao seu workspace.",
+        title: "Credenciais inválidas",
+        description: "Confira email, senha e vínculo ativo com um workspace.",
+        variant: "destructive",
       });
-      navigate(from === defaultRedirect ? getDefaultRouteForSession(session) : from, { replace: true });
-    }, 250);
+      setLoading(false);
+      return;
+    }
+
+    toast({
+      title: "Acesso liberado",
+      description: "Bem-vindo ao seu workspace.",
+    });
+    navigate(from === defaultRedirect ? getDefaultRouteForSession(session) : from, { replace: true });
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email.trim()) {
+      toast({
+        title: "Informe seu email",
+        description: "Use o mesmo email cadastrado no Portal BVBP.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResetLoading(true);
+
+    try {
+      await requestPerformancePasswordReset(email);
+      toast({
+        title: "Email enviado",
+        description: "Se o email tiver acesso ao portal, o link de definição de senha chegará na caixa de entrada.",
+      });
+    } catch {
+      toast({
+        title: "Não foi possível enviar o link",
+        description: "Confirme o email ou peça um novo convite para a equipe BVBP.",
+        variant: "destructive",
+      });
+    } finally {
+      setResetLoading(false);
+    }
   };
 
   return (
@@ -113,7 +143,7 @@ const LoginPage = () => {
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder={mockLoginCredentials.email}
+                  placeholder={portalRuntimeConfig.enableMockAuth ? mockLoginCredentials.email : "seu@email.com"}
                   required
                   autoComplete="email"
                 />
@@ -128,7 +158,7 @@ const LoginPage = () => {
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="bvbp90"
+                  placeholder={portalRuntimeConfig.enableMockAuth ? "bvbp90" : "Sua senha"}
                   required
                   autoComplete="current-password"
                 />
@@ -139,8 +169,19 @@ const LoginPage = () => {
               </Button>
             </form>
 
+            <button
+              type="button"
+              onClick={handlePasswordReset}
+              disabled={resetLoading}
+              className="mt-4 w-full text-center text-sm font-semibold text-bvbp-forest transition-colors hover:text-bvbp-forest-dark disabled:opacity-60"
+            >
+              {resetLoading ? "Enviando link..." : "Esqueci ou preciso definir minha senha"}
+            </button>
+
             <div className="mt-6 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset p-3 text-xs leading-5 text-bvbp-muted-ink">
-              Equipe BVBP: conrado@bvbp.com.br · Usuário demo: cliente@bvbp.com.br · Senha: bvbp90
+              {portalRuntimeConfig.enableMockAuth
+                ? "Acesso Supabase com fallback demo local: cliente@bvbp.com.br · Senha: bvbp90"
+                : "Acesso Supabase ativo. Use o email cadastrado pela BVBP ou o link recebido por convite/recuperação."}
             </div>
           </div>
         </section>

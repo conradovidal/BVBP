@@ -12,6 +12,8 @@ import {
   getImprovementsForCompany,
   mockCompanies,
 } from "@/data/performanceSystem";
+import { syncPdcaCyclesForCompanySoon } from "@/lib/clientPortalSupabase";
+import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 import { PORTAL_STORAGE_KEYS, isPdcaCycleList, readJsonStorage, writeJsonStorage } from "@/lib/portalStorage";
 
 export type PdcaCycleInput = Omit<PdcaCycle, "id" | "companyId" | "evidences" | "learnings" | "actions"> & {
@@ -41,6 +43,13 @@ function savePdcaCycles(cycles: PdcaCycle[]) {
 function readAllPdcaCycles() {
   const { data: storedCycles } = readJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, isPdcaCycleList);
   return storedCycles?.map(normalizeStoredCycle) || [];
+}
+
+function syncCompanyCyclesFromList(companyId: string, cycles: PdcaCycle[]) {
+  syncPdcaCyclesForCompanySoon(
+    companyId,
+    cycles.filter((cycle) => cycle.companyId === companyId),
+  );
 }
 
 function normalizeAffectedPointer(pointer: string) {
@@ -145,13 +154,14 @@ function getSeedCyclesForCompany(company: Company) {
 
 export function getPdcaCyclesForCompany(company: Company) {
   const storedCycles = readAllPdcaCycles();
-  const seedCycles = getSeedCyclesForCompany(company);
+  const seedCycles = portalRuntimeConfig.enableDemoData ? getSeedCyclesForCompany(company) : [];
   const storedIds = new Set(storedCycles.map((cycle) => cycle.id));
   const missingSeeds = seedCycles.filter((cycle) => !storedIds.has(cycle.id));
   const nextCycles = missingSeeds.length ? [...missingSeeds, ...storedCycles] : storedCycles;
 
   if (missingSeeds.length || nextCycles.some((cycle, index) => cycle !== storedCycles[index])) {
     savePdcaCycles(nextCycles);
+    syncCompanyCyclesFromList(company.id, nextCycles);
   }
 
   return nextCycles
@@ -171,7 +181,7 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     affectedPointer: input.affectedPointer.trim(),
     affectedFlow: input.affectedFlow.trim(),
     hypothesis: input.hypothesis.trim(),
-    plannedAction: input.plannedAction.trim(),
+    plannedAction: input.plannedAction.trim() || input.nextDecision.trim() || input.hypothesis.trim(),
     whyItMatters: input.whyItMatters.trim(),
     owner: input.owner.trim(),
     deadline: input.deadline.trim(),
@@ -180,7 +190,7 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     nextDecision: input.nextDecision.trim(),
     dataType: input.dataType,
     startDate: input.startDate?.trim() || "2026-06-30",
-    endDate: input.endDate?.trim() || input.deadline.trim(),
+    endDate: input.deadline.trim() || input.endDate?.trim(),
     baseline: input.baseline?.trim() || "Linha de base a confirmar",
     target: input.target?.trim() || input.nextDecision.trim() || "Objetivo a confirmar",
     priorityOrder: typeof input.priorityOrder === "number" ? input.priorityOrder : companyCycles.length,
@@ -193,14 +203,19 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     : [nextCycle, ...cycles];
 
   savePdcaCycles(nextCycles);
+  syncCompanyCyclesFromList(company.id, nextCycles);
   return nextCycle;
 }
 
 export function updatePdcaCycleStatus(cycleId: string, pdcaStatus: PdcaStatus) {
   const cycles = readAllPdcaCycles();
   const nextCycles = cycles.map((cycle) => (cycle.id === cycleId ? { ...cycle, pdcaStatus } : cycle));
+  const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
 
   savePdcaCycles(nextCycles);
+  if (updatedCycle) {
+    syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
+  }
   return nextCycles.find((cycle) => cycle.id === cycleId);
 }
 
@@ -218,6 +233,7 @@ export function reorderPdcaCycles(companyId: string, orderedIds: string[], statu
   });
 
   savePdcaCycles(nextCycles);
+  syncCompanyCyclesFromList(companyId, nextCycles);
   return nextCycles
     .filter((cycle) => cycle.companyId === companyId)
     .sort((a, b) => (a.priorityOrder || 0) - (b.priorityOrder || 0));
@@ -236,8 +252,12 @@ export function addPdcaEvidence(cycleId: string, input: EvidenceInput) {
   const nextCycles = cycles.map((cycle) =>
     cycle.id === cycleId ? { ...cycle, evidences: [evidence, ...cycle.evidences] } : cycle,
   );
+  const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
 
   savePdcaCycles(nextCycles);
+  if (updatedCycle) {
+    syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
+  }
   return evidence;
 }
 
@@ -259,8 +279,12 @@ export function upsertPdcaAction(cycleId: string, input: PdcaActionInput) {
 
     return { ...cycle, actions: nextActions };
   });
+  const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
 
   savePdcaCycles(nextCycles);
+  if (updatedCycle) {
+    syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
+  }
   return action;
 }
 

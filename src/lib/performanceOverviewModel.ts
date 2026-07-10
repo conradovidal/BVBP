@@ -1,20 +1,18 @@
 import {
   type BvbpPillarId,
   type ClientMetricConfig,
-  type ClientMetricDataType,
   type ClientMetricUnit,
   type ClientPillarConfig,
   type Company,
+  type MaturityLevelDefinition,
   type OverviewPillarHighlight,
   type PdcaCycle,
   bvbpPillarIds,
-  maturityLevels,
+  getPillarMaturityState,
+  maturityDefinitionsByPillar,
   getOverviewPillarHighlights,
 } from "@/data/performanceSystem";
-import {
-  clientMetricDataTypeLabels,
-  getClientConfiguration,
-} from "@/lib/clientConfigurationStore";
+import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 
 export type OverviewDataStatus = "Real" | "Estimado" | "Mockado" | "Sem baseline";
@@ -23,13 +21,13 @@ export interface OverviewMetricView {
   id: string;
   name: string;
   description: string;
+  formula?: string;
   unit: ClientMetricUnit;
   dataType: OverviewDataStatus;
   currentValue?: number;
   displayValue: string;
   target?: string;
   source: string;
-  frequency?: string;
   owner?: string;
   custom: boolean;
 }
@@ -54,6 +52,9 @@ export interface OverviewPillarSummary {
   nextLevelName: string;
   nextLevelDescription: string;
   advancementCriteria: string;
+  completedMaturityCriteria: number;
+  totalMaturityCriteria: number;
+  maturityLevels: MaturityLevelDefinition[];
   pains: string[];
   notes?: string;
   metrics: OverviewMetricView[];
@@ -110,8 +111,8 @@ const metricPriorityByPillar: Record<BvbpPillarId, string[]> = {
     "diagnosticos agendados",
     "commercial-propostas-enviadas",
     "propostas enviadas",
-    "commercial-leads",
-    "leads",
+    "commercial-leads-qualificados",
+    "leads qualificados",
   ],
   operation: [
     "operation-custo-operacional-mensal",
@@ -126,12 +127,12 @@ const metricPriorityByPillar: Record<BvbpPillarId, string[]> = {
     "gargalos mapeados",
   ],
   technology: [
-    "technology-impacto-estimado-automacao",
-    "impacto estimado de automacao",
-    "technology-horas-automatizaveis",
-    "horas automatizaveis",
-    "technology-automacoes-mapeadas",
-    "automacoes mapeadas",
+    "technology-horas-economizadas",
+    "horas economizadas",
+    "technology-taxa-adocao",
+    "taxa de adocao",
+    "technology-automacoes-producao",
+    "automacoes em producao",
     "technology-relatorios-manuais",
     "relatorios manuais",
     "technology-sistemas-criticos",
@@ -201,7 +202,7 @@ export function formatOverviewMetricValue(unit: ClientMetricUnit, value?: number
 
 function dataStatusForMetric(metric: ClientMetricConfig): OverviewDataStatus {
   if (!hasMetricValue(metric)) return "Sem baseline";
-  return clientMetricDataTypeLabels[metric.dataType];
+  return "Real";
 }
 
 function normalizeFallbackDataStatus(dataType: OverviewPillarHighlight["dataType"], value?: number): OverviewDataStatus {
@@ -216,13 +217,13 @@ function metricViewFromConfig(metric: ClientMetricConfig): OverviewMetricView {
     id: metric.id,
     name: metric.name,
     description: metric.description,
+    formula: metric.formula,
     unit: metric.unit,
     dataType: dataStatusForMetric(metric),
     currentValue: metric.currentValue,
     displayValue: formatOverviewMetricValue(metric.unit, metric.currentValue),
     target: metric.target,
-    source: metric.source || (metric.custom ? "Métrica customizada" : "Catálogo BVBP"),
-    frequency: metric.frequency,
+    source: metric.source || (metric.custom ? "Ponteiro personalizado" : "Catálogo BVBP"),
     owner: metric.owner,
     custom: metric.custom,
   };
@@ -242,10 +243,6 @@ function metricViewFromFallback(highlight?: OverviewPillarHighlight): OverviewMe
     source: highlight.source,
     custom: false,
   };
-}
-
-function maturityLevelInfo(level: number) {
-  return maturityLevels.find((item) => item.level === level) || maturityLevels[0];
 }
 
 export function isOverviewCycleActive(cycle: PdcaCycle) {
@@ -327,8 +324,12 @@ function buildPillarSummary(
   const fallbackPrimary = metricViewFromFallback(fallback);
   const primaryMetric = pickPrimaryMetric(pillarConfig.pillar, metrics);
   const primaryMetricView = primaryMetric ? metricViewFromConfig(primaryMetric) : fallbackPrimary;
-  const levelInfo = maturityLevelInfo(pillarConfig.maturityLevel);
-  const nextInfo = maturityLevelInfo(pillarConfig.nextLevel);
+  const maturity = getPillarMaturityState(
+    pillarConfig.pillar,
+    pillarConfig.completedMaturityCriterionIds,
+  );
+  const completedCriterionIds = new Set(pillarConfig.completedMaturityCriterionIds);
+  const pendingCurrentCriteria = maturity.current.criteria.filter((criterion) => !completedCriterionIds.has(criterion.id));
   const relatedInitiatives = cycles.filter((cycle) => cycleMatchesPillar(cycle, pillarConfig.pillar));
   const evidence = relatedInitiatives.flatMap((cycle) =>
     cycle.evidences.map((item) => `${item.date} · ${item.description}`),
@@ -338,7 +339,7 @@ function buildPillarSummary(
   const signal =
     noBaselineCount > 0
       ? "Mapear baseline"
-      : pillarConfig.maturityLevel <= 2
+      : maturity.level <= 2
         ? "Atenção"
         : "Acompanhar";
 
@@ -355,15 +356,20 @@ function buildPillarSummary(
     painsCount: pillarConfig.pains.length,
     signal,
     context: metricCount
-      ? `${metricCount} métricas acompanhadas`
-      : `Sem métricas configuradas para ${company.name}`,
-    maturityLevel: pillarConfig.maturityLevel,
-    currentLevelName: pillarConfig.currentLevelName || levelInfo.name,
-    currentLevelDescription: levelInfo.description,
-    nextLevel: pillarConfig.nextLevel,
-    nextLevelName: nextInfo.name,
-    nextLevelDescription: nextInfo.description,
-    advancementCriteria: pillarConfig.advancementCriteria || "Definir critério de avanço.",
+      ? `${metricCount} ponteiros acompanhados`
+      : `Sem ponteiros configurados para ${company.name}`,
+    maturityLevel: maturity.level,
+    currentLevelName: maturity.current.name,
+    currentLevelDescription: maturity.current.description,
+    nextLevel: maturity.next?.level || 5,
+    nextLevelName: maturity.next?.name || maturity.current.name,
+    nextLevelDescription: maturity.next?.description || maturity.current.description,
+    advancementCriteria: pendingCurrentCriteria.length
+      ? pendingCurrentCriteria.map((criterion) => criterion.label).join(" · ")
+      : "Maturidade máxima validada.",
+    completedMaturityCriteria: maturity.completedCriteria,
+    totalMaturityCriteria: maturity.totalCriteria,
+    maturityLevels: maturityDefinitionsByPillar[pillarConfig.pillar].levels,
     pains: pillarConfig.pains,
     notes: pillarConfig.notes,
     metrics: selectedMetricViews.length ? selectedMetricViews : buildFallbackMetricViews(fallback),

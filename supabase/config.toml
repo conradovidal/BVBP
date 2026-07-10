@@ -2,3 +2,9 @@ project_id = "zcpelfllyutpkystubxr"
 
 [functions.notify-new-lead]
 verify_jwt = false
+
+[functions.invite-client-contact]
+verify_jwt = true
+
+[functions.bootstrap-admins]
+verify_jwt = false

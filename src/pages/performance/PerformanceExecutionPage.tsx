@@ -63,6 +63,7 @@ import {
   type EvidenceInput,
   type PdcaCycleInput,
 } from "@/lib/pdcaCycleStore";
+import { getPerformanceSession, isBvbpStaff } from "@/lib/performanceAuth";
 
 const pointerOptions = Array.from(new Set([...bvbpPointerOptions, "Finanças", "Comercial", "Operação", "Tecnologia", "Automação"]));
 
@@ -108,13 +109,13 @@ function initiativeToForm(initiative: PdcaCycle): PdcaCycleInput {
     plannedAction: initiative.plannedAction,
     whyItMatters: initiative.whyItMatters,
     owner: initiative.owner,
-    deadline: initiative.deadline,
+    deadline: initiative.deadline || initiative.endDate || "",
     pdcaStatus: initiative.pdcaStatus,
     estimatedImpact: initiative.estimatedImpact,
     nextDecision: initiative.nextDecision,
     dataType: initiative.dataType,
     startDate: initiative.startDate || "",
-    endDate: initiative.endDate || "",
+    endDate: initiative.deadline || initiative.endDate || "",
     baseline: initiative.baseline || "",
     target: initiative.target || "",
     priorityOrder: initiative.priorityOrder || 0,
@@ -135,6 +136,7 @@ function blankActivityForm(initiative?: PdcaCycle | null): InitiativeActivityInp
 
 const PerformanceExecutionPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
+  const canManageInitiatives = isBvbpStaff(getPerformanceSession());
   const [initiatives, setInitiatives] = useState<PdcaCycle[]>(() => getPdcaCyclesForCompany(activeCompany));
   const [activities, setActivities] = useState<InitiativeActivity[]>(() => getActivitiesForInitiatives(getPdcaCyclesForCompany(activeCompany)));
   const [selectedInitiativeId, setSelectedInitiativeId] = useState<string | null>(() => initiatives[0]?.id || null);
@@ -191,13 +193,15 @@ const PerformanceExecutionPage = () => {
   };
 
   const openNewInitiative = () => {
+    if (!canManageInitiatives) return;
+
     setInitiativeForm({ ...blankInitiativeForm, priorityOrder: initiatives.length });
     setFormError("");
     setIsFormDialogOpen(true);
   };
 
   const openEditInitiative = () => {
-    if (!selectedInitiative) return;
+    if (!canManageInitiatives || !selectedInitiative) return;
 
     setInitiativeForm(initiativeToForm(selectedInitiative));
     setFormError("");
@@ -205,6 +209,8 @@ const PerformanceExecutionPage = () => {
   };
 
   const saveInitiative = () => {
+    if (!canManageInitiatives) return;
+
     if (!initiativeForm.title.trim() || !initiativeForm.affectedPointer.trim()) {
       setFormError("Nome e ponteiro afetado são obrigatórios.");
       return;
@@ -220,6 +226,8 @@ const PerformanceExecutionPage = () => {
   };
 
   const changeInitiativeStatus = (initiativeId: string, status: PdcaStatus) => {
+    if (!canManageInitiatives) return;
+
     updatePdcaCycleStatus(initiativeId, status);
     refreshInitiatives(selectedInitiativeId || initiativeId);
   };
@@ -251,6 +259,8 @@ const PerformanceExecutionPage = () => {
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
+    if (!canManageInitiatives) return;
+
     const activeId = String(event.active.id);
     const overId = event.over ? String(event.over.id) : "";
     if (!overId || activeId === overId) return;
@@ -285,25 +295,31 @@ const PerformanceExecutionPage = () => {
               Prioridades, atividades e evidências para mover os ponteiros.
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-            onClick={openNewInitiative}
-          >
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Nova iniciativa
-          </Button>
+          {canManageInitiatives ? (
+            <Button
+              variant="outline"
+              className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
+              onClick={openNewInitiative}
+            >
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              Nova iniciativa
+            </Button>
+          ) : null}
         </section>
 
         <InitiativeSummaryCards initiatives={initiatives} activities={activities} />
 
         <section className="space-y-4">
-          <SectionHeader title="Lista por prioridade" description="Arraste para ordenar o que precisa vir primeiro." />
+          <SectionHeader
+            title="Lista por prioridade"
+            description={canManageInitiatives ? "Arraste para ordenar o que precisa vir primeiro." : "Prioridades definidas pela equipe BVBP."}
+          />
           {sortedInitiatives.length ? (
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <InitiativePriorityList
                 initiatives={sortedInitiatives}
                 selectedInitiativeId={selectedInitiative?.id}
+                canManage={canManageInitiatives}
                 onSelect={selectInitiative}
                 onStatusChange={changeInitiativeStatus}
               />
@@ -321,6 +337,7 @@ const PerformanceExecutionPage = () => {
           activities={selectedActivities}
           activityForm={activityForm}
           evidenceForm={evidenceForm}
+          canManageInitiative={canManageInitiatives}
           onEdit={openEditInitiative}
           onActivityFormChange={setActivityForm}
           onAddActivity={addActivity}
@@ -413,11 +430,11 @@ const PerformanceExecutionPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="initiative-end">Data de fim</Label>
+              <Label htmlFor="initiative-deadline">Prazo</Label>
               <Input
-                id="initiative-end"
-                value={initiativeForm.endDate}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, endDate: event.target.value })}
+                id="initiative-deadline"
+                value={initiativeForm.deadline}
+                onChange={(event) => setInitiativeForm({ ...initiativeForm, deadline: event.target.value, endDate: event.target.value })}
                 placeholder="2026-07-30"
               />
             </div>
@@ -470,14 +487,6 @@ const PerformanceExecutionPage = () => {
                 id="initiative-hypothesis"
                 value={initiativeForm.hypothesis}
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, hypothesis: event.target.value })}
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="initiative-action">Ação planejada</Label>
-              <Textarea
-                id="initiative-action"
-                value={initiativeForm.plannedAction}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, plannedAction: event.target.value })}
               />
             </div>
             <div className="space-y-2 md:col-span-2">

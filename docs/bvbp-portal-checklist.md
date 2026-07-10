@@ -9,54 +9,55 @@ npm run dev
 
 Abra `http://localhost:8080` quando o servidor estiver nessa porta, ou use a porta indicada pelo Vite.
 
-## Acessar o admin
+## Desenvolvimento local
 
-- URL: `/login`
-- Admin: `conrado@bvbp.com.br`
-- Senha: `bvbp90`
+- `VITE_ENABLE_DEMO_DATA=true` mantém clientes e workspace de demonstração.
+- `VITE_ENABLE_MOCK_AUTH=true` libera o fallback local `cliente@bvbp.com.br` / `bvbp90`.
+- Em produção, deixe `VITE_ENABLE_DEMO_DATA=false` e `VITE_ENABLE_MOCK_AUTH=false`.
 
-## Usar o workspace BVBP
+## Produção zerada
 
-- Entre no Portal BVBP.
-- Abra `Clientes` ou `Visão geral`.
-- Clique em `Abrir` no item BVBP, ou selecione `BVBP` no seletor do app de Performance.
+- Aplique as migrações Supabase.
+- Faça deploy de `invite-client-contact` e `bootstrap-admins`.
+- Configure `PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `BOOTSTRAP_ADMIN_SECRET` nas Edge Functions.
+- Configure `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_PUBLIC_SITE_URL` no app.
+- Configure Site URL e Redirect URLs do Supabase Auth para `/auth/set-password`.
+- Configure SMTP/email transacional antes de convidar clientes reais.
 
-## Criar iniciativa PDCA
+Com demo desligada, o primeiro acesso admin deve mostrar o portal sem BVBP nem clientes exemplo.
 
-- Acesse `/app/performance/execution`.
-- Clique em `Nova iniciativa`.
-- Preencha pelo menos `Nome` e `Ponteiro afetado`.
-- Salve e ajuste o status no card do board quando necessário.
+## Bootstrap de admins
 
-## Registrar evidência
+- Chame a Edge Function `bootstrap-admins` com o header `x-bootstrap-secret`.
+- `conrado@bvbp.com.br` e `cristiano@bvbp.com.br` recebem link para definir senha.
+- Usuários confirmados com email `@bvbp.com.br` recebem papel `admin` automaticamente pela migration.
 
-- Abra uma iniciativa no board PDCA.
-- Na seção `Evidências`, descreva o aprendizado ou dado observado.
-- Clique em `Registrar evidência`.
+## Primeiro uso
 
-## Resetar dados locais
-
+- Entre pelo link recebido e defina a senha em `/auth/set-password`.
 - Acesse `/app/admin/settings`.
-- Clique em `Restaurar`.
-- Digite `RESTAURAR`.
-- Confirme `Restaurar dados`.
+- Clique em `Cadastrar workspace BVBP`.
+- Cadastre a BVBP manualmente.
+- Depois cadastre clientes reais no CRM.
 
-O reset restaura clientes seedados, workspace BVBP, ciclos PDCA e evidências locais. A sessão atual é preservada.
+## Contatos de clientes
 
-## O que ainda é mockado/local
+- Salvar contato não envia email.
+- O acesso só é liberado em edição do cliente, pelo botão `Enviar convite`.
+- `Reenviar convite` manda novo link de definição/recuperação de senha.
+- `Desativar acesso` revoga a membership do cliente.
 
-- Login e papéis.
-- Clientes, prospects e workspace BVBP.
-- Pipeline, ponteiros, automações e vazamentos.
-- Ciclos PDCA e evidências, salvos em `localStorage`.
-- Impactos financeiros são potenciais estimados, não ROI comprovado.
+## Validação antes de publicar
 
-## Antes de subir para dev/prod
+```sh
+npx tsc -p tsconfig.app.json --noEmit
+npm run lint
+npm run build
+```
 
-- Rodar `npm run lint`.
-- Rodar `npm run build`.
-- Validar `/app/admin`, `/app/admin/clients`, `/app/admin/content` e `/app/admin/settings`.
-- Validar `/app/performance/overview`, `pointers`, `funnel`, `operations`, `execution` e `automations`.
-- Testar criação de iniciativa, mudança de status e registro de evidência.
-- Testar reset local.
+- Testar login admin, reset de senha e `/auth/set-password`.
+- Testar Supabase vazio sem dados de demo.
+- Testar cadastro do workspace BVBP.
+- Testar criação/edição de cliente, contatos, convite, reenvio e desativação.
+- Testar cliente acessando apenas o próprio workspace.
 - Testar mobile em 390px.

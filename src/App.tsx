@@ -16,6 +16,7 @@ import ComparativoServicosPage from "./pages/ComparativoServicosPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import LoginPage from "./pages/LoginPage";
+import SetPasswordPage from "./pages/SetPasswordPage";
 import { AdminAppShell } from "./components/admin/AdminAppShell";
 import { PerformanceAppShell } from "./components/performance/PerformanceAppShell";
 import { PortalEntryRedirect } from "./components/performance/PortalEntryRedirect";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/admin/blog/novo" element={<Navigate to="/app/admin/blog" replace />} />
             <Route path="/admin/blog/editar/:id" element={<Navigate to="/app/admin/blog" replace />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/set-password" element={<SetPasswordPage />} />
             <Route
               path="/app"
               element={

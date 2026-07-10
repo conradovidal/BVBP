@@ -1,6 +1,7 @@
 import {
   type BvbpPillarId,
   type Company,
+  type MaturityLevelDefinition,
   type PdcaCycle,
 } from "@/data/performanceSystem";
 import {
@@ -45,6 +46,9 @@ export interface PointerPillarDiagnostic {
     nextName: string;
     nextDescription: string;
     advancementCriteria: string;
+    completedCriteria: number;
+    totalCriteria: number;
+    levels: MaturityLevelDefinition[];
   };
   initiatives: PdcaCycle[];
   nextDecision: {
@@ -194,6 +198,9 @@ export function buildPerformancePointersModel(
       nextName: summary.nextLevelName,
       nextDescription: summary.nextLevelDescription,
       advancementCriteria: summary.advancementCriteria,
+      completedCriteria: summary.completedMaturityCriteria,
+      totalCriteria: summary.totalMaturityCriteria,
+      levels: summary.maturityLevels,
     },
     initiatives,
     nextDecision: buildNextDecision(summary, criticalPointer, initiatives),

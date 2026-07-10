@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { StatusBadge } from "@/components/performance/StatusBadge";
-import { maturityLevels, type PdcaCycle } from "@/data/performanceSystem";
+import type { PdcaCycle } from "@/data/performanceSystem";
 import {
   type ExecutiveReadingItem,
   type OverviewMetricView,
@@ -64,9 +64,9 @@ function DetailPanel({
 
 function MetricLine({ metric }: { metric: OverviewMetricView }) {
   const details = [
+    metric.formula ? `Fórmula: ${metric.formula}` : null,
     metric.source ? `Fonte: ${metric.source}` : null,
     metric.target ? `Meta: ${metric.target}` : null,
-    metric.frequency ? `Frequência: ${metric.frequency}` : null,
     metric.owner ? `Responsável: ${metric.owner}` : null,
   ].filter(Boolean);
 
@@ -173,10 +173,12 @@ export function MaturityMapPanel({ pillars, onSelect }: MaturityMapPanelProps) {
           </div>
 
           <p className="mt-4 text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
-            Próximo nível
+            {pillar.maturityLevel === 5 ? "Progresso" : "Próximo nível"}
           </p>
           <p className="mt-1 text-sm font-semibold leading-5 text-bvbp-ink">
-            {pillar.nextLevel} · {pillar.nextLevelName}
+            {pillar.maturityLevel === 5
+              ? `${pillar.completedMaturityCriteria}/${pillar.totalMaturityCriteria} critérios validados`
+              : `${pillar.nextLevel} · ${pillar.nextLevelName}`}
           </p>
           <p className="mt-2 line-clamp-2 text-xs leading-5 text-bvbp-muted-ink">{pillar.advancementCriteria}</p>
         </button>
@@ -262,7 +264,7 @@ export function PillarOverviewDetailDialog({ pillar, open, onOpenChange }: Pilla
               </DetailPanel>
             </div>
 
-            <DetailPanel title="Métricas acompanhadas">
+            <DetailPanel title="Ponteiros acompanhados">
               {pillar.metrics.length ? (
                 <div className="grid gap-3 md:grid-cols-2">
                   {pillar.metrics.map((metric) => (
@@ -270,7 +272,7 @@ export function PillarOverviewDetailDialog({ pillar, open, onOpenChange }: Pilla
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-bvbp-muted-ink">Nenhuma métrica configurada para este pilar.</p>
+                <p className="text-sm text-bvbp-muted-ink">Nenhum ponteiro configurado para este pilar.</p>
               )}
             </DetailPanel>
 
@@ -292,7 +294,7 @@ export function PillarOverviewDetailDialog({ pillar, open, onOpenChange }: Pilla
               <DetailPanel title="Maturidade BVBP">
                 <div className="space-y-3">
                   <div className="grid gap-2 sm:grid-cols-5">
-                    {maturityLevels.map((level) => (
+                    {pillar.maturityLevels.map((level) => (
                       <div
                         key={level.level}
                         className={cn(
@@ -308,9 +310,14 @@ export function PillarOverviewDetailDialog({ pillar, open, onOpenChange }: Pilla
                     ))}
                   </div>
                   <div className="rounded-[8px] bg-bvbp-inset p-3 text-sm leading-6 text-bvbp-ink">
-                    <p>
-                      <span className="font-semibold">Próximo:</span> nível {pillar.nextLevel} · {pillar.nextLevelName}
+                    <p className="font-semibold">
+                      {pillar.completedMaturityCriteria}/{pillar.totalMaturityCriteria} critérios validados
                     </p>
+                    {pillar.maturityLevel < 5 ? (
+                      <p className="mt-1">
+                        Próximo: nível {pillar.nextLevel} · {pillar.nextLevelName}
+                      </p>
+                    ) : null}
                     <p className="mt-1 text-bvbp-muted-ink">{pillar.advancementCriteria}</p>
                   </div>
                 </div>

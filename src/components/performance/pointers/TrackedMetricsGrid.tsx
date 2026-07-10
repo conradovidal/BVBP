@@ -11,8 +11,8 @@ export function TrackedMetricsGrid({ metrics }: TrackedMetricsGridProps) {
   if (!metrics.length) {
     return (
       <EmptyState
-        title="Nenhuma métrica selecionada."
-        description="Edite o cliente para selecionar métricas deste pilar."
+        title="Nenhum ponteiro selecionado."
+        description="Edite o cliente para selecionar ponteiros deste pilar."
       />
     );
   }
@@ -24,7 +24,6 @@ export function TrackedMetricsGrid({ metrics }: TrackedMetricsGridProps) {
           `Unidade: ${clientMetricUnitLabels[metric.unit]}`,
           metric.target ? `Meta: ${metric.target}` : null,
           metric.source ? `Fonte: ${metric.source}` : null,
-          metric.frequency ? `Frequência: ${metric.frequency}` : null,
           metric.owner ? `Responsável: ${metric.owner}` : null,
         ].filter(Boolean);
 
@@ -34,6 +33,7 @@ export function TrackedMetricsGrid({ metrics }: TrackedMetricsGridProps) {
               <div className="min-w-0">
                 <h3 className="font-heading text-base font-semibold leading-tight text-bvbp-ink">{metric.name}</h3>
                 <p className="mt-2 line-clamp-2 text-xs leading-5 text-bvbp-muted-ink">{metric.description}</p>
+                {metric.formula ? <p className="mt-2 text-xs leading-5 text-bvbp-muted-ink">Fórmula: {metric.formula}</p> : null}
               </div>
               <StatusBadge label={metric.dataType} />
             </div>
