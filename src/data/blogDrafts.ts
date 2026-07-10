@@ -1,3 +1,5 @@
+import { isDemoDataEnabled } from "@/lib/portalRuntimeConfig";
+
 export interface BlogDraft {
   id: string;
   title: string;
@@ -68,6 +70,11 @@ export const blogDrafts: BlogDraft[] = [
   },
 ];
 
+export function getBlogDrafts() {
+  return isDemoDataEnabled ? blogDrafts : [];
+}
+
 export function getBlogDraft(draftId: string | undefined) {
-  return blogDrafts.find((draft) => draft.id === draftId) || blogDrafts[0];
+  const drafts = getBlogDrafts();
+  return drafts.find((draft) => draft.id === draftId) || drafts[0];
 }

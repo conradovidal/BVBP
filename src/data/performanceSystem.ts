@@ -1,3 +1,5 @@
+import { isDemoDataEnabled } from "@/lib/portalRuntimeConfig";
+
 export type PortalRole = "admin" | "editor" | "client";
 
 export interface PerformanceUser {
@@ -1001,6 +1003,10 @@ export const internalPortfolioItems: InternalPortfolioItem[] = [
   },
 ];
 
+export function getInternalPortfolioItems() {
+  return isDemoDataEnabled ? internalPortfolioItems : [];
+}
+
 export interface AdminClientPortfolioItem extends Omit<InternalPortfolioItem, "status"> {
   companyId?: string;
   segment?: string;
@@ -1028,7 +1034,9 @@ export function getAdminClientPortfolioItems(companies: Company[]): AdminClientP
         segment: company.segment,
       };
     });
-  const opportunityItems = internalPortfolioItems.filter((item) => item.id !== "internal-bvbp");
+  const opportunityItems = isDemoDataEnabled
+    ? internalPortfolioItems.filter((item) => item.id !== "internal-bvbp")
+    : [];
 
   return [...clientItems, ...opportunityItems];
 }
@@ -1043,20 +1051,29 @@ export function getAdminClientPortfolioSummary(items: AdminClientPortfolioItem[]
 }
 
 export function getInternalPortfolioSummary() {
+  if (!isDemoDataEnabled) {
+    return {
+      activeItems: 0,
+      opportunities: 0,
+      mappedPotential: 0,
+      pendingActions: 0,
+    };
+  }
+
   return {
-    activeItems: internalPortfolioItems.filter((item) => item.status !== "Pausado" && item.status !== "Perdido").length,
-    opportunities: internalPortfolioItems.filter((item) => item.type === "Prospect" || item.type === "Lead interno").length,
+    activeItems: getInternalPortfolioItems().filter((item) => item.status !== "Pausado" && item.status !== "Perdido").length,
+    opportunities: getInternalPortfolioItems().filter((item) => item.type === "Prospect" || item.type === "Lead interno").length,
     mappedPotential: getBvbpPortfolioPotential(),
-    pendingActions: internalPortfolioItems.filter((item) => item.status !== "Ativo" && item.status !== "Perdido").length,
+    pendingActions: getInternalPortfolioItems().filter((item) => item.status !== "Ativo" && item.status !== "Perdido").length,
   };
 }
 
 export function getBvbpWorkspacePotential() {
-  return portfolioSignalsByCompanyId[BVBP_COMPANY_ID].mappedPotential;
+  return isDemoDataEnabled ? portfolioSignalsByCompanyId[BVBP_COMPANY_ID].mappedPotential : 0;
 }
 
 export function getBvbpPortfolioPotential() {
-  return internalPortfolioItems.reduce((sum, item) => sum + item.mappedPotential, 0);
+  return getInternalPortfolioItems().reduce((sum, item) => sum + item.mappedPotential, 0);
 }
 
 export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSignal {
@@ -1089,9 +1106,10 @@ export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSig
 
 export function createOverviewMetrics(company: Company): Metric[] {
   if (isBvbpInternalWorkspace(company)) {
+    const pipelineOpportunities = getBvbpPipelineOpportunities();
     const pipelinePotential = getBvbpPipelinePotential();
-    const diagnostics = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
-    const proposals = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
+    const diagnostics = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
+    const proposals = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
 
     return [
       {
@@ -1232,14 +1250,17 @@ export function createOverviewMetrics(company: Company): Metric[] {
 
 export function getOverviewPillarHighlights(company: Company): OverviewPillarHighlight[] {
   const signal = getCompanyPortfolioSignal(company);
-  const automationSummary = getAutomationOpportunitySummary();
+  const automationSummary = getAutomationOpportunitySummary(getAutomationOpportunitiesForCompany(company));
   const isInternal = isBvbpInternalWorkspace(company);
   const commercialPipeline = isInternal ? getBvbpPipelinePotential() : Math.round(company.monthlyRevenue * 0.55);
   const funnelMetricsForCompany = createFunnelMetrics(company);
   const conversionMetric = funnelMetricsForCompany.find((metric) => metric.id === "conversion");
+  const operationalLeaksForCompany = getOperationalLeaksForCompany(company);
   const operationalPotential = isInternal
-    ? bvbpPdcaCycleSeeds.reduce((sum, cycle) => sum + cycle.estimatedImpact, 0)
-    : operationalLeaks.reduce((sum, leak) => sum + leak.estimatedCost, 0);
+    ? isDemoDataEnabled
+      ? bvbpPdcaCycleSeeds.reduce((sum, cycle) => sum + cycle.estimatedImpact, 0)
+      : 0
+    : operationalLeaksForCompany.reduce((sum, leak) => sum + leak.estimatedCost, 0);
   const financialValue = isInternal ? getBvbpWorkspacePotential() : company.monthlyRevenue;
   const financialMetricLabel = isInternal ? "Potencial mapeado" : "Faturamento mensal";
   const financialHelper = isInternal ? "Estimativa interna" : "Dado de entrada";
@@ -1625,16 +1646,17 @@ export const projects: Project[] = [
 
 export function createFunnelMetrics(company: Company): FunnelMetric[] {
   if (isBvbpInternalWorkspace(company)) {
-    const diagnostics = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
-    const proposals = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
-    const activeConversations = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage !== "Mapeado").length;
+    const pipelineOpportunities = getBvbpPipelineOpportunities();
+    const diagnostics = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
+    const proposals = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
+    const activeConversations = pipelineOpportunities.filter((opportunity) => opportunity.stage !== "Mapeado").length;
 
     return [
-      { id: "leads", name: "Leads mapeados", value: bvbpPipelineOpportunities.length, unit: "count", helper: "Mockado" },
-      { id: "meetings", name: "Conversas iniciadas", value: activeConversations, unit: "count", helper: "Mockado" },
-      { id: "diagnostics", name: "Diagnósticos agendados", value: diagnostics, unit: "count", helper: "Mockado" },
-      { id: "proposals", name: "Propostas enviadas", value: proposals, unit: "count", helper: "Mockado" },
-      { id: "pipeline", name: "Potencial estimado", value: getBvbpPipelinePotential(), unit: "currency", helper: "Estimado" },
+      { id: "leads", name: "Leads mapeados", value: pipelineOpportunities.length, unit: "count", helper: isDemoDataEnabled ? "Demo" : "Sem dados" },
+      { id: "meetings", name: "Conversas iniciadas", value: activeConversations, unit: "count", helper: isDemoDataEnabled ? "Demo" : "Sem dados" },
+      { id: "diagnostics", name: "Diagnósticos agendados", value: diagnostics, unit: "count", helper: isDemoDataEnabled ? "Demo" : "Sem dados" },
+      { id: "proposals", name: "Propostas enviadas", value: proposals, unit: "count", helper: isDemoDataEnabled ? "Demo" : "Sem dados" },
+      { id: "pipeline", name: "Potencial estimado", value: getBvbpPipelinePotential(), unit: "currency", helper: isDemoDataEnabled ? "Estimado" : "Sem dados" },
       { id: "next-action", name: "Próxima ação pendente", value: getBvbpOpenPipelineActionCount(), unit: "count", helper: "Ações abertas" },
     ];
   }
@@ -1761,16 +1783,20 @@ export const bvbpPipelineOpportunities: PipelineOpportunity[] = [
   },
 ];
 
+export function getBvbpPipelineOpportunities() {
+  return isDemoDataEnabled ? bvbpPipelineOpportunities : [];
+}
+
 export function getBvbpPipelinePotential() {
-  return bvbpPipelineOpportunities.reduce((sum, opportunity) => sum + opportunity.potential, 0);
+  return getBvbpPipelineOpportunities().reduce((sum, opportunity) => sum + opportunity.potential, 0);
 }
 
 export function getBvbpOpenPipelineActionCount() {
-  return bvbpPipelineOpportunities.filter((opportunity) => !["Fechado", "Perdido", "Pausado"].includes(opportunity.status)).length;
+  return getBvbpPipelineOpportunities().filter((opportunity) => !["Fechado", "Perdido", "Pausado"].includes(opportunity.status)).length;
 }
 
 export function getPipelineOpportunitiesForCompany(company: Company) {
-  return isBvbpInternalWorkspace(company) ? bvbpPipelineOpportunities : [];
+  return isBvbpInternalWorkspace(company) ? getBvbpPipelineOpportunities() : [];
 }
 
 export function getFunnelChannelsForCompany(company: Company) {
@@ -1792,7 +1818,11 @@ export const internalFunnelSignals = [
 ];
 
 export function getFunnelSignalsForCompany(company: Company) {
-  return isBvbpInternalWorkspace(company) ? internalFunnelSignals : funnelLeaks;
+  if (isBvbpInternalWorkspace(company)) {
+    return isDemoDataEnabled ? internalFunnelSignals : [];
+  }
+
+  return funnelLeaks;
 }
 
 export const operationalLeaks: OperationalLeak[] = [
@@ -1863,6 +1893,14 @@ export const operationalLeaks: OperationalLeak[] = [
     source: "Diagnóstico de execução",
   },
 ];
+
+export function getOperationalLeaksForCompany(company: Company) {
+  if (isBvbpInternalWorkspace(company)) {
+    return isDemoDataEnabled ? operationalLeaks : [];
+  }
+
+  return operationalLeaks;
+}
 
 export const improvements: Improvement[] = [
   {
@@ -2253,6 +2291,14 @@ export const automationOpportunities: AutomationOpportunity[] = [
     status: "Validar",
   },
 ];
+
+export function getAutomationOpportunitiesForCompany(company: Company) {
+  if (isBvbpInternalWorkspace(company)) {
+    return isDemoDataEnabled ? automationOpportunities : [];
+  }
+
+  return automationOpportunities;
+}
 
 export function getAutomationOpportunitySummary(items: AutomationOpportunity[] = automationOpportunities) {
   return {

@@ -13,13 +13,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BVBP_COMPANY_ID, getInternalPortfolioSummary, internalPortfolioItems } from "@/data/performanceSystem";
+import { BVBP_COMPANY_ID, getInternalPortfolioItems, getInternalPortfolioSummary } from "@/data/performanceSystem";
 import { setActiveCompanyId } from "@/lib/clientPortalStore";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 
 const AdminDashboardPage = () => {
   const navigate = useNavigate();
   const summary = getInternalPortfolioSummary();
+  const portfolioItems = getInternalPortfolioItems();
 
   const openBvbpWorkspace = () => {
     setActiveCompanyId(BVBP_COMPANY_ID);
@@ -65,9 +66,9 @@ const AdminDashboardPage = () => {
             </Link>
           </div>
 
-          {internalPortfolioItems.length ? (
+          {portfolioItems.length ? (
             <div className="grid gap-3 p-4 md:hidden">
-              {internalPortfolioItems.map((item) => (
+              {portfolioItems.map((item) => (
                 <article key={item.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -102,7 +103,7 @@ const AdminDashboardPage = () => {
             />
           )}
 
-          {internalPortfolioItems.length ? (
+          {portfolioItems.length ? (
           <div className="hidden overflow-x-auto md:block">
             <Table>
               <TableHeader>
@@ -118,7 +119,7 @@ const AdminDashboardPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {internalPortfolioItems.map((item) => (
+                {portfolioItems.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell className="min-w-[180px] font-semibold text-bvbp-ink">{item.name}</TableCell>
                     <TableCell className="min-w-[130px] text-bvbp-ink">{item.type}</TableCell>

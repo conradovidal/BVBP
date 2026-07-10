@@ -14,9 +14,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  bvbpPipelineOpportunities,
   getAdminClientPortfolioItems,
-  getBvbpPipelinePotential,
+  getAdminClientPortfolioSummary,
+  getBvbpPipelineOpportunities,
 } from "@/data/performanceSystem";
 import { getExternalPortalCompanies, setActiveCompanyId } from "@/lib/clientPortalStore";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
@@ -24,8 +24,10 @@ import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 const AdminClientsPage = () => {
   const navigate = useNavigate();
   const portfolioItems = getAdminClientPortfolioItems(getExternalPortalCompanies());
-  const diagnostics = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
-  const proposals = bvbpPipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
+  const portfolioSummary = getAdminClientPortfolioSummary(portfolioItems);
+  const pipelineOpportunities = getBvbpPipelineOpportunities();
+  const diagnostics = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
+  const proposals = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
 
   const openClientWorkspace = (companyId: string) => {
     setActiveCompanyId(companyId);
@@ -57,10 +59,10 @@ const AdminClientsPage = () => {
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard title="Oportunidades" value={formatNumber(bvbpPipelineOpportunities.length)} accent="orange" />
+          <MetricCard title="Oportunidades" value={formatNumber(portfolioSummary.opportunities)} accent="orange" />
           <MetricCard title="Diagnósticos" value={formatNumber(diagnostics)} accent="blue" />
           <MetricCard title="Propostas" value={formatNumber(proposals)} accent="gray" />
-          <MetricCard title="Potencial" value={`${formatCurrency(getBvbpPipelinePotential())}/mês`} accent="green" />
+          <MetricCard title="Potencial" value={`${formatCurrency(portfolioSummary.mappedPotential)}/mês`} accent="green" />
         </section>
 
         <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
@@ -111,8 +113,8 @@ const AdminClientsPage = () => {
             </div>
           ) : (
             <EmptyState
-              title="Nenhum cliente ou prospect."
-              description="Cadastre a primeira oportunidade para acompanhar ponteiro, potencial e próxima ação."
+              title="CRM vazio."
+              description="Cadastre o primeiro cliente real para acompanhar ponteiro, potencial e próxima ação."
               className="m-4"
             />
           )}

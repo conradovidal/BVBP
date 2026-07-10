@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import { CheckCircle2, Pencil, RotateCcw, ShieldCheck } from "lucide-react";
+import { Pencil, RotateCcw, ShieldCheck } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -152,7 +152,10 @@ const AdminSettingsPage = () => {
         </section>
 
         <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5">
-          <h2 className="font-heading text-lg font-bold text-bvbp-ink">Checklist operacional</h2>
+          <h2 className="font-heading text-lg font-bold text-bvbp-ink">Checklist de produção</h2>
+          <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
+            Use esta lista para conferência operacional antes de publicar.
+          </p>
           <div className="mt-4 grid gap-3 text-sm text-bvbp-muted-ink md:grid-cols-2">
             {[
               "Migrações Supabase aplicadas",
@@ -162,9 +165,11 @@ const AdminSettingsPage = () => {
               "VITE_ENABLE_DEMO_DATA=false e VITE_ENABLE_MOCK_AUTH=false",
               "Conrado e Cristiano convidados pelo bootstrap inicial",
             ].map((item) => (
-              <p key={item} className="flex gap-2">
-                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-bvbp-positive" aria-hidden="true" />
-                <span>{item}</span>
+              <p key={item} className="flex items-start gap-2">
+                <span className="mt-0.5 rounded-[6px] border border-bvbp-ink/10 bg-bvbp-inset px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
+                  Verificar
+                </span>
+                <span className="leading-6">{item}</span>
               </p>
             ))}
           </div>

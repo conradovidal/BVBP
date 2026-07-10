@@ -94,7 +94,7 @@ const LoginPage = () => {
         <title>Login | Portal BVBP</title>
         <meta
           name="description"
-          content="Acesse o Portal BVBP para acompanhar workspace, ponteiros, ciclos PDCA e evidências de performance."
+          content="Acesse o Portal BVBP para acompanhar workspace, ponteiros, iniciativas e evidências de performance."
         />
       </Helmet>
 
@@ -104,11 +104,11 @@ const LoginPage = () => {
             <div>
               <BrandLockup tone="light" size="lg" />
               <p className="mt-10 max-w-sm font-heading text-4xl font-medium leading-tight">
-                Ponteiros, ciclos e evidências para decidir melhor.
+                Ponteiros, iniciativas e evidências para decidir melhor.
               </p>
             </div>
             <div className="grid gap-3 border-t border-bvbp-ivory/12 pt-6">
-              {["Ponteiros", "PDCA", "Evidências"].map((item) => (
+              {["Ponteiros", "Iniciativas", "Evidências"].map((item) => (
                 <p key={item} className="font-label text-[11px] font-medium uppercase tracking-[0.12em] text-bvbp-ivory/65">
                   {item}
                 </p>
@@ -129,7 +129,7 @@ const LoginPage = () => {
               <BrandLockup tone="dark" size="md" />
               <h1 className="mt-8 font-heading text-3xl font-medium text-bvbp-ink">Entrar no Portal BVBP</h1>
               <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
-                Acompanhe ponteiros, ciclos PDCA e evidências do seu workspace.
+                Acompanhe ponteiros, iniciativas e evidências do seu workspace.
               </p>
             </div>
 

@@ -28,6 +28,8 @@ export const portalRuntimeConfig = {
   supabasePublishableKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY,
 };
 
+export const isDemoDataEnabled = portalRuntimeConfig.enableDemoData;
+
 export function getAuthRedirectUrl(path = "/auth/set-password") {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${portalRuntimeConfig.siteUrl}${normalizedPath}`;

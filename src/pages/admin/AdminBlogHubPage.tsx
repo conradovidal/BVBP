@@ -2,12 +2,14 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Edit, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/performance/EmptyState";
 import { MetricCard } from "@/components/performance/MetricCard";
 import { StatusBadge } from "@/components/performance/StatusBadge";
-import { blogDrafts } from "@/data/blogDrafts";
+import { getBlogDrafts } from "@/data/blogDrafts";
 import { formatNumber } from "@/lib/performanceFormatters";
 
 const AdminBlogHubPage = () => {
+  const blogDrafts = getBlogDrafts();
   const publishedCount = blogDrafts.filter((post) => post.status === "Publicado").length;
   const reviewCount = blogDrafts.filter((post) => post.status === "Revisão").length;
   const draftCount = blogDrafts.filter((post) => post.status === "Rascunho").length;
@@ -43,8 +45,9 @@ const AdminBlogHubPage = () => {
         </section>
 
         <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
-          <div className="divide-y divide-bvbp-ink/10">
-            {blogDrafts.map((post) => (
+          {blogDrafts.length ? (
+            <div className="divide-y divide-bvbp-ink/10">
+              {blogDrafts.map((post) => (
               <div key={post.title} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="font-semibold text-bvbp-ink">{post.title}</p>
@@ -60,8 +63,15 @@ const AdminBlogHubPage = () => {
                   </Button>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Nenhum conteúdo cadastrado."
+              description="Crie o primeiro conteúdo real para acompanhar publicação, revisão e rascunhos."
+              className="m-4"
+            />
+          )}
         </div>
       </div>
     </>
