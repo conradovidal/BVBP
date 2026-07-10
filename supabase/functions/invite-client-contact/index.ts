@@ -25,6 +25,16 @@ function isContactAccessAction(value: unknown): value is ContactAccessAction {
   return value === "invite" || value === "resend" || value === "disable";
 }
 
+function logInviteStep(details: Record<string, boolean | string | number | null>) {
+  console.info("invite-client-contact", JSON.stringify(details));
+}
+
+function getBearerToken(req: Request) {
+  const authorization = req.headers.get("authorization") || "";
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+  return match?.[1]?.trim() || "";
+}
+
 function getRedirectTo(req: Request) {
   const origin = Deno.env.get("PUBLIC_SITE_URL") || Deno.env.get("SITE_URL") || req.headers.get("origin");
   return origin ? `${origin.replace(/\/+$/, "")}/auth/set-password` : undefined;
@@ -58,6 +68,8 @@ serve(async (req) => {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
+  logInviteStep({ received: true, method: req.method });
+
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const publishableKey = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -66,26 +78,37 @@ serve(async (req) => {
     return jsonResponse({ error: "Supabase environment is not configured." }, 500);
   }
 
-  const authorization = req.headers.get("authorization") || "";
+  const accessToken = getBearerToken(req);
+  logInviteStep({ tokenPresent: Boolean(accessToken) });
+
+  if (!accessToken) {
+    return jsonResponse({ error: "Unauthorized" }, 401);
+  }
+
   const callerClient = createClient(supabaseUrl, publishableKey, {
-    global: { headers: { authorization } },
+    auth: { autoRefreshToken: false, persistSession: false },
   });
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  const { data: userData, error: userError } = await callerClient.auth.getUser();
+  const { data: userData, error: userError } = await callerClient.auth.getUser(accessToken);
+  logInviteStep({ userValidated: Boolean(userData.user && !userError) });
+
   if (userError || !userData.user) {
     return jsonResponse({ error: "Unauthorized" }, 401);
   }
 
-  const { data: roles, error: roleError } = await callerClient
+  const { data: roles, error: roleError } = await adminClient
     .from("user_roles")
     .select("role")
     .eq("user_id", userData.user.id)
     .in("role", ["admin", "editor"]);
+  const roleAuthorized = Boolean(!roleError && roles?.length);
 
-  if (roleError || !roles?.length) {
+  logInviteStep({ roleAuthorized });
+
+  if (!roleAuthorized) {
     return jsonResponse({ error: "Forbidden" }, 403);
   }
 
@@ -100,8 +123,11 @@ serve(async (req) => {
     .eq("id", body.contactId)
     .eq("workspace_id", body.workspaceId)
     .single();
+  const contactFound = Boolean(!contactError && contact);
 
-  if (contactError || !contact) {
+  logInviteStep({ contactFound });
+
+  if (!contactFound) {
     return jsonResponse({ error: "Contact not found." }, 404);
   }
 
@@ -125,6 +151,8 @@ serve(async (req) => {
         .eq("workspace_id", contact.workspace_id)
         .eq("user_id", contact.auth_user_id);
     }
+
+    logInviteStep({ inviteSent: false, accessDisabled: true });
 
     return jsonResponse({
       contact: {
@@ -164,6 +192,8 @@ serve(async (req) => {
     );
 
     if (inviteError || !inviteData.user) {
+      logInviteStep({ inviteSent: false });
+
       return jsonResponse({
         error: inviteError?.message || "Could not invite contact.",
       }, 400);
@@ -174,6 +204,8 @@ serve(async (req) => {
     const { error: recoveryError } = await adminClient.auth.resetPasswordForEmail(contact.email, { redirectTo });
 
     if (recoveryError) {
+      logInviteStep({ inviteSent: false });
+
       return jsonResponse({
         error: recoveryError.message || "Could not send access email.",
       }, 400);
@@ -204,6 +236,8 @@ serve(async (req) => {
       updated_at: now,
     })
     .eq("id", contact.id);
+
+  logInviteStep({ inviteSent: true });
 
   return jsonResponse({
     contact: {
