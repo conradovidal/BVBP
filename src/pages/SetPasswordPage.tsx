@@ -100,15 +100,17 @@ export default function SetPasswordPage() {
       <main className="min-h-screen bg-bvbp-ivory px-4 py-8 text-bvbp-ink">
         <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-md flex-col justify-center">
           <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-6 sm:p-8">
-            <Link
-              to="/login"
-              className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink transition-colors hover:text-bvbp-ink"
-            >
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Login
-            </Link>
+            <div className="flex flex-col items-start gap-8">
+              <BrandLockup tone="dark" size="md" />
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-bvbp-muted-ink transition-colors hover:text-bvbp-ink"
+              >
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Voltar para o login
+              </Link>
+            </div>
 
-            <BrandLockup tone="dark" size="md" />
             <div className="mt-8 flex h-11 w-11 items-center justify-center rounded-[8px] bg-bvbp-forest text-bvbp-ivory">
               <LockKeyhole className="h-5 w-5" aria-hidden="true" />
             </div>
