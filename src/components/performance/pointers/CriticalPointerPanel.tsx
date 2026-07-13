@@ -11,7 +11,7 @@ export function CriticalPointerPanel({ pointer }: CriticalPointerPanelProps) {
     return (
       <EmptyState
         title="Nenhum ponteiro definido."
-        description="Edite o cliente para selecionar métricas deste pilar."
+        description="Edite o cliente para selecionar ponteiros deste pilar."
       />
     );
   }

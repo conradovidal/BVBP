@@ -7,6 +7,7 @@ import {
   mockCompanies,
   type PdcaCycle,
 } from "@/data/performanceSystem";
+import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 
 export const PORTAL_STORAGE_KEYS = {
   clients: "bvbp-portal-clients",
@@ -51,6 +52,18 @@ export function isCompanyList(value: unknown): value is Company[] {
     if (!item || typeof item !== "object") return false;
     const company = item as Partial<Company>;
 
+    const hasValidContacts = company.contacts === undefined || (
+      Array.isArray(company.contacts) &&
+      company.contacts.every((contact) => (
+        !!contact &&
+        typeof contact.id === "string" &&
+        typeof contact.name === "string" &&
+        typeof contact.email === "string" &&
+        typeof contact.isPrimary === "boolean" &&
+        typeof contact.accessStatus === "string"
+      ))
+    );
+
     return (
       typeof company.id === "string" &&
       typeof company.name === "string" &&
@@ -58,7 +71,8 @@ export function isCompanyList(value: unknown): value is Company[] {
       typeof company.employees === "number" &&
       typeof company.monthlyRevenue === "number" &&
       typeof company.recurringRevenue === "number" &&
-      typeof company.monthlyOperationalCost === "number"
+      typeof company.monthlyOperationalCost === "number" &&
+      hasValidContacts
     );
   });
 }
@@ -98,17 +112,30 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
     if (!item || typeof item !== "object") return false;
     const config = item as Partial<ClientConfiguration>;
 
-    const hasValidPillars = Array.isArray(config.pillars) && config.pillars.every((pillar) => (
-      !!pillar &&
-      typeof pillar.pillar === "string" &&
-      typeof pillar.maturityLevel === "number" &&
-      typeof pillar.currentLevelName === "string" &&
-      typeof pillar.nextLevel === "number" &&
-      typeof pillar.advancementCriteria === "string" &&
-      Array.isArray(pillar.selectedMetricIds) &&
-      Array.isArray(pillar.pains) &&
-      typeof pillar.notes === "string"
-    ));
+    const hasValidPillars = Array.isArray(config.pillars) && config.pillars.every((pillar) => {
+      if (!pillar || typeof pillar !== "object") return false;
+      const storedPillar = pillar as Partial<ClientConfiguration["pillars"][number]> & {
+        maturityLevel?: unknown;
+        currentLevelName?: unknown;
+        nextLevel?: unknown;
+        advancementCriteria?: unknown;
+      };
+      const hasV2Maturity = Array.isArray(storedPillar.completedMaturityCriterionIds);
+      const hasLegacyMaturity = (
+        typeof storedPillar.maturityLevel === "number" &&
+        typeof storedPillar.currentLevelName === "string" &&
+        typeof storedPillar.nextLevel === "number" &&
+        typeof storedPillar.advancementCriteria === "string"
+      );
+
+      return (
+        typeof storedPillar.pillar === "string" &&
+        (hasV2Maturity || hasLegacyMaturity) &&
+        Array.isArray(storedPillar.selectedMetricIds) &&
+        Array.isArray(storedPillar.pains) &&
+        typeof storedPillar.notes === "string"
+      );
+    });
     const hasValidMetrics = Array.isArray(config.metrics) && config.metrics.every((metric) => (
       !!metric &&
       typeof metric.id === "string" &&
@@ -116,18 +143,32 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
       typeof metric.pillar === "string" &&
       typeof metric.description === "string" &&
       typeof metric.unit === "string" &&
-      typeof metric.dataType === "string" &&
+      (
+        typeof metric.formula === "string" ||
+        typeof (metric as { dataType?: unknown }).dataType === "string"
+      ) &&
       typeof metric.custom === "boolean"
     ));
 
-    return typeof config.companyId === "string" && hasValidPillars && hasValidMetrics;
+    const hasValidSchema = config.schemaVersion === undefined || config.schemaVersion === 2;
+
+    return hasValidSchema && typeof config.companyId === "string" && hasValidPillars && hasValidMetrics;
   });
 }
 
 export function resetPortalDemoData() {
+  if (!portalRuntimeConfig.enableDemoData) {
+    return false;
+  }
+
   writeJsonStorage(PORTAL_STORAGE_KEYS.clients, mockCompanies);
-  writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, mockCompanies.map(createDefaultClientConfiguration));
+  writeJsonStorage(
+    PORTAL_STORAGE_KEYS.clientConfigurations,
+    mockCompanies.map((company) => createDefaultClientConfiguration(company)),
+  );
   writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, bvbpPdcaCycleSeeds);
   writeJsonStorage(PORTAL_STORAGE_KEYS.initiativeActivities, []);
   window.localStorage.setItem(PORTAL_STORAGE_KEYS.activeCompany, BVBP_COMPANY_ID);
+
+  return true;
 }

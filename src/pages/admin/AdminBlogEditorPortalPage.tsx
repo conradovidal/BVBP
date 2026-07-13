@@ -28,7 +28,7 @@ const slugify = (text: string) =>
 const AdminBlogEditorPortalPage = () => {
   const { draftId } = useParams<{ draftId: string }>();
   const navigate = useNavigate();
-  const draft = draftId ? getBlogDraft(draftId) : emptyDraft;
+  const draft = draftId ? getBlogDraft(draftId) || emptyDraft : emptyDraft;
   const [title, setTitle] = useState(draft.title);
   const [slug, setSlug] = useState(draft.slug);
   const [excerpt, setExcerpt] = useState(draft.excerpt);

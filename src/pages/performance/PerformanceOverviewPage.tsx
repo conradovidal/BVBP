@@ -11,7 +11,7 @@ import {
   PillarOverviewDetailDialog,
   PrioritizedInitiativesList,
 } from "@/components/performance/overview/OverviewCockpitSections";
-import { type Company, type PdcaCycle, isBvbpInternalWorkspace } from "@/data/performanceSystem";
+import { type Company, type PdcaCycle, getCompanyRelationshipStatus, isBvbpInternalWorkspace } from "@/data/performanceSystem";
 import {
   buildPerformanceOverviewModel,
   type OverviewPillarSummary,
@@ -50,7 +50,7 @@ const PerformanceOverviewPage = () => {
   const overview = buildPerformanceOverviewModel(activeCompany, cycles);
   const pageTitle = isInternalWorkspace ? "Portal BVBP" : "Visão geral";
   const contextLabel = isInternalWorkspace ? "Workspace interno" : activeCompany.name;
-  const relationshipStatus = activeCompany.relationshipStatus || activeCompany.status;
+  const relationshipStatus = getCompanyRelationshipStatus(activeCompany);
 
   const openInitiative = (cycle: PdcaCycle) => {
     setInitiative(initiativeDetail(cycle));
@@ -83,7 +83,7 @@ const PerformanceOverviewPage = () => {
         </section>
 
         <section className="space-y-3">
-          <SectionHeader title="Pilares e métricas principais" />
+          <SectionHeader title="Pilares e ponteiros principais" />
           <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {overview.pillarSummaries.map((pillar) => (
               <OverviewPillarCard key={pillar.id} pillar={pillar} onSelect={setSelectedPillar} />

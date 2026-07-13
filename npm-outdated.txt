@@ -41,7 +41,6 @@ eslint                            9.32.0   9.39.4   10.6.0  node_modules/eslint 
 eslint-plugin-react-hooks          5.2.0    5.2.0    7.1.1  node_modules/eslint-plugin-react-hooks        BVBP
 eslint-plugin-react-refresh       0.4.20   0.4.26    0.5.3  node_modules/eslint-plugin-react-refresh      BVBP
 globals                          15.15.0  15.15.0   17.7.0  node_modules/globals                          BVBP
-lovable-tagger                     1.1.9    1.3.1    1.3.1  node_modules/lovable-tagger                   BVBP
 lucide-react                     0.462.0  0.462.0   1.23.0  node_modules/lucide-react                     BVBP
 motion                           12.34.3  12.42.2  12.42.2  node_modules/motion                           BVBP
 next-themes                        0.3.0    0.3.0    0.4.6  node_modules/next-themes                      BVBP

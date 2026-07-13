@@ -132,13 +132,13 @@ const team = [
     name: "Cristiano Basso",
     bio: "Estrutura operação, governança e execução para transformar intenção em rotina.",
     linkedin: "https://www.linkedin.com/in/cristianobasso/",
-    photo: "/lovable-uploads/5308fe52-0ff8-4f9d-8040-99ff6ff89d35.png",
+    photo: "/uploads/5308fe52-0ff8-4f9d-8040-99ff6ff89d35.png",
   },
   {
     name: "Conrado Vidal",
     bio: "Conecta estratégia, dados, produto e tecnologia para mover ponteiros reais.",
     linkedin: "https://www.linkedin.com/in/conradovidal/",
-    photo: "/lovable-uploads/conrado-vidal.jpeg",
+    photo: "/uploads/conrado-vidal.jpeg",
   },
 ];
 

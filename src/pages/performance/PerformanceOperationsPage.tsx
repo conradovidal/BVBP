@@ -15,20 +15,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Company, isBvbpInternalWorkspace, operationalLeaks } from "@/data/performanceSystem";
+import { type Company, getOperationalLeaksForCompany, isBvbpInternalWorkspace } from "@/data/performanceSystem";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 import { getBvbpPdcaCycles } from "@/lib/pdcaCycleStore";
 import { operationalLeakDetail } from "@/lib/performanceDetails";
-
-const totalHours = operationalLeaks.reduce((sum, leak) => sum + leak.hoursPerMonth, 0);
-const totalEstimatedCost = operationalLeaks.reduce((sum, leak) => sum + leak.estimatedCost, 0);
-const highSeverity = operationalLeaks.filter((leak) => leak.severity === "Alta").length;
 
 const PerformanceOperationsPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
   const [detail, setDetail] = useState<PerformanceDetail | null>(null);
   const isInternalWorkspace = isBvbpInternalWorkspace(activeCompany);
   const cycles = isInternalWorkspace ? getBvbpPdcaCycles() : [];
+  const operationalLeaks = getOperationalLeaksForCompany(activeCompany);
+  const totalHours = operationalLeaks.reduce((sum, leak) => sum + leak.hoursPerMonth, 0);
+  const totalEstimatedCost = operationalLeaks.reduce((sum, leak) => sum + leak.estimatedCost, 0);
+  const highSeverity = operationalLeaks.filter((leak) => leak.severity === "Alta").length;
 
   return (
     <>

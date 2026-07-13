@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 interface InitiativePriorityListProps {
   initiatives: PdcaCycle[];
   selectedInitiativeId?: string;
+  canManage: boolean;
   onSelect: (initiative: PdcaCycle) => void;
   onStatusChange: (initiativeId: string, status: PdcaStatus) => void;
 }
@@ -21,15 +22,20 @@ function formatImpact(value: number) {
 function SortableInitiativeRow({
   initiative,
   isSelected,
+  canManage,
   onSelect,
   onStatusChange,
 }: {
   initiative: PdcaCycle;
   isSelected: boolean;
+  canManage: boolean;
   onSelect: (initiative: PdcaCycle) => void;
   onStatusChange: (initiativeId: string, status: PdcaStatus) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: initiative.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: initiative.id,
+    disabled: !canManage,
+  });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -47,10 +53,14 @@ function SortableInitiativeRow({
     >
       <button
         type="button"
-        className="inline-flex h-8 w-8 cursor-grab items-center justify-center rounded-[8px] border border-bvbp-ink/10 text-bvbp-muted-ink active:cursor-grabbing"
+        className={cn(
+          "inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-bvbp-ink/10 text-bvbp-muted-ink",
+          canManage ? "cursor-grab active:cursor-grabbing" : "cursor-default opacity-45",
+        )}
         aria-label={`Arrastar ${initiative.title}`}
-        {...attributes}
-        {...listeners}
+        disabled={!canManage}
+        {...(canManage ? attributes : {})}
+        {...(canManage ? listeners : {})}
       >
         <GripVertical className="h-4 w-4" aria-hidden="true" />
       </button>
@@ -77,11 +87,15 @@ function SortableInitiativeRow({
       </button>
 
       <div onClick={(event) => event.stopPropagation()}>
-        <InitiativeStatusMenu
-          status={initiative.pdcaStatus}
-          onChange={(status) => onStatusChange(initiative.id, status)}
-          className="w-full"
-        />
+        {canManage ? (
+          <InitiativeStatusMenu
+            status={initiative.pdcaStatus}
+            onChange={(status) => onStatusChange(initiative.id, status)}
+            className="w-full"
+          />
+        ) : (
+          <StatusBadge label={initiative.pdcaStatus} />
+        )}
       </div>
     </article>
   );
@@ -90,6 +104,7 @@ function SortableInitiativeRow({
 export function InitiativePriorityList({
   initiatives,
   selectedInitiativeId,
+  canManage,
   onSelect,
   onStatusChange,
 }: InitiativePriorityListProps) {
@@ -101,6 +116,7 @@ export function InitiativePriorityList({
             key={initiative.id}
             initiative={initiative}
             isSelected={initiative.id === selectedInitiativeId}
+            canManage={canManage}
             onSelect={onSelect}
             onStatusChange={onStatusChange}
           />

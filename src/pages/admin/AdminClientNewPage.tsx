@@ -9,10 +9,10 @@ const draftCompany: Company = {
   id: "draft-client",
   name: "",
   segment: "",
-  employees: 20,
-  monthlyRevenue: 180000,
-  recurringRevenue: 70000,
-  monthlyOperationalCost: 120000,
+  employees: 0,
+  monthlyRevenue: 0,
+  recurringRevenue: 0,
+  monthlyOperationalCost: 0,
   relationshipStatus: "Onboarding",
   status: "Onboarding",
 };
@@ -46,7 +46,7 @@ const AdminClientNewPage = () => {
 
         <ClientSetupWizard
           mode="create"
-          configuration={createDefaultClientConfiguration(draftCompany)}
+          configuration={createDefaultClientConfiguration(draftCompany, { selectDefaults: false })}
           onCancel={() => navigate("/app/admin/clients")}
           onSave={handleSave}
         />

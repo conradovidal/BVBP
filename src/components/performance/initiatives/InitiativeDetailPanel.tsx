@@ -26,6 +26,7 @@ interface InitiativeDetailPanelProps {
   activities: InitiativeActivity[];
   activityForm: InitiativeActivityInput;
   evidenceForm: EvidenceInput;
+  canManageInitiative: boolean;
   onEdit: () => void;
   onActivityFormChange: (value: InitiativeActivityInput) => void;
   onAddActivity: () => void;
@@ -44,6 +45,7 @@ export function InitiativeDetailPanel({
   activities,
   activityForm,
   evidenceForm,
+  canManageInitiative,
   onEdit,
   onActivityFormChange,
   onAddActivity,
@@ -75,15 +77,17 @@ export function InitiativeDetailPanel({
             {initiative.affectedPointer} · {initiative.affectedFlow || "Frente a definir"}
           </p>
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
-          onClick={onEdit}
-        >
-          <Pencil className="h-4 w-4" aria-hidden="true" />
-          Editar iniciativa
-        </Button>
+        {canManageInitiative ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
+            onClick={onEdit}
+          >
+            <Pencil className="h-4 w-4" aria-hidden="true" />
+            Editar iniciativa
+          </Button>
+        ) : null}
       </div>
 
       <section className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">

@@ -14,7 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type Company, automationOpportunities, getAutomationOpportunitySummary, isBvbpInternalWorkspace } from "@/data/performanceSystem";
+import {
+  type Company,
+  getAutomationOpportunitiesForCompany,
+  getAutomationOpportunitySummary,
+  isBvbpInternalWorkspace,
+} from "@/data/performanceSystem";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 import { getBvbpPdcaCycles } from "@/lib/pdcaCycleStore";
 import { automationDetail } from "@/lib/performanceDetails";
@@ -24,7 +29,8 @@ const PerformanceAutomationsPage = () => {
   const [detail, setDetail] = useState<PerformanceDetail | null>(null);
   const isInternalWorkspace = isBvbpInternalWorkspace(activeCompany);
   const cycles = isInternalWorkspace ? getBvbpPdcaCycles() : [];
-  const summary = getAutomationOpportunitySummary();
+  const automationOpportunities = getAutomationOpportunitiesForCompany(activeCompany);
+  const summary = getAutomationOpportunitySummary(automationOpportunities);
 
   return (
     <>

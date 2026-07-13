@@ -2,16 +2,18 @@ import {
   type BvbpPillarId,
   type ClientConfiguration,
   type ClientMetricConfig,
-  type ClientMetricDataType,
   type ClientMetricUnit,
   type ClientPillarConfig,
   type Company,
+  type MaturityLevel,
   type MaturityMapItem,
   type OverviewPillarHighlight,
   bvbpPillarIds,
   bvbpPillarLabels,
   createDefaultClientConfiguration,
-  maturityLevels,
+  getMaturityCriterionIdsForLevel,
+  getPillarMaturityState,
+  maturityDefinitionsByPillar,
   metricCatalogByPillar,
 } from "@/data/performanceSystem";
 import {
@@ -20,6 +22,7 @@ import {
   getCompanyById,
   updatePortalCompany,
 } from "@/lib/clientPortalStore";
+import { syncClientConfigurationToSupabaseSoon } from "@/lib/clientPortalSupabase";
 import {
   PORTAL_STORAGE_KEYS,
   isClientConfigurationList,
@@ -36,12 +39,6 @@ export const clientMetricUnitLabels: Record<ClientMetricUnit, string> = {
   text: "texto",
 };
 
-export const clientMetricDataTypeLabels: Record<ClientMetricDataType, "Real" | "Estimado" | "Mockado"> = {
-  real: "Real",
-  estimated: "Estimado",
-  mock: "Mockado",
-};
-
 export interface ClientSetupInput {
   company: NewClientInput;
   configuration: Omit<ClientConfiguration, "companyId">;
@@ -54,8 +51,26 @@ export interface CustomClientMetricInput {
   currentValue?: number;
   target?: string;
   source?: string;
-  dataType: ClientMetricDataType;
-  frequency?: string;
+  formula: string;
+}
+
+interface StoredClientPillarConfig extends Partial<ClientPillarConfig> {
+  pillar: BvbpPillarId;
+  maturityLevel?: number;
+  currentLevelName?: string;
+  nextLevel?: number;
+  advancementCriteria?: string;
+}
+
+type StoredClientMetricConfig = Omit<ClientMetricConfig, "formula"> & {
+  formula?: string;
+};
+
+interface StoredClientConfiguration {
+  schemaVersion?: number;
+  companyId: string;
+  pillars: StoredClientPillarConfig[];
+  metrics: StoredClientMetricConfig[];
 }
 
 const overviewIdByPillar: Record<BvbpPillarId, OverviewPillarHighlight["id"]> = {
@@ -88,56 +103,93 @@ const maturityMapNameByPillar: Record<BvbpPillarId, string> = {
 
 function readAllClientConfigurations() {
   const { data } = readJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, isClientConfigurationList);
-  return data || [];
+  return (data || []) as unknown as StoredClientConfiguration[];
 }
 
-function saveAllClientConfigurations(configurations: ClientConfiguration[]) {
+function saveAllClientConfigurations(configurations: StoredClientConfiguration[]) {
   writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, configurations);
 }
 
-function getMaturityLevel(level: number) {
-  return maturityLevels.find((item) => item.level === level) || maturityLevels[0];
-}
-
-function clampMaturityLevel(value: number): 1 | 2 | 3 | 4 | 5 {
+function clampMaturityLevel(value: number): MaturityLevel {
   if (value <= 1) return 1;
   if (value >= 5) return 5;
-  return value as 1 | 2 | 3 | 4 | 5;
+  return value as MaturityLevel;
 }
 
-function normalizePillarConfig(defaultPillar: ClientPillarConfig, storedPillar?: ClientPillarConfig): ClientPillarConfig {
-  const maturityLevel = clampMaturityLevel(storedPillar?.maturityLevel || defaultPillar.maturityLevel);
-  const currentLevel = getMaturityLevel(maturityLevel);
-  const nextLevel = clampMaturityLevel(Math.min(maturityLevel + 1, 5));
+function normalizePillarConfig(
+  defaultPillar: ClientPillarConfig,
+  storedPillar?: StoredClientPillarConfig,
+): ClientPillarConfig {
+  const definition = maturityDefinitionsByPillar[defaultPillar.pillar];
+  const validCriterionIds = new Set(
+    definition.levels.flatMap((level) => level.criteria.map((criterion) => criterion.id)),
+  );
+  const completedMaturityCriterionIds = !storedPillar
+    ? defaultPillar.completedMaturityCriterionIds
+    : Array.isArray(storedPillar.completedMaturityCriterionIds)
+      ? storedPillar.completedMaturityCriterionIds.filter((criterionId) => validCriterionIds.has(criterionId))
+      : getMaturityCriterionIdsForLevel(
+          defaultPillar.pillar,
+          clampMaturityLevel(storedPillar.maturityLevel || 1),
+        );
 
   return {
-    ...defaultPillar,
-    ...storedPillar,
-    maturityLevel,
-    currentLevelName: storedPillar?.currentLevelName || currentLevel.name,
-    nextLevel,
-    advancementCriteria: storedPillar?.advancementCriteria || defaultPillar.advancementCriteria,
-    selectedMetricIds: storedPillar?.selectedMetricIds?.length ? storedPillar.selectedMetricIds : defaultPillar.selectedMetricIds,
+    pillar: defaultPillar.pillar,
+    completedMaturityCriterionIds,
+    selectedMetricIds: Array.isArray(storedPillar?.selectedMetricIds) ? storedPillar.selectedMetricIds : defaultPillar.selectedMetricIds,
     pains: storedPillar?.pains || [],
     notes: storedPillar?.notes || "",
   };
 }
 
-function normalizeClientConfiguration(company: Company, storedConfig?: ClientConfiguration): ClientConfiguration {
+function normalizeMetric(
+  fallback: ClientMetricConfig,
+  storedMetric?: StoredClientMetricConfig,
+  custom = fallback.custom,
+): ClientMetricConfig {
+  return {
+    id: storedMetric?.id || fallback.id,
+    name: custom ? storedMetric?.name || fallback.name : fallback.name,
+    pillar: storedMetric?.pillar || fallback.pillar,
+    description: custom ? storedMetric?.description || fallback.description : fallback.description,
+    unit: storedMetric?.unit || fallback.unit,
+    formula: storedMetric?.formula?.trim() || fallback.formula,
+    currentValue: storedMetric?.currentValue,
+    target: storedMetric?.target,
+    source: storedMetric?.source,
+    owner: storedMetric?.owner,
+    custom,
+  };
+}
+
+function normalizeClientConfiguration(company: Company, storedConfig?: StoredClientConfiguration): ClientConfiguration {
   const defaultConfig = createDefaultClientConfiguration(company);
   const storedMetricById = new Map((storedConfig?.metrics || []).map((metric) => [metric.id, metric]));
-  const defaultMetrics = defaultConfig.metrics.map((metric) => ({
-    ...metric,
-    ...storedMetricById.get(metric.id),
-    custom: false,
-  }));
-  const customMetrics = (storedConfig?.metrics || []).filter((metric) => metric.custom);
+  const currentCatalogIds = new Set(defaultConfig.metrics.map((metric) => metric.id));
+  const selectedStoredIds = new Set((storedConfig?.pillars || []).flatMap((pillar) => pillar.selectedMetricIds));
+  const defaultMetrics = defaultConfig.metrics.map((metric) => normalizeMetric(metric, storedMetricById.get(metric.id), false));
+  const customMetrics = (storedConfig?.metrics || [])
+    .filter((metric) => metric.custom || (!currentCatalogIds.has(metric.id) && selectedStoredIds.has(metric.id)))
+    .map((metric) => normalizeMetric({
+      ...metric,
+      formula: metric.formula?.trim() || "Definir fórmula de cálculo",
+      custom: true,
+    }, metric, true));
   const storedPillarById = new Map((storedConfig?.pillars || []).map((pillar) => [pillar.pillar, pillar]));
+  const availableMetricIds = new Set([...defaultMetrics, ...customMetrics].map((metric) => metric.id));
 
   return {
+    schemaVersion: 2,
     companyId: company.id,
     metrics: [...defaultMetrics, ...customMetrics],
-    pillars: defaultConfig.pillars.map((pillar) => normalizePillarConfig(pillar, storedPillarById.get(pillar.pillar))),
+    pillars: defaultConfig.pillars.map((pillar) => {
+      const normalizedPillar = normalizePillarConfig(pillar, storedPillarById.get(pillar.pillar));
+
+      return {
+        ...normalizedPillar,
+        selectedMetricIds: normalizedPillar.selectedMetricIds.filter((metricId) => availableMetricIds.has(metricId)),
+      };
+    }),
   };
 }
 
@@ -162,12 +214,14 @@ export function saveClientConfiguration(config: ClientConfiguration) {
     : [config, ...configurations];
 
   saveAllClientConfigurations(nextConfigurations);
+  syncClientConfigurationToSupabaseSoon(config);
   return config;
 }
 
 export function createClientWithConfiguration(input: ClientSetupInput) {
   const company = createPortalCompany(input.company);
   const configuration = saveClientConfiguration({
+    schemaVersion: 2,
     companyId: company.id,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -182,6 +236,23 @@ export function updateClientWithConfiguration(companyId: string, input: ClientSe
   if (!company) return undefined;
 
   const configuration = saveClientConfiguration({
+    schemaVersion: 2,
+    companyId,
+    pillars: input.configuration.pillars,
+    metrics: input.configuration.metrics,
+  });
+
+  return { company, configuration };
+}
+
+export function upsertClientWithConfiguration(companyId: string, input: ClientSetupInput) {
+  const existingCompany = getCompanyById(companyId);
+  const company = existingCompany
+    ? updatePortalCompany(companyId, input.company) || existingCompany
+    : createPortalCompany({ ...input.company, id: companyId });
+
+  const configuration = saveClientConfiguration({
+    schemaVersion: 2,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -200,13 +271,12 @@ export function addCustomClientMetric(companyId: string, input: CustomClientMetr
     id: `${companyId}-${input.pillar}-metric-${Date.now()}`,
     name: input.name.trim(),
     pillar: input.pillar,
-    description: "Métrica customizada cadastrada localmente.",
+    description: "Ponteiro personalizado cadastrado localmente.",
     unit: input.unit,
-    dataType: input.dataType,
+    formula: input.formula.trim(),
     currentValue: input.currentValue,
     target: input.target?.trim() || undefined,
     source: input.source?.trim() || undefined,
-    frequency: input.frequency?.trim() || undefined,
     owner: company.bvbpOwner || "BVBP",
     custom: true,
   };
@@ -256,15 +326,15 @@ export function getConfiguredOverviewPillarHighlights(
       value: primaryMetric.currentValue,
       unit: primaryMetric.unit,
       helper: primaryMetric.source || "Configuração local",
-      dataType: clientMetricDataTypeLabels[primaryMetric.dataType],
+      dataType: "Real",
       source: primaryMetric.source || "Configuração local",
       description: primaryMetric.description,
       metrics: selectedMetrics.map((metric) => ({
         label: metric.name,
         value: metric.currentValue,
         unit: metric.unit,
-        dataType: clientMetricDataTypeLabels[metric.dataType],
-        source: metric.source || (metric.custom ? "Métrica customizada" : "Catálogo BVBP"),
+        dataType: "Real",
+        source: metric.source || (metric.custom ? "Ponteiro personalizado" : "Catálogo BVBP"),
       })),
     };
   });
@@ -275,22 +345,23 @@ export function getConfiguredMaturityMap(company: Company, fallbackMap: Maturity
   const fallbackById = new Map(fallbackMap.map((item) => [item.id, item]));
 
   return configuration.pillars.map((pillar) => {
-    const currentLevel = getMaturityLevel(pillar.maturityLevel);
-    const nextLevel = getMaturityLevel(pillar.nextLevel);
+    const maturity = getPillarMaturityState(pillar.pillar, pillar.completedMaturityCriterionIds);
     const fallback = fallbackById.get(maturityMapIdByPillar[pillar.pillar]);
-    const status = pillar.maturityLevel <= 1 ? "Base inicial" : pillar.maturityLevel === 2 ? "Atenção" : "Em evolução";
+    const status = maturity.level <= 1 ? "Base inicial" : maturity.level === 2 ? "Atenção" : "Em evolução";
 
     return {
       id: maturityMapIdByPillar[pillar.pillar],
       name: maturityMapNameByPillar[pillar.pillar],
-      score: pillar.maturityLevel,
+      score: maturity.level,
       status,
       description: pillar.notes || fallback?.description || `${bvbpPillarLabels[pillar.pillar]} configurado localmente.`,
-      currentLevelLabel: pillar.currentLevelName || currentLevel.name,
-      nextLevel: pillar.nextLevel,
-      nextLevelLabel: nextLevel.name,
-      currentMeaning: currentLevel.description,
-      advancementCriteria: [pillar.advancementCriteria || "Definir critério de avanço."],
+      currentLevelLabel: maturity.current.name,
+      nextLevel: maturity.next?.level || 5,
+      nextLevelLabel: maturity.next?.name || maturity.current.name,
+      currentMeaning: maturity.current.description,
+      advancementCriteria: maturity.current.criteria.length
+        ? maturity.current.criteria.map((criterion) => criterion.label)
+        : ["Maturidade máxima validada."],
     };
   });
 }

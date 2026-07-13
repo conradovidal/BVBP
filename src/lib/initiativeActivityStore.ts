@@ -1,4 +1,5 @@
 import type { PdcaAction, PdcaCycle } from "@/data/performanceSystem";
+import { syncInitiativeActivitiesForInitiativeSoon } from "@/lib/clientPortalSupabase";
 import { PORTAL_STORAGE_KEYS, readJsonStorage, writeJsonStorage } from "@/lib/portalStorage";
 
 export const initiativeActivityStatuses = ["A fazer", "Em andamento", "Em validação", "Concluído"] as const;
@@ -87,6 +88,7 @@ export function getActivitiesForInitiative(initiative: PdcaCycle) {
 
   const seededActivities = initiative.actions.map((action, index) => activityFromAction(initiative.id, action, index));
   saveActivities([...seededActivities, ...storedActivities]);
+  syncInitiativeActivitiesForInitiativeSoon(initiative.id, [...seededActivities, ...storedActivities]);
 
   return seededActivities;
 }
@@ -104,7 +106,11 @@ export function getActivitiesForInitiatives(initiatives: PdcaCycle[]) {
   });
 
   if (seededActivities.length) {
-    saveActivities([...seededActivities, ...storedActivities]);
+    const nextActivities = [...seededActivities, ...storedActivities];
+    saveActivities(nextActivities);
+    seededActivities.forEach((activity) => {
+      syncInitiativeActivitiesForInitiativeSoon(activity.initiativeId, nextActivities);
+    });
   }
 
   return [...seededActivities, ...storedActivities].filter((activity) =>
@@ -132,6 +138,7 @@ export function upsertInitiativeActivity(input: InitiativeActivityInput) {
     : [activity, ...activities];
 
   saveActivities(nextActivities);
+  syncInitiativeActivitiesForInitiativeSoon(activity.initiativeId, nextActivities);
   return activity;
 }
 
@@ -141,7 +148,11 @@ export function updateInitiativeActivityStatus(activityId: string, status: Initi
   const nextActivities = activities.map((activity) =>
     activity.id === activityId ? { ...activity, status, updatedAt } : activity,
   );
+  const updatedActivity = nextActivities.find((activity) => activity.id === activityId);
 
   saveActivities(nextActivities);
+  if (updatedActivity) {
+    syncInitiativeActivitiesForInitiativeSoon(updatedActivity.initiativeId, nextActivities);
+  }
   return nextActivities.find((activity) => activity.id === activityId);
 }

@@ -110,6 +110,175 @@ export type Database = {
         }
         Relationships: []
       }
+      client_workspaces: {
+        Row: {
+          company_payload: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          relationship_status: string
+          segment: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          company_payload?: Json
+          created_at?: string
+          created_by?: string | null
+          id: string
+          name: string
+          relationship_status?: string
+          segment: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          company_payload?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          relationship_status?: string
+          segment?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      client_contacts: {
+        Row: {
+          access_status: string
+          auth_user_id: string | null
+          created_at: string
+          disabled_at: string | null
+          email: string
+          id: string
+          invited_at: string | null
+          is_primary: boolean
+          name: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          access_status?: string
+          auth_user_id?: string | null
+          created_at?: string
+          disabled_at?: string | null
+          email: string
+          id: string
+          invited_at?: string | null
+          is_primary?: boolean
+          name: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          access_status?: string
+          auth_user_id?: string | null
+          created_at?: string
+          disabled_at?: string | null
+          email?: string
+          id?: string
+          invited_at?: string | null
+          is_primary?: boolean
+          name?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_contacts_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "client_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_memberships: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          id: string
+          role: string
+          status: string
+          updated_at: string
+          user_id: string
+          workspace_id: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          workspace_id: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          id?: string
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_memberships_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "client_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_memberships_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "client_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_workspace_payloads: {
+        Row: {
+          payload: Json
+          payload_key: string
+          schema_version: number
+          updated_at: string
+          updated_by: string | null
+          workspace_id: string
+        }
+        Insert: {
+          payload?: Json
+          payload_key: string
+          schema_version?: number
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id: string
+        }
+        Update: {
+          payload?: Json
+          payload_key?: string
+          schema_version?: number
+          updated_at?: string
+          updated_by?: string | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_workspace_payloads_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "client_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -136,6 +305,19 @@ export type Database = {
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_active_client_membership: {
+        Args: {
+          _user_id: string
+          _workspace_id: string
+        }
+        Returns: boolean
+      }
+      is_bvbp_staff: {
+        Args: {
           _user_id: string
         }
         Returns: boolean

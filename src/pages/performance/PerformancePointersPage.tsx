@@ -33,7 +33,7 @@ const PerformancePointersPage = () => {
     <>
       <Helmet>
         <title>Ponteiros | BVBP Performance System</title>
-        <meta name="description" content="Métricas, dores e iniciativas por pilar do Método BVBP." />
+        <meta name="description" content="Ponteiros, dores e iniciativas por pilar do Método BVBP." />
       </Helmet>
 
       <div className="space-y-7">
@@ -41,7 +41,7 @@ const PerformancePointersPage = () => {
           <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Ponteiros</h1>
           <p className="text-sm font-semibold text-bvbp-ink">{activeCompany.name}</p>
           <p className="max-w-2xl text-sm leading-6 text-bvbp-muted-ink">
-            Métricas, dores e iniciativas por pilar.
+            Ponteiros, dores e iniciativas por pilar.
           </p>
         </section>
 
@@ -58,7 +58,7 @@ const PerformancePointersPage = () => {
 
         <section className="space-y-3">
           <SectionHeader
-            title="Métricas acompanhadas"
+            title="Ponteiros acompanhados"
             description={`${diagnostic.activePillar.label} · ${diagnostic.activePillar.description}`}
           />
           <TrackedMetricsGrid metrics={diagnostic.metrics} />

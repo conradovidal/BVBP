@@ -1,4 +1,3 @@
-import { maturityLevels } from "@/data/performanceSystem";
 import type { PointerPillarDiagnostic } from "@/lib/performancePointersModel";
 import { cn } from "@/lib/utils";
 
@@ -20,15 +19,19 @@ export function PillarMaturityPanel({ maturity }: PillarMaturityPanelProps) {
           <p className="mt-2 max-w-xl text-sm leading-6 text-bvbp-muted-ink">{maturity.currentDescription}</p>
         </div>
         <div className="rounded-[8px] bg-bvbp-inset px-4 py-3 text-sm leading-6">
-          <p className="font-semibold text-bvbp-ink">Próximo nível</p>
+          <p className="font-semibold text-bvbp-ink">
+            {maturity.currentLevel === 5 ? "Progresso" : "Próximo nível"}
+          </p>
           <p className="text-bvbp-muted-ink">
-            {maturity.nextLevel}/5 · {maturity.nextName}
+            {maturity.currentLevel === 5
+              ? `${maturity.completedCriteria}/${maturity.totalCriteria} critérios validados`
+              : `${maturity.nextLevel}/5 · ${maturity.nextName}`}
           </p>
         </div>
       </div>
 
       <div className="mt-5 grid gap-2 sm:grid-cols-5">
-        {maturityLevels.map((level) => (
+        {maturity.levels.map((level) => (
           <div
             key={level.level}
             className={cn(
@@ -45,7 +48,9 @@ export function PillarMaturityPanel({ maturity }: PillarMaturityPanelProps) {
       </div>
 
       <section className="mt-5 rounded-[8px] bg-bvbp-inset p-3 text-sm leading-6">
-        <p className="font-semibold text-bvbp-ink">Critério para avançar</p>
+        <p className="font-semibold text-bvbp-ink">
+          {maturity.currentLevel === 5 ? "Situação atual" : "Critérios para avançar"}
+        </p>
         <p className="mt-1 text-bvbp-muted-ink">{maturity.advancementCriteria}</p>
       </section>
     </article>

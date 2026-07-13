@@ -1,5 +1,5 @@
-import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
-import { FileText, LayoutDashboard, ListChecks, LogOut, Settings, Target, UsersRound } from "lucide-react";
+import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { FileText, LayoutDashboard, ListChecks, LogOut, Plus, Settings, Target, UsersRound } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
 import { getBvbpWorkspaceCompany } from "@/lib/clientPortalStore";
@@ -15,10 +15,53 @@ const adminNavItems = [
   { label: "Configurações", href: "/app/admin/settings", icon: Settings },
 ];
 
+const BVBP_WORKSPACE_EDIT_PATH = "/app/admin/clients/company-bvbp/edit";
+
+function getActiveAdminNavHref(pathname: string) {
+  if (pathname === BVBP_WORKSPACE_EDIT_PATH) return "/app/admin/settings";
+  if (pathname === "/app/admin") return "/app/admin";
+  if (pathname.startsWith("/app/admin/blog")) return "/app/admin/content";
+
+  return adminNavItems.find((item) => (
+    item.href !== "/app/admin" &&
+    (pathname === item.href || pathname.startsWith(`${item.href}/`))
+  ))?.href;
+}
+
+function needsBvbpWorkspace(pathname: string) {
+  return pathname === "/app/admin" ||
+    pathname === "/app/admin/pointers" ||
+    pathname.startsWith("/app/admin/pointers/") ||
+    pathname === "/app/admin/initiatives" ||
+    pathname.startsWith("/app/admin/initiatives/");
+}
+
+function EmptyBvbpWorkspaceState() {
+  return (
+    <section className="rounded-[8px] border border-dashed border-bvbp-ink/15 bg-bvbp-raised p-6">
+      <p className="font-label text-[10px] font-semibold uppercase tracking-[0.14em] text-bvbp-muted-ink">
+        Primeiro uso
+      </p>
+      <h1 className="mt-3 font-heading text-2xl font-bold text-bvbp-ink">Cadastre o workspace BVBP</h1>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-bvbp-muted-ink">
+        O portal está sem dados de demonstração. Crie primeiro o workspace interno para liberar visão geral, ponteiros e iniciativas da BVBP.
+      </p>
+      <Button asChild className="mt-5 rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark">
+        <Link to="/app/admin/clients/company-bvbp/edit">
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Cadastrar workspace BVBP
+        </Link>
+      </Button>
+    </section>
+  );
+}
+
 export function AdminAppShell() {
   const session = getPerformanceSession();
   const navigate = useNavigate();
+  const location = useLocation();
   const activeCompany = getBvbpWorkspaceCompany();
+  const activeNavHref = getActiveAdminNavHref(location.pathname);
 
   if (!isBvbpStaff(session)) {
     return <Navigate to="/app/performance/overview" replace />;
@@ -42,24 +85,23 @@ export function AdminAppShell() {
         <nav className="flex-1 space-y-1 px-3 py-5">
           {adminNavItems.map((item) => {
             const Icon = item.icon;
+            const isActive = activeNavHref === item.href;
 
             return (
-              <NavLink
+              <Link
                 key={item.href}
                 to={item.href}
-                end={item.href === "/app/admin"}
-                className={({ isActive }) =>
-                  cn(
-                    "flex items-center gap-3 rounded-[8px] px-3 py-2.5 text-sm font-semibold transition-colors",
-                    isActive
-                      ? "bg-bvbp-ivory text-bvbp-forest-dark"
-                      : "text-bvbp-ivory/72 hover:bg-bvbp-ivory/10 hover:text-bvbp-ivory"
-                  )
-                }
+                aria-current={isActive ? "page" : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-[8px] px-3 py-2.5 text-sm font-semibold transition-colors",
+                  isActive
+                    ? "bg-bvbp-ivory text-bvbp-forest-dark"
+                    : "text-bvbp-ivory/72 hover:bg-bvbp-ivory/10 hover:text-bvbp-ivory"
+                )}
               >
                 <Icon className="h-4 w-4" aria-hidden="true" />
                 {item.label}
-              </NavLink>
+              </Link>
             );
           })}
         </nav>
@@ -99,31 +141,34 @@ export function AdminAppShell() {
             {adminNavItems
               .map((item) => {
                 const Icon = item.icon;
+                const isActive = activeNavHref === item.href;
 
                 return (
-                  <NavLink
+                  <Link
                     key={item.href}
                     to={item.href}
-                    end={item.href === "/app/admin"}
-                    className={({ isActive }) =>
-                      cn(
-                        "inline-flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-sm font-semibold transition-colors",
-                        isActive
-                          ? "bg-bvbp-forest text-bvbp-ivory"
-                          : "text-bvbp-muted-ink hover:bg-bvbp-inset hover:text-bvbp-ink"
-                      )
-                    }
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "inline-flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-sm font-semibold transition-colors",
+                      isActive
+                        ? "bg-bvbp-forest text-bvbp-ivory"
+                        : "text-bvbp-muted-ink hover:bg-bvbp-inset hover:text-bvbp-ink"
+                    )}
                   >
                     <Icon className="h-4 w-4" aria-hidden="true" />
                     {item.label}
-                  </NavLink>
+                  </Link>
                 );
               })}
           </nav>
         </header>
 
         <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <Outlet context={{ activeCompany }} />
+          {!activeCompany && needsBvbpWorkspace(location.pathname) ? (
+            <EmptyBvbpWorkspaceState />
+          ) : (
+            <Outlet context={{ activeCompany }} />
+          )}
         </main>
       </div>
     </div>
