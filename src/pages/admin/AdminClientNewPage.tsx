@@ -20,8 +20,8 @@ const draftCompany: Company = {
 const AdminClientNewPage = () => {
   const navigate = useNavigate();
 
-  const handleSave = (input: ClientSetupInput) => {
-    createClientWithConfiguration(input);
+  const handleSave = async (input: ClientSetupInput) => {
+    await createClientWithConfiguration(input);
     navigate("/app/admin/clients");
   };
 

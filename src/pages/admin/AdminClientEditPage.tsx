@@ -36,11 +36,11 @@ const AdminClientEditPage = () => {
 
   const returnPath = isBvbpWorkspace ? "/app/admin/settings" : "/app/admin/clients";
 
-  const handleSave = (input: ClientSetupInput) => {
+  const handleSave = async (input: ClientSetupInput) => {
     if (isBvbpWorkspace && !hasStoredBvbpWorkspace) {
-      upsertClientWithConfiguration(BVBP_COMPANY_ID, input);
+      await upsertClientWithConfiguration(BVBP_COMPANY_ID, input);
     } else {
-      updateClientWithConfiguration(company.id, input);
+      await updateClientWithConfiguration(company.id, input);
     }
 
     navigate(returnPath);

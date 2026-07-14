@@ -140,9 +140,12 @@ export function PerformanceAppShell() {
   const canSwitchWorkspace = accessibleCompanies.length > 1;
   const isStaff = isBvbpStaff(session);
 
-  const handleLogout = () => {
-    signOutPerformanceUser();
-    navigate("/login", { replace: true });
+  const handleLogout = async () => {
+    try {
+      await signOutPerformanceUser();
+    } finally {
+      navigate("/login", { replace: true });
+    }
   };
 
   const handleCompanyChange = (companyId: string) => {
@@ -169,7 +172,7 @@ export function PerformanceAppShell() {
                 <NavLink to="/app/admin">Portal BVBP</NavLink>
               </Button>
             ) : null}
-            <Button variant="outline" className="rounded-[8px]" onClick={handleLogout}>
+            <Button variant="outline" className="rounded-[8px]" onClick={() => void handleLogout()}>
               <LogOut className="h-4 w-4" aria-hidden="true" />
               Sair
             </Button>
@@ -270,7 +273,7 @@ export function PerformanceAppShell() {
                 variant="outline"
                 size="sm"
                 className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
-                onClick={handleLogout}
+                onClick={() => void handleLogout()}
               >
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 Sair

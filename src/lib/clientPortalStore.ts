@@ -6,7 +6,6 @@ import {
   mockCompanies,
 } from "@/data/performanceSystem";
 import { type PerformanceSession, isBvbpStaff } from "@/lib/performanceAuth";
-import { syncCompanyToSupabaseSoon } from "@/lib/clientPortalSupabase";
 import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 import { PORTAL_STORAGE_KEYS, isCompanyList, readJsonStorage, writeJsonStorage } from "@/lib/portalStorage";
 
@@ -111,12 +110,11 @@ export function getExternalPortalCompanies() {
   return getPortalCompanies().filter((company) => company.id !== BVBP_COMPANY_ID);
 }
 
-export function createPortalCompany(input: NewClientInput): Company {
-  const companies = getPortalCompanies();
+export function buildPortalCompany(input: NewClientInput): Company {
   const companyId = input.id || `company-${Date.now()}`;
   const contacts = normalizeContacts(companyId, input.contacts, input.contactName, input.contactEmail);
   const primaryContact = contacts.find((contact) => contact.isPrimary);
-  const company: Company = {
+  return {
     id: companyId,
     name: input.name.trim(),
     segment: input.segment.trim(),
@@ -135,24 +133,16 @@ export function createPortalCompany(input: NewClientInput): Company {
     contacts,
     status: input.relationshipStatus || "Onboarding",
   };
-
-  savePortalCompanies([company, ...companies]);
-  syncCompanyToSupabaseSoon(company);
-  setActiveCompanyId(company.id);
-  return company;
 }
 
-export function updatePortalCompany(companyId: string, input: UpdateClientInput) {
-  const companies = getPortalCompanies();
-  const existing = companies.find((company) => company.id === companyId);
-
-  if (!existing) return undefined;
-
+export function buildUpdatedPortalCompany(existing: Company, input: UpdateClientInput): Company {
+  const companyId = existing.id;
   const contacts = input.contacts
     ? normalizeContacts(companyId, input.contacts, input.contactName, input.contactEmail)
     : normalizeContacts(companyId, existing.contacts, input.contactName ?? existing.contactName, input.contactEmail ?? existing.contactEmail);
   const primaryContact = contacts.find((contact) => contact.isPrimary);
-  const updated: Company = {
+
+  return {
     ...existing,
     name: input.name !== undefined ? input.name.trim() : existing.name,
     segment: input.segment !== undefined ? input.segment.trim() : existing.segment,
@@ -171,10 +161,33 @@ export function updatePortalCompany(companyId: string, input: UpdateClientInput)
     contacts,
     status: input.relationshipStatus || existing.relationshipStatus || existing.status,
   };
+}
 
-  savePortalCompanies(companies.map((company) => (company.id === companyId ? updated : company)));
-  syncCompanyToSupabaseSoon(updated);
-  return updated;
+export function commitPortalCompany(company: Company) {
+  const companies = getPortalCompanies();
+  const exists = companies.some((candidate) => candidate.id === company.id);
+  savePortalCompanies(
+    exists
+      ? companies.map((candidate) => (candidate.id === company.id ? company : candidate))
+      : [company, ...companies],
+  );
+  setActiveCompanyId(company.id);
+  return company;
+}
+
+export function createPortalCompany(input: NewClientInput): Company {
+  const company = buildPortalCompany(input);
+
+  return commitPortalCompany(company);
+}
+
+export function updatePortalCompany(companyId: string, input: UpdateClientInput) {
+  const companies = getPortalCompanies();
+  const existing = companies.find((company) => company.id === companyId);
+
+  if (!existing) return undefined;
+
+  return commitPortalCompany(buildUpdatedPortalCompany(existing, input));
 }
 
 export function getCompanyById(companyId: string | undefined) {

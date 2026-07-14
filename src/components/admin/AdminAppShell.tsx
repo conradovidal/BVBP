@@ -67,9 +67,12 @@ export function AdminAppShell() {
     return <Navigate to="/app/performance/overview" replace />;
   }
 
-  const handleLogout = () => {
-    signOutPerformanceUser();
-    navigate("/login", { replace: true });
+  const handleLogout = async () => {
+    try {
+      await signOutPerformanceUser();
+    } finally {
+      navigate("/login", { replace: true });
+    }
   };
 
   return (
@@ -129,7 +132,7 @@ export function AdminAppShell() {
                 variant="outline"
                 size="sm"
                 className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
-                onClick={handleLogout}
+                onClick={() => void handleLogout()}
               >
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 Sair
