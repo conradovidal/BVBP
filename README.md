@@ -60,9 +60,10 @@ Antes de publicar o portal para uso real:
 1. Aplique as migrações Supabase, incluindo `client_portal_access` e `staff_access_bootstrap`.
 2. Faça deploy das Edge Functions `invite-client-contact` e `bootstrap-admins`.
 3. Configure `PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `BOOTSTRAP_ADMIN_SECRET` nas Edge Functions.
-4. No Supabase Auth, configure Site URL e Redirect URLs de produção, preview e localhost apontando para `/auth/set-password`.
+4. No Supabase Auth, use `https://www.bvbp.com.br` como Site URL, autorize as duas variantes de domínio em `/auth/**` e configure o OTP para 3.600 segundos.
 5. Configure SMTP/email transacional antes de convidar clientes reais.
-6. Execute o bootstrap inicial chamando `bootstrap-admins` com o header `x-bootstrap-secret` e o body `{ "mode": "invite_only" }`; Conrado e Cristiano só recebem o primeiro convite se não houver conta preexistente.
+6. Publique os templates versionados em `docs/email-templates/` somente depois de `/auth/confirm` estar disponível em produção.
+7. Execute o bootstrap inicial chamando `bootstrap-admins` com o header `x-bootstrap-secret` e destinatários explícitos, por exemplo `{ "mode": "invite_only", "emails": ["conrado@bvbp.com.br"] }`. A função não possui destinatários implícitos.
 
 ## Produção
 
