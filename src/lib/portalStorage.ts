@@ -15,7 +15,19 @@ export const PORTAL_STORAGE_KEYS = {
   pdcaCycles: "bvbp-pdca-cycles",
   initiativeActivities: "bvbp-initiative-activities",
   clientConfigurations: "bvbp-client-configurations",
+  performanceSession: "bvbp-performance-session",
+  cacheVersion: "bvbp-portal-cache-version",
 } as const;
+
+const CURRENT_PORTAL_CACHE_VERSION = "2026-07-production-clean-start-v1";
+
+const workspaceStorageKeys = [
+  PORTAL_STORAGE_KEYS.clients,
+  PORTAL_STORAGE_KEYS.activeCompany,
+  PORTAL_STORAGE_KEYS.pdcaCycles,
+  PORTAL_STORAGE_KEYS.initiativeActivities,
+  PORTAL_STORAGE_KEYS.clientConfigurations,
+] as const;
 
 export interface StorageParseResult<T> {
   data: T | null;
@@ -45,6 +57,27 @@ export function readJsonStorage<T>(key: string, isValid: (value: unknown) => val
 
 export function writeJsonStorage<T>(key: string, value: T) {
   window.localStorage.setItem(key, JSON.stringify(value));
+}
+
+export function clearPortalWorkspaceData() {
+  workspaceStorageKeys.forEach((key) => window.localStorage.removeItem(key));
+}
+
+export function clearPortalLocalState() {
+  clearPortalWorkspaceData();
+  window.localStorage.removeItem(PORTAL_STORAGE_KEYS.performanceSession);
+}
+
+export function initializePortalLocalState() {
+  const storedVersion = window.localStorage.getItem(PORTAL_STORAGE_KEYS.cacheVersion);
+
+  if (storedVersion === CURRENT_PORTAL_CACHE_VERSION) {
+    return false;
+  }
+
+  clearPortalLocalState();
+  window.localStorage.setItem(PORTAL_STORAGE_KEYS.cacheVersion, CURRENT_PORTAL_CACHE_VERSION);
+  return true;
 }
 
 export function isCompanyList(value: unknown): value is Company[] {

@@ -2,8 +2,9 @@ import { PRISMA_DEMO_COMPANY_ID, type PerformanceUser, type PortalRole } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { hydratePortalFromSupabase } from "@/lib/clientPortalSupabase";
 import { getAuthRedirectUrl, portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
+import { PORTAL_STORAGE_KEYS, clearPortalLocalState } from "@/lib/portalStorage";
 
-const PERFORMANCE_SESSION_KEY = "bvbp-performance-session";
+const PERFORMANCE_SESSION_KEY = PORTAL_STORAGE_KEYS.performanceSession;
 
 export const mockLoginCredentials = {
   email: "cliente@bvbp.com.br",
@@ -90,15 +91,24 @@ function getRoleLabel(role: PortalRole) {
 }
 
 export async function refreshPerformanceSessionFromSupabase(): Promise<PerformanceSession | null> {
-  const { data: userData } = await supabase.auth.getUser();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
   const user = userData.user;
 
-  if (!user?.email) return null;
+  if (userError || !user?.email) {
+    window.localStorage.removeItem(PERFORMANCE_SESSION_KEY);
+    return null;
+  }
 
-  const [{ data: roles }, { data: memberships }] = await Promise.all([
+  const [rolesResult, membershipsResult] = await Promise.all([
     supabase.from("user_roles").select("role").eq("user_id", user.id),
     supabase.from("client_memberships").select("workspace_id, status").eq("user_id", user.id).eq("status", "active"),
   ]);
+  const { data: roles, error: rolesError } = rolesResult;
+  const { data: memberships, error: membershipsError } = membershipsResult;
+
+  if (rolesError || membershipsError) {
+    throw new Error("Não foi possível validar as permissões do portal.");
+  }
   const roleNames = new Set((roles || []).map((role) => role.role));
   const role: PortalRole = roleNames.has("admin")
     ? "admin"
@@ -216,9 +226,13 @@ export function getPerformanceSession(): PerformanceSession | null {
   }
 }
 
-export function signOutPerformanceUser() {
-  window.localStorage.removeItem(PERFORMANCE_SESSION_KEY);
-  void supabase.auth.signOut();
+export async function signOutPerformanceUser() {
+  clearPortalLocalState();
+  const { error } = await supabase.auth.signOut({ scope: "local" });
+
+  if (error) {
+    throw error;
+  }
 }
 
 export function isBvbpStaff(session: PerformanceSession | null) {

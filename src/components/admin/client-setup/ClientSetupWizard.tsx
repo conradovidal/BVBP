@@ -74,7 +74,7 @@ interface ClientSetupWizardProps {
   company?: Company;
   configuration: ClientConfiguration;
   onCancel: () => void;
-  onSave: (input: ClientSetupInput) => void;
+  onSave: (input: ClientSetupInput) => Promise<void>;
 }
 
 interface StepProps {
@@ -243,6 +243,7 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
 export function ClientSetupWizard({ mode, company, configuration, onCancel, onSave }: ClientSetupWizardProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState(() => createInitialState(company, configuration));
+  const [saving, setSaving] = useState(false);
   const [contactAccessLoadingId, setContactAccessLoadingId] = useState<string>();
   const isBasicValid = state.company.name.trim().length > 1 && state.company.segment.trim().length > 1;
   const areContactsValid =
@@ -436,13 +437,21 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
         throw new Error("Sessão expirada ou sem permissão. Entre novamente com uma conta BVBP.");
       }
 
-      const updatedContact = await sendClientContactAccessAction(company.id, contact.id, action);
+      const { contact: updatedContact, deliveryType } = await sendClientContactAccessAction(company.id, contact.id, action);
       updateContact(contact.id, updatedContact);
+      const title = action === "disable"
+        ? "Acesso desativado"
+        : deliveryType === "recovery"
+          ? "Link de recuperação enviado"
+          : "Convite enviado";
+      const description = action === "disable"
+        ? `${contact.name} não acessa mais este workspace.`
+        : deliveryType === "recovery"
+          ? `${contact.name} já possuía uma conta e recebeu um link para redefinir a senha.`
+          : `${contact.name} recebeu um primeiro convite para definir a senha.`;
       toast({
-        title: action === "disable" ? "Acesso desativado" : "Convite enviado",
-        description: action === "disable"
-          ? `${contact.name} não acessa mais este workspace.`
-          : `${contact.name} recebeu um convite para definir a senha.`,
+        title,
+        description,
       });
     } catch (error) {
       toast({
@@ -454,6 +463,23 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
       });
     } finally {
       setContactAccessLoadingId(undefined);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+
+    try {
+      await onSave(buildSaveInput(state));
+    } catch (error) {
+      toast({
+        title: "Não foi possível salvar",
+        description: error instanceof Error
+          ? error.message
+          : "Confira sua conexão e tente novamente.",
+        variant: "destructive",
+      });
+      setSaving(false);
     }
   };
 
@@ -535,11 +561,11 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
             <Button
               type="button"
               className="rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
-              disabled={!isBasicValid || !areContactsValid || !arePointersValid}
-              onClick={() => onSave(buildSaveInput(state))}
+              disabled={saving || !isBasicValid || !areContactsValid || !arePointersValid}
+              onClick={() => void handleSave()}
             >
               <Save className="h-4 w-4" aria-hidden="true" />
-              {mode === "create" ? "Salvar cliente" : "Salvar alterações"}
+              {saving ? "Salvando..." : mode === "create" ? "Salvar cliente" : "Salvar alterações"}
             </Button>
           )}
         </div>

@@ -18,11 +18,18 @@ import {
 } from "@/data/performanceSystem";
 import {
   type NewClientInput,
-  createPortalCompany,
+  buildPortalCompany,
+  buildUpdatedPortalCompany,
+  commitPortalCompany,
   getCompanyById,
-  updatePortalCompany,
 } from "@/lib/clientPortalStore";
-import { syncClientConfigurationToSupabaseSoon } from "@/lib/clientPortalSupabase";
+import {
+  deleteWorkspaceFromSupabase,
+  syncClientConfigurationToSupabase,
+  syncClientConfigurationToSupabaseSoon,
+  syncCompanyToSupabase,
+} from "@/lib/clientPortalSupabase";
+import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 import {
   PORTAL_STORAGE_KEYS,
   isClientConfigurationList,
@@ -206,7 +213,7 @@ export function getClientConfiguration(company: Company): ClientConfiguration {
   return normalizedConfig;
 }
 
-export function saveClientConfiguration(config: ClientConfiguration) {
+function storeClientConfiguration(config: ClientConfiguration) {
   const configurations = readAllClientConfigurations();
   const exists = configurations.some((configuration) => configuration.companyId === config.companyId);
   const nextConfigurations = exists
@@ -214,51 +221,88 @@ export function saveClientConfiguration(config: ClientConfiguration) {
     : [config, ...configurations];
 
   saveAllClientConfigurations(nextConfigurations);
+  return config;
+}
+
+export function saveClientConfiguration(config: ClientConfiguration) {
+  storeClientConfiguration(config);
   syncClientConfigurationToSupabaseSoon(config);
   return config;
 }
 
-export function createClientWithConfiguration(input: ClientSetupInput) {
-  const company = createPortalCompany(input.company);
-  const configuration = saveClientConfiguration({
+async function rollbackCompanyPersistence(company: Company, previousCompany?: Company) {
+  if (previousCompany) {
+    await syncCompanyToSupabase(previousCompany);
+    return;
+  }
+
+  await deleteWorkspaceFromSupabase(company.id);
+}
+
+async function persistClientBundle(company: Company, configuration: ClientConfiguration, previousCompany?: Company) {
+  if (!portalRuntimeConfig.enableDemoData) {
+    const companySynced = await syncCompanyToSupabase(company);
+
+    if (!companySynced) {
+      await rollbackCompanyPersistence(company, previousCompany);
+      throw new Error("Não foi possível salvar os dados da empresa no Supabase.");
+    }
+
+    const configurationSynced = await syncClientConfigurationToSupabase(configuration);
+
+    if (!configurationSynced) {
+      await rollbackCompanyPersistence(company, previousCompany);
+      throw new Error("A empresa não foi concluída porque a configuração não pôde ser salva.");
+    }
+  }
+
+  commitPortalCompany(company);
+  storeClientConfiguration(configuration);
+  return { company, configuration };
+}
+
+export async function createClientWithConfiguration(input: ClientSetupInput) {
+  const company = buildPortalCompany(input.company);
+  const configuration: ClientConfiguration = {
     schemaVersion: 2,
     companyId: company.id,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
-  });
+  };
 
-  return { company, configuration };
+  return persistClientBundle(company, configuration);
 }
 
-export function updateClientWithConfiguration(companyId: string, input: ClientSetupInput) {
-  const company = updatePortalCompany(companyId, input.company) || getCompanyById(companyId);
+export async function updateClientWithConfiguration(companyId: string, input: ClientSetupInput) {
+  const existingCompany = getCompanyById(companyId);
 
-  if (!company) return undefined;
+  if (!existingCompany) return undefined;
 
-  const configuration = saveClientConfiguration({
+  const company = buildUpdatedPortalCompany(existingCompany, input.company);
+  const configuration: ClientConfiguration = {
     schemaVersion: 2,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
-  });
+  };
 
-  return { company, configuration };
+  return persistClientBundle(company, configuration, existingCompany);
 }
 
-export function upsertClientWithConfiguration(companyId: string, input: ClientSetupInput) {
+export async function upsertClientWithConfiguration(companyId: string, input: ClientSetupInput) {
   const existingCompany = getCompanyById(companyId);
   const company = existingCompany
-    ? updatePortalCompany(companyId, input.company) || existingCompany
-    : createPortalCompany({ ...input.company, id: companyId });
+    ? buildUpdatedPortalCompany(existingCompany, input.company)
+    : buildPortalCompany({ ...input.company, id: companyId });
 
-  const configuration = saveClientConfiguration({
+  const configuration: ClientConfiguration = {
     schemaVersion: 2,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
-  });
+  };
 
-  return { company, configuration };
+  return persistClientBundle(company, configuration, existingCompany);
 }
 
 export function addCustomClientMetric(companyId: string, input: CustomClientMetricInput) {

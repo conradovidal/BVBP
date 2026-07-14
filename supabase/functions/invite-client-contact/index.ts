@@ -132,7 +132,7 @@ serve(async (req) => {
   }
 
   if (body.action === "disable") {
-    await adminClient
+    const { error: contactDisableError } = await adminClient
       .from("client_contacts")
       .update({
         access_status: "disabled",
@@ -141,8 +141,12 @@ serve(async (req) => {
       })
       .eq("id", contact.id);
 
+    if (contactDisableError) {
+      return jsonResponse({ error: contactDisableError.message }, 500);
+    }
+
     if (contact.auth_user_id) {
-      await adminClient
+      const { error: membershipDisableError } = await adminClient
         .from("client_memberships")
         .update({
           status: "disabled",
@@ -150,6 +154,10 @@ serve(async (req) => {
         })
         .eq("workspace_id", contact.workspace_id)
         .eq("user_id", contact.auth_user_id);
+
+      if (membershipDisableError) {
+        return jsonResponse({ error: membershipDisableError.message }, 500);
+      }
     }
 
     logInviteStep({ inviteSent: false, accessDisabled: true });
@@ -162,6 +170,7 @@ serve(async (req) => {
         isPrimary: contact.is_primary,
         accessStatus: "disabled",
       },
+      deliveryType: "none",
     });
   }
 
@@ -171,6 +180,7 @@ serve(async (req) => {
 
   const redirectTo = getRedirectTo(req);
   let authUserId = contact.auth_user_id as string | null;
+  let deliveryType: "invite" | "recovery" = "invite";
 
   if (!authUserId) {
     const existingUser = await findUserByEmail(adminClient, contact.email);
@@ -201,6 +211,7 @@ serve(async (req) => {
 
     authUserId = inviteData.user.id;
   } else {
+    deliveryType = "recovery";
     const { error: recoveryError } = await adminClient.auth.resetPasswordForEmail(contact.email, { redirectTo });
 
     if (recoveryError) {
@@ -213,7 +224,7 @@ serve(async (req) => {
   }
 
   const now = new Date().toISOString();
-  await adminClient
+  const { error: membershipError } = await adminClient
     .from("client_memberships")
     .upsert({
       workspace_id: contact.workspace_id,
@@ -226,7 +237,11 @@ serve(async (req) => {
       onConflict: "workspace_id,user_id",
     });
 
-  await adminClient
+  if (membershipError) {
+    return jsonResponse({ error: membershipError.message }, 500);
+  }
+
+  const { error: contactUpdateError } = await adminClient
     .from("client_contacts")
     .update({
       auth_user_id: authUserId,
@@ -237,7 +252,11 @@ serve(async (req) => {
     })
     .eq("id", contact.id);
 
-  logInviteStep({ inviteSent: true });
+  if (contactUpdateError) {
+    return jsonResponse({ error: contactUpdateError.message }, 500);
+  }
+
+  logInviteStep({ inviteSent: true, deliveryType });
 
   return jsonResponse({
     contact: {
@@ -247,5 +266,6 @@ serve(async (req) => {
       isPrimary: contact.is_primary,
       accessStatus: "invited",
     },
+    deliveryType,
   });
 });

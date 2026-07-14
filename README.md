@@ -41,6 +41,8 @@ VITE_ENABLE_DEMO_DATA=false
 VITE_ENABLE_MOCK_AUTH=false
 ```
 
+Dados de demonstração e autenticação mock são sempre opt-in, inclusive em desenvolvimento. Para usá-los localmente, defina explicitamente as flags como `true`; na ausência delas, o portal inicia sem exemplos.
+
 Variáveis server-only das Edge Functions:
 
 ```sh
@@ -60,7 +62,7 @@ Antes de publicar o portal para uso real:
 3. Configure `PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `BOOTSTRAP_ADMIN_SECRET` nas Edge Functions.
 4. No Supabase Auth, configure Site URL e Redirect URLs de produção, preview e localhost apontando para `/auth/set-password`.
 5. Configure SMTP/email transacional antes de convidar clientes reais.
-6. Execute o bootstrap inicial chamando `bootstrap-admins` com o header `x-bootstrap-secret`; Conrado e Cristiano recebem link para definir senha.
+6. Execute o bootstrap inicial chamando `bootstrap-admins` com o header `x-bootstrap-secret` e o body `{ "mode": "invite_only" }`; Conrado e Cristiano só recebem o primeiro convite se não houver conta preexistente.
 
 ## Produção
 

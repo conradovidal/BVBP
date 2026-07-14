@@ -13,9 +13,15 @@ const bootstrapAdmins = [
 
 type BootstrapResult = {
   email: string;
-  status: "invited" | "recovery_sent" | "role_granted" | "error";
+  status: "invited" | "already_exists" | "recovery_sent" | "error";
   message?: string;
 };
+
+type BootstrapMode = "invite_only" | "recover_existing";
+
+interface BootstrapRequestBody {
+  mode?: BootstrapMode;
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -27,6 +33,10 @@ function jsonResponse(body: unknown, status = 200) {
 function getRedirectTo(req: Request) {
   const origin = Deno.env.get("PUBLIC_SITE_URL") || Deno.env.get("SITE_URL") || req.headers.get("origin");
   return origin ? `${origin.replace(/\/+$/, "")}/auth/set-password` : undefined;
+}
+
+function isBootstrapMode(value: unknown): value is BootstrapMode {
+  return value === "invite_only" || value === "recover_existing";
 }
 
 async function findUserByEmail(adminClient: ReturnType<typeof createClient>, email: string) {
@@ -93,6 +103,21 @@ serve(async (req) => {
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+  let body: BootstrapRequestBody = {};
+
+  try {
+    const rawBody = await req.text();
+    body = rawBody ? JSON.parse(rawBody) as BootstrapRequestBody : {};
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body." }, 400);
+  }
+
+  const mode = body.mode || "invite_only";
+
+  if (!isBootstrapMode(mode)) {
+    return jsonResponse({ error: "mode must be invite_only or recover_existing." }, 400);
+  }
+
   const redirectTo = getRedirectTo(req);
   const results: BootstrapResult[] = [];
 
@@ -101,13 +126,17 @@ serve(async (req) => {
       const existingUser = await findUserByEmail(adminClient, admin.email);
 
       if (existingUser) {
-        await grantAdminRole(adminClient, existingUser.id, admin.email);
+        if (mode === "invite_only") {
+          results.push({ email: admin.email, status: "already_exists" });
+          continue;
+        }
 
         const { error } = await adminClient.auth.resetPasswordForEmail(admin.email, { redirectTo });
 
         if (error) {
-          results.push({ email: admin.email, status: "role_granted", message: error.message });
+          results.push({ email: admin.email, status: "error", message: error.message });
         } else {
+          await grantAdminRole(adminClient, existingUser.id, admin.email);
           results.push({ email: admin.email, status: "recovery_sent" });
         }
 
@@ -138,5 +167,5 @@ serve(async (req) => {
     }
   }
 
-  return jsonResponse({ results });
+  return jsonResponse({ mode, results });
 });

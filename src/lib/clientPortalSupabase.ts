@@ -36,6 +36,7 @@ interface RemoteContact {
 
 interface InviteClientContactResponse {
   contact: ClientContact;
+  deliveryType: "invite" | "recovery" | "none";
 }
 
 const expiredSessionMessage = "Sessão expirada. Entre novamente para enviar o convite.";
@@ -140,14 +141,17 @@ export async function syncCompanyToSupabase(company: Company) {
     if (contactsError) return false;
   }
 
-  const { data: remoteContacts } = await supabase
+  const { data: remoteContacts, error: remoteContactsError } = await supabase
     .from("client_contacts")
     .select("id, access_status")
     .eq("workspace_id", company.id);
+
+  if (remoteContactsError) return false;
+
   const currentContactIds = new Set(contacts.map((contact) => contact.id));
   const removedContacts = (remoteContacts || []).filter((contact) => !currentContactIds.has(contact.id));
 
-  await Promise.all(removedContacts.map((contact) => {
+  const removalResults = await Promise.all(removedContacts.map((contact) => {
     if (contact.access_status === "planned") {
       return supabase.from("client_contacts").delete().eq("id", contact.id);
     }
@@ -162,7 +166,7 @@ export async function syncCompanyToSupabase(company: Company) {
       .eq("id", contact.id);
   }));
 
-  return true;
+  return removalResults.every((result) => !result.error);
 }
 
 export function syncCompanyToSupabaseSoon(company: Company) {
@@ -171,6 +175,11 @@ export function syncCompanyToSupabaseSoon(company: Company) {
 
 export async function syncClientConfigurationToSupabase(config: ClientConfiguration) {
   return upsertWorkspacePayload(config.companyId, "client_configuration", config, config.schemaVersion);
+}
+
+export async function deleteWorkspaceFromSupabase(workspaceId: string) {
+  const { error } = await supabase.from("client_workspaces").delete().eq("id", workspaceId);
+  return !error;
 }
 
 export function syncClientConfigurationToSupabaseSoon(config: ClientConfiguration) {
@@ -214,10 +223,22 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
     .select("*")
     .order("updated_at", { ascending: false });
 
-  if (workspacesError || !workspaces?.length) return false;
+  if (workspacesError) {
+    throw new Error("Não foi possível carregar os workspaces do Supabase.");
+  }
 
-  const workspaceIds = workspaces.map((workspace) => workspace.id);
-  const [{ data: contacts }, { data: payloads }] = await Promise.all([
+  const workspaceIds = (workspaces || []).map((workspace) => workspace.id);
+
+  if (!workspaceIds.length) {
+    writeJsonStorage(PORTAL_STORAGE_KEYS.clients, []);
+    writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, []);
+    writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, []);
+    writeJsonStorage(PORTAL_STORAGE_KEYS.initiativeActivities, []);
+    window.localStorage.removeItem(PORTAL_STORAGE_KEYS.activeCompany);
+    return true;
+  }
+
+  const [contactsResult, payloadsResult] = await Promise.all([
     supabase
       .from("client_contacts")
       .select("id, workspace_id, auth_user_id, name, email, is_primary, access_status, invited_at, disabled_at")
@@ -227,6 +248,12 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
       .select("workspace_id, payload_key, payload")
       .in("workspace_id", workspaceIds),
   ]);
+  const { data: contacts, error: contactsError } = contactsResult;
+  const { data: payloads, error: payloadsError } = payloadsResult;
+
+  if (contactsError || payloadsError) {
+    throw new Error("Não foi possível carregar os dados do portal no Supabase.");
+  }
 
   const contactsByWorkspace = new Map<string, ClientContact[]>();
   (contacts || []).forEach((contact) => {
@@ -234,7 +261,7 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
     contactsByWorkspace.set(contact.workspace_id, [...currentContacts, toClientContact(contact)]);
   });
 
-  const remoteCompanies = workspaces.map((workspace) => {
+  const remoteCompanies = (workspaces || []).map((workspace) => {
     const payload = workspace.company_payload as Partial<Company>;
     const workspaceContacts = contactsByWorkspace.get(workspace.id) || payload.contacts || [];
     const primaryContact = workspaceContacts.find((contact) => contact.isPrimary);
@@ -260,8 +287,12 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
     } satisfies Company;
   });
 
-  const { data: localCompanies } = readJsonStorage(PORTAL_STORAGE_KEYS.clients, isCompanyList);
-  writeJsonStorage(PORTAL_STORAGE_KEYS.clients, mergeById(remoteCompanies, localCompanies || []));
+  if (portalRuntimeConfig.enableDemoData) {
+    const { data: localCompanies } = readJsonStorage(PORTAL_STORAGE_KEYS.clients, isCompanyList);
+    writeJsonStorage(PORTAL_STORAGE_KEYS.clients, mergeById(remoteCompanies, localCompanies || []));
+  } else {
+    writeJsonStorage(PORTAL_STORAGE_KEYS.clients, remoteCompanies);
+  }
 
   const remoteConfigurations = (payloads || [])
     .filter((payload) => payload.payload_key === "client_configuration")
@@ -281,30 +312,32 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
 
       return [];
     });
-  const { data: localConfigurations } = readJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, isClientConfigurationList);
-
-  if (remoteConfigurations.length) {
+  if (portalRuntimeConfig.enableDemoData) {
+    const { data: localConfigurations } = readJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, isClientConfigurationList);
     writeJsonStorage(
       PORTAL_STORAGE_KEYS.clientConfigurations,
       mergeById(remoteConfigurations.map((config) => ({ ...config, id: config.companyId })), (localConfigurations || []).map((config) => ({ ...config, id: config.companyId })))
         .map(({ id: _id, ...config }) => config as ClientConfiguration),
     );
+  } else {
+    writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, remoteConfigurations);
   }
 
   const remoteCycles = (payloads || [])
     .filter((payload) => payload.payload_key === "pdca_cycles" && Array.isArray(payload.payload))
     .flatMap((payload) => payload.payload as unknown as PdcaCycle[]);
-  const { data: localCycles } = readJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, isPdcaCycleList);
-
-  if (remoteCycles.length) {
+  if (portalRuntimeConfig.enableDemoData) {
+    const { data: localCycles } = readJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, isPdcaCycleList);
     writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, mergeById(remoteCycles, localCycles || []));
+  } else {
+    writeJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, remoteCycles);
   }
 
   const remoteActivities = (payloads || [])
     .filter((payload) => payload.payload_key === "initiative_activities" && Array.isArray(payload.payload))
     .flatMap((payload) => payload.payload as unknown as InitiativeActivity[]);
 
-  if (remoteActivities.length) {
+  if (portalRuntimeConfig.enableDemoData) {
     let localActivities: InitiativeActivity[] = [];
 
     try {
@@ -315,9 +348,12 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
     }
 
     writeJsonStorage(PORTAL_STORAGE_KEYS.initiativeActivities, mergeById(remoteActivities, localActivities));
+  } else {
+    writeJsonStorage(PORTAL_STORAGE_KEYS.initiativeActivities, remoteActivities);
   }
 
-  if (!window.localStorage.getItem(PORTAL_STORAGE_KEYS.activeCompany)) {
+  const activeCompanyId = window.localStorage.getItem(PORTAL_STORAGE_KEYS.activeCompany);
+  if (!activeCompanyId || !workspaceIds.includes(activeCompanyId)) {
     window.localStorage.setItem(PORTAL_STORAGE_KEYS.activeCompany, workspaceIds[0]);
   }
 
@@ -359,5 +395,5 @@ export async function sendClientContactAccessAction(
     throw new Error("A resposta do convite veio incompleta.");
   }
 
-  return data.contact;
+  return data;
 }

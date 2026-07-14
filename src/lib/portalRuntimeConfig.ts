@@ -18,11 +18,11 @@ function withoutTrailingSlash(value: string) {
 }
 
 const browserOrigin = typeof window === "undefined" ? "" : window.location.origin;
-const defaultDevelopmentFlag = !import.meta.env.PROD;
+const defaultFeatureFlag = false;
 
 export const portalRuntimeConfig = {
-  enableDemoData: readBooleanFlag(import.meta.env.VITE_ENABLE_DEMO_DATA, defaultDevelopmentFlag),
-  enableMockAuth: readBooleanFlag(import.meta.env.VITE_ENABLE_MOCK_AUTH, defaultDevelopmentFlag),
+  enableDemoData: readBooleanFlag(import.meta.env.VITE_ENABLE_DEMO_DATA, defaultFeatureFlag),
+  enableMockAuth: readBooleanFlag(import.meta.env.VITE_ENABLE_MOCK_AUTH, defaultFeatureFlag),
   siteUrl: withoutTrailingSlash(import.meta.env.VITE_PUBLIC_SITE_URL || browserOrigin),
   supabaseUrl: import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL,
   supabasePublishableKey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY,
