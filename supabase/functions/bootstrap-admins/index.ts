@@ -9,7 +9,10 @@ const corsHeaders = {
 const bootstrapAdmins = [
   { email: "conrado@bvbp.com.br", name: "Conrado Vidal" },
   { email: "cristiano@bvbp.com.br", name: "Cristiano Basso" },
-];
+] as const;
+
+type BootstrapAdminEmail = typeof bootstrapAdmins[number]["email"];
+type AdminClient = ReturnType<typeof createClient<any>>;
 
 type BootstrapResult = {
   email: string;
@@ -20,7 +23,8 @@ type BootstrapResult = {
 type BootstrapMode = "invite_only" | "recover_existing";
 
 interface BootstrapRequestBody {
-  mode?: BootstrapMode;
+  mode?: unknown;
+  emails?: unknown;
 }
 
 function jsonResponse(body: unknown, status = 200) {
@@ -39,7 +43,35 @@ function isBootstrapMode(value: unknown): value is BootstrapMode {
   return value === "invite_only" || value === "recover_existing";
 }
 
-async function findUserByEmail(adminClient: ReturnType<typeof createClient>, email: string) {
+function parseRequestedAdmins(body: BootstrapRequestBody) {
+  if (!Array.isArray(body.emails) || body.emails.length === 0) {
+    throw new Error("emails must be a non-empty array.");
+  }
+
+  if (!body.emails.every((email) => typeof email === "string")) {
+    throw new Error("emails must contain only strings.");
+  }
+
+  const normalizedEmails = body.emails.map((email) => email.trim().toLowerCase());
+  const uniqueEmails = new Set(normalizedEmails);
+
+  if (uniqueEmails.size !== normalizedEmails.length) {
+    throw new Error("emails must not contain duplicates.");
+  }
+
+  const adminByEmail = new Map<BootstrapAdminEmail, typeof bootstrapAdmins[number]>(
+    bootstrapAdmins.map((admin) => [admin.email, admin]),
+  );
+  const requestedAdmins = normalizedEmails.map((email) => adminByEmail.get(email as BootstrapAdminEmail));
+
+  if (requestedAdmins.some((admin) => !admin)) {
+    throw new Error("emails contains an address outside the bootstrap allowlist.");
+  }
+
+  return requestedAdmins as Array<typeof bootstrapAdmins[number]>;
+}
+
+async function findUserByEmail(adminClient: AdminClient, email: string) {
   const normalizedEmail = email.toLowerCase();
   const perPage = 1000;
 
@@ -58,7 +90,7 @@ async function findUserByEmail(adminClient: ReturnType<typeof createClient>, ema
   return null;
 }
 
-async function grantAdminRole(adminClient: ReturnType<typeof createClient>, userId: string, email: string) {
+async function grantAdminRole(adminClient: AdminClient, userId: string, email: string) {
   await adminClient.rpc("assign_staff_role_from_email", {
     _user_id: userId,
     _email: email,
@@ -112,16 +144,26 @@ serve(async (req) => {
     return jsonResponse({ error: "Invalid JSON body." }, 400);
   }
 
-  const mode = body.mode || "invite_only";
+  const mode = body.mode;
 
   if (!isBootstrapMode(mode)) {
     return jsonResponse({ error: "mode must be invite_only or recover_existing." }, 400);
   }
 
+  let requestedAdmins: Array<typeof bootstrapAdmins[number]>;
+
+  try {
+    requestedAdmins = parseRequestedAdmins(body);
+  } catch (error) {
+    return jsonResponse({
+      error: error instanceof Error ? error.message : "Invalid emails.",
+    }, 400);
+  }
+
   const redirectTo = getRedirectTo(req);
   const results: BootstrapResult[] = [];
 
-  for (const admin of bootstrapAdmins) {
+  for (const admin of requestedAdmins) {
     try {
       const existingUser = await findUserByEmail(adminClient, admin.email);
 
@@ -140,6 +182,15 @@ serve(async (req) => {
           results.push({ email: admin.email, status: "recovery_sent" });
         }
 
+        continue;
+      }
+
+      if (mode === "recover_existing") {
+        results.push({
+          email: admin.email,
+          status: "error",
+          message: "User does not exist; recover_existing never creates a new account.",
+        });
         continue;
       }
 
@@ -167,5 +218,9 @@ serve(async (req) => {
     }
   }
 
-  return jsonResponse({ mode, results });
+  return jsonResponse({
+    mode,
+    requestedEmails: requestedAdmins.map((admin) => admin.email),
+    results,
+  });
 });

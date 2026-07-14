@@ -22,16 +22,20 @@ Abra `http://localhost:8080` quando o servidor estiver nessa porta, ou use a por
 - Faça deploy de `invite-client-contact` e `bootstrap-admins`.
 - Configure `PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `BOOTSTRAP_ADMIN_SECRET` nas Edge Functions.
 - Configure `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_PUBLIC_SITE_URL` no app.
-- Configure Site URL e Redirect URLs do Supabase Auth para `/auth/set-password`.
+- Configure `https://www.bvbp.com.br` como Site URL e autorize `https://www.bvbp.com.br/auth/**` e `https://bvbp.com.br/auth/**` nas Redirect URLs do Supabase Auth.
+- Configure a validade do OTP para 3.600 segundos.
+- Publique os templates de `docs/email-templates/` somente depois de `/auth/confirm` estar no ar.
+- No Resend, confirme `click_tracking=false` e `open_tracking=false` no domínio transacional.
 - Configure SMTP/email transacional antes de convidar clientes reais.
 
 Com demo desligada, o primeiro acesso admin deve mostrar o portal sem BVBP nem clientes exemplo.
 
 ## Bootstrap de admins
 
-- Chame a Edge Function `bootstrap-admins` com o header `x-bootstrap-secret` e o body `{ "mode": "invite_only" }`.
-- `conrado@bvbp.com.br` e `cristiano@bvbp.com.br` recebem link para definir senha.
-- O bootstrap só está pronto para um ambiente novo quando os dois resultados são `invited`.
+- Chame a Edge Function `bootstrap-admins` com o header `x-bootstrap-secret` e um body com destinatários explícitos, como `{ "mode": "invite_only", "emails": ["conrado@bvbp.com.br"] }`.
+- A lista `emails` é obrigatória, não aceita duplicatas e só permite `conrado@bvbp.com.br` e `cristiano@bvbp.com.br`.
+- Somente os endereços solicitados recebem email. Nunca inclua Cristiano durante uma validação exclusiva do Conrado.
+- Para um ambiente novo, cada destinatário solicitado deve retornar `invited`.
 - `already_exists` não envia email nem altera papéis. Use `recover_existing` apenas quando a intenção explícita for recuperar uma conta existente.
 - Usuários confirmados com email `@bvbp.com.br` recebem papel `admin` automaticamente pela migration.
 
@@ -52,7 +56,7 @@ Ordem operacional:
 3. Exporte autoria dos posts e ownership das imagens por email; remova temporariamente esses vínculos sem apagar conteúdo.
 4. Revogue sessões, limpe as tabelas do portal na ordem das dependências, remova somente leads aprovados e exclua os usuários alvo.
 5. Confirme zero usuários, sessões, papéis, leads de teste e registros do portal.
-6. Rotacione `BOOTSTRAP_ADMIN_SECRET`, invoque `bootstrap-admins` em `invite_only` e exija dois resultados `invited`.
+6. Rotacione `BOOTSTRAP_ADMIN_SECRET`, invoque `bootstrap-admins` em `invite_only` com a lista explícita aprovada e exija `invited` para cada destinatário solicitado.
 7. Restaure autoria e ownership usando os novos UUIDs e repita todas as contagens.
 
 Estado esperado para o reset inicial de julho de 2026:
@@ -63,7 +67,7 @@ Estado esperado para o reset inicial de julho de 2026:
 
 ## Primeiro uso
 
-- Entre pelo link recebido e defina a senha em `/auth/set-password`.
+- Abra o link recebido, clique em **Continuar para definir senha** em `/auth/confirm` e defina a senha em `/auth/set-password`.
 - Acesse `/app/admin/settings`.
 - Clique em `Cadastrar workspace BVBP`.
 - Cadastre a BVBP manualmente.
@@ -84,7 +88,9 @@ npm run lint
 npm run build
 ```
 
-- Testar login admin, reset de senha e `/auth/set-password`.
+- Testar link ausente, tipo inválido, token expirado e clique repetido em `/auth/confirm`.
+- Confirmar que um GET em `/auth/confirm` não consome o token; somente o botão chama `verifyOtp`.
+- Testar login admin, recuperação de senha e `/auth/set-password`.
 - Testar Supabase vazio sem dados de demo.
 - Testar cadastro do workspace BVBP.
 - Testar criação/edição de cliente, contatos, convite, reenvio e desativação.
