@@ -92,6 +92,8 @@ export function isCompanyList(value: unknown): value is Company[] {
         typeof contact.id === "string" &&
         typeof contact.name === "string" &&
         typeof contact.email === "string" &&
+        (contact.title === undefined || typeof contact.title === "string") &&
+        (contact.accessLevel === undefined || contact.accessLevel === "collaborator" || contact.accessLevel === "viewer") &&
         typeof contact.isPrimary === "boolean" &&
         typeof contact.accessStatus === "string"
       ))
@@ -105,6 +107,9 @@ export function isCompanyList(value: unknown): value is Company[] {
       typeof company.monthlyRevenue === "number" &&
       typeof company.recurringRevenue === "number" &&
       typeof company.monthlyOperationalCost === "number" &&
+      (company.budgetMethod === undefined || company.budgetMethod === "defined" || company.budgetMethod === "revenue_percentage") &&
+      (company.budgetAmount === undefined || typeof company.budgetAmount === "number") &&
+      (company.budgetPercentage === undefined || typeof company.budgetPercentage === "number") &&
       hasValidContacts
     );
   });

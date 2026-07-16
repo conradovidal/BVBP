@@ -27,6 +27,8 @@ interface RemoteContact {
   auth_user_id: string | null;
   disabled_at: string | null;
   email: string;
+  title: string;
+  access_level: string;
   id: string;
   invited_at: string | null;
   is_primary: boolean;
@@ -56,6 +58,8 @@ function toClientContact(contact: RemoteContact): ClientContact {
     id: contact.id,
     name: contact.name,
     email: contact.email,
+    title: contact.title || "",
+    accessLevel: contact.access_level === "viewer" ? "viewer" : "collaborator",
     isPrimary: contact.is_primary,
     accessStatus: isContactAccessStatus(contact.access_status),
   };
@@ -131,6 +135,8 @@ export async function syncCompanyToSupabase(company: Company) {
           workspace_id: company.id,
           name: contact.name.trim(),
           email: contact.email.trim().toLowerCase(),
+          title: contact.title?.trim() || "",
+          access_level: contact.accessLevel || "collaborator",
           is_primary: contact.isPrimary,
           access_status: contact.accessStatus || "planned",
           updated_at: new Date().toISOString(),
@@ -139,6 +145,18 @@ export async function syncCompanyToSupabase(company: Company) {
       );
 
     if (contactsError) return false;
+
+    const membershipRoleResults = await Promise.all(contacts.map((contact) => (
+      supabase
+        .from("client_memberships")
+        .update({
+          role: contact.accessLevel === "viewer" ? "viewer" : "client",
+          updated_at: new Date().toISOString(),
+        })
+        .eq("contact_id", contact.id)
+    )));
+
+    if (membershipRoleResults.some((result) => result.error)) return false;
   }
 
   const { data: remoteContacts, error: remoteContactsError } = await supabase
@@ -241,7 +259,7 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
   const [contactsResult, payloadsResult] = await Promise.all([
     supabase
       .from("client_contacts")
-      .select("id, workspace_id, auth_user_id, name, email, is_primary, access_status, invited_at, disabled_at")
+      .select("id, workspace_id, auth_user_id, name, email, title, access_level, is_primary, access_status, invited_at, disabled_at")
       .in("workspace_id", workspaceIds),
     supabase
       .from("client_workspace_payloads")
@@ -278,6 +296,9 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
       bvbpOwner: payload.bvbpOwner,
       companySize: payload.companySize,
       reportedRevenue: payload.reportedRevenue,
+      budgetMethod: payload.budgetMethod,
+      budgetAmount: payload.budgetAmount,
+      budgetPercentage: payload.budgetPercentage,
       startDate: payload.startDate,
       contactName: primaryContact?.name || payload.contactName,
       contactEmail: primaryContact?.email || payload.contactEmail,

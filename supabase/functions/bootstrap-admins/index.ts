@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.98.0";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.98.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,7 +12,7 @@ const bootstrapAdmins = [
 ] as const;
 
 type BootstrapAdminEmail = typeof bootstrapAdmins[number]["email"];
-type AdminClient = ReturnType<typeof createClient<any>>;
+type AdminClient = SupabaseClient;
 
 type BootstrapResult = {
   email: string;

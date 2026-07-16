@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.98.0";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.98.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,7 +40,7 @@ function getRedirectTo(req: Request) {
   return origin ? `${origin.replace(/\/+$/, "")}/auth/set-password` : undefined;
 }
 
-async function findUserByEmail(adminClient: ReturnType<typeof createClient>, email: string) {
+async function findUserByEmail(adminClient: SupabaseClient, email: string) {
   const normalizedEmail = email.toLowerCase();
   const perPage = 1000;
 
@@ -119,7 +119,7 @@ serve(async (req) => {
 
   const { data: contact, error: contactError } = await adminClient
     .from("client_contacts")
-    .select("id, workspace_id, auth_user_id, name, email, is_primary, access_status")
+    .select("id, workspace_id, auth_user_id, name, email, title, access_level, is_primary, access_status")
     .eq("id", body.contactId)
     .eq("workspace_id", body.workspaceId)
     .single();
@@ -127,7 +127,7 @@ serve(async (req) => {
 
   logInviteStep({ contactFound });
 
-  if (!contactFound) {
+  if (contactError || !contact) {
     return jsonResponse({ error: "Contact not found." }, 404);
   }
 
@@ -167,6 +167,8 @@ serve(async (req) => {
         id: contact.id,
         name: contact.name,
         email: contact.email,
+        title: contact.title || "",
+        accessLevel: contact.access_level === "viewer" ? "viewer" : "collaborator",
         isPrimary: contact.is_primary,
         accessStatus: "disabled",
       },
@@ -230,7 +232,7 @@ serve(async (req) => {
       workspace_id: contact.workspace_id,
       contact_id: contact.id,
       user_id: authUserId,
-      role: "client",
+      role: contact.access_level === "viewer" ? "viewer" : "client",
       status: "active",
       updated_at: now,
     }, {
@@ -263,6 +265,8 @@ serve(async (req) => {
       id: contact.id,
       name: contact.name,
       email: contact.email,
+      title: contact.title || "",
+      accessLevel: contact.access_level === "viewer" ? "viewer" : "collaborator",
       isPrimary: contact.is_primary,
       accessStatus: "invited",
     },

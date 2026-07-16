@@ -18,12 +18,17 @@ export type ClientRelationshipStatus = (typeof relationshipStatuses)[number];
 export type BvbpPillarId = "financial" | "commercial" | "operation" | "technology";
 
 export type ClientMetricUnit = "currency" | "percentage" | "hours" | "count" | "days" | "text";
+export type ClientBudgetMethod = "defined" | "revenue_percentage";
+export type ClientContactAccessLevel = "collaborator" | "viewer";
+export type ClientMetricDirection = "higher" | "lower" | "target";
 export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface ClientContact {
   id: string;
   name: string;
   email: string;
+  title?: string;
+  accessLevel?: ClientContactAccessLevel;
   isPrimary: boolean;
   accessStatus: "planned" | "invited" | "active" | "disabled";
 }
@@ -40,6 +45,9 @@ export interface Company {
   bvbpOwner?: string;
   companySize?: string;
   reportedRevenue?: number;
+  budgetMethod?: ClientBudgetMethod;
+  budgetAmount?: number;
+  budgetPercentage?: number;
   startDate?: string;
   contactName?: string;
   contactEmail?: string;
@@ -61,6 +69,8 @@ export interface ClientMetricConfig {
   formula: string;
   currentValue?: number;
   target?: string;
+  benchmark?: string;
+  direction?: ClientMetricDirection;
   source?: string;
   owner?: string;
   custom: boolean;
@@ -645,6 +655,7 @@ function makeMetricCatalogItem(
   unit: ClientMetricUnit,
   description: string,
   formula: string,
+  direction: ClientMetricDirection = "higher",
 ): ClientMetricConfig {
   return {
     id: `${pillar}-${slug}`,
@@ -653,6 +664,7 @@ function makeMetricCatalogItem(
     description,
     unit,
     formula,
+    direction,
     custom: false,
   };
 }
@@ -661,29 +673,29 @@ export const metricCatalogByPillar: Record<BvbpPillarId, ClientMetricConfig[]> =
   financial: [
     makeMetricCatalogItem("financial", "faturamento", "Faturamento", "currency", "Receita reconhecida no período.", "Soma das receitas reconhecidas no período"),
     makeMetricCatalogItem("financial", "margem", "Margem operacional", "percentage", "Resultado operacional em relação ao faturamento.", "(Faturamento - custo operacional) / faturamento × 100"),
-    makeMetricCatalogItem("financial", "custo-operacional", "Custo operacional", "currency", "Custos necessários para manter a operação.", "Soma dos custos operacionais do período"),
+    makeMetricCatalogItem("financial", "custo-operacional", "Custo operacional", "currency", "Custos necessários para manter a operação.", "Soma dos custos operacionais do período", "lower"),
     makeMetricCatalogItem("financial", "caixa", "Caixa disponível", "currency", "Recursos disponíveis para uso imediato.", "Soma dos saldos disponíveis em caixa e contas"),
-    makeMetricCatalogItem("financial", "inadimplencia", "Inadimplência", "percentage", "Percentual do faturamento vencido e não recebido.", "Valores vencidos / faturamento do período × 100"),
+    makeMetricCatalogItem("financial", "inadimplencia", "Inadimplência", "percentage", "Percentual do faturamento vencido e não recebido.", "Valores vencidos / faturamento do período × 100", "lower"),
   ],
   commercial: [
     makeMetricCatalogItem("commercial", "leads-qualificados", "Leads qualificados", "count", "Entradas que atendem aos critérios comerciais.", "Contagem de leads qualificados no período"),
     makeMetricCatalogItem("commercial", "taxa-conversao", "Taxa de conversão", "percentage", "Conversão de leads qualificados em clientes.", "Clientes conquistados / leads qualificados × 100"),
     makeMetricCatalogItem("commercial", "pipeline", "Pipeline aberto", "currency", "Valor das oportunidades comerciais abertas.", "Soma dos valores das oportunidades abertas"),
     makeMetricCatalogItem("commercial", "ticket-medio", "Ticket médio", "currency", "Valor médio das vendas fechadas.", "Receita das vendas fechadas / número de vendas"),
-    makeMetricCatalogItem("commercial", "ciclo-venda", "Ciclo de vendas", "days", "Tempo médio entre qualificação e fechamento.", "Média de dias entre qualificação e fechamento"),
+    makeMetricCatalogItem("commercial", "ciclo-venda", "Ciclo de vendas", "days", "Tempo médio entre qualificação e fechamento.", "Média de dias entre qualificação e fechamento", "lower"),
   ],
   operation: [
-    makeMetricCatalogItem("operation", "lead-time", "Lead time", "days", "Tempo total entre solicitação e entrega.", "Média de dias entre solicitação e entrega"),
-    makeMetricCatalogItem("operation", "retrabalho", "Retrabalho", "count", "Ocorrências que exigiram refazer uma entrega.", "Contagem de ocorrências de retrabalho no período"),
-    makeMetricCatalogItem("operation", "horas-manuais", "Horas manuais", "hours", "Horas dedicadas a tarefas manuais recorrentes.", "Soma das horas registradas em tarefas manuais"),
+    makeMetricCatalogItem("operation", "lead-time", "Lead time", "days", "Tempo total entre solicitação e entrega.", "Média de dias entre solicitação e entrega", "lower"),
+    makeMetricCatalogItem("operation", "retrabalho", "Retrabalho", "count", "Ocorrências que exigiram refazer uma entrega.", "Contagem de ocorrências de retrabalho no período", "lower"),
+    makeMetricCatalogItem("operation", "horas-manuais", "Horas manuais", "hours", "Horas dedicadas a tarefas manuais recorrentes.", "Soma das horas registradas em tarefas manuais", "lower"),
     makeMetricCatalogItem("operation", "sla", "SLA", "percentage", "Percentual de entregas realizadas dentro do acordo.", "Entregas no prazo / total de entregas × 100"),
-    makeMetricCatalogItem("operation", "entregas-atraso", "Entregas em atraso", "count", "Entregas concluídas ou abertas fora do prazo.", "Contagem de entregas fora do prazo no período"),
+    makeMetricCatalogItem("operation", "entregas-atraso", "Entregas em atraso", "count", "Entregas concluídas ou abertas fora do prazo.", "Contagem de entregas fora do prazo no período", "lower"),
   ],
   technology: [
     makeMetricCatalogItem("technology", "automacoes-producao", "Automações em produção", "count", "Automações ativas no fluxo real.", "Contagem de automações ativas em produção"),
     makeMetricCatalogItem("technology", "horas-economizadas", "Horas economizadas", "hours", "Tempo efetivamente reduzido por tecnologia.", "Horas manuais do baseline - horas manuais atuais"),
     makeMetricCatalogItem("technology", "taxa-adocao", "Taxa de adoção", "percentage", "Uso efetivo da solução pelo público esperado.", "Usuários ativos / usuários previstos × 100"),
-    makeMetricCatalogItem("technology", "erros-incidentes", "Erros e incidentes", "count", "Falhas observadas no processo apoiado por tecnologia.", "Contagem de erros e incidentes no período"),
+    makeMetricCatalogItem("technology", "erros-incidentes", "Erros e incidentes", "count", "Falhas observadas no processo apoiado por tecnologia.", "Contagem de erros e incidentes no período", "lower"),
   ],
 };
 
