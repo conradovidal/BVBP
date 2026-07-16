@@ -46,6 +46,15 @@ const AdminClientEditPage = () => {
     navigate(returnPath);
   };
 
+  const handleSaveDraft = async (input: ClientSetupInput) => {
+    if (isBvbpWorkspace && !hasStoredBvbpWorkspace) {
+      await upsertClientWithConfiguration(BVBP_COMPANY_ID, input);
+      return;
+    }
+
+    await updateClientWithConfiguration(company.id, input);
+  };
+
   return (
     <>
       <Helmet>
@@ -72,6 +81,7 @@ const AdminClientEditPage = () => {
             : createDefaultClientConfiguration(company, { selectDefaults: false })}
           onCancel={() => navigate(returnPath)}
           onSave={handleSave}
+          onSaveDraft={handleSaveDraft}
         />
       </div>
     </>

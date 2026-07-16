@@ -29,6 +29,7 @@ import AdminClientEditPage from "./pages/admin/AdminClientEditPage";
 import AdminClientNewPage from "./pages/admin/AdminClientNewPage";
 import AdminClientsPage from "./pages/admin/AdminClientsPage";
 import AdminSettingsPage from "./pages/admin/AdminSettingsPage";
+import AdminProfilePage from "./pages/admin/AdminProfilePage";
 import PerformanceExecutionPage from "./pages/performance/PerformanceExecutionPage";
 import PerformanceOverviewPage from "./pages/performance/PerformanceOverviewPage";
 import PerformancePointersPage from "./pages/performance/PerformancePointersPage";
@@ -89,6 +90,7 @@ const App = () => (
                 <Route path="content/new" element={<AdminBlogEditorPortalPage />} />
                 <Route path="content/edit/:draftId" element={<AdminBlogEditorPortalPage />} />
                 <Route path="settings" element={<AdminSettingsPage />} />
+                <Route path="profile" element={<AdminProfilePage />} />
               </Route>
               <Route path="performance" element={<PerformanceAppShell />}>
                 <Route index element={<Navigate to="/app/performance/overview" replace />} />

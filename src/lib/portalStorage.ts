@@ -98,6 +98,18 @@ export function isCompanyList(value: unknown): value is Company[] {
         typeof contact.accessStatus === "string"
       ))
     );
+    const hasValidRelationshipEvents = company.relationshipEvents === undefined || (
+      Array.isArray(company.relationshipEvents) &&
+      company.relationshipEvents.every((event) => (
+        !!event &&
+        typeof event.id === "string" &&
+        typeof event.type === "string" &&
+        typeof event.occurredAt === "string" &&
+        typeof event.createdAt === "string" &&
+        typeof event.createdBy === "string" &&
+        typeof event.notes === "string"
+      ))
+    );
 
     return (
       typeof company.id === "string" &&
@@ -110,7 +122,8 @@ export function isCompanyList(value: unknown): value is Company[] {
       (company.budgetMethod === undefined || company.budgetMethod === "defined" || company.budgetMethod === "revenue_percentage") &&
       (company.budgetAmount === undefined || typeof company.budgetAmount === "number") &&
       (company.budgetPercentage === undefined || typeof company.budgetPercentage === "number") &&
-      hasValidContacts
+      hasValidContacts &&
+      hasValidRelationshipEvents
     );
   });
 }

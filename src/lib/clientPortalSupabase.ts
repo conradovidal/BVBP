@@ -44,6 +44,12 @@ interface InviteClientContactResponse {
 const expiredSessionMessage = "Sessão expirada. Entre novamente para enviar o convite.";
 const forbiddenInviteMessage = "Sessão expirada ou sem permissão. Entre novamente com uma conta BVBP.";
 
+function isPersistableContact(contact: ClientContact) {
+  return contact.name.trim().length > 1 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact.email.trim()) &&
+    Boolean(contact.title?.trim());
+}
+
 function toJson(value: unknown): Json {
   return JSON.parse(JSON.stringify(value)) as Json;
 }
@@ -126,11 +132,12 @@ export async function syncCompanyToSupabase(company: Company) {
   if (workspaceError) return false;
 
   const contacts = company.contacts || [];
-  if (contacts.length) {
+  const persistableContacts = contacts.filter(isPersistableContact);
+  if (persistableContacts.length) {
     const { error: contactsError } = await supabase
       .from("client_contacts")
       .upsert(
-        contacts.map((contact) => ({
+        persistableContacts.map((contact) => ({
           id: contact.id,
           workspace_id: company.id,
           name: contact.name.trim(),
@@ -146,7 +153,7 @@ export async function syncCompanyToSupabase(company: Company) {
 
     if (contactsError) return false;
 
-    const membershipRoleResults = await Promise.all(contacts.map((contact) => (
+    const membershipRoleResults = await Promise.all(persistableContacts.map((contact) => (
       supabase
         .from("client_memberships")
         .update({
@@ -166,7 +173,7 @@ export async function syncCompanyToSupabase(company: Company) {
 
   if (remoteContactsError) return false;
 
-  const currentContactIds = new Set(contacts.map((contact) => contact.id));
+  const currentContactIds = new Set(persistableContacts.map((contact) => contact.id));
   const removedContacts = (remoteContacts || []).filter((contact) => !currentContactIds.has(contact.id));
 
   const removalResults = await Promise.all(removedContacts.map((contact) => {
@@ -281,7 +288,13 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
 
   const remoteCompanies = (workspaces || []).map((workspace) => {
     const payload = workspace.company_payload as Partial<Company>;
-    const workspaceContacts = contactsByWorkspace.get(workspace.id) || payload.contacts || [];
+    const remoteWorkspaceContacts = contactsByWorkspace.get(workspace.id) || [];
+    const payloadContacts = payload.contacts || [];
+    const remoteContactIds = new Set(remoteWorkspaceContacts.map((contact) => contact.id));
+    const workspaceContacts = [
+      ...remoteWorkspaceContacts,
+      ...payloadContacts.filter((contact) => !remoteContactIds.has(contact.id)),
+    ];
     const primaryContact = workspaceContacts.find((contact) => contact.isPrimary);
 
     return {
@@ -303,6 +316,7 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
       contactName: primaryContact?.name || payload.contactName,
       contactEmail: primaryContact?.email || payload.contactEmail,
       contacts: workspaceContacts,
+      relationshipEvents: Array.isArray(payload.relationshipEvents) ? payload.relationshipEvents : [],
       relationshipStatus: workspace.relationship_status as Company["relationshipStatus"],
       status: workspace.relationship_status as Company["status"],
     } satisfies Company;
