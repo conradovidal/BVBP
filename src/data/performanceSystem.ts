@@ -21,6 +21,7 @@ export type ClientMetricUnit = "currency" | "percentage" | "hours" | "count" | "
 export type ClientBudgetMethod = "defined" | "revenue_percentage";
 export type ClientContactAccessLevel = "collaborator" | "viewer";
 export type ClientMetricDirection = "higher" | "lower" | "target";
+export type ClientRelationshipEventType = "meeting" | "proposal" | "follow_up" | "contract_start" | "note";
 export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
 
 export interface ClientContact {
@@ -31,6 +32,15 @@ export interface ClientContact {
   accessLevel?: ClientContactAccessLevel;
   isPrimary: boolean;
   accessStatus: "planned" | "invited" | "active" | "disabled";
+}
+
+export interface ClientRelationshipEvent {
+  id: string;
+  type: ClientRelationshipEventType;
+  occurredAt: string;
+  createdAt: string;
+  createdBy: string;
+  notes: string;
 }
 
 export interface Company {
@@ -52,6 +62,7 @@ export interface Company {
   contactName?: string;
   contactEmail?: string;
   contacts?: ClientContact[];
+  relationshipEvents?: ClientRelationshipEvent[];
   status?: ClientRelationshipStatus;
   relationshipStatus?: ClientRelationshipStatus;
 }

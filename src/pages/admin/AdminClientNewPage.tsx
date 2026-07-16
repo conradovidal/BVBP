@@ -13,8 +13,8 @@ const draftCompany: Company = {
   monthlyRevenue: 0,
   recurringRevenue: 0,
   monthlyOperationalCost: 0,
-  relationshipStatus: "Onboarding",
-  status: "Onboarding",
+  relationshipStatus: "Prospect",
+  status: "Prospect",
 };
 
 const AdminClientNewPage = () => {
@@ -23,6 +23,11 @@ const AdminClientNewPage = () => {
   const handleSave = async (input: ClientSetupInput) => {
     await createClientWithConfiguration(input);
     navigate("/app/admin/clients");
+  };
+
+  const handleSaveDraft = async (input: ClientSetupInput) => {
+    const result = await createClientWithConfiguration(input);
+    navigate(`/app/admin/clients/${result.company.id}/edit`, { replace: true });
   };
 
   return (
@@ -48,6 +53,7 @@ const AdminClientNewPage = () => {
           configuration={createDefaultClientConfiguration(draftCompany, { selectDefaults: false })}
           onCancel={() => navigate("/app/admin/clients")}
           onSave={handleSave}
+          onSaveDraft={handleSaveDraft}
         />
       </div>
     </>

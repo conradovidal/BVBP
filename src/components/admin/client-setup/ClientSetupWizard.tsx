@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Ban, CheckCircle2, KeyRound, LockKeyhole, Plus, RefreshCw, Save, Send, Star, Trash2 } from "lucide-react";
+import { Ban, CheckCircle2, History, KeyRound, LockKeyhole, Plus, RefreshCw, Save, Send, Star, Trash2 } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -32,6 +33,8 @@ import {
   type ClientMetricDirection,
   type ClientPillarConfig,
   type ClientRelationshipStatus,
+  type ClientRelationshipEvent,
+  type ClientRelationshipEventType,
   type Company,
   type MaturityLevel,
   bvbpPillarIds,
@@ -47,6 +50,7 @@ import {
   clientMetricUnitLabels,
 } from "@/lib/clientConfigurationStore";
 import { sendClientContactAccessAction, syncCompanyToSupabase } from "@/lib/clientPortalSupabase";
+import { getPerformanceSession } from "@/lib/performanceAuth";
 import { cn } from "@/lib/utils";
 
 interface ClientSetupCompanyForm {
@@ -65,6 +69,7 @@ interface ClientSetupCompanyForm {
   budgetAmount: string;
   budgetPercentage: string;
   contacts: ClientContact[];
+  relationshipEvents: ClientRelationshipEvent[];
   startDate: string;
 }
 
@@ -81,6 +86,7 @@ interface ClientSetupWizardProps {
   configuration: ClientConfiguration;
   onCancel: () => void;
   onSave: (input: ClientSetupInput) => Promise<void>;
+  onSaveDraft: (input: ClientSetupInput) => Promise<void>;
 }
 
 interface StepProps {
@@ -114,6 +120,13 @@ const contactAccessLevelLabels: Record<ClientContactAccessLevel, string> = {
   collaborator: "Colaborador",
   viewer: "Somente leitura",
 };
+const relationshipEventTypeLabels: Record<ClientRelationshipEventType, string> = {
+  meeting: "Reunião",
+  proposal: "Proposta",
+  follow_up: "Follow-up",
+  contract_start: "Início do contrato",
+  note: "Registro geral",
+};
 const metricDirectionLabels: Record<ClientMetricDirection, string> = {
   higher: "Quanto maior, melhor",
   lower: "Quanto menor, melhor",
@@ -129,7 +142,7 @@ const defaultCompanyForm: ClientSetupCompanyForm = {
   name: "",
   segment: "",
   description: "",
-  relationshipStatus: "Onboarding",
+  relationshipStatus: "Prospect",
   bvbpOwner: "BVBP",
   companySize: "",
   employees: "",
@@ -141,6 +154,7 @@ const defaultCompanyForm: ClientSetupCompanyForm = {
   budgetAmount: "",
   budgetPercentage: "",
   contacts: [],
+  relationshipEvents: [],
   startDate: "",
 };
 
@@ -191,6 +205,7 @@ function createInitialState(company: Company | undefined, configuration: ClientC
       budgetAmount: toStringValue(company?.budgetAmount),
       budgetPercentage: toStringValue(company?.budgetPercentage),
       contacts,
+      relationshipEvents: company?.relationshipEvents || [],
       startDate: company?.startDate || "",
     },
     configuration: {
@@ -249,6 +264,7 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
       contactName: primaryContact?.name || "",
       contactEmail: primaryContact?.email || "",
       contacts: state.company.contacts,
+      relationshipEvents: state.company.relationshipEvents,
     },
     configuration: state.configuration,
   };
@@ -276,15 +292,16 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
     contactName: input.contactName,
     contactEmail: input.contactEmail,
     contacts: input.contacts,
+    relationshipEvents: input.relationshipEvents,
     relationshipStatus: input.relationshipStatus,
     status: input.relationshipStatus,
   };
 }
 
-export function ClientSetupWizard({ mode, company, configuration, onCancel, onSave }: ClientSetupWizardProps) {
+export function ClientSetupWizard({ mode, company, configuration, onCancel, onSave, onSaveDraft }: ClientSetupWizardProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState(() => createInitialState(company, configuration));
-  const [saving, setSaving] = useState(false);
+  const [savingAction, setSavingAction] = useState<"draft" | "final">();
   const [contactAccessLoadingId, setContactAccessLoadingId] = useState<string>();
   const isBasicValid = state.company.name.trim().length > 1 && state.company.segment.trim().length > 1;
   const areContactsValid =
@@ -306,6 +323,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
       : activeStep === 2
         ? arePointersValid
         : true;
+  const canSaveDraft = state.company.name.trim().length > 1;
 
   const updateCompanyField = <K extends keyof ClientSetupCompanyForm>(field: K, value: ClientSetupCompanyForm[K]) => {
     setState((current) => ({
@@ -514,7 +532,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   };
 
   const handleSave = async () => {
-    setSaving(true);
+    setSavingAction("final");
 
     try {
       await onSave(buildSaveInput(state));
@@ -526,7 +544,28 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
           : "Confira sua conexão e tente novamente.",
         variant: "destructive",
       });
-      setSaving(false);
+      setSavingAction(undefined);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!canSaveDraft) return;
+    setSavingAction("draft");
+
+    try {
+      await onSaveDraft(buildSaveInput(state));
+      toast({
+        title: "Rascunho salvo",
+        description: "Você pode continuar o cadastro agora ou retomar pelo CRM depois.",
+      });
+    } catch (error) {
+      toast({
+        title: "Não foi possível salvar o rascunho",
+        description: error instanceof Error ? error.message : "Confira sua conexão e tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingAction(undefined);
     }
   };
 
@@ -583,9 +622,18 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
       </div>
 
       <div className="flex flex-col gap-3 border-t border-bvbp-ink/10 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancelar
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={!canSaveDraft || Boolean(savingAction)}
+            onClick={() => void handleSaveDraft()}
+          >
+            <Save className="h-4 w-4" aria-hidden="true" />
+            {savingAction === "draft" ? "Salvando..." : "Salvar rascunho"}
+          </Button>
+        </div>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             type="button"
@@ -608,11 +656,11 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
             <Button
               type="button"
               className="rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
-              disabled={saving || !isBasicValid || !areContactsValid || !arePointersValid}
+              disabled={Boolean(savingAction) || !isBasicValid || !areContactsValid || !arePointersValid}
               onClick={() => void handleSave()}
             >
               <Save className="h-4 w-4" aria-hidden="true" />
-              {saving ? "Salvando..." : mode === "create" ? "Salvar cliente" : "Salvar alterações"}
+              {savingAction === "final" ? "Salvando..." : mode === "create" ? "Concluir cadastro" : "Salvar alterações"}
             </Button>
           )}
         </div>
@@ -633,9 +681,37 @@ export function ClientBasicDataStep({
   contactAccessLoadingId,
   onContactAccessAction,
 }: StepProps) {
+  const currentUserName = getPerformanceSession()?.user.name || "Equipe BVBP";
+  const [eventDraft, setEventDraft] = useState({
+    type: "meeting" as ClientRelationshipEventType,
+    occurredAt: new Intl.DateTimeFormat("en-CA").format(new Date()),
+    createdBy: currentUserName,
+    notes: "",
+  });
   const estimatedBudget = state.company.reportedRevenue.trim() && state.company.budgetPercentage.trim()
     ? Math.round(toNumber(state.company.reportedRevenue) * (toNumber(state.company.budgetPercentage) / 100))
     : undefined;
+  const relationshipEvents = [...state.company.relationshipEvents].sort((a, b) => (
+    `${b.occurredAt}-${b.createdAt}`.localeCompare(`${a.occurredAt}-${a.createdAt}`)
+  ));
+
+  const addRelationshipEvent = () => {
+    if (!eventDraft.occurredAt || !eventDraft.createdBy.trim() || !eventDraft.notes.trim()) return;
+    const createdAt = new Date().toISOString();
+
+    updateCompanyField("relationshipEvents", [
+      {
+        id: `relationship-event-${Date.now()}`,
+        type: eventDraft.type,
+        occurredAt: eventDraft.occurredAt,
+        createdAt,
+        createdBy: eventDraft.createdBy.trim(),
+        notes: eventDraft.notes.trim(),
+      },
+      ...state.company.relationshipEvents,
+    ]);
+    setEventDraft((current) => ({ ...current, notes: "" }));
+  };
 
   return (
     <section className="grid gap-4 sm:grid-cols-2">
@@ -910,6 +986,109 @@ export function ClientBasicDataStep({
             Nenhum contato cadastrado.
           </div>
         )}
+      </div>
+      <div className="border-t border-bvbp-ink/10 pt-3 sm:col-span-2">
+        <Accordion type="single" collapsible defaultValue="relationship-log">
+          <AccordionItem value="relationship-log" className="border-0">
+            <AccordionTrigger className="py-3 text-left hover:no-underline">
+              <span className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-[8px] bg-bvbp-forest/8 text-bvbp-forest">
+                  <History className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <span>
+                  <span className="block font-heading text-lg font-semibold text-bvbp-ink">Histórico do relacionamento</span>
+                  <span className="mt-1 block text-sm font-normal text-bvbp-muted-ink">
+                    {relationshipEvents.length
+                      ? `${relationshipEvents.length} registro(s) neste cliente`
+                      : "Reuniões, propostas e marcos do relacionamento com o cliente."}
+                  </span>
+                </span>
+              </span>
+            </AccordionTrigger>
+            <AccordionContent className="pb-1 pt-3">
+              <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-2">
+                    <Label>Tipo de registro</Label>
+                    <Select
+                      value={eventDraft.type}
+                      onValueChange={(value) => setEventDraft((current) => ({
+                        ...current,
+                        type: value as ClientRelationshipEventType,
+                      }))}
+                    >
+                      <SelectTrigger aria-label="Tipo do registro de relacionamento"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(relationshipEventTypeLabels).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="relationship-event-date">Data</Label>
+                    <Input
+                      id="relationship-event-date"
+                      type="date"
+                      value={eventDraft.occurredAt}
+                      onChange={(event) => setEventDraft((current) => ({ ...current, occurredAt: event.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="relationship-event-owner">Quem registrou</Label>
+                    <Input
+                      id="relationship-event-owner"
+                      value={eventDraft.createdBy}
+                      onChange={(event) => setEventDraft((current) => ({ ...current, createdBy: event.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2 lg:col-span-3">
+                    <Label htmlFor="relationship-event-notes">Registro</Label>
+                    <Textarea
+                      id="relationship-event-notes"
+                      rows={2}
+                      value={eventDraft.notes}
+                      onChange={(event) => setEventDraft((current) => ({ ...current, notes: event.target.value }))}
+                      placeholder="O que aconteceu, decisões tomadas e próximo passo"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      type="button"
+                      className="w-full rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
+                      disabled={!eventDraft.occurredAt || !eventDraft.createdBy.trim() || !eventDraft.notes.trim()}
+                      onClick={addRelationshipEvent}
+                    >
+                      <Plus className="h-4 w-4" aria-hidden="true" />
+                      Adicionar registro
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {relationshipEvents.length ? (
+                <ol className="mt-4 space-y-3">
+                  {relationshipEvents.map((event) => (
+                    <li key={event.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="font-semibold text-bvbp-ink">{relationshipEventTypeLabels[event.type]}</p>
+                        <time dateTime={event.occurredAt} className="text-xs font-semibold text-bvbp-muted-ink">
+                          {new Date(`${event.occurredAt}T12:00:00`).toLocaleDateString("pt-BR")}
+                        </time>
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-bvbp-ink">{event.notes}</p>
+                      <p className="mt-2 text-xs text-bvbp-muted-ink">Registrado por {event.createdBy}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="mt-4 rounded-[8px] border border-dashed border-bvbp-ink/15 p-4 text-sm text-bvbp-muted-ink">
+                  Nenhum evento registrado para este cliente.
+                </p>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </section>
   );

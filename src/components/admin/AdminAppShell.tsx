@@ -1,7 +1,15 @@
 import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FileText, LayoutDashboard, ListChecks, LogOut, Plus, Settings, Target, UsersRound } from "lucide-react";
+import { ChevronDown, FileText, LayoutDashboard, ListChecks, LogOut, Plus, Settings, Target, UserRound, UsersRound } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLockup";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { getBvbpWorkspaceCompany } from "@/lib/clientPortalStore";
 import { getPerformanceSession, isBvbpStaff, signOutPerformanceUser } from "@/lib/performanceAuth";
 import { cn } from "@/lib/utils";
@@ -34,6 +42,7 @@ function getAdminPageTitle(pathname: string) {
   if (/^\/app\/admin\/clients\/[^/]+\/edit$/.test(pathname)) return "Editar cliente";
   if (pathname === "/app/admin/content/new" || pathname === "/app/admin/blog/new") return "Novo conteúdo";
   if (pathname.startsWith("/app/admin/content/edit/") || pathname.startsWith("/app/admin/blog/edit/")) return "Editar conteúdo";
+  if (pathname === "/app/admin/profile") return "Meu perfil";
 
   const activeHref = getActiveAdminNavHref(pathname);
   return adminNavItems.find((item) => item.href === activeHref)?.label || "Portal BVBP";
@@ -53,7 +62,7 @@ function EmptyBvbpWorkspaceState() {
       <p className="font-label text-[10px] font-semibold uppercase tracking-[0.14em] text-bvbp-muted-ink">
         Primeiro uso
       </p>
-      <h1 className="mt-3 font-heading text-2xl font-bold text-bvbp-ink">Cadastre o workspace BVBP</h1>
+      <h2 className="mt-3 font-heading text-2xl font-bold text-bvbp-ink">Cadastre o workspace BVBP</h2>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-bvbp-muted-ink">
         O portal está sem dados de demonstração. Crie primeiro o workspace interno para liberar visão geral, ponteiros e iniciativas da BVBP.
       </p>
@@ -120,35 +129,47 @@ export function AdminAppShell() {
           })}
         </nav>
 
-        <div className="border-t border-bvbp-ivory/10 p-4">
-          <p className="truncate text-sm font-semibold">{session?.user.name}</p>
-          <p className="truncate text-xs text-bvbp-ivory/60">{session?.user.roleLabel}</p>
+        <div className="border-t border-bvbp-ivory/10 p-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 rounded-[8px] px-3 py-2.5 text-left transition-colors hover:bg-bvbp-ivory/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bvbp-gold"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-bvbp-ivory/10">
+                  <UserRound className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">{session?.user.name}</span>
+                  <span className="block truncate text-xs text-bvbp-ivory/60">{session?.user.roleLabel}</span>
+                </span>
+                <ChevronDown className="h-4 w-4 text-bvbp-ivory/60" aria-hidden="true" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="start" className="w-[228px] rounded-[8px]">
+              <DropdownMenuLabel className="font-normal">
+                <span className="block truncate text-sm font-semibold text-bvbp-ink">{session?.user.name}</span>
+                <span className="block truncate text-xs text-bvbp-muted-ink">{session?.user.email}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/app/admin/profile" className="gap-2">
+                  <UserRound className="h-4 w-4" aria-hidden="true" />
+                  Acessar perfil
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onSelect={() => void handleLogout()}>
+                <LogOut className="h-4 w-4" aria-hidden="true" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </aside>
 
       <div className="min-w-0">
-        <header className="sticky top-0 z-40 border-b border-bvbp-ink/10 bg-bvbp-raised/95 backdrop-blur">
-          <div className="flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-            <h1 className="font-heading text-xl font-semibold text-bvbp-ink">{pageTitle}</h1>
-
-            <div className="flex items-center justify-between gap-3 lg:justify-end">
-              <div className="min-w-0 text-left lg:text-right">
-                <p className="truncate text-sm font-semibold text-bvbp-ink">{session?.user.name}</p>
-                <p className="truncate text-xs text-bvbp-muted-ink">{session?.user.email}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
-                onClick={() => void handleLogout()}
-              >
-                <LogOut className="h-4 w-4" aria-hidden="true" />
-                Sair
-              </Button>
-            </div>
-          </div>
-
-          <nav className="flex gap-2 overflow-x-auto border-t border-bvbp-ink/10 px-4 py-2 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden lg:hidden">
+        <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+          <nav className="-mx-4 mb-7 flex gap-2 overflow-x-auto border-b border-bvbp-ink/10 px-4 pb-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden lg:hidden">
             {adminNavItems
               .map((item) => {
                 const Icon = item.icon;
@@ -172,9 +193,12 @@ export function AdminAppShell() {
                 );
               })}
           </nav>
-        </header>
 
-        <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <header className="mb-7 border-b border-bvbp-ink/10 pb-5">
+            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-bvbp-muted-ink">Portal BVBP</p>
+            <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-bvbp-ink sm:text-4xl">{pageTitle}</h1>
+          </header>
+
           {!activeCompany && needsBvbpWorkspace(location.pathname) ? (
             <EmptyBvbpWorkspaceState />
           ) : (

@@ -3,6 +3,7 @@ import {
   type ClientContact,
   type ClientBudgetMethod,
   type ClientRelationshipStatus,
+  type ClientRelationshipEvent,
   type Company,
   mockCompanies,
 } from "@/data/performanceSystem";
@@ -30,6 +31,7 @@ export interface NewClientInput {
   contactName?: string;
   contactEmail?: string;
   contacts?: ClientContact[];
+  relationshipEvents?: ClientRelationshipEvent[];
 }
 
 export type UpdateClientInput = Partial<NewClientInput>;
@@ -69,6 +71,7 @@ function normalizeCompany(company: Company) {
   return {
     ...company,
     contacts,
+    relationshipEvents: company.relationshipEvents || [],
     contactName: primaryContact?.name || company.contactName,
     contactEmail: primaryContact?.email || company.contactEmail,
   };
@@ -142,6 +145,7 @@ export function buildPortalCompany(input: NewClientInput): Company {
     contactName: primaryContact?.name || input.contactName?.trim() || undefined,
     contactEmail: primaryContact?.email || input.contactEmail?.trim() || undefined,
     contacts,
+    relationshipEvents: input.relationshipEvents || [],
     status: input.relationshipStatus || "Onboarding",
   };
 }
@@ -173,6 +177,7 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
     contactName: primaryContact?.name || undefined,
     contactEmail: primaryContact?.email || undefined,
     contacts,
+    relationshipEvents: input.relationshipEvents !== undefined ? input.relationshipEvents : existing.relationshipEvents,
     status: input.relationshipStatus || existing.relationshipStatus || existing.status,
   };
 }
