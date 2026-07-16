@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useOutletContext } from "react-router-dom";
+import { useLocation, useOutletContext } from "react-router-dom";
 import {
   closestCenter,
   DndContext,
@@ -136,6 +136,8 @@ function blankActivityForm(initiative?: PdcaCycle | null): InitiativeActivityInp
 
 const PerformanceExecutionPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
+  const location = useLocation();
+  const isAdminPortal = location.pathname.startsWith("/app/admin");
   const canManageInitiatives = isBvbpStaff(getPerformanceSession());
   const [initiatives, setInitiatives] = useState<PdcaCycle[]>(() => getPdcaCyclesForCompany(activeCompany));
   const [activities, setActivities] = useState<InitiativeActivity[]>(() => getActivitiesForInitiatives(getPdcaCyclesForCompany(activeCompany)));
@@ -289,7 +291,7 @@ const PerformanceExecutionPage = () => {
       <div className="space-y-8">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Iniciativas</h1>
+            {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Iniciativas</h1> : null}
             <p className="mt-1 text-sm font-semibold text-bvbp-ink">{activeCompany.name}</p>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-bvbp-muted-ink">
               Prioridades, atividades e evidências para mover os ponteiros.

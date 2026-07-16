@@ -22,10 +22,7 @@ const AdminBlogHubPage = () => {
 
       <div className="space-y-6">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="font-heading text-2xl font-bold text-bvbp-ink">Conteúdo</h1>
-            <p className="mt-1 text-sm text-bvbp-muted-ink">Temas estratégicos do Método BVBP.</p>
-          </div>
+          <p className="text-sm text-bvbp-muted-ink">Temas estratégicos do Método BVBP.</p>
           <Button
             asChild
             variant="outline"

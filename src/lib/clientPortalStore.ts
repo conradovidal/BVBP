@@ -1,6 +1,7 @@
 import {
   BVBP_COMPANY_ID,
   type ClientContact,
+  type ClientBudgetMethod,
   type ClientRelationshipStatus,
   type Company,
   mockCompanies,
@@ -22,6 +23,9 @@ export interface NewClientInput {
   recurringRevenue: number;
   monthlyOperationalCost: number;
   reportedRevenue?: number;
+  budgetMethod?: ClientBudgetMethod;
+  budgetAmount?: number;
+  budgetPercentage?: number;
   startDate?: string;
   contactName?: string;
   contactEmail?: string;
@@ -38,6 +42,8 @@ function normalizeContacts(companyId: string, contacts: ClientContact[] | undefi
           id: `contact-${companyId}-primary`,
           name: contactName || "",
           email: contactEmail || "",
+          title: "",
+          accessLevel: "collaborator" as const,
           isPrimary: true,
           accessStatus: "planned" as const,
         }]
@@ -49,6 +55,8 @@ function normalizeContacts(companyId: string, contacts: ClientContact[] | undefi
     id: contact.id || `contact-${companyId}-${index + 1}`,
     name: contact.name.trim(),
     email: contact.email.trim().toLowerCase(),
+    title: contact.title?.trim() || "",
+    accessLevel: contact.accessLevel || "collaborator",
     isPrimary: index === primaryIndex,
     accessStatus: contact.accessStatus || "planned",
   }));
@@ -127,6 +135,9 @@ export function buildPortalCompany(input: NewClientInput): Company {
     recurringRevenue: input.recurringRevenue,
     monthlyOperationalCost: input.monthlyOperationalCost,
     reportedRevenue: input.reportedRevenue,
+    budgetMethod: input.budgetMethod,
+    budgetAmount: input.budgetAmount,
+    budgetPercentage: input.budgetPercentage,
     startDate: input.startDate?.trim() || undefined,
     contactName: primaryContact?.name || input.contactName?.trim() || undefined,
     contactEmail: primaryContact?.email || input.contactEmail?.trim() || undefined,
@@ -155,6 +166,9 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
     recurringRevenue: input.recurringRevenue ?? existing.recurringRevenue,
     monthlyOperationalCost: input.monthlyOperationalCost ?? existing.monthlyOperationalCost,
     reportedRevenue: input.reportedRevenue !== undefined ? input.reportedRevenue : existing.reportedRevenue,
+    budgetMethod: input.budgetMethod !== undefined ? input.budgetMethod : existing.budgetMethod,
+    budgetAmount: input.budgetAmount !== undefined ? input.budgetAmount : existing.budgetAmount,
+    budgetPercentage: input.budgetPercentage !== undefined ? input.budgetPercentage : existing.budgetPercentage,
     startDate: input.startDate !== undefined ? input.startDate.trim() || undefined : existing.startDate,
     contactName: primaryContact?.name || undefined,
     contactEmail: primaryContact?.email || undefined,

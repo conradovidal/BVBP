@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Ban, CheckCircle2, ChevronLeft, ChevronRight, KeyRound, LockKeyhole, Plus, RefreshCw, Save, Send, Star, Trash2 } from "lucide-react";
+import { Ban, CheckCircle2, KeyRound, LockKeyhole, Plus, RefreshCw, Save, Send, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -23,10 +23,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
   type BvbpPillarId,
+  type ClientBudgetMethod,
   type ClientContact,
+  type ClientContactAccessLevel,
   type ClientConfiguration,
   type ClientMetricConfig,
   type ClientMetricUnit,
+  type ClientMetricDirection,
   type ClientPillarConfig,
   type ClientRelationshipStatus,
   type Company,
@@ -58,6 +61,9 @@ interface ClientSetupCompanyForm {
   recurringRevenue: string;
   monthlyOperationalCost: string;
   reportedRevenue: string;
+  budgetMethod: ClientBudgetMethod;
+  budgetAmount: string;
+  budgetPercentage: string;
   contacts: ClientContact[];
   startDate: string;
 }
@@ -104,6 +110,20 @@ const contactAccessStatusLabels: Record<ClientContact["accessStatus"], string> =
   active: "Acesso ativo",
   disabled: "Acesso desativado",
 };
+const contactAccessLevelLabels: Record<ClientContactAccessLevel, string> = {
+  collaborator: "Colaborador",
+  viewer: "Somente leitura",
+};
+const metricDirectionLabels: Record<ClientMetricDirection, string> = {
+  higher: "Quanto maior, melhor",
+  lower: "Quanto menor, melhor",
+  target: "Mais próximo da meta, melhor",
+};
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  maximumFractionDigits: 0,
+});
 
 const defaultCompanyForm: ClientSetupCompanyForm = {
   name: "",
@@ -117,6 +137,9 @@ const defaultCompanyForm: ClientSetupCompanyForm = {
   recurringRevenue: "",
   monthlyOperationalCost: "",
   reportedRevenue: "",
+  budgetMethod: "defined",
+  budgetAmount: "",
+  budgetPercentage: "",
   contacts: [],
   startDate: "",
 };
@@ -143,6 +166,8 @@ function createInitialState(company: Company | undefined, configuration: ClientC
           id: `contact-${company?.id || "draft"}-primary`,
           name: company?.contactName || "",
           email: company?.contactEmail || "",
+          title: "",
+          accessLevel: "collaborator" as const,
           isPrimary: true,
           accessStatus: "planned" as const,
         }]
@@ -162,6 +187,9 @@ function createInitialState(company: Company | undefined, configuration: ClientC
       recurringRevenue: toStringValue(company?.recurringRevenue ?? defaultCompanyForm.recurringRevenue),
       monthlyOperationalCost: toStringValue(company?.monthlyOperationalCost ?? defaultCompanyForm.monthlyOperationalCost),
       reportedRevenue: toStringValue(company?.reportedRevenue),
+      budgetMethod: company?.budgetMethod || "defined",
+      budgetAmount: toStringValue(company?.budgetAmount),
+      budgetPercentage: toStringValue(company?.budgetPercentage),
       contacts,
       startDate: company?.startDate || "",
     },
@@ -193,6 +221,13 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
     getMetricValue(state, ["financial-custo-operacional", "operation-custo-operacional-mensal"]) ??
     toNumber(state.company.monthlyOperationalCost);
   const primaryContact = state.company.contacts.find((contact) => contact.isPrimary);
+  const reportedRevenue = toOptionalNumber(state.company.reportedRevenue);
+  const budgetPercentage = toOptionalNumber(state.company.budgetPercentage);
+  const budgetAmount = state.company.budgetMethod === "revenue_percentage"
+    ? reportedRevenue && budgetPercentage
+      ? Math.round(reportedRevenue * (budgetPercentage / 100))
+      : undefined
+    : toOptionalNumber(state.company.budgetAmount);
 
   return {
     company: {
@@ -206,7 +241,10 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
       monthlyRevenue,
       recurringRevenue: toNumber(state.company.recurringRevenue),
       monthlyOperationalCost,
-      reportedRevenue: toOptionalNumber(state.company.reportedRevenue),
+      reportedRevenue,
+      budgetMethod: state.company.budgetMethod,
+      budgetAmount,
+      budgetPercentage: state.company.budgetMethod === "revenue_percentage" ? budgetPercentage : undefined,
       startDate: state.company.startDate,
       contactName: primaryContact?.name || "",
       contactEmail: primaryContact?.email || "",
@@ -231,6 +269,9 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
     bvbpOwner: input.bvbpOwner?.trim() || undefined,
     companySize: input.companySize?.trim() || undefined,
     reportedRevenue: input.reportedRevenue,
+    budgetMethod: input.budgetMethod,
+    budgetAmount: input.budgetAmount,
+    budgetPercentage: input.budgetPercentage,
     startDate: input.startDate?.trim() || undefined,
     contactName: input.contactName,
     contactEmail: input.contactEmail,
@@ -247,7 +288,11 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   const [contactAccessLoadingId, setContactAccessLoadingId] = useState<string>();
   const isBasicValid = state.company.name.trim().length > 1 && state.company.segment.trim().length > 1;
   const areContactsValid =
-    state.company.contacts.every((contact) => contact.name.trim().length > 1 && EMAIL_PATTERN.test(contact.email.trim())) &&
+    state.company.contacts.every((contact) => (
+      contact.name.trim().length > 1 &&
+      EMAIL_PATTERN.test(contact.email.trim()) &&
+      Boolean(contact.title?.trim())
+    )) &&
     (state.company.contacts.length === 0 || state.company.contacts.filter((contact) => contact.isPrimary).length === 1);
   const selectedMetricIds = new Set(state.configuration.pillars.flatMap((pillar) => pillar.selectedMetricIds));
   const arePointersValid = state.configuration.metrics.every((metric) => (
@@ -356,6 +401,8 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
             id: `contact-${Date.now()}`,
             name: "",
             email: "",
+            title: "",
+            accessLevel: "collaborator",
             isPrimary: current.company.contacts.length === 0,
             accessStatus: "planned",
           },
@@ -586,6 +633,10 @@ export function ClientBasicDataStep({
   contactAccessLoadingId,
   onContactAccessAction,
 }: StepProps) {
+  const estimatedBudget = state.company.reportedRevenue.trim() && state.company.budgetPercentage.trim()
+    ? Math.round(toNumber(state.company.reportedRevenue) * (toNumber(state.company.budgetPercentage) / 100))
+    : undefined;
+
   return (
     <section className="grid gap-4 sm:grid-cols-2">
       <div className="space-y-2 sm:col-span-2">
@@ -602,7 +653,7 @@ export function ClientBasicDataStep({
           value={state.company.relationshipStatus}
           onValueChange={(value) => updateCompanyField("relationshipStatus", value as ClientRelationshipStatus)}
         >
-          <SelectTrigger>
+          <SelectTrigger aria-label="Fase do relacionamento">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -624,11 +675,86 @@ export function ClientBasicDataStep({
           placeholder="Contexto executivo do cliente"
         />
       </div>
+      <div className="space-y-4 border-t border-bvbp-ink/10 pt-5 sm:col-span-2">
+        <div>
+          <h2 className="font-heading text-lg font-semibold text-bvbp-ink">Budget</h2>
+          <p className="mt-1 text-sm text-bvbp-muted-ink">
+            Registre o orçamento disponível ou estime uma referência a partir do faturamento mensal.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label>Forma de definição</Label>
+            <Select
+              value={state.company.budgetMethod}
+              onValueChange={(value) => updateCompanyField("budgetMethod", value as ClientBudgetMethod)}
+            >
+              <SelectTrigger aria-label="Forma de definição do budget">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="defined">Orçamento informado pelo cliente</SelectItem>
+                <SelectItem value="revenue_percentage">Estimativa sobre o faturamento</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {state.company.budgetMethod === "defined" ? (
+            <div className="space-y-2">
+              <Label htmlFor="client-budget-amount">Budget disponível (R$)</Label>
+              <Input
+                id="client-budget-amount"
+                type="number"
+                min="0"
+                value={state.company.budgetAmount}
+                onChange={(event) => updateCompanyField("budgetAmount", event.target.value)}
+                placeholder="Ex.: 15000"
+              />
+            </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="client-reported-revenue">Faturamento mensal informado (R$)</Label>
+                <Input
+                  id="client-reported-revenue"
+                  type="number"
+                  min="0"
+                  value={state.company.reportedRevenue}
+                  onChange={(event) => updateCompanyField("reportedRevenue", event.target.value)}
+                  placeholder="Ex.: 500000"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="client-budget-percentage">Percentual destinado (%)</Label>
+                <Input
+                  id="client-budget-percentage"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={state.company.budgetPercentage}
+                  onChange={(event) => updateCompanyField("budgetPercentage", event.target.value)}
+                  placeholder="Ex.: 3"
+                />
+              </div>
+              <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Budget estimado</p>
+                <p className="mt-2 font-heading text-xl font-semibold text-bvbp-ink">
+                  {estimatedBudget === undefined
+                    ? "A calcular"
+                    : currencyFormatter.format(estimatedBudget)}
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
       <div className="space-y-3 border-t border-bvbp-ink/10 pt-5 sm:col-span-2">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="font-heading text-lg font-semibold text-bvbp-ink">Contatos do workspace</h2>
-            <p className="mt-1 text-sm text-bvbp-muted-ink">Cadastre as pessoas que acessarão o workspace do cliente.</p>
+            <p className="mt-1 text-sm text-bvbp-muted-ink">
+              Colaboradores participam da execução; acessos de somente leitura apenas acompanham o workspace.
+            </p>
           </div>
           <Button type="button" variant="outline" onClick={addContact}>
             <Plus className="h-4 w-4" aria-hidden="true" />
@@ -640,13 +766,13 @@ export function ClientBasicDataStep({
           <div className="grid gap-3">
             {state.company.contacts.map((contact) => {
               const isEmailInvalid = Boolean(contact.email) && !EMAIL_PATTERN.test(contact.email.trim());
-              const isContactIncomplete = contact.name.trim().length <= 1 || !EMAIL_PATTERN.test(contact.email.trim());
+              const isContactIncomplete = contact.name.trim().length <= 1 || !EMAIL_PATTERN.test(contact.email.trim()) || !contact.title?.trim();
               const isAccessLocked = contact.accessStatus !== "planned";
               const canManageAccess = mode === "edit" && Boolean(companyId);
 
               return (
                 <article key={contact.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4">
-                  <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
+                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(180px,0.7fr)_minmax(180px,0.7fr)_auto] xl:items-end">
                     <div className="space-y-2">
                       <Label htmlFor={`${contact.id}-name`}>Nome</Label>
                       <Input
@@ -667,6 +793,31 @@ export function ClientBasicDataStep({
                         disabled={isAccessLocked}
                         aria-invalid={isEmailInvalid}
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor={`${contact.id}-title`}>Cargo</Label>
+                      <Input
+                        id={`${contact.id}-title`}
+                        value={contact.title || ""}
+                        onChange={(event) => updateContact(contact.id, { title: event.target.value })}
+                        placeholder="Ex.: Diretora financeira"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Tipo de acesso</Label>
+                      <Select
+                        value={contact.accessLevel || "collaborator"}
+                        onValueChange={(value) => updateContact(contact.id, { accessLevel: value as ClientContactAccessLevel })}
+                      >
+                        <SelectTrigger aria-label={`Tipo de acesso de ${contact.name || "contato"}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(contactAccessLevelLabels).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>{label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     {isAccessLocked ? (
                       <Button
@@ -851,51 +1002,39 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
   const [activePillar, setActivePillar] = useState<BvbpPillarId>("financial");
   const [activeMetricId, setActiveMetricId] = useState<string | null>(() => {
     const financialPillar = getPillarConfig(state, "financial");
-    return financialPillar?.selectedMetricIds[0] || null;
+    return financialPillar?.selectedMetricIds[0] || getPillarMetrics(state, "financial")[0]?.id || null;
   });
-  const [isDetailCollapsed, setIsDetailCollapsed] = useState(false);
   const pillar = getPillarConfig(state, activePillar);
   const metrics = getPillarMetrics(state, activePillar);
   const selectedMetricIds = pillar?.selectedMetricIds || [];
-  const activeMetric = metrics.find((metric) => metric.id === activeMetricId && selectedMetricIds.includes(metric.id));
+  const activeMetric = metrics.find((metric) => metric.id === activeMetricId);
 
   const selectPillar = (pillarId: BvbpPillarId) => {
     const nextPillar = getPillarConfig(state, pillarId);
+    const nextMetrics = getPillarMetrics(state, pillarId);
     setActivePillar(pillarId);
-    setActiveMetricId(nextPillar?.selectedMetricIds[0] || null);
-    setIsDetailCollapsed(false);
+    setActiveMetricId(nextPillar?.selectedMetricIds[0] || nextMetrics[0]?.id || null);
   };
 
   const changeMetricSelection = (metric: ClientMetricConfig, isSelected: boolean) => {
     toggleMetric(metric.pillar, metric.id);
 
-    if (isSelected) {
-      const nextActiveMetricId = selectedMetricIds.find((metricId) => metricId !== metric.id) || null;
-      setActiveMetricId(nextActiveMetricId);
-      return;
-    }
-
     setActiveMetricId(metric.id);
-    setIsDetailCollapsed(false);
   };
 
   const addMetric = (metric: ClientMetricConfig) => {
     addCustomMetric(metric);
     setActivePillar(metric.pillar);
     setActiveMetricId(metric.id);
-    setIsDetailCollapsed(false);
   };
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-heading text-xl font-semibold text-bvbp-ink">Ponteiros acompanhados</h2>
-          <p className="mt-1 text-sm text-bvbp-muted-ink">
-            Selecione os ponteiros essenciais e registre baseline, fórmula, meta e fonte.
-          </p>
-        </div>
-        <CustomMetricDialog onAdd={addMetric} />
+      <div>
+        <h2 className="font-heading text-xl font-semibold text-bvbp-ink">Ponteiros acompanhados</h2>
+        <p className="mt-1 text-sm text-bvbp-muted-ink">
+          Clique no card para ver os detalhes e use o check para incluir o ponteiro no acompanhamento.
+        </p>
       </div>
 
       <Tabs value={activePillar} onValueChange={(value) => selectPillar(value as BvbpPillarId)}>
@@ -917,9 +1056,9 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
               <div
                 className={cn(
                   "grid gap-4",
-                  activeMetric && !isDetailCollapsed
+                  activeMetric
                     ? "lg:grid-cols-[minmax(260px,0.75fr)_minmax(0,1.35fr)]"
-                    : "lg:grid-cols-[minmax(0,1fr)_auto]",
+                    : "lg:grid-cols-[minmax(0,1fr)]",
                 )}
               >
                 <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
@@ -933,7 +1072,7 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                   <div className="mt-3 grid gap-2">
                     {metrics.map((metric) => {
                       const isSelected = selectedMetricIds.includes(metric.id);
-                      const isActive = activeMetricId === metric.id && isSelected;
+                      const isActive = activeMetricId === metric.id;
 
                       return (
                         <div
@@ -954,12 +1093,7 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                             type="button"
                             className="min-w-0 flex-1 text-left"
                             onClick={() => {
-                              if (!isSelected) {
-                                changeMetricSelection(metric, false);
-                              } else {
-                                setActiveMetricId(metric.id);
-                                setIsDetailCollapsed(false);
-                              }
+                              setActiveMetricId(metric.id);
                             }}
                           >
                             <span className="block text-sm font-semibold text-bvbp-ink">{metric.name}</span>
@@ -972,32 +1106,32 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                         </div>
                       );
                     })}
+                    <CustomMetricDialog key={pillarId} defaultPillar={pillarId} onAdd={addMetric} />
                   </div>
                 </article>
 
-                {activeMetric && !isDetailCollapsed ? (
+                {activeMetric ? (
                   <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
-                    <div className="flex items-start justify-between gap-3 border-b border-bvbp-ink/10 pb-4">
+                    <div className="border-b border-bvbp-ink/10 pb-4">
                       <div className="min-w-0">
                         <p className="font-label text-[11px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
                           Detalhes do ponteiro
                         </p>
                         <h3 className="mt-2 font-heading text-xl font-semibold text-bvbp-ink">{activeMetric.name}</h3>
-                        <p className="mt-1 text-sm leading-5 text-bvbp-muted-ink">{activeMetric.description}</p>
                       </div>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setIsDetailCollapsed(true)}
-                        title="Recolher detalhes"
-                      >
-                        <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                        <span className="sr-only">Recolher detalhes</span>
-                      </Button>
                     </div>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label htmlFor={`${activeMetric.id}-description`}>Descrição</Label>
+                        <Textarea
+                          id={`${activeMetric.id}-description`}
+                          rows={2}
+                          value={activeMetric.description}
+                          onChange={(event) => updateMetric(activeMetric.id, { description: event.target.value })}
+                          placeholder="O que este ponteiro mede"
+                        />
+                      </div>
                       <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor={`${activeMetric.id}-formula`}>Fórmula</Label>
                         <Textarea
@@ -1006,6 +1140,34 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                           value={activeMetric.formula}
                           onChange={(event) => updateMetric(activeMetric.id, { formula: event.target.value })}
                         />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Unidade</Label>
+                        <Select
+                          value={activeMetric.unit}
+                          onValueChange={(value) => updateMetric(activeMetric.id, { unit: value as ClientMetricUnit })}
+                        >
+                          <SelectTrigger aria-label={`Unidade de ${activeMetric.name}`}><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(clientMetricUnitLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Forma de avaliação</Label>
+                        <Select
+                          value={activeMetric.direction || "higher"}
+                          onValueChange={(value) => updateMetric(activeMetric.id, { direction: value as ClientMetricDirection })}
+                        >
+                          <SelectTrigger aria-label={`Forma de avaliação de ${activeMetric.name}`}><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(metricDirectionLabels).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor={`${activeMetric.id}-value`}>Valor atual</Label>
@@ -1031,6 +1193,15 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                         />
                       </div>
                       <div className="space-y-2 sm:col-span-2">
+                        <Label htmlFor={`${activeMetric.id}-benchmark`}>Benchmark</Label>
+                        <Input
+                          id={`${activeMetric.id}-benchmark`}
+                          value={activeMetric.benchmark || ""}
+                          onChange={(event) => updateMetric(activeMetric.id, { benchmark: event.target.value })}
+                          placeholder="Referência de mercado, fonte ou faixa esperada"
+                        />
+                      </div>
+                      <div className="space-y-2 sm:col-span-2">
                         <Label htmlFor={`${activeMetric.id}-source`}>
                           Fonte{activeMetric.currentValue !== undefined ? " *" : ""}
                         </Label>
@@ -1047,18 +1218,6 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                       </div>
                     </div>
                   </article>
-                ) : activeMetric ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="h-11 w-11 self-start"
-                    onClick={() => setIsDetailCollapsed(false)}
-                    title="Mostrar detalhes"
-                  >
-                    <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                    <span className="sr-only">Mostrar detalhes</span>
-                  </Button>
                 ) : (
                   <div className="rounded-[8px] border border-dashed border-bvbp-ink/15 bg-bvbp-ivory p-6 text-sm text-bvbp-muted-ink">
                     Selecione um ponteiro para preencher seus detalhes.
@@ -1268,6 +1427,7 @@ export function ClientReviewStep({ state }: StepProps) {
     return state.configuration.metrics.filter((metric) => selectedIds.has(metric.id));
   }, [state.configuration.metrics, state.configuration.pillars]);
   const primaryContact = state.company.contacts.find((contact) => contact.isPrimary);
+  const reviewBudget = buildSaveInput(state).company.budgetAmount;
 
   return (
     <section className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
@@ -1278,7 +1438,13 @@ export function ClientReviewStep({ state }: StepProps) {
           <p>{state.company.segment || "Segmento não informado"}</p>
           <p>{state.company.relationshipStatus}</p>
           <p>Responsável: {state.company.bvbpOwner || "BVBP"}</p>
-          <p>Contato: {primaryContact?.name || "Não informado"}</p>
+          <p>
+            Budget: {reviewBudget
+              ? currencyFormatter.format(reviewBudget)
+              : "Não informado"}
+          </p>
+          <p>Contato: {primaryContact?.name || "Não informado"}{primaryContact?.title ? ` · ${primaryContact.title}` : ""}</p>
+          <p>Acesso principal: {contactAccessLevelLabels[primaryContact?.accessLevel || "collaborator"]}</p>
           <p>{state.company.contacts.length} contato(s) cadastrados</p>
         </div>
       </article>
@@ -1308,14 +1474,17 @@ export function ClientReviewStep({ state }: StepProps) {
   );
 }
 
-export function CustomMetricDialog({ onAdd }: { onAdd: (metric: ClientMetricConfig) => void }) {
+export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: BvbpPillarId; onAdd: (metric: ClientMetricConfig) => void }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
     name: "",
-    pillar: "financial" as BvbpPillarId,
+    description: "",
+    pillar: defaultPillar,
     unit: "count" as ClientMetricUnit,
     currentValue: "",
     target: "",
+    benchmark: "",
+    direction: "higher" as ClientMetricDirection,
     source: "",
     formula: "",
   });
@@ -1327,23 +1496,41 @@ export function CustomMetricDialog({ onAdd }: { onAdd: (metric: ClientMetricConf
       id: `custom-${form.pillar}-${Date.now()}`,
       name: form.name.trim(),
       pillar: form.pillar,
-      description: "Ponteiro personalizado para o cliente atual.",
+      description: form.description.trim() || "Ponteiro personalizado para o cliente atual.",
       unit: form.unit,
       formula: form.formula.trim(),
       currentValue: toOptionalNumber(form.currentValue),
       target: form.target.trim() || undefined,
+      benchmark: form.benchmark.trim() || undefined,
+      direction: form.direction,
       source: form.source.trim() || undefined,
       custom: true,
     });
-    setForm({ name: "", pillar: "financial", unit: "count", currentValue: "", target: "", source: "", formula: "" });
+    setForm({
+      name: "",
+      description: "",
+      pillar: defaultPillar,
+      unit: "count",
+      currentValue: "",
+      target: "",
+      benchmark: "",
+      direction: "higher",
+      source: "",
+      formula: "",
+    });
     setOpen(false);
+  };
+
+  const openDialog = () => {
+    setForm((current) => ({ ...current, pillar: defaultPillar }));
+    setOpen(true);
   };
 
   return (
     <>
-      <Button type="button" variant="outline" onClick={() => setOpen(true)}>
+      <Button type="button" variant="outline" className="mt-1 justify-start" onClick={openDialog}>
         <Plus className="h-4 w-4" aria-hidden="true" />
-        Novo ponteiro
+        Adicionar ponteiro em {bvbpPillarLabels[defaultPillar]}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl">
@@ -1355,6 +1542,16 @@ export function CustomMetricDialog({ onAdd }: { onAdd: (metric: ClientMetricConf
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="custom-metric-name">Nome</Label>
               <Input id="custom-metric-name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="custom-metric-description">Descrição</Label>
+              <Textarea
+                id="custom-metric-description"
+                rows={2}
+                value={form.description}
+                onChange={(event) => setForm({ ...form, description: event.target.value })}
+                placeholder="O que este ponteiro mede"
+              />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="custom-metric-formula">Fórmula</Label>
@@ -1369,7 +1566,7 @@ export function CustomMetricDialog({ onAdd }: { onAdd: (metric: ClientMetricConf
             <div className="space-y-2">
               <Label>Pilar</Label>
               <Select value={form.pillar} onValueChange={(value) => setForm({ ...form, pillar: value as BvbpPillarId })}>
-                <SelectTrigger>
+                <SelectTrigger aria-label="Pilar do novo ponteiro">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1384,7 +1581,7 @@ export function CustomMetricDialog({ onAdd }: { onAdd: (metric: ClientMetricConf
             <div className="space-y-2">
               <Label>Unidade</Label>
               <Select value={form.unit} onValueChange={(value) => setForm({ ...form, unit: value as ClientMetricUnit })}>
-                <SelectTrigger>
+                <SelectTrigger aria-label="Unidade do novo ponteiro">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1397,12 +1594,27 @@ export function CustomMetricDialog({ onAdd }: { onAdd: (metric: ClientMetricConf
               </Select>
             </div>
             <div className="space-y-2">
+              <Label>Forma de avaliação</Label>
+              <Select value={form.direction} onValueChange={(value) => setForm({ ...form, direction: value as ClientMetricDirection })}>
+                <SelectTrigger aria-label="Forma de avaliação do novo ponteiro"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Object.entries(metricDirectionLabels).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>{label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="custom-metric-value">Valor atual</Label>
               <Input id="custom-metric-value" type="number" value={form.currentValue} onChange={(event) => setForm({ ...form, currentValue: event.target.value })} placeholder="Opcional" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="custom-metric-target">Meta</Label>
               <Input id="custom-metric-target" value={form.target} onChange={(event) => setForm({ ...form, target: event.target.value })} placeholder="Opcional" />
+            </div>
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="custom-metric-benchmark">Benchmark</Label>
+              <Input id="custom-metric-benchmark" value={form.benchmark} onChange={(event) => setForm({ ...form, benchmark: event.target.value })} placeholder="Referência de mercado ou faixa esperada" />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="custom-metric-source">Fonte</Label>

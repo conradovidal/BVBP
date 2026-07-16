@@ -153,6 +153,8 @@ export type Database = {
           created_at: string
           disabled_at: string | null
           email: string
+          title: string
+          access_level: string
           id: string
           invited_at: string | null
           is_primary: boolean
@@ -166,6 +168,8 @@ export type Database = {
           created_at?: string
           disabled_at?: string | null
           email: string
+          title?: string
+          access_level?: string
           id: string
           invited_at?: string | null
           is_primary?: boolean
@@ -179,6 +183,8 @@ export type Database = {
           created_at?: string
           disabled_at?: string | null
           email?: string
+          title?: string
+          access_level?: string
           id?: string
           invited_at?: string | null
           is_primary?: boolean

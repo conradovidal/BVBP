@@ -42,10 +42,7 @@ const AdminClientsPage = () => {
 
       <div className="space-y-6">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="font-heading text-2xl font-bold text-bvbp-ink">CRM</h1>
-            <p className="mt-1 text-sm text-bvbp-muted-ink">Pipeline comercial, clientes externos e próximas ações.</p>
-          </div>
+          <p className="text-sm text-bvbp-muted-ink">Pipeline comercial, clientes externos e próximas ações.</p>
           <Button
             asChild
             variant="outline"

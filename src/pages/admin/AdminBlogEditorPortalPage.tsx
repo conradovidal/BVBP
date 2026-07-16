@@ -58,7 +58,6 @@ const AdminBlogEditorPortalPage = () => {
               <ArrowLeft className="h-4 w-4" />
               Conteúdo
             </Link>
-            <h1 className="font-heading text-2xl font-bold text-bvbp-ink">{draftId ? "Editar conteúdo" : "Novo conteúdo"}</h1>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleSave}>

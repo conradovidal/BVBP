@@ -28,6 +28,17 @@ function getActiveAdminNavHref(pathname: string) {
   ))?.href;
 }
 
+function getAdminPageTitle(pathname: string) {
+  if (pathname === "/app/admin/clients/new") return "Novo cliente";
+  if (pathname === BVBP_WORKSPACE_EDIT_PATH) return "Dados da BVBP";
+  if (/^\/app\/admin\/clients\/[^/]+\/edit$/.test(pathname)) return "Editar cliente";
+  if (pathname === "/app/admin/content/new" || pathname === "/app/admin/blog/new") return "Novo conteúdo";
+  if (pathname.startsWith("/app/admin/content/edit/") || pathname.startsWith("/app/admin/blog/edit/")) return "Editar conteúdo";
+
+  const activeHref = getActiveAdminNavHref(pathname);
+  return adminNavItems.find((item) => item.href === activeHref)?.label || "Portal BVBP";
+}
+
 function needsBvbpWorkspace(pathname: string) {
   return pathname === "/app/admin" ||
     pathname === "/app/admin/pointers" ||
@@ -62,6 +73,7 @@ export function AdminAppShell() {
   const location = useLocation();
   const activeCompany = getBvbpWorkspaceCompany();
   const activeNavHref = getActiveAdminNavHref(location.pathname);
+  const pageTitle = getAdminPageTitle(location.pathname);
 
   if (!isBvbpStaff(session)) {
     return <Navigate to="/app/performance/overview" replace />;
@@ -77,12 +89,11 @@ export function AdminAppShell() {
 
   return (
     <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="hidden border-r border-bvbp-gold/20 bg-bvbp-forest-dark text-bvbp-ivory lg:flex lg:min-h-screen lg:flex-col">
+      <aside className="hidden border-r border-bvbp-gold/20 bg-bvbp-forest-dark text-bvbp-ivory lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-hidden">
         <div className="border-b border-bvbp-ivory/10 px-6 py-6">
           <a href="/" aria-label="Voltar para o site BVBP">
             <BrandLockup tone="light" size="lg" />
           </a>
-          <p className="mt-3 text-sm text-bvbp-ivory/65">Portal administrativo</p>
         </div>
 
         <nav className="flex-1 space-y-1 px-3 py-5">
@@ -118,10 +129,7 @@ export function AdminAppShell() {
       <div className="min-w-0">
         <header className="sticky top-0 z-40 border-b border-bvbp-ink/10 bg-bvbp-raised/95 backdrop-blur">
           <div className="flex min-h-16 flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-            <div>
-              <p className="font-heading text-lg font-semibold text-bvbp-ink">Portal BVBP</p>
-              <p className="text-sm text-bvbp-muted-ink">CRM, ponteiros e conteúdo estratégico.</p>
-            </div>
+            <h1 className="font-heading text-xl font-semibold text-bvbp-ink">{pageTitle}</h1>
 
             <div className="flex items-center justify-between gap-3 lg:justify-end">
               <div className="min-w-0 text-left lg:text-right">

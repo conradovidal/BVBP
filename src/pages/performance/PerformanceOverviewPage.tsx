@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useOutletContext } from "react-router-dom";
+import { useLocation, useOutletContext } from "react-router-dom";
 import { PerformanceDetailDialog, type PerformanceDetail } from "@/components/performance/PerformanceDetailDialog";
 import { SectionHeader } from "@/components/performance/SectionHeader";
 import { StatusBadge } from "@/components/performance/StatusBadge";
@@ -43,12 +43,14 @@ function initiativeDetail(cycle: PdcaCycle): PerformanceDetail {
 
 const PerformanceOverviewPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
+  const location = useLocation();
   const [selectedPillar, setSelectedPillar] = useState<OverviewPillarSummary | null>(null);
   const [initiative, setInitiative] = useState<PerformanceDetail | null>(null);
   const isInternalWorkspace = isBvbpInternalWorkspace(activeCompany);
   const cycles = getPdcaCyclesForCompany(activeCompany);
   const overview = buildPerformanceOverviewModel(activeCompany, cycles);
   const pageTitle = isInternalWorkspace ? "Portal BVBP" : "Visão geral";
+  const isAdminPortal = location.pathname.startsWith("/app/admin");
   const contextLabel = isInternalWorkspace ? "Workspace interno" : activeCompany.name;
   const relationshipStatus = getCompanyRelationshipStatus(activeCompany);
 
@@ -66,7 +68,7 @@ const PerformanceOverviewPage = () => {
       <div className="space-y-7">
         <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">{pageTitle}</h1>
+            {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">{pageTitle}</h1> : null}
             <div className="mt-2 flex flex-wrap items-center gap-3">
               <p className="text-sm font-semibold text-bvbp-ink">{contextLabel}</p>
               {relationshipStatus && <StatusBadge label={relationshipStatus} />}

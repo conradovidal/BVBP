@@ -41,7 +41,6 @@ const AdminClientNewPage = () => {
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             CRM
           </button>
-          <h1 className="font-heading text-2xl font-bold text-bvbp-ink">Novo cliente</h1>
         </section>
 
         <ClientSetupWizard
