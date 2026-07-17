@@ -1,19 +1,17 @@
-import {
-  bvbpPillarIds,
-  bvbpPillarLabels,
-  type BvbpPillarId,
-  type ClientConfiguration,
-} from "@/data/performanceSystem";
-import { cn } from "@/lib/utils";
+import { PointerPillarSelector } from "@/components/performance/pointers/PointerPillarSelector";
+import type { BvbpPillarId, ClientConfiguration, PdcaCycle, PdcaStatus } from "@/data/performanceSystem";
+import { pointerPillars } from "@/lib/performancePointersModel";
 
 interface InitiativePillarContextProps {
   configuration: ClientConfiguration;
+  initiatives: PdcaCycle[];
   activePillarId: "all" | BvbpPillarId;
   onSelect: (pillarId: BvbpPillarId) => void;
 }
 
 export function InitiativePillarContext({
   configuration,
+  initiatives,
   activePillarId,
   onSelect,
 }: InitiativePillarContextProps) {
@@ -24,31 +22,21 @@ export function InitiativePillarContext({
   const additionalMetrics = configuration.metrics.filter((metric) => (
     activePillar?.selectedMetricIds.includes(metric.id) && metric.id !== activePillar.criticalMetricId
   ));
+  const statusSummary: Array<{ label: string; status: PdcaStatus }> = [
+    { label: "Em refinamento", status: "Em refinamento" },
+    { label: "Em progresso", status: "Em desenvolvimento" },
+    { label: "Em validação", status: "Em validação" },
+    { label: "Concluídas", status: "Concluída" },
+  ];
 
   return (
     <section className="space-y-2">
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4" aria-label="Filtrar iniciativas por pilar">
-        {bvbpPillarIds.map((pillarId) => {
-          const isActive = activePillarId === pillarId;
-
-          return (
-            <button
-              type="button"
-              key={pillarId}
-              aria-pressed={isActive}
-              onClick={() => onSelect(pillarId)}
-              className={cn(
-                "min-h-12 rounded-[8px] border px-3 py-2.5 text-left font-heading font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45",
-                isActive
-                  ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory"
-                  : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink hover:border-bvbp-forest/35 hover:bg-bvbp-inset",
-              )}
-            >
-              {bvbpPillarLabels[pillarId]}
-            </button>
-          );
-        })}
-      </div>
+      <PointerPillarSelector
+        pillars={pointerPillars}
+        activePillarId={activePillar?.pillar}
+        onSelect={onSelect}
+        ariaLabel="Filtrar iniciativas por pilar"
+      />
 
       {activePillar ? (
         <div className="grid gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset px-4 py-3 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.2fr)]">
@@ -57,7 +45,7 @@ export function InitiativePillarContext({
             <p className="mt-1 text-sm font-semibold text-bvbp-ink">{criticalMetric?.name || "A definir"}</p>
           </div>
           <div>
-            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Outros ponteiros acompanhados</p>
+            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Ponteiros adicionais</p>
             <p className="mt-1 text-sm text-bvbp-ink">
               {additionalMetrics.length ? additionalMetrics.map((metric) => metric.name).join(" · ") : "Nenhum adicional"}
             </p>
@@ -69,7 +57,20 @@ export function InitiativePillarContext({
             </p>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <div className="grid gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset px-4 py-3 sm:grid-cols-2 xl:grid-cols-4">
+          {statusSummary.map(({ label, status }) => (
+            <div key={status} className="flex items-end justify-between gap-3 border-bvbp-ink/10 sm:border-r sm:pr-3 sm:last:border-r-0">
+              <div>
+                <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</p>
+                <p className="mt-1 font-heading text-2xl font-bold text-bvbp-ink">
+                  {initiatives.filter((initiative) => initiative.pdcaStatus === status).length}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
