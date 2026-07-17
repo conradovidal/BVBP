@@ -25,7 +25,7 @@ export function InitiativeStatusMenu({ status, onChange, className }: Initiative
           variant="outline"
           size="sm"
           className={cn(
-            "h-9 justify-between gap-2 rounded-[8px] border-bvbp-ink/10 bg-bvbp-ivory px-2.5 text-xs font-semibold text-bvbp-ink hover:bg-bvbp-inset",
+            "h-8 justify-end gap-1 rounded-full border-0 bg-transparent px-1 text-xs font-semibold text-bvbp-ink shadow-none hover:bg-transparent",
             className,
           )}
           aria-label={`Alterar status: ${status}`}

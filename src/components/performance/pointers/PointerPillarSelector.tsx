@@ -3,13 +3,19 @@ import { cn } from "@/lib/utils";
 
 interface PointerPillarSelectorProps {
   pillars: PointerPillarOption[];
-  activePillarId: PointerPillarId;
+  activePillarId?: PointerPillarId;
   onSelect: (pillarId: PointerPillarId) => void;
+  ariaLabel?: string;
 }
 
-export function PointerPillarSelector({ pillars, activePillarId, onSelect }: PointerPillarSelectorProps) {
+export function PointerPillarSelector({
+  pillars,
+  activePillarId,
+  onSelect,
+  ariaLabel = "Pilares de ponteiros",
+}: PointerPillarSelectorProps) {
   return (
-    <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Pilares de ponteiros">
+    <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label={ariaLabel}>
       {pillars.map((pillar) => {
         const isActive = pillar.id === activePillarId;
 

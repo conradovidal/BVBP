@@ -12,12 +12,12 @@ const toneClasses: Record<Tone, string> = {
 };
 
 const initiativeStatusClasses: Record<string, string> = {
-  "Em refinamento": "border-bvbp-muted-ink bg-bvbp-muted-ink text-white",
+  "Em refinamento": "border-bvbp-ink/10 bg-bvbp-ink/10 text-bvbp-ink",
   "Em desenvolvimento": "border-bvbp-signal bg-bvbp-signal text-white",
   "Em validação": "border-bvbp-signal/75 bg-bvbp-signal/75 text-white",
   "Concluída": "border-bvbp-positive bg-bvbp-positive text-white",
   "Descartada": "border-bvbp-risk bg-bvbp-risk text-white",
-  "Arquivada": "border-bvbp-ink/35 bg-bvbp-ink/35 text-white",
+  "Arquivada": "border-bvbp-muted-ink bg-bvbp-muted-ink text-white",
 };
 
 function toneForLabel(label: string): Tone {

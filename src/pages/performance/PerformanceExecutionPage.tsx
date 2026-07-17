@@ -458,6 +458,7 @@ const PerformanceExecutionPage = () => {
 
         <InitiativePillarContext
           configuration={configuration}
+          initiatives={initiatives}
           activePillarId={pillarFilter}
           onSelect={applyPillarFilter}
         />
@@ -504,10 +505,9 @@ const PerformanceExecutionPage = () => {
             </div>
           </div>
 
-          <div className="hidden shrink-0 grid-cols-[32px_minmax(180px,1.25fr)_minmax(100px,0.5fr)_minmax(110px,0.55fr)_minmax(125px,0.65fr)_105px_160px] gap-3 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+          <div className="hidden shrink-0 grid-cols-[32px_minmax(240px,1.45fr)_minmax(120px,0.65fr)_minmax(140px,0.7fr)_105px_160px] gap-3 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
             <span aria-hidden="true" />
             <span>Iniciativa</span>
-            <span>Responsável</span>
             <span>Ponteiro</span>
             <span>Baseline → meta</span>
             <span>Prioridade</span>
