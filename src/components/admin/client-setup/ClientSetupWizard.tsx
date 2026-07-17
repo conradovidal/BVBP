@@ -1770,7 +1770,7 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
         Adicionar ponteiro em {bvbpPillarLabels[defaultPillar]}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent withinContentArea className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>Novo ponteiro</DialogTitle>
             <DialogDescription>Ponteiro específico para acompanhar no cliente atual.</DialogDescription>

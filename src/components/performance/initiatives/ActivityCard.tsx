@@ -84,38 +84,31 @@ export function ActivityCard({ activity, onStatusChange, onUpdate }: ActivityCar
   }
 
   return (
-    <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-3">
-      <div className="flex items-start justify-between gap-3">
+    <article className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between">
+      <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold leading-5 text-bvbp-ink">{activity.title}</p>
+        {activity.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-bvbp-muted-ink">{activity.description}</p>}
+        <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">
+          {activity.owner || "Sem responsável"} · {activity.dueDate || "Sem prazo"}
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <Select value={activity.status} onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}>
+          <SelectTrigger className="h-8 w-[150px] bg-bvbp-ivory text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            {initiativeActivityStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+          </SelectContent>
+        </Select>
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="h-7 rounded-[8px] px-2 text-xs text-bvbp-muted-ink hover:bg-bvbp-inset hover:text-bvbp-ink"
+          className="h-8 px-2 text-xs text-bvbp-muted-ink hover:bg-bvbp-inset hover:text-bvbp-ink"
           onClick={() => setIsEditing(true)}
         >
           Editar
         </Button>
       </div>
-      {activity.description && <p className="mt-2 text-xs leading-5 text-bvbp-muted-ink">{activity.description}</p>}
-      <p className="mt-2 text-xs leading-5 text-bvbp-muted-ink">
-        {activity.owner || "Sem responsável"} · {activity.dueDate || "Sem prazo"}
-      </p>
-      <Select
-        value={activity.status}
-        onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}
-      >
-        <SelectTrigger className="mt-3 h-9 bg-bvbp-ivory text-xs">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {initiativeActivityStatuses.map((status) => (
-            <SelectItem key={status} value={status}>
-              {status}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
     </article>
   );
 }

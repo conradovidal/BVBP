@@ -47,7 +47,7 @@ function DetailBlock({ title, children }: { title: string; children: ReactNode }
 export function PerformanceDetailDialog({ detail, open, onOpenChange }: PerformanceDetailDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto bg-bvbp-ivory">
+      <DialogContent withinContentArea className="max-h-[90vh] max-w-3xl overflow-y-auto bg-bvbp-ivory">
         {detail && (
           <>
             <DialogHeader>

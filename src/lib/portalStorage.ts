@@ -167,6 +167,7 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
       (cycle.baselineValue === undefined || typeof cycle.baselineValue === "number") &&
       (cycle.targetValue === undefined || typeof cycle.targetValue === "number") &&
       (cycle.teamMembers === undefined || (Array.isArray(cycle.teamMembers) && cycle.teamMembers.every((member) => typeof member === "string"))) &&
+      (cycle.priority === undefined || ["Alta", "Média", "Baixa"].includes(cycle.priority)) &&
       hasValidEvidence &&
       hasValidLearnings
     );

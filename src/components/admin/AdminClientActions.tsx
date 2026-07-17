@@ -109,7 +109,7 @@ export function AdminClientActions({ companyId, companyName, onOpenWorkspace, on
       </DropdownMenu>
 
       <AlertDialog open={dialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent withinContentArea>
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir {companyName} definitivamente?</AlertDialogTitle>
             <AlertDialogDescription className="space-y-3">

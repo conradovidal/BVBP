@@ -230,7 +230,7 @@ export function PrioritizedInitiativesList({ initiatives, onSelect }: Prioritize
 export function PillarOverviewDetailDialog({ pillar, open, onOpenChange }: PillarOverviewDetailDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
+      <DialogContent withinContentArea className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
         {pillar && (
           <>
             <DialogHeader>

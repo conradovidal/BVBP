@@ -270,6 +270,10 @@ export const pdcaStatuses = [
 
 export type PdcaStatus = (typeof pdcaStatuses)[number];
 
+export const initiativePriorities = ["Alta", "Média", "Baixa"] as const;
+
+export type InitiativePriority = (typeof initiativePriorities)[number];
+
 export const evidenceTypes = ["Dado", "Reunião", "Cliente", "Entrega", "Aprendizado", "Decisão"] as const;
 
 export type EvidenceType = (typeof evidenceTypes)[number];
@@ -340,6 +344,7 @@ export interface PdcaCycle {
   baselineValue?: number;
   targetValue?: number;
   teamMembers?: string[];
+  priority?: InitiativePriority;
   priorityOrder?: number;
   actions?: PdcaAction[];
   evidences: PdcaEvidence[];
