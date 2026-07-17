@@ -3,6 +3,7 @@ import {
   type Company,
   type EvidenceType,
   type Improvement,
+  type InitiativePriority,
   type PdcaAction,
   type PdcaActionStatus,
   type PdcaCycle,
@@ -113,9 +114,14 @@ function normalizeStoredCycle(cycle: PdcaCycle, index = 0): PdcaCycle {
     target: cycle.target || "",
     metricValueOrigin: cycle.metricValueOrigin || (cycle.dataType === "Estimado" ? "estimated" : cycle.dataType === "Real" ? "informed" : undefined),
     teamMembers: normalizeTeamMembers(cycle.teamMembers || []),
+    priority: normalizeInitiativePriority(cycle.priority),
     priorityOrder: typeof cycle.priorityOrder === "number" ? cycle.priorityOrder : index,
     actions: normalizeActions({ ...cycle, affectedPointer, pdcaStatus }),
   };
+}
+
+function normalizeInitiativePriority(priority: InitiativePriority | undefined) {
+  return priority === "Alta" || priority === "Média" || priority === "Baixa" ? priority : undefined;
 }
 
 function normalizeTeamMembers(members: string[]) {
@@ -234,6 +240,7 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     baselineValue: typeof input.baselineValue === "number" ? input.baselineValue : undefined,
     targetValue: typeof input.targetValue === "number" ? input.targetValue : undefined,
     teamMembers: normalizeTeamMembers(input.teamMembers || []),
+    priority: normalizeInitiativePriority(input.priority),
     priorityOrder: typeof input.priorityOrder === "number" ? input.priorityOrder : companyCycles.length,
     actions: input.actions || existing?.actions || [],
     evidences: existing?.evidences || [],
@@ -258,6 +265,16 @@ export function updatePdcaCycleStatus(cycleId: string, pdcaStatus: PdcaStatus) {
     syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
   }
   return nextCycles.find((cycle) => cycle.id === cycleId);
+}
+
+export function updatePdcaCyclePriority(cycleId: string, priority: InitiativePriority) {
+  const cycles = readAllPdcaCycles();
+  const nextCycles = cycles.map((cycle) => (cycle.id === cycleId ? { ...cycle, priority } : cycle));
+  const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
+
+  savePdcaCycles(nextCycles);
+  if (updatedCycle) syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
+  return updatedCycle;
 }
 
 export function reorderPdcaCycles(companyId: string, orderedIds: string[], statusById: Record<string, PdcaStatus> = {}) {

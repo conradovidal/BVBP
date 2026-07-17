@@ -11,6 +11,15 @@ const toneClasses: Record<Tone, string> = {
   gray: "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-muted-ink",
 };
 
+const initiativeStatusClasses: Record<string, string> = {
+  "Em refinamento": "border-bvbp-muted-ink bg-bvbp-muted-ink text-white",
+  "Em desenvolvimento": "border-bvbp-signal bg-bvbp-signal text-white",
+  "Em validação": "border-bvbp-signal/75 bg-bvbp-signal/75 text-white",
+  "Concluída": "border-bvbp-positive bg-bvbp-positive text-white",
+  "Descartada": "border-bvbp-risk bg-bvbp-risk text-white",
+  "Arquivada": "border-bvbp-ink/35 bg-bvbp-ink/35 text-white",
+};
+
 function toneForLabel(label: string): Tone {
   if (["Ativo", "Baixo", "Baixa", "Alta", "Em andamento", "Fazer agora", "Forte", "Real", "Informado", "Concluída"].includes(label)) {
     return "green";
@@ -33,7 +42,7 @@ export function StatusBadge({ label, className }: StatusBadgeProps) {
     <span
       className={cn(
         "font-label inline-flex min-h-6 items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase leading-none tracking-[0.05em]",
-        toneClasses[toneForLabel(label)],
+        initiativeStatusClasses[label] || toneClasses[toneForLabel(label)],
         className
       )}
     >

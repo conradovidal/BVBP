@@ -44,10 +44,12 @@ import {
   type Company,
   type BvbpPillarId,
   type ClientMetricConfig,
+  type InitiativePriority,
   type PdcaCycle,
   type PdcaStatus,
   bvbpPillarIds,
   bvbpPillarLabels,
+  initiativePriorities,
   pdcaStatuses,
 } from "@/data/performanceSystem";
 import {
@@ -62,6 +64,7 @@ import {
   addPdcaEvidence,
   getPdcaCyclesForCompany,
   reorderPdcaCycles,
+  updatePdcaCyclePriority,
   updatePdcaCycleStatus,
   upsertPdcaCycle,
   type EvidenceInput,
@@ -87,6 +90,7 @@ const blankInitiativeForm: PdcaCycleInput = {
   endDate: "",
   baseline: "",
   target: "",
+  priority: "Média",
   priorityOrder: 0,
   actions: [],
 };
@@ -131,6 +135,7 @@ function initiativeToForm(initiative: PdcaCycle): PdcaCycleInput {
     baselineValue: initiative.baselineValue,
     targetValue: initiative.targetValue,
     teamMembers: initiative.teamMembers || [],
+    priority: initiative.priority,
     priorityOrder: initiative.priorityOrder || 0,
     actions: initiative.actions || [],
   };
@@ -166,6 +171,7 @@ const PerformanceExecutionPage = () => {
   const [teamMembersInput, setTeamMembersInput] = useState("");
   const [pillarFilter, setPillarFilter] = useState<"all" | BvbpPillarId>("all");
   const [statusFilter, setStatusFilter] = useState<"all" | PdcaStatus>("all");
+  const [priorityFilter, setPriorityFilter] = useState<"all" | "unset" | InitiativePriority>("all");
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -183,6 +189,7 @@ const PerformanceExecutionPage = () => {
     setActivityForm(blankActivityForm(nextInitiatives[0]));
     setPillarFilter("all");
     setStatusFilter("all");
+    setPriorityFilter("all");
   }, [activeCompany]);
 
   useEffect(() => {
@@ -198,16 +205,18 @@ const PerformanceExecutionPage = () => {
     () => sortedInitiatives.filter((initiative) => (
       initiative.pdcaStatus !== "Arquivada" &&
       (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter)) &&
-      (statusFilter === "all" || initiative.pdcaStatus === statusFilter)
+      (statusFilter === "all" || initiative.pdcaStatus === statusFilter) &&
+      (priorityFilter === "all" || (priorityFilter === "unset" ? !initiative.priority : initiative.priority === priorityFilter))
     )),
-    [pillarFilter, sortedInitiatives, statusFilter],
+    [pillarFilter, priorityFilter, sortedInitiatives, statusFilter],
   );
   const archivedInitiatives = useMemo(
     () => sortedInitiatives.filter((initiative) => (
       initiative.pdcaStatus === "Arquivada" &&
-      (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter))
+      (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter)) &&
+      (priorityFilter === "all" || (priorityFilter === "unset" ? !initiative.priority : initiative.priority === priorityFilter))
     )),
-    [pillarFilter, sortedInitiatives],
+    [pillarFilter, priorityFilter, sortedInitiatives],
   );
   const selectedInitiative = initiatives.find((initiative) => initiative.id === selectedInitiativeId) || null;
   const selectedActivities = selectedInitiative
@@ -376,6 +385,13 @@ const PerformanceExecutionPage = () => {
     refreshInitiatives(selectedInitiativeId || initiativeId);
   };
 
+  const changeInitiativePriority = (initiativeId: string, priority: InitiativePriority) => {
+    if (!canManageInitiatives) return;
+
+    updatePdcaCyclePriority(initiativeId, priority);
+    refreshInitiatives(selectedInitiativeId || initiativeId);
+  };
+
   const addEvidence = () => {
     if (!selectedInitiative || !evidenceForm.description.trim()) return;
 
@@ -434,7 +450,6 @@ const PerformanceExecutionPage = () => {
         <section className="shrink-0">
           <div>
             {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Iniciativas</h1> : null}
-            <p className="mt-1 text-sm font-semibold text-bvbp-ink">{activeCompany.name}</p>
             <p className="mt-1 max-w-2xl text-sm leading-5 text-bvbp-muted-ink">
               Prioridades, atividades e evidências para mover os ponteiros.
             </p>
@@ -467,6 +482,16 @@ const PerformanceExecutionPage = () => {
                   ))}
                 </SelectContent>
               </Select>
+              <Select value={priorityFilter} onValueChange={(value) => setPriorityFilter(value as "all" | "unset" | InitiativePriority)}>
+                <SelectTrigger className="h-9 w-[180px] bg-bvbp-ivory" aria-label="Filtrar por prioridade">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as prioridades</SelectItem>
+                  {initiativePriorities.map((priority) => <SelectItem key={priority} value={priority}>{priority}</SelectItem>)}
+                  <SelectItem value="unset">A definir</SelectItem>
+                </SelectContent>
+              </Select>
               {canManageInitiatives ? (
                 <Button
                   className="h-9 rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
@@ -479,6 +504,16 @@ const PerformanceExecutionPage = () => {
             </div>
           </div>
 
+          <div className="hidden shrink-0 grid-cols-[32px_minmax(180px,1.25fr)_minmax(100px,0.5fr)_minmax(110px,0.55fr)_minmax(125px,0.65fr)_105px_160px] gap-3 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+            <span aria-hidden="true" />
+            <span>Iniciativa</span>
+            <span>Responsável</span>
+            <span>Ponteiro</span>
+            <span>Baseline → meta</span>
+            <span>Prioridade</span>
+            <span>Status</span>
+          </div>
+
           <div className="min-h-0 flex-1 overflow-y-auto p-3">
             {filteredInitiatives.length ? (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -486,9 +521,10 @@ const PerformanceExecutionPage = () => {
                   initiatives={filteredInitiatives}
                   selectedInitiativeId={selectedInitiative?.id}
                   canManage={canManageInitiatives}
-                  canReorder={canManageInitiatives && pillarFilter === "all" && statusFilter === "all"}
+                  canReorder={canManageInitiatives && pillarFilter === "all" && statusFilter === "all" && priorityFilter === "all"}
                   onSelect={selectInitiative}
                   onStatusChange={changeInitiativeStatus}
+                  onPriorityChange={changeInitiativePriority}
                 />
               </DndContext>
             ) : (
@@ -510,6 +546,7 @@ const PerformanceExecutionPage = () => {
                     canReorder={false}
                     onSelect={selectInitiative}
                     onStatusChange={changeInitiativeStatus}
+                    onPriorityChange={changeInitiativePriority}
                   />
                 </div>
               </details>
@@ -519,7 +556,7 @@ const PerformanceExecutionPage = () => {
       </div>
 
       <Dialog open={isDetailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-3 sm:p-4">
+        <DialogContent withinContentArea className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-3 sm:p-4">
           <DialogHeader className="sr-only">
             <DialogTitle>{selectedInitiative?.title || "Detalhe da iniciativa"}</DialogTitle>
             <DialogDescription>Detalhes, evidências e atividades conectadas à iniciativa.</DialogDescription>
@@ -542,7 +579,7 @@ const PerformanceExecutionPage = () => {
       </Dialog>
 
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
+        <DialogContent withinContentArea className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl text-bvbp-ink">
               {initiativeForm.id ? "Editar iniciativa" : "Nova iniciativa"}
@@ -553,7 +590,7 @@ const PerformanceExecutionPage = () => {
           </DialogHeader>
 
           <div className="grid gap-4 md:grid-cols-6">
-            <div className="space-y-2 md:col-span-4">
+            <div className="space-y-2 md:col-span-2">
               <Label htmlFor="initiative-title">Título</Label>
               <Input
                 id="initiative-title"
@@ -574,6 +611,18 @@ const PerformanceExecutionPage = () => {
                       <StatusBadge label={status} />
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2 md:col-span-2">
+              <Label>Prioridade</Label>
+              <Select
+                value={initiativeForm.priority || "Média"}
+                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, priority: value as InitiativePriority })}
+              >
+                <SelectTrigger aria-label="Prioridade da iniciativa"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {initiativePriorities.map((priority) => <SelectItem key={priority} value={priority}>{priority}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
