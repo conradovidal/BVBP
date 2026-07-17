@@ -25,7 +25,6 @@ function initiativeDetail(cycle: PdcaCycle): PerformanceDetail {
     status: cycle.pdcaStatus,
     affectedPointer: cycle.affectedPointer,
     estimatedImpact: cycle.estimatedImpact,
-    dataType: cycle.dataType,
     description: cycle.hypothesis,
     whyItMatters: cycle.whyItMatters,
     facts: [

@@ -2,6 +2,7 @@ import {
   type BvbpPillarId,
   type ClientConfiguration,
   type ClientMetricConfig,
+  type ClientMetricValueOrigin,
   type ClientMetricUnit,
   type ClientPillarConfig,
   type Company,
@@ -56,6 +57,7 @@ export interface CustomClientMetricInput {
   pillar: BvbpPillarId;
   unit: ClientMetricUnit;
   currentValue?: number;
+  valueOrigin?: ClientMetricValueOrigin;
   target?: string;
   source?: string;
   formula: string;
@@ -144,6 +146,7 @@ function normalizePillarConfig(
     pillar: defaultPillar.pillar,
     completedMaturityCriterionIds,
     selectedMetricIds: Array.isArray(storedPillar?.selectedMetricIds) ? storedPillar.selectedMetricIds : defaultPillar.selectedMetricIds,
+    criticalMetricId: storedPillar?.criticalMetricId,
     pains: storedPillar?.pains || [],
     notes: storedPillar?.notes || "",
   };
@@ -154,6 +157,13 @@ function normalizeMetric(
   storedMetric?: StoredClientMetricConfig,
   custom = fallback.custom,
 ): ClientMetricConfig {
+  const storedSource = storedMetric?.source?.trim();
+  const isGeneratedSeed = storedSource === "Seed local";
+  const currentValue = isGeneratedSeed ? undefined : storedMetric?.currentValue;
+  const valueOrigin = currentValue === undefined
+    ? undefined
+    : storedMetric?.valueOrigin || (storedSource?.toLowerCase().includes("estim") ? "estimated" : "informed");
+
   return {
     id: storedMetric?.id || fallback.id,
     name: custom ? storedMetric?.name || fallback.name : fallback.name,
@@ -161,11 +171,12 @@ function normalizeMetric(
     description: storedMetric?.description || fallback.description,
     unit: storedMetric?.unit || fallback.unit,
     formula: storedMetric?.formula?.trim() || fallback.formula,
-    currentValue: storedMetric?.currentValue,
+    currentValue,
+    valueOrigin,
     target: storedMetric?.target,
     benchmark: storedMetric?.benchmark,
     direction: storedMetric?.direction || fallback.direction || "higher",
-    source: storedMetric?.source,
+    source: isGeneratedSeed ? undefined : storedSource,
     owner: storedMetric?.owner,
     custom,
   };
@@ -188,15 +199,20 @@ function normalizeClientConfiguration(company: Company, storedConfig?: StoredCli
   const availableMetricIds = new Set([...defaultMetrics, ...customMetrics].map((metric) => metric.id));
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     companyId: company.id,
     metrics: [...defaultMetrics, ...customMetrics],
     pillars: defaultConfig.pillars.map((pillar) => {
       const normalizedPillar = normalizePillarConfig(pillar, storedPillarById.get(pillar.pillar));
 
+      const selectedMetricIds = normalizedPillar.selectedMetricIds.filter((metricId) => availableMetricIds.has(metricId));
+
       return {
         ...normalizedPillar,
-        selectedMetricIds: normalizedPillar.selectedMetricIds.filter((metricId) => availableMetricIds.has(metricId)),
+        selectedMetricIds,
+        criticalMetricId: selectedMetricIds.includes(normalizedPillar.criticalMetricId || "")
+          ? normalizedPillar.criticalMetricId
+          : undefined,
       };
     }),
   };
@@ -266,7 +282,7 @@ async function persistClientBundle(company: Company, configuration: ClientConfig
 export async function createClientWithConfiguration(input: ClientSetupInput) {
   const company = buildPortalCompany(input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     companyId: company.id,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -282,7 +298,7 @@ export async function updateClientWithConfiguration(companyId: string, input: Cl
 
   const company = buildUpdatedPortalCompany(existingCompany, input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -298,7 +314,7 @@ export async function upsertClientWithConfiguration(companyId: string, input: Cl
     : buildPortalCompany({ ...input.company, id: companyId });
 
   const configuration: ClientConfiguration = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -321,9 +337,10 @@ export function addCustomClientMetric(companyId: string, input: CustomClientMetr
     unit: input.unit,
     formula: input.formula.trim(),
     currentValue: input.currentValue,
+    valueOrigin: input.currentValue === undefined ? undefined : input.valueOrigin || "informed",
     target: input.target?.trim() || undefined,
     source: input.source?.trim() || undefined,
-    owner: company.bvbpOwner || "BVBP",
+    owner: company.bvbpOwner,
     custom: true,
   };
   const nextConfiguration: ClientConfiguration = {
@@ -351,20 +368,17 @@ export function getSelectedClientMetricsByPillar(company: Company, pillarId: Bvb
 
 export function getConfiguredOverviewPillarHighlights(
   company: Company,
-  fallbackHighlights: OverviewPillarHighlight[],
+  _fallbackHighlights: OverviewPillarHighlight[],
 ): OverviewPillarHighlight[] {
   const configuration = getClientConfiguration(company);
-  const fallbackById = new Map(fallbackHighlights.map((highlight) => [highlight.id, highlight]));
-
-  return bvbpPillarIds.map((pillarId) => {
+  return bvbpPillarIds.flatMap((pillarId) => {
     const selectedMetrics = getSelectedClientMetricsByPillar(company, pillarId);
-    const primaryMetric = selectedMetrics.find((metric) => metric.currentValue !== undefined) || selectedMetrics[0];
-    const fallback = fallbackById.get(overviewIdByPillar[pillarId]) || fallbackHighlights[0];
+    const pillar = configuration.pillars.find((item) => item.pillar === pillarId);
+    const primaryMetric = selectedMetrics.find((metric) => metric.id === pillar?.criticalMetricId);
+    if (!primaryMetric || primaryMetric.currentValue === undefined || !primaryMetric.source?.trim()) return [];
+    const usableMetrics = selectedMetrics.filter((metric) => metric.currentValue !== undefined && Boolean(metric.source?.trim()));
 
-    if (!primaryMetric) return fallback;
-
-    return {
-      ...fallback,
+    return [{
       id: overviewIdByPillar[pillarId],
       companyId: company.id,
       pillar: overviewTitleByPillar[pillarId],
@@ -372,17 +386,17 @@ export function getConfiguredOverviewPillarHighlights(
       value: primaryMetric.currentValue,
       unit: primaryMetric.unit,
       helper: primaryMetric.source || "Configuração local",
-      dataType: "Real",
-      source: primaryMetric.source || "Configuração local",
+      dataType: primaryMetric.valueOrigin === "estimated" ? "Estimado" : "Real",
+      source: primaryMetric.source,
       description: primaryMetric.description,
-      metrics: selectedMetrics.map((metric) => ({
+      metrics: usableMetrics.map((metric) => ({
         label: metric.name,
         value: metric.currentValue,
         unit: metric.unit,
-        dataType: "Real",
-        source: metric.source || (metric.custom ? "Ponteiro personalizado" : "Catálogo BVBP"),
+        dataType: metric.valueOrigin === "estimated" ? "Estimado" : "Real",
+        source: metric.source!,
       })),
-    };
+    }];
   });
 }
 

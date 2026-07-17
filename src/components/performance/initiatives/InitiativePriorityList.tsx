@@ -75,11 +75,11 @@ function SortableInitiativeRow({
 
       <button type="button" className="grid gap-1 text-left text-xs text-bvbp-muted-ink" onClick={() => onSelect(initiative)}>
         <span className="font-semibold text-bvbp-ink">{initiative.owner || "Sem responsável"}</span>
+        {initiative.teamMembers?.length ? <span>{initiative.teamMembers.join(", ")}</span> : null}
         <span>{initiative.deadline || initiative.endDate || "Sem prazo"}</span>
       </button>
 
       <button type="button" className="flex flex-wrap items-center gap-2 text-left" onClick={() => onSelect(initiative)}>
-        <StatusBadge label={initiative.dataType} />
         <span className="text-xs font-semibold text-bvbp-positive">{getInitiativeImpactLabel(initiative)}</span>
       </button>
 

@@ -85,6 +85,7 @@ export interface ClientMetricConfig {
   unit: ClientMetricUnit;
   formula: string;
   currentValue?: number;
+  valueOrigin?: ClientMetricValueOrigin;
   target?: string;
   benchmark?: string;
   direction?: ClientMetricDirection;
@@ -97,16 +98,19 @@ export interface ClientPillarConfig {
   pillar: BvbpPillarId;
   completedMaturityCriterionIds: string[];
   selectedMetricIds: string[];
+  criticalMetricId?: string;
   pains: string[];
   notes: string;
 }
 
 export interface ClientConfiguration {
-  schemaVersion: 2;
+  schemaVersion: 3;
   companyId: string;
   pillars: ClientPillarConfig[];
   metrics: ClientMetricConfig[];
 }
+
+export type ClientMetricValueOrigin = "informed" | "estimated";
 
 export interface MaturityCriterionDefinition {
   id: string;
@@ -250,12 +254,19 @@ export interface Improvement {
   ease: "Alta" | "Média" | "Baixa";
   owner: string;
   deadline: string;
-  pdcaStatus: "Planejar" | "Executar" | "Medir" | "Aprender" | "Padronizar" | "Pausar" | "Fazer agora" | "Em andamento" | "Aguardando" | "Concluído" | "Pausado";
+  pdcaStatus: "Planejar" | "Executar" | "Medir" | "Aprender" | "Padronizar" | "Pausar" | "Fazer agora" | "Em andamento" | "Aguardando" | "Concluído" | "Pausado" | "Em refinamento" | "Em desenvolvimento" | "Em validação" | "Concluída" | "Descartada" | "Arquivada";
   priorityBucket: "Fazer agora" | "Planejar" | "Monitorar" | "Pausar";
   nextDecision?: string;
 }
 
-export const pdcaStatuses = ["Planejar", "Executar", "Medir", "Aprender", "Padronizar", "Pausar"] as const;
+export const pdcaStatuses = [
+  "Em refinamento",
+  "Em desenvolvimento",
+  "Em validação",
+  "Concluída",
+  "Descartada",
+  "Arquivada",
+] as const;
 
 export type PdcaStatus = (typeof pdcaStatuses)[number];
 
@@ -304,7 +315,7 @@ export interface PdcaCycle {
   companyId: string;
   title: string;
   affectedPointer: string;
-  affectedFlow: string;
+  affectedFlow?: string;
   hypothesis: string;
   plannedAction: string;
   whyItMatters: string;
@@ -313,7 +324,7 @@ export interface PdcaCycle {
   pdcaStatus: PdcaStatus;
   estimatedImpact: number;
   nextDecision: string;
-  dataType: "Mockado" | "Estimado" | "Real";
+  dataType?: "Mockado" | "Estimado" | "Real";
   startDate?: string;
   endDate?: string;
   baseline?: string;
@@ -324,8 +335,11 @@ export interface PdcaCycle {
   metricNameSnapshot?: string;
   metricUnit?: ClientMetricUnit;
   metricDirection?: ClientMetricDirection;
+  metricSourceSnapshot?: string;
+  metricValueOrigin?: ClientMetricValueOrigin;
   baselineValue?: number;
   targetValue?: number;
+  teamMembers?: string[];
   priorityOrder?: number;
   actions?: PdcaAction[];
   evidences: PdcaEvidence[];
@@ -882,39 +896,10 @@ function getDefaultMaturityLevel(company: Company, pillar: BvbpPillarId): 1 | 2 
   return levels[pillar];
 }
 
-function getDefaultMetricValue(company: Company, metricId: string) {
-  const hasCompanyBaseline = Boolean(company.reportedRevenue) || company.monthlyRevenue > 0 || company.monthlyOperationalCost > 0;
-
-  if (company.id !== BVBP_COMPANY_ID && !hasCompanyBaseline) {
-    return undefined;
-  }
-
-  const margin =
-    company.monthlyRevenue > 0
-      ? Math.max(0, Math.round(((company.monthlyRevenue - company.monthlyOperationalCost) / company.monthlyRevenue) * 100))
-      : undefined;
-
-  const valueByMetric: Record<string, number | undefined> = {
-    "financial-faturamento": company.reportedRevenue || company.monthlyRevenue || undefined,
-    "financial-margem": margin,
-    "financial-custo-operacional": company.monthlyOperationalCost || undefined,
-    "commercial-taxa-conversao": company.id === BVBP_COMPANY_ID ? undefined : 18,
-    "commercial-pipeline": company.id === BVBP_COMPANY_ID ? getBvbpPipelinePotential() : Math.round(company.monthlyRevenue * 0.55),
-    "operation-horas-manuais": company.id === BVBP_COMPANY_ID ? undefined : 146,
-    "technology-automacoes-producao": company.id === BVBP_COMPANY_ID ? 2 : 4,
-  };
-
-  return valueByMetric[metricId];
-}
-
 function buildDefaultMetricForCompany(company: Company, metric: ClientMetricConfig): ClientMetricConfig {
-  const currentValue = getDefaultMetricValue(company, metric.id);
-
   return {
     ...metric,
-    currentValue,
-    source: currentValue === undefined ? undefined : metric.id.includes("faturamento") || metric.id.includes("custo-operacional") ? "Cadastro do cliente" : "Seed local",
-    owner: company.bvbpOwner || "BVBP",
+    owner: company.bvbpOwner,
   };
 }
 
@@ -922,13 +907,13 @@ export function createDefaultClientConfiguration(
   company: Company,
   options: { selectDefaults?: boolean } = {},
 ): ClientConfiguration {
-  const { selectDefaults = true } = options;
+  const { selectDefaults = false } = options;
   const metrics = bvbpPillarIds.flatMap((pillar) =>
     metricCatalogByPillar[pillar].map((metric) => buildDefaultMetricForCompany(company, metric)),
   );
 
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     companyId: company.id,
     metrics,
     pillars: bvbpPillarIds.map((pillar) => {
@@ -938,6 +923,7 @@ export function createDefaultClientConfiguration(
         pillar,
         completedMaturityCriterionIds: getMaturityCriterionIdsForLevel(pillar, maturityLevel),
         selectedMetricIds: selectDefaults ? defaultSelectedMetricIdsByPillar[pillar] : [],
+        criticalMetricId: undefined,
         pains: [],
         notes: "",
       };
@@ -1148,6 +1134,20 @@ export function getBvbpPortfolioPotential() {
 }
 
 export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSignal {
+  if (!isDemoDataEnabled) {
+    return {
+      companyId: company.id,
+      criticalPointer: "A definir",
+      mappedPotential: 0,
+      nextAction: "Definir próxima ação",
+      activeCycles: 0,
+      highRiskProjects: 0,
+      projectsCount: 0,
+      revenueAtRisk: 0,
+      attention: false,
+    };
+  }
+
   const stored = portfolioSignalsByCompanyId[company.id];
   const relationshipStatus = getCompanyRelationshipStatus(company);
 
@@ -1176,6 +1176,8 @@ export function getCompanyPortfolioSignal(company: Company): CompanyPortfolioSig
 }
 
 export function createOverviewMetrics(company: Company): Metric[] {
+  if (!isDemoDataEnabled) return [];
+
   if (isBvbpInternalWorkspace(company)) {
     const pipelineOpportunities = getBvbpPipelineOpportunities();
     const pipelinePotential = getBvbpPipelinePotential();
@@ -1320,6 +1322,8 @@ export function createOverviewMetrics(company: Company): Metric[] {
 }
 
 export function getOverviewPillarHighlights(company: Company): OverviewPillarHighlight[] {
+  if (!isDemoDataEnabled) return [];
+
   const signal = getCompanyPortfolioSignal(company);
   const automationSummary = getAutomationOpportunitySummary(getAutomationOpportunitiesForCompany(company));
   const isInternal = isBvbpInternalWorkspace(company);
@@ -1550,6 +1554,7 @@ export const internalBvbpPillars: BvbpPillar[] = [
 ];
 
 export function getPillarsForCompany(company: Company) {
+  if (!isDemoDataEnabled) return [];
   return isBvbpInternalWorkspace(company) ? internalBvbpPillars : bvbpPillars;
 }
 
@@ -1623,6 +1628,7 @@ export const internalDiagnosticSignals = [
 ];
 
 export function getDiagnosticSignalsForCompany(company: Company) {
+  if (!isDemoDataEnabled) return [];
   return isBvbpInternalWorkspace(company) ? internalDiagnosticSignals : diagnosticSignals;
 }
 
@@ -1716,6 +1722,8 @@ export const projects: Project[] = [
 ];
 
 export function createFunnelMetrics(company: Company): FunnelMetric[] {
+  if (!isDemoDataEnabled) return [];
+
   if (isBvbpInternalWorkspace(company)) {
     const pipelineOpportunities = getBvbpPipelineOpportunities();
     const diagnostics = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
@@ -1871,7 +1879,7 @@ export function getPipelineOpportunitiesForCompany(company: Company) {
 }
 
 export function getFunnelChannelsForCompany(company: Company) {
-  return isBvbpInternalWorkspace(company) ? [] : funnelChannels;
+  return isDemoDataEnabled && !isBvbpInternalWorkspace(company) ? funnelChannels : [];
 }
 
 export const funnelLeaks = [
@@ -1889,6 +1897,7 @@ export const internalFunnelSignals = [
 ];
 
 export function getFunnelSignalsForCompany(company: Company) {
+  if (!isDemoDataEnabled) return [];
   if (isBvbpInternalWorkspace(company)) {
     return isDemoDataEnabled ? internalFunnelSignals : [];
   }
@@ -1966,11 +1975,8 @@ export const operationalLeaks: OperationalLeak[] = [
 ];
 
 export function getOperationalLeaksForCompany(company: Company) {
-  if (isBvbpInternalWorkspace(company)) {
-    return isDemoDataEnabled ? operationalLeaks : [];
-  }
-
-  return operationalLeaks;
+  if (!isDemoDataEnabled) return [];
+  return isBvbpInternalWorkspace(company) ? operationalLeaks : operationalLeaks.filter((leak) => leak.companyId === company.id);
 }
 
 export const improvements: Improvement[] = [
@@ -2072,7 +2078,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "Sem prioridade explícita, o comercial tende a ficar reativo.",
     owner: "Conrado",
     deadline: "7 dias",
-    pdcaStatus: "Planejar",
+    pdcaStatus: "Em refinamento",
     estimatedImpact: 42000,
     nextDecision: "Quais 10 contas entram na primeira rodada?",
     dataType: "Estimado",
@@ -2104,7 +2110,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "O diagnóstico precisa gerar decisão, não apenas conversa exploratória.",
     owner: "Cristiano",
     deadline: "10 dias",
-    pdcaStatus: "Executar",
+    pdcaStatus: "Em desenvolvimento",
     estimatedImpact: 18000,
     nextDecision: "Qual evidência mínima precisa sair do diagnóstico?",
     dataType: "Estimado",
@@ -2136,7 +2142,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "O site precisa refletir a oferta que será usada nas conversas comerciais.",
     owner: "Conrado",
     deadline: "14 dias",
-    pdcaStatus: "Medir",
+    pdcaStatus: "Em validação",
     estimatedImpact: 12000,
     nextDecision: "Quais duas ofertas ficam visíveis primeiro?",
     dataType: "Mockado",
@@ -2167,7 +2173,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "A autoridade precisa abrir conversas, não apenas educar em abstrato.",
     owner: "Cristiano",
     deadline: "14 dias",
-    pdcaStatus: "Aprender",
+    pdcaStatus: "Em validação",
     estimatedImpact: 8000,
     nextDecision: "Qual tema abre a sequência editorial?",
     dataType: "Mockado",
@@ -2198,7 +2204,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "A proposta precisa transformar evidência em decisão de continuidade.",
     owner: "BVBP",
     deadline: "10 dias",
-    pdcaStatus: "Executar",
+    pdcaStatus: "Em desenvolvimento",
     estimatedImpact: 22000,
     nextDecision: "Qual estrutura mínima da proposta?",
     dataType: "Estimado",
@@ -2222,7 +2228,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "Sem base mínima, o time perde cadência e contexto entre conversas.",
     owner: "BVBP",
     deadline: "7 dias",
-    pdcaStatus: "Padronizar",
+    pdcaStatus: "Concluída",
     estimatedImpact: 15000,
     nextDecision: "Quais campos ficam obrigatórios?",
     dataType: "Mockado",
@@ -2253,7 +2259,7 @@ export const bvbpPdcaCycleSeeds: PdcaCycle[] = [
     whyItMatters: "Padronizar cedo demais pode cristalizar um método ainda não validado.",
     owner: "Conrado",
     deadline: "21 dias",
-    pdcaStatus: "Pausar",
+    pdcaStatus: "Arquivada",
     estimatedImpact: 0,
     nextDecision: "Esperar validação dos primeiros diagnósticos.",
     dataType: "Mockado",
@@ -2280,11 +2286,12 @@ export const bvbpInternalActions: Improvement[] = bvbpPdcaCycleSeeds.map((cycle)
   owner: cycle.owner,
   deadline: cycle.deadline,
   pdcaStatus: cycle.pdcaStatus,
-  priorityBucket: cycle.pdcaStatus === "Pausar" ? "Pausar" : cycle.pdcaStatus === "Padronizar" ? "Monitorar" : cycle.pdcaStatus === "Planejar" ? "Planejar" : "Fazer agora",
+  priorityBucket: cycle.pdcaStatus === "Arquivada" ? "Pausar" : cycle.pdcaStatus === "Concluída" ? "Monitorar" : cycle.pdcaStatus === "Em refinamento" ? "Planejar" : "Fazer agora",
   nextDecision: cycle.nextDecision,
 }));
 
 export function getImprovementsForCompany(company: Company) {
+  if (!isDemoDataEnabled) return [];
   return isBvbpInternalWorkspace(company)
     ? bvbpInternalActions
     : improvements.filter((improvement) => improvement.companyId === mockCompany.id || improvement.companyId === company.id);
@@ -2364,10 +2371,7 @@ export const automationOpportunities: AutomationOpportunity[] = [
 ];
 
 export function getAutomationOpportunitiesForCompany(company: Company) {
-  if (isBvbpInternalWorkspace(company)) {
-    return isDemoDataEnabled ? automationOpportunities : [];
-  }
-
+  if (!isDemoDataEnabled) return [];
   return automationOpportunities;
 }
 

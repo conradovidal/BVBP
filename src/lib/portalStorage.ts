@@ -162,8 +162,11 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
       (cycle.metricNameSnapshot === undefined || typeof cycle.metricNameSnapshot === "string") &&
       (cycle.metricUnit === undefined || typeof cycle.metricUnit === "string") &&
       (cycle.metricDirection === undefined || ["higher", "lower", "target"].includes(cycle.metricDirection)) &&
+      (cycle.metricSourceSnapshot === undefined || typeof cycle.metricSourceSnapshot === "string") &&
+      (cycle.metricValueOrigin === undefined || ["informed", "estimated"].includes(cycle.metricValueOrigin)) &&
       (cycle.baselineValue === undefined || typeof cycle.baselineValue === "number") &&
       (cycle.targetValue === undefined || typeof cycle.targetValue === "number") &&
+      (cycle.teamMembers === undefined || (Array.isArray(cycle.teamMembers) && cycle.teamMembers.every((member) => typeof member === "string"))) &&
       hasValidEvidence &&
       hasValidLearnings
     );
@@ -195,6 +198,7 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
         typeof storedPillar.pillar === "string" &&
         (hasV2Maturity || hasLegacyMaturity) &&
         Array.isArray(storedPillar.selectedMetricIds) &&
+        (storedPillar.criticalMetricId === undefined || typeof storedPillar.criticalMetricId === "string") &&
         Array.isArray(storedPillar.pains) &&
         typeof storedPillar.notes === "string"
       );
@@ -206,6 +210,7 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
       typeof metric.pillar === "string" &&
       typeof metric.description === "string" &&
       typeof metric.unit === "string" &&
+      (metric.valueOrigin === undefined || ["informed", "estimated"].includes(metric.valueOrigin)) &&
       (
         typeof metric.formula === "string" ||
         typeof (metric as { dataType?: unknown }).dataType === "string"
@@ -213,7 +218,8 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
       typeof metric.custom === "boolean"
     ));
 
-    const hasValidSchema = config.schemaVersion === undefined || config.schemaVersion === 2;
+    const schemaVersion = (config as { schemaVersion?: number }).schemaVersion;
+    const hasValidSchema = schemaVersion === undefined || schemaVersion === 2 || schemaVersion === 3;
 
     return hasValidSchema && typeof config.companyId === "string" && hasValidPillars && hasValidMetrics;
   });

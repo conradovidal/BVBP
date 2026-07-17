@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { StatusBadge } from "@/components/performance/StatusBadge";
-import type { PdcaCycle } from "@/data/performanceSystem";
+import type { MaturityLevel, PdcaCycle } from "@/data/performanceSystem";
 import {
   type ExecutiveReadingItem,
   type OverviewMetricView,
@@ -15,6 +15,7 @@ import {
 } from "@/lib/performanceOverviewModel";
 import { formatCurrency } from "@/lib/performanceFormatters";
 import { cn } from "@/lib/utils";
+import { maturityActiveCardClass, maturitySegmentClass } from "@/lib/maturityColors";
 
 interface ExecutiveReadingStripProps {
   items: ExecutiveReadingItem[];
@@ -42,7 +43,7 @@ interface PillarOverviewDetailDialogProps {
 }
 
 function formatImpact(value: number) {
-  return value ? `${formatCurrency(value)}/mês` : "Estimado";
+  return value ? `${formatCurrency(value)}/mês` : "Impacto ainda não mensurado";
 }
 
 function DetailPanel({
@@ -112,7 +113,10 @@ export function OverviewPillarCard({ pillar, onSelect }: OverviewPillarCardProps
     <button
       type="button"
       onClick={() => onSelect(pillar)}
-      className="group h-full rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-left transition hover:border-bvbp-forest/30 hover:bg-bvbp-raised/80 focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45"
+      className={cn(
+        "group h-full rounded-[8px] border bg-bvbp-raised p-4 text-left transition hover:bg-bvbp-raised/80 focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45",
+        pillar.primaryMetricName === "Ponteiro a definir" ? "border-bvbp-ink/10 hover:border-bvbp-forest/30" : "border-bvbp-gold/55 hover:border-bvbp-gold",
+      )}
       aria-label={`Abrir detalhe do pilar ${pillar.label}`}
     >
       <div className="flex h-full min-h-[178px] flex-col justify-between gap-5">
@@ -120,7 +124,7 @@ export function OverviewPillarCard({ pillar, onSelect }: OverviewPillarCardProps
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-heading text-lg font-semibold text-bvbp-ink">{pillar.label}</p>
-              <p className="mt-1 text-xs font-medium leading-5 text-bvbp-muted-ink">{pillar.primaryMetricName}</p>
+              <p className={cn("mt-1 text-xs font-medium leading-5", pillar.primaryMetricName === "Ponteiro a definir" ? "text-bvbp-muted-ink" : "text-bvbp-gold")}>{pillar.primaryMetricName}</p>
             </div>
             <StatusBadge label={pillar.signal} />
           </div>
@@ -166,7 +170,7 @@ export function MaturityMapPanel({ pillars, onSelect }: MaturityMapPanelProps) {
                 key={step}
                 className={cn(
                   "h-1.5 flex-1 rounded-full",
-                  step <= pillar.maturityLevel ? "bg-bvbp-forest" : "bg-bvbp-inset",
+                  step <= pillar.maturityLevel ? maturitySegmentClass(step as MaturityLevel) : "bg-bvbp-inset",
                 )}
               />
             ))}
@@ -300,7 +304,7 @@ export function PillarOverviewDetailDialog({ pillar, open, onOpenChange }: Pilla
                         className={cn(
                           "rounded-[8px] border px-3 py-2",
                           level.level === pillar.maturityLevel
-                            ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory"
+                            ? maturityActiveCardClass(level.level)
                             : "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-muted-ink",
                         )}
                       >

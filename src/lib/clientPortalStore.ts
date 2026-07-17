@@ -30,7 +30,6 @@ export interface NewClientInput {
   budgetMethod?: ClientBudgetMethod;
   budgetAmount?: number;
   budgetRangeId?: ClientBudgetRangeId;
-  budgetPercentage?: number;
   startDate?: string;
   contactName?: string;
   contactEmail?: string;
@@ -153,7 +152,6 @@ export function buildPortalCompany(input: NewClientInput): Company {
     budgetMethod: input.budgetMethod,
     budgetAmount: input.budgetAmount,
     budgetRangeId: input.budgetRangeId,
-    budgetPercentage: input.budgetPercentage,
     startDate: input.startDate?.trim() || undefined,
     contactName: primaryContact?.name || input.contactName?.trim() || undefined,
     contactEmail: primaryContact?.email || input.contactEmail?.trim() || undefined,
@@ -164,6 +162,8 @@ export function buildPortalCompany(input: NewClientInput): Company {
 }
 
 export function buildUpdatedPortalCompany(existing: Company, input: UpdateClientInput): Company {
+  const { budgetPercentage: _legacyBudgetPercentage, ...existingWithoutBudgetPercentage } = existing;
+  void _legacyBudgetPercentage;
   const companyId = existing.id;
   const contacts = input.contacts
     ? normalizeContacts(companyId, input.contacts, input.contactName, input.contactEmail)
@@ -171,7 +171,7 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
   const primaryContact = contacts.find((contact) => contact.isPrimary);
 
   return {
-    ...existing,
+    ...existingWithoutBudgetPercentage,
     name: input.name !== undefined ? input.name.trim() : existing.name,
     segment: input.segment !== undefined ? input.segment.trim() : existing.segment,
     description: input.description !== undefined ? input.description.trim() || undefined : existing.description,
@@ -187,7 +187,6 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
     budgetMethod: input.budgetMethod !== undefined ? input.budgetMethod : existing.budgetMethod,
     budgetAmount: hasOwnField(input, "budgetAmount") ? input.budgetAmount : existing.budgetAmount,
     budgetRangeId: input.budgetRangeId !== undefined ? input.budgetRangeId : existing.budgetRangeId,
-    budgetPercentage: hasOwnField(input, "budgetPercentage") ? input.budgetPercentage : existing.budgetPercentage,
     startDate: input.startDate !== undefined ? input.startDate.trim() || undefined : existing.startDate,
     contactName: primaryContact?.name || undefined,
     contactEmail: primaryContact?.email || undefined,

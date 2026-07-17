@@ -30,6 +30,7 @@ import {
   type ClientContactAccessLevel,
   type ClientConfiguration,
   type ClientMetricConfig,
+  type ClientMetricValueOrigin,
   type ClientMetricUnit,
   type ClientMetricDirection,
   type ClientPillarConfig,
@@ -57,6 +58,7 @@ import {
 import { sendClientContactAccessAction, syncCompanyToSupabase } from "@/lib/clientPortalSupabase";
 import { getPerformanceSession } from "@/lib/performanceAuth";
 import { cn } from "@/lib/utils";
+import { maturityActiveCardClass } from "@/lib/maturityColors";
 
 interface ClientSetupCompanyForm {
   name: string;
@@ -75,7 +77,6 @@ interface ClientSetupCompanyForm {
   budgetMethod: ClientBudgetMethod;
   budgetAmount: string;
   budgetRangeId: ClientBudgetRangeId;
-  budgetPercentage: string;
   contacts: ClientContact[];
   relationshipEvents: ClientRelationshipEvent[];
   startDate: string;
@@ -163,7 +164,6 @@ const defaultCompanyForm: ClientSetupCompanyForm = {
   budgetMethod: "defined",
   budgetAmount: "",
   budgetRangeId: "undefined",
-  budgetPercentage: "",
   contacts: [],
   relationshipEvents: [],
   startDate: "",
@@ -221,13 +221,12 @@ function createInitialState(company: Company | undefined, configuration: ClientC
       budgetMethod: company?.budgetMethod || "defined",
       budgetAmount: toStringValue(company?.budgetAmount),
       budgetRangeId: company?.budgetRangeId || "undefined",
-      budgetPercentage: toStringValue(company?.budgetPercentage),
       contacts,
       relationshipEvents: company?.relationshipEvents || [],
       startDate: company?.startDate || "",
     },
     configuration: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       pillars: configuration.pillars,
       metrics: configuration.metrics,
     },
@@ -255,7 +254,6 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
     toNumber(state.company.monthlyOperationalCost);
   const primaryContact = state.company.contacts.find((contact) => contact.isPrimary);
   const reportedRevenue = toOptionalNumber(state.company.reportedRevenue);
-  const budgetPercentage = toOptionalNumber(state.company.budgetPercentage);
   const budgetAmount = toOptionalNumber(state.company.budgetAmount);
 
   return {
@@ -275,7 +273,6 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
       budgetMethod: state.company.budgetMethod,
       budgetAmount,
       budgetRangeId: state.company.budgetRangeId,
-      budgetPercentage,
       startDate: state.company.startDate,
       contactName: primaryContact?.name || "",
       contactEmail: primaryContact?.email || "",
@@ -305,7 +302,6 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
     budgetMethod: input.budgetMethod,
     budgetAmount: input.budgetAmount,
     budgetRangeId: input.budgetRangeId,
-    budgetPercentage: input.budgetPercentage,
     startDate: input.startDate?.trim() || undefined,
     contactName: input.contactName,
     contactEmail: input.contactEmail,
@@ -335,7 +331,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   const arePointersValid = state.configuration.metrics.every((metric) => (
     !selectedMetricIds.has(metric.id) ||
     metric.currentValue === undefined ||
-    Boolean(metric.source?.trim())
+    (Boolean(metric.source?.trim()) && Boolean(metric.valueOrigin))
   ));
   const isCurrentStepValid =
     activeStep === 0
@@ -384,7 +380,12 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
       ? selectedMetricIds.filter((item) => item !== metricId)
       : [...selectedMetricIds, metricId];
 
-    updatePillar(pillarId, { selectedMetricIds: nextMetricIds });
+    updatePillar(pillarId, {
+      selectedMetricIds: nextMetricIds,
+      criticalMetricId: nextMetricIds.includes(pillar?.criticalMetricId || "")
+        ? pillar?.criticalMetricId
+        : undefined,
+    });
   };
 
   const updateMetric = (metricId: string, patch: Partial<ClientMetricConfig>) => {
@@ -612,7 +613,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   };
 
   return (
-    <div className="flex h-[calc(100dvh-11rem)] min-h-[32rem] flex-col overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none lg:h-auto lg:min-h-0 lg:flex-1">
+    <div className="flex max-h-[calc(100dvh-11rem)] flex-col overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
       <div className="shrink-0 border-b border-bvbp-ink/10 p-3">
         <div className="grid grid-cols-5 gap-1.5">
           {steps.map((step, index) => (
@@ -636,7 +637,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
+      <div className="min-h-0 overflow-y-auto p-4 sm:p-5">
         {activeStep === 0 && <ClientBasicDataStep {...stepProps} />}
         {activeStep === 1 && <ClientPainsStep {...stepProps} />}
         {activeStep === 2 && <ClientMetricsStep {...stepProps} />}
@@ -833,11 +834,6 @@ export function ClientBasicDataStep({
           <div className="space-y-2">
             <Label htmlFor="client-budget-amount">Budget exato (R$, opcional)</Label>
             <Input id="client-budget-amount" type="number" min="0" value={state.company.budgetAmount} onChange={(event) => updateCompanyField("budgetAmount", event.target.value)} placeholder="Ex.: 15000" />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="client-budget-percentage">Percentual informado ou estimado (opcional)</Label>
-            <Input id="client-budget-percentage" type="number" min="0" max="100" step="0.1" value={state.company.budgetPercentage} onChange={(event) => updateCompanyField("budgetPercentage", event.target.value)} placeholder="Ex.: 3" />
-            <p className="text-xs text-bvbp-muted-ink">Registro manual para a qualificação; não representa benchmark de mercado.</p>
           </div>
         </div>
       </div>
@@ -1186,7 +1182,7 @@ export function ClientPainsStep({ state, togglePain, addCustomPain }: StepProps)
   );
 }
 
-export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustomMetric }: StepProps) {
+export function ClientMetricsStep({ state, toggleMetric, updateMetric, updatePillar, addCustomMetric }: StepProps) {
   const [activePillar, setActivePillar] = useState<BvbpPillarId>("financial");
   const [activeMetricId, setActiveMetricId] = useState<string | null>(() => {
     const financialPillar = getPillarConfig(state, "financial");
@@ -1204,7 +1200,7 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
     setActiveMetricId(nextPillar?.selectedMetricIds[0] || nextMetrics[0]?.id || null);
   };
 
-  const changeMetricSelection = (metric: ClientMetricConfig, isSelected: boolean) => {
+  const changeMetricSelection = (metric: ClientMetricConfig) => {
     toggleMetric(metric.pillar, metric.id);
 
     setActiveMetricId(metric.id);
@@ -1274,7 +1270,7 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                         >
                           <Checkbox
                             checked={isSelected}
-                            onCheckedChange={() => changeMetricSelection(metric, isSelected)}
+                            onCheckedChange={() => changeMetricSelection(metric)}
                             aria-label={`${isSelected ? "Remover" : "Selecionar"} ${metric.name}`}
                           />
                           <button
@@ -1284,10 +1280,19 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                               setActiveMetricId(metric.id);
                             }}
                           >
-                            <span className="block text-sm font-semibold text-bvbp-ink">{metric.name}</span>
+                            <span className="flex items-center gap-2 text-sm font-semibold text-bvbp-ink">
+                              {metric.name}
+                              {pillar?.criticalMetricId === metric.id ? <Star className="h-3.5 w-3.5 fill-bvbp-gold text-bvbp-gold" aria-label="Ponteiro crítico" /> : null}
+                            </span>
                             <span className="mt-1 block text-xs leading-5 text-bvbp-muted-ink">
                               {clientMetricUnitLabels[metric.unit]}
-                              {metric.currentValue === undefined ? " · Sem baseline" : ""}
+                              {metric.currentValue === undefined
+                                ? " · Sem baseline"
+                                : !metric.source?.trim()
+                                  ? " · Fonte pendente"
+                                  : metric.valueOrigin === "estimated"
+                                    ? " · Estimado"
+                                    : " · Informado"}
                               {metric.custom ? " · personalizado" : ""}
                             </span>
                           </button>
@@ -1300,13 +1305,29 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
 
                 {activeMetric ? (
                   <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
-                    <div className="border-b border-bvbp-ink/10 pb-4">
+                    <div className="flex flex-col gap-3 border-b border-bvbp-ink/10 pb-4 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
                         <p className="font-label text-[11px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
                           Detalhes do ponteiro
                         </p>
                         <h3 className="mt-2 font-heading text-xl font-semibold text-bvbp-ink">{activeMetric.name}</h3>
                       </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={pillar?.criticalMetricId === activeMetric.id ? "default" : "outline"}
+                        disabled={!selectedMetricIds.includes(activeMetric.id)}
+                        onClick={() => updatePillar(activePillar, {
+                          criticalMetricId: pillar?.criticalMetricId === activeMetric.id ? undefined : activeMetric.id,
+                        })}
+                        className={cn(
+                          "shrink-0",
+                          pillar?.criticalMetricId === activeMetric.id && "bg-bvbp-gold text-bvbp-ink hover:bg-bvbp-gold/85",
+                        )}
+                      >
+                        <Star className={cn("h-4 w-4", pillar?.criticalMetricId === activeMetric.id && "fill-current")} aria-hidden="true" />
+                        {pillar?.criticalMetricId === activeMetric.id ? "Ponteiro crítico" : "Definir como crítico"}
+                      </Button>
                     </div>
 
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -1366,10 +1387,25 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, addCustom
                           onChange={(event) =>
                             updateMetric(activeMetric.id, {
                               currentValue: event.target.value.trim() ? Number(event.target.value) : undefined,
+                              valueOrigin: event.target.value.trim() ? activeMetric.valueOrigin || "informed" : undefined,
                             })
                           }
                           placeholder="Sem baseline"
                         />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Origem do valor</Label>
+                        <Select
+                          value={activeMetric.valueOrigin || "informed"}
+                          onValueChange={(value) => updateMetric(activeMetric.id, { valueOrigin: value as ClientMetricValueOrigin })}
+                          disabled={activeMetric.currentValue === undefined}
+                        >
+                          <SelectTrigger aria-label={`Origem do valor de ${activeMetric.name}`}><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="informed">Informado</SelectItem>
+                            <SelectItem value="estimated">Estimado</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor={`${activeMetric.id}-target`}>Meta</Label>
@@ -1517,7 +1553,7 @@ export function ClientMaturityStep({ state, updatePillar }: StepProps) {
                       className={cn(
                         "flex min-h-[68px] items-start gap-3 rounded-[8px] border p-3 text-left transition",
                         isSelected
-                          ? "border-bvbp-forest/40 bg-bvbp-raised"
+                          ? maturityActiveCardClass(levelDefinition.level)
                           : "border-bvbp-ink/10 bg-bvbp-raised/60",
                         isLocked && "cursor-not-allowed opacity-45",
                       )}
@@ -1671,6 +1707,7 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
     pillar: defaultPillar,
     unit: "count" as ClientMetricUnit,
     currentValue: "",
+    valueOrigin: "informed" as ClientMetricValueOrigin,
     target: "",
     benchmark: "",
     direction: "higher" as ClientMetricDirection,
@@ -1679,7 +1716,7 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
   });
 
   const addMetric = () => {
-    if (!form.name.trim() || !form.formula.trim()) return;
+    if (!form.name.trim() || !form.formula.trim() || (form.currentValue.trim() && !form.source.trim())) return;
 
     onAdd({
       id: `custom-${form.pillar}-${Date.now()}`,
@@ -1689,6 +1726,7 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
       unit: form.unit,
       formula: form.formula.trim(),
       currentValue: toOptionalNumber(form.currentValue),
+      valueOrigin: form.currentValue.trim() ? form.valueOrigin : undefined,
       target: form.target.trim() || undefined,
       benchmark: form.benchmark.trim() || undefined,
       direction: form.direction,
@@ -1701,6 +1739,7 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
       pillar: defaultPillar,
       unit: "count",
       currentValue: "",
+      valueOrigin: "informed",
       target: "",
       benchmark: "",
       direction: "higher",
@@ -1802,6 +1841,16 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
               <Input id="custom-metric-target" value={form.target} onChange={(event) => setForm({ ...form, target: event.target.value })} placeholder="Opcional" />
             </div>
             <div className="space-y-2 sm:col-span-2">
+              <Label>Origem do valor</Label>
+              <Select value={form.valueOrigin} onValueChange={(value) => setForm({ ...form, valueOrigin: value as ClientMetricValueOrigin })} disabled={!form.currentValue.trim()}>
+                <SelectTrigger aria-label="Origem do valor do novo ponteiro"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="informed">Informado</SelectItem>
+                  <SelectItem value="estimated">Estimado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2 sm:col-span-2">
               <Label htmlFor="custom-metric-benchmark">Benchmark</Label>
               <Input id="custom-metric-benchmark" value={form.benchmark} onChange={(event) => setForm({ ...form, benchmark: event.target.value })} placeholder="Referência de mercado ou faixa esperada" />
             </div>
@@ -1818,7 +1867,7 @@ export function CustomMetricDialog({ defaultPillar, onAdd }: { defaultPillar: Bv
               type="button"
               className="rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
               onClick={addMetric}
-              disabled={!form.name.trim() || !form.formula.trim()}
+              disabled={!form.name.trim() || !form.formula.trim() || Boolean(form.currentValue.trim() && !form.source.trim())}
             >
               Adicionar ponteiro
             </Button>

@@ -11,6 +11,7 @@ import {
   type OverviewMetricView,
   type OverviewPillarSummary,
 } from "@/lib/performanceOverviewModel";
+import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 
 export type PointerPillarId = BvbpPillarId;
 
@@ -37,6 +38,7 @@ export interface PointerPillarDiagnostic {
   summary: OverviewPillarSummary;
   criticalPointer: CriticalPointerDiagnostic | null;
   metrics: OverviewMetricView[];
+  criticalMetricId?: string;
   pains: string[];
   maturity: {
     currentLevel: number;
@@ -117,7 +119,7 @@ function buildCriticalPointer(summary: OverviewPillarSummary): CriticalPointerDi
 
   if (!metric) return null;
 
-  const hasBaseline = metric.dataType !== "Sem baseline";
+  const hasBaseline = metric.dataType === "Informado" || metric.dataType === "Estimado";
   const nextDecision = hasBaseline
     ? summary.nextDecision
     : "Ponteiro selecionado, mas ainda sem baseline. O próximo passo é definir fonte e valor inicial.";
@@ -148,23 +150,30 @@ function buildNextDecision(
     };
   }
 
-  if (summary.advancementCriteria) {
+  if (!summary.metrics.length) {
     return {
-      value: summary.advancementCriteria,
-      source: "Critério de avanço da maturidade",
+      value: "Defina o primeiro ponteiro que será acompanhado neste pilar.",
+      source: "Configuração pendente",
     };
   }
 
-  if (criticalPointer && !criticalPointer.hasBaseline) {
+  if (!criticalPointer) {
     return {
-      value: "Definir fonte e valor inicial do ponteiro crítico.",
-      source: "Baseline ausente",
+      value: "Defina qual dos ponteiros acompanhados é o crítico deste pilar.",
+      source: "Ponteiro crítico pendente",
+    };
+  }
+
+  if (!criticalPointer.hasBaseline) {
+    return {
+      value: "Informe o baseline e a fonte do ponteiro crítico.",
+      source: "Baseline pendente",
     };
   }
 
   return {
-    value: "Definir próxima iniciativa conectada a este pilar.",
-    source: "Fallback",
+    value: summary.nextDecision,
+    source: "Diagnóstico do pilar",
   };
 }
 
@@ -174,6 +183,7 @@ export function buildPerformancePointersModel(
   activePillarId: PointerPillarId,
 ): PointerPillarDiagnostic {
   const overview = buildPerformanceOverviewModel(company, cycles);
+  const configuration = getClientConfiguration(company);
   const summary =
     overview.pillarSummaries.find((pillar) => pillar.id === activePillarId) ||
     overview.pillarSummaries[0];
@@ -189,6 +199,7 @@ export function buildPerformancePointersModel(
     summary,
     criticalPointer,
     metrics: summary.metrics,
+    criticalMetricId: configuration.pillars.find((pillar) => pillar.pillar === summary.id)?.criticalMetricId,
     pains: summary.pains,
     maturity: {
       currentLevel: summary.maturityLevel,

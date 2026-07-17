@@ -2,12 +2,14 @@ import { EmptyState } from "@/components/performance/EmptyState";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { clientMetricUnitLabels } from "@/lib/clientConfigurationStore";
 import type { OverviewMetricView } from "@/lib/performanceOverviewModel";
+import { cn } from "@/lib/utils";
 
 interface TrackedMetricsGridProps {
   metrics: OverviewMetricView[];
+  criticalMetricId?: string;
 }
 
-export function TrackedMetricsGrid({ metrics }: TrackedMetricsGridProps) {
+export function TrackedMetricsGrid({ metrics, criticalMetricId }: TrackedMetricsGridProps) {
   if (!metrics.length) {
     return (
       <EmptyState
@@ -28,7 +30,13 @@ export function TrackedMetricsGrid({ metrics }: TrackedMetricsGridProps) {
         ].filter(Boolean);
 
         return (
-          <article key={metric.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
+          <article
+            key={metric.id}
+            className={cn(
+              "rounded-[8px] border bg-bvbp-raised p-4",
+              metric.id === criticalMetricId ? "border-bvbp-gold/70" : "border-bvbp-positive/20",
+            )}
+          >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h3 className="font-heading text-base font-semibold leading-tight text-bvbp-ink">{metric.name}</h3>

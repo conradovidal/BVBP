@@ -20,6 +20,12 @@ import {
 } from "@/lib/initiativeActivityStore";
 import { calculateInitiativeProgress, formatMetricValue, getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 
+function formatDateBr(value?: string) {
+  if (!value) return "Sem data";
+  const [year, month, day] = value.split("-");
+  return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
 interface InitiativeDetailPanelProps {
   initiative: PdcaCycle | null;
   activities: InitiativeActivity[];
@@ -63,6 +69,9 @@ export function InitiativeDetailPanel({
   const baselineLabel = initiative.baselineValue === undefined
     ? initiative.baseline || "Sem baseline"
     : formatMetricValue(initiative.baselineValue, initiative.metricUnit);
+  const targetLabel = initiative.targetValue === undefined
+    ? initiative.target || "Sem meta"
+    : formatMetricValue(initiative.targetValue, initiative.metricUnit);
 
   return (
     <section className="space-y-6 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5">
@@ -73,7 +82,7 @@ export function InitiativeDetailPanel({
           </p>
           <h2 className="mt-2 font-heading text-2xl font-bold text-bvbp-ink">{initiative.title}</h2>
           <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
-            {initiative.affectedPointer} · {initiative.affectedFlow || "Frente a definir"}
+            {initiative.affectedPointer}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {initiative.pillarId ? <StatusBadge label={bvbpPillarLabels[initiative.pillarId]} /> : <StatusBadge label="Vínculo a revisar" />}
@@ -96,11 +105,16 @@ export function InitiativeDetailPanel({
       <section className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         {[
           ["Responsável", initiative.owner || "Sem responsável"],
-          ["Prazo", initiative.deadline || initiative.endDate || "Sem prazo"],
+          ["Equipe", initiative.teamMembers?.length ? initiative.teamMembers.join(", ") : "Sem equipe definida"],
+          ["Início", formatDateBr(initiative.startDate)],
+          ["Prazo", formatDateBr(initiative.deadline || initiative.endDate)],
           ["Status", initiative.pdcaStatus],
           ["Impacto", getInitiativeImpactLabel(initiative)],
-          ["Tipo", initiative.dataType],
           ["Baseline", baselineLabel],
+          ["Meta", targetLabel],
+          ["Fonte", initiative.metricSourceSnapshot
+            ? `${initiative.metricValueOrigin === "estimated" ? "Estimado · " : ""}${initiative.metricSourceSnapshot}`
+            : "Não informada"],
         ].map(([label, value]) => (
           <div key={label} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
             <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</p>

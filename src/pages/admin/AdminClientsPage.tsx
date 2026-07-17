@@ -7,30 +7,36 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/performance/EmptyState";
 import { MetricCard } from "@/components/performance/MetricCard";
 import { StatusBadge } from "@/components/performance/StatusBadge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  getAdminClientPortfolioItems,
-  getAdminClientPortfolioSummary,
-  getBvbpPipelineOpportunities,
-} from "@/data/performanceSystem";
 import { getExternalPortalCompanies, setActiveCompanyId } from "@/lib/clientPortalStore";
-import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
+import { getClientConfiguration } from "@/lib/clientConfigurationStore";
+import { getPdcaCyclesForCompany } from "@/lib/pdcaCycleStore";
+import { isOverviewCycleActive } from "@/lib/performanceOverviewModel";
+import { formatNumber } from "@/lib/performanceFormatters";
 
 const AdminClientsPage = () => {
   const navigate = useNavigate();
   const [, refreshPortfolio] = useState(0);
-  const portfolioItems = getAdminClientPortfolioItems(getExternalPortalCompanies());
-  const portfolioSummary = getAdminClientPortfolioSummary(portfolioItems);
-  const pipelineOpportunities = getBvbpPipelineOpportunities();
-  const diagnostics = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Diagnóstico").length;
-  const proposals = pipelineOpportunities.filter((opportunity) => opportunity.stage === "Proposta").length;
+  const companies = getExternalPortalCompanies();
+  const portfolioItems = companies.map((company) => {
+    const configuration = getClientConfiguration(company);
+    const initiatives = getPdcaCyclesForCompany(company);
+    const activeInitiatives = initiatives.filter(isOverviewCycleActive);
+    const nextDecision = activeInitiatives.find((initiative) => initiative.nextDecision.trim())?.nextDecision;
+    const pointerCount = configuration.pillars.reduce((total, pillar) => total + pillar.selectedMetricIds.length, 0);
+    const criticalCount = configuration.pillars.filter((pillar) => Boolean(pillar.criticalMetricId)).length;
+
+    return {
+      company,
+      pointerCount,
+      criticalCount,
+      activeInitiativeCount: activeInitiatives.length,
+      nextDecision: nextDecision || "Definir próxima ação",
+      owner: company.bvbpOwner || "A definir",
+    };
+  });
+  const prospectCount = companies.filter((company) => (company.relationshipStatus || company.status) === "Prospect").length;
+  const pointerCount = portfolioItems.reduce((total, item) => total + item.pointerCount, 0);
+  const activeInitiativeCount = portfolioItems.reduce((total, item) => total + item.activeInitiativeCount, 0);
 
   const openClientWorkspace = (companyId: string) => {
     setActiveCompanyId(companyId);
@@ -39,125 +45,59 @@ const AdminClientsPage = () => {
 
   return (
     <>
-      <Helmet>
-        <title>CRM | Portal BVBP</title>
-      </Helmet>
+      <Helmet><title>CRM | Portal BVBP</title></Helmet>
 
       <div className="space-y-5">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <p className="text-sm text-bvbp-muted-ink">Pipeline comercial, clientes externos e próximas ações.</p>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-          >
-            <Link to="/app/admin/clients/new">
-              <Plus className="h-4 w-4" />
-              Novo cliente
-            </Link>
+          <p className="text-sm text-bvbp-muted-ink">Clientes, diagnóstico e próximas decisões.</p>
+          <Button asChild className="bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark">
+            <Link to="/app/admin/clients/new"><Plus className="h-4 w-4" />Novo cliente</Link>
           </Button>
         </section>
 
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard title="Oportunidades" value={formatNumber(portfolioSummary.opportunities)} accent="orange" compact />
-          <MetricCard title="Diagnósticos" value={formatNumber(diagnostics)} accent="blue" compact />
-          <MetricCard title="Propostas" value={formatNumber(proposals)} accent="gray" compact />
-          <MetricCard title="Potencial" value={`${formatCurrency(portfolioSummary.mappedPotential)}/mês`} accent="green" compact />
+          <MetricCard title="Clientes" value={formatNumber(companies.length)} accent="blue" compact />
+          <MetricCard title="Prospects" value={formatNumber(prospectCount)} accent="gray" compact />
+          <MetricCard title="Ponteiros selecionados" value={formatNumber(pointerCount)} accent="green" compact />
+          <MetricCard title="Iniciativas ativas" value={formatNumber(activeInitiativeCount)} accent="green" compact />
         </section>
 
-        <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
+        <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
           {portfolioItems.length ? (
-            <div className="grid gap-3 p-4 md:hidden">
-              {portfolioItems.map((item) => (
-                <article key={item.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <h2 className="font-heading text-base font-bold text-bvbp-ink">{item.name}</h2>
-                      <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
-                        {item.segment || item.type}
-                      </p>
+            <>
+              <div className="hidden grid-cols-[minmax(150px,1.1fr)_110px_minmax(150px,0.8fr)_minmax(180px,1.2fr)_44px] gap-3 border-b border-bvbp-ink/10 px-4 py-3 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+                <span>Cliente</span><span>Status</span><span>Ponteiros</span><span>Próxima decisão</span><span className="sr-only">Ações</span>
+              </div>
+              <div className="divide-y divide-bvbp-ink/10">
+                {portfolioItems.map(({ company, pointerCount: itemPointerCount, criticalCount, nextDecision, owner }) => (
+                  <article key={company.id} className="grid gap-3 p-4 lg:grid-cols-[minmax(150px,1.1fr)_110px_minmax(150px,0.8fr)_minmax(180px,1.2fr)_44px] lg:items-center">
+                    <div className="min-w-0">
+                      <h2 className="truncate font-heading text-base font-semibold text-bvbp-ink">{company.name}</h2>
+                      <p className="mt-1 truncate text-xs text-bvbp-muted-ink">{company.segment || "Segmento a definir"}</p>
                     </div>
-                    <StatusBadge label={item.status} />
-                  </div>
-                  <div className="mt-4 grid gap-3 text-sm">
-                    <p className="text-bvbp-muted-ink">
-                      <span className="font-semibold text-bvbp-ink">Ponteiro:</span> {item.criticalPointer}
-                    </p>
-                    <p className="font-semibold text-bvbp-positive">{formatCurrency(item.mappedPotential)}/mês</p>
-                    <p className="text-bvbp-muted-ink">{item.nextAction}</p>
-                    <p className="text-bvbp-muted-ink">{item.owner}</p>
-                  </div>
-                  {item.companyId ? (
-                    <div className="mt-4 flex justify-end">
-                      <AdminClientActions
-                        companyId={item.companyId}
-                        companyName={item.name}
-                        onOpenWorkspace={() => openClientWorkspace(item.companyId!)}
-                        onDeleted={() => refreshPortfolio((current) => current + 1)}
-                      />
+                    <div><StatusBadge label={company.relationshipStatus || company.status || "Prospect"} /></div>
+                    <div className="text-sm text-bvbp-ink">
+                      <p className="font-semibold">{itemPointerCount} selecionado(s)</p>
+                      <p className="mt-1 text-xs text-bvbp-muted-ink">{criticalCount} crítico(s)</p>
                     </div>
-                  ) : (
-                    <p className="mt-4 text-sm font-semibold text-bvbp-ink">{item.actionLabel}</p>
-                  )}
-                </article>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title="CRM vazio."
-              description="Cadastre o primeiro cliente real para acompanhar ponteiro, potencial e próxima ação."
-              className="m-4"
-            />
-          )}
-
-          {portfolioItems.length ? (
-          <div className="hidden overflow-x-auto md:block">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nome</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Ponteiro crítico</TableHead>
-                  <TableHead>Potencial mapeado</TableHead>
-                  <TableHead>Próxima ação</TableHead>
-                  <TableHead>Responsável</TableHead>
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {portfolioItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="min-w-[180px] font-semibold text-bvbp-ink">{item.name}</TableCell>
-                    <TableCell className="min-w-[150px] text-bvbp-ink">{item.segment || item.type}</TableCell>
-                    <TableCell>
-                      <StatusBadge label={item.status} />
-                    </TableCell>
-                    <TableCell className="min-w-[180px] text-bvbp-ink">{item.criticalPointer}</TableCell>
-                    <TableCell className="font-semibold text-bvbp-positive">{formatCurrency(item.mappedPotential)}/mês</TableCell>
-                    <TableCell className="min-w-[220px] text-bvbp-ink">{item.nextAction}</TableCell>
-                    <TableCell className="min-w-[130px] text-bvbp-ink">{item.owner}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {item.companyId ? (
-                          <AdminClientActions
-                            companyId={item.companyId}
-                            companyName={item.name}
-                            onOpenWorkspace={() => openClientWorkspace(item.companyId!)}
-                            onDeleted={() => refreshPortfolio((current) => current + 1)}
-                          />
-                        ) : (
-                          <span className="text-sm font-semibold text-bvbp-ink">{item.actionLabel}</span>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    <div className="min-w-0 text-sm text-bvbp-ink">
+                      <p className="line-clamp-2">{nextDecision}</p>
+                      <p className="mt-1 text-xs text-bvbp-muted-ink">Responsável: {owner}</p>
+                    </div>
+                    <AdminClientActions
+                      companyId={company.id}
+                      companyName={company.name}
+                      onOpenWorkspace={() => openClientWorkspace(company.id)}
+                      onDeleted={() => refreshPortfolio((current) => current + 1)}
+                    />
+                  </article>
                 ))}
-              </TableBody>
-            </Table>
-          </div>
-          ) : null}
-        </div>
+              </div>
+            </>
+          ) : (
+            <EmptyState title="CRM vazio." description="Cadastre o primeiro cliente real para começar o diagnóstico." className="m-4" />
+          )}
+        </section>
       </div>
     </>
   );

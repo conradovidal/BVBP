@@ -11,7 +11,7 @@ interface InitiativeSummaryCardsProps {
 }
 
 export function InitiativeSummaryCards({ initiatives, activities, compact = false }: InitiativeSummaryCardsProps) {
-  const activeInitiatives = initiatives.filter((initiative) => !["Padronizar", "Pausar"].includes(initiative.pdcaStatus));
+  const activeInitiatives = initiatives.filter((initiative) => ["Em refinamento", "Em desenvolvimento", "Em validação"].includes(initiative.pdcaStatus));
   const measuredInitiatives = initiatives.filter((initiative) => calculateInitiativeProgress(initiative) !== undefined);
 
   return (
