@@ -1,5 +1,8 @@
 project_id = "zcpelfllyutpkystubxr"
 
+[auth.email]
+otp_expiry = 86400
+
 [functions.notify-new-lead]
 verify_jwt = false
 

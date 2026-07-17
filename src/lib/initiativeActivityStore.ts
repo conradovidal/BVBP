@@ -32,7 +32,7 @@ function isInitiativeActivityStatus(value: unknown): value is InitiativeActivity
   return typeof value === "string" && initiativeActivityStatuses.includes(value as InitiativeActivityStatus);
 }
 
-function isInitiativeActivityList(value: unknown): value is InitiativeActivity[] {
+export function isInitiativeActivityList(value: unknown): value is InitiativeActivity[] {
   return Array.isArray(value) && value.every((item) => {
     if (!item || typeof item !== "object") return false;
     const activity = item as Partial<InitiativeActivity>;

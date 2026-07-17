@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Pencil, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
+import { AdminClientActions } from "@/components/admin/AdminClientActions";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/performance/EmptyState";
 import { MetricCard } from "@/components/performance/MetricCard";
@@ -23,6 +25,7 @@ import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 
 const AdminClientsPage = () => {
   const navigate = useNavigate();
+  const [, refreshPortfolio] = useState(0);
   const portfolioItems = getAdminClientPortfolioItems(getExternalPortalCompanies());
   const portfolioSummary = getAdminClientPortfolioSummary(portfolioItems);
   const pipelineOpportunities = getBvbpPipelineOpportunities();
@@ -40,7 +43,7 @@ const AdminClientsPage = () => {
         <title>CRM | Portal BVBP</title>
       </Helmet>
 
-      <div className="space-y-6">
+      <div className="space-y-5">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <p className="text-sm text-bvbp-muted-ink">Pipeline comercial, clientes externos e próximas ações.</p>
           <Button
@@ -55,11 +58,11 @@ const AdminClientsPage = () => {
           </Button>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard title="Oportunidades" value={formatNumber(portfolioSummary.opportunities)} accent="orange" />
-          <MetricCard title="Diagnósticos" value={formatNumber(diagnostics)} accent="blue" />
-          <MetricCard title="Propostas" value={formatNumber(proposals)} accent="gray" />
-          <MetricCard title="Potencial" value={`${formatCurrency(portfolioSummary.mappedPotential)}/mês`} accent="green" />
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard title="Oportunidades" value={formatNumber(portfolioSummary.opportunities)} accent="orange" compact />
+          <MetricCard title="Diagnósticos" value={formatNumber(diagnostics)} accent="blue" compact />
+          <MetricCard title="Propostas" value={formatNumber(proposals)} accent="gray" compact />
+          <MetricCard title="Potencial" value={`${formatCurrency(portfolioSummary.mappedPotential)}/mês`} accent="green" compact />
         </section>
 
         <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
@@ -85,22 +88,13 @@ const AdminClientsPage = () => {
                     <p className="text-bvbp-muted-ink">{item.owner}</p>
                   </div>
                   {item.companyId ? (
-                    <div className="mt-4 grid gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-                        onClick={() => openClientWorkspace(item.companyId)}
-                      >
-                        Abrir workspace
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                      <Button asChild size="sm" variant="outline" className="w-full rounded-[8px]">
-                        <Link to={`/app/admin/clients/${item.companyId}/edit`}>
-                          <Pencil className="h-4 w-4" />
-                          Editar
-                        </Link>
-                      </Button>
+                    <div className="mt-4 flex justify-end">
+                      <AdminClientActions
+                        companyId={item.companyId}
+                        companyName={item.name}
+                        onOpenWorkspace={() => openClientWorkspace(item.companyId!)}
+                        onDeleted={() => refreshPortfolio((current) => current + 1)}
+                      />
                     </div>
                   ) : (
                     <p className="mt-4 text-sm font-semibold text-bvbp-ink">{item.actionLabel}</p>
@@ -146,23 +140,12 @@ const AdminClientsPage = () => {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {item.companyId ? (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-                              onClick={() => openClientWorkspace(item.companyId)}
-                            >
-                              Abrir workspace
-                              <ArrowRight className="h-4 w-4" />
-                            </Button>
-                            <Button asChild size="sm" variant="outline" className="rounded-[8px]">
-                              <Link to={`/app/admin/clients/${item.companyId}/edit`}>
-                                <Pencil className="h-4 w-4" />
-                                Editar
-                              </Link>
-                            </Button>
-                          </>
+                          <AdminClientActions
+                            companyId={item.companyId}
+                            companyName={item.name}
+                            onOpenWorkspace={() => openClientWorkspace(item.companyId!)}
+                            onDeleted={() => refreshPortfolio((current) => current + 1)}
+                          />
                         ) : (
                           <span className="text-sm font-semibold text-bvbp-ink">{item.actionLabel}</span>
                         )}

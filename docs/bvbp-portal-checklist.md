@@ -23,7 +23,7 @@ Abra `http://localhost:8080` quando o servidor estiver nessa porta, ou use a por
 - Configure `PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` e `BOOTSTRAP_ADMIN_SECRET` nas Edge Functions.
 - Configure `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_PUBLIC_SITE_URL` no app.
 - Configure `https://www.bvbp.com.br` como Site URL e autorize `https://www.bvbp.com.br/auth/**` e `https://bvbp.com.br/auth/**` nas Redirect URLs do Supabase Auth.
-- Configure a validade do OTP para 3.600 segundos.
+- Configure a validade do OTP para 86.400 segundos (24 horas) e confirme o valor por uma leitura posterior.
 - Publique os templates de `docs/email-templates/` somente depois de `/auth/confirm` estar no ar.
 - No Resend, confirme `click_tracking=false` e `open_tracking=false` no domínio transacional.
 - Configure SMTP/email transacional antes de convidar clientes reais.
@@ -35,6 +35,7 @@ Com demo desligada, o primeiro acesso admin deve mostrar o portal sem BVBP nem c
 - Chame a Edge Function `bootstrap-admins` com o header `x-bootstrap-secret` e um body com destinatários explícitos, como `{ "mode": "invite_only", "emails": ["conrado@bvbp.com.br"] }`.
 - A lista `emails` é obrigatória, não aceita duplicatas e só permite `conrado@bvbp.com.br` e `cristiano@bvbp.com.br`.
 - Somente os endereços solicitados recebem email. Nunca inclua Cristiano durante uma validação exclusiva do Conrado.
+- O próximo envio para `cristiano@bvbp.com.br` só pode ocorrer após aceite explícito de Conrado sobre a versão publicada.
 - Para um ambiente novo, cada destinatário solicitado deve retornar `invited`.
 - `already_exists` não envia email nem altera papéis. Use `recover_existing` apenas quando a intenção explícita for recuperar uma conta existente.
 - Usuários confirmados com email `@bvbp.com.br` recebem papel `admin` automaticamente pela migration.
@@ -68,6 +69,7 @@ Estado esperado para o reset inicial de julho de 2026:
 ## Primeiro uso
 
 - Abra o link recebido, clique em **Continuar para definir senha** em `/auth/confirm` e defina a senha em `/auth/set-password`.
+- O link de convite ou recuperação é de uso único e válido por até 24 horas. Se expirar, solicite um novo link diretamente em `/auth/confirm` ou no login.
 - Acesse `/app/admin/settings`.
 - Clique em `Cadastrar workspace BVBP`.
 - Cadastre a BVBP manualmente.
@@ -89,6 +91,7 @@ npm run build
 ```
 
 - Testar link ausente, tipo inválido, token expirado e clique repetido em `/auth/confirm`.
+- Confirmar que o estado expirado permite solicitar um novo link sem revelar se o email está cadastrado.
 - Confirmar que um GET em `/auth/confirm` não consome o token; somente o botão chama `verifyOtp`.
 - Testar login admin, recuperação de senha e `/auth/set-password`.
 - Testar Supabase vazio sem dados de demo.

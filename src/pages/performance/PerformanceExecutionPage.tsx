@@ -380,12 +380,12 @@ const PerformanceExecutionPage = () => {
         <meta name="description" content="Prioridades, atividades e evidências para mover os ponteiros." />
       </Helmet>
 
-      <div className="space-y-8">
+      <div className={isAdminPortal ? "space-y-5" : "space-y-8"}>
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Iniciativas</h1> : null}
             <p className="mt-1 text-sm font-semibold text-bvbp-ink">{activeCompany.name}</p>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-bvbp-muted-ink">
+            <p className="mt-1 max-w-2xl text-sm leading-5 text-bvbp-muted-ink">
               Prioridades, atividades e evidências para mover os ponteiros.
             </p>
           </div>
@@ -401,14 +401,14 @@ const PerformanceExecutionPage = () => {
           ) : null}
         </section>
 
-        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5" aria-label="Filtrar iniciativas por pilar">
+        <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5" aria-label="Filtrar iniciativas por pilar">
           <button
             type="button"
             onClick={() => applyPillarFilter("all")}
-            className={`rounded-[8px] border p-4 text-left transition-colors ${pillarFilter === "all" ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
+            className={`rounded-[8px] border px-3 py-2.5 text-left transition-colors ${pillarFilter === "all" ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
           >
             <span className="font-heading font-semibold">Todos</span>
-            <span className="mt-2 block text-xs opacity-75">{initiatives.length} iniciativa(s)</span>
+            <span className="mt-1 block text-xs opacity-75">{initiatives.length} iniciativa(s)</span>
           </button>
           {bvbpPillarIds.map((pillarId) => {
             const pillar = configuration.pillars.find((item) => item.pillar === pillarId);
@@ -418,10 +418,10 @@ const PerformanceExecutionPage = () => {
                 type="button"
                 key={pillarId}
                 onClick={() => applyPillarFilter(pillarId)}
-                className={`rounded-[8px] border p-4 text-left transition-colors ${pillarFilter === pillarId ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
+                className={`rounded-[8px] border px-3 py-2.5 text-left transition-colors ${pillarFilter === pillarId ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
               >
                 <span className="font-heading font-semibold">{bvbpPillarLabels[pillarId]}</span>
-                <span className="mt-2 block text-xs opacity-75">
+                <span className="mt-1 block text-xs opacity-75">
                   {pillar?.pains.length || 0} dores · {pillar?.selectedMetricIds.length || 0} ponteiros · {initiativeCount} iniciativas
                 </span>
               </button>
@@ -429,7 +429,7 @@ const PerformanceExecutionPage = () => {
           })}
         </section>
 
-        <InitiativeSummaryCards initiatives={filteredInitiatives} activities={filteredActivities} />
+        <InitiativeSummaryCards initiatives={filteredInitiatives} activities={filteredActivities} compact={isAdminPortal} />
 
         <section className="space-y-4">
           <SectionHeader

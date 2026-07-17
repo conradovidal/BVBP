@@ -36,8 +36,8 @@ const AdminClientNewPage = () => {
         <title>Novo cliente | Portal BVBP</title>
       </Helmet>
 
-      <div className="mx-auto max-w-6xl space-y-6">
-        <section>
+      <div className="mx-auto flex h-full max-w-6xl flex-col">
+        <section className="shrink-0">
           <button
             type="button"
             onClick={() => navigate("/app/admin/clients")}
