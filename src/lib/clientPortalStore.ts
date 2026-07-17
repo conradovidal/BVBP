@@ -78,7 +78,9 @@ function normalizeCompany(company: Company) {
 
   return {
     ...company,
-    referenceCode: normalizeCompanyReferenceCode(company.referenceCode || company.name),
+    referenceCode: company.referenceCode
+      ? normalizeCompanyReferenceCode(company.referenceCode)
+      : deriveCompanyReferenceCode(company.name),
     contacts,
     relationshipEvents: (company.relationshipEvents || []).map((event) => {
       const createdByName = event.createdByName || event.createdBy || "Equipe BVBP";
@@ -96,6 +98,11 @@ export function normalizeCompanyReferenceCode(value: string) {
     .toUpperCase()
     .replace(/[^A-Z0-9]/g, "")
     .slice(0, 8);
+}
+
+export function deriveCompanyReferenceCode(name: string) {
+  const firstWord = name.trim().split(/\s+/)[0] || name;
+  return normalizeCompanyReferenceCode(firstWord);
 }
 
 export function getPortalCompanies(): Company[] {
@@ -148,7 +155,9 @@ export function buildPortalCompany(input: NewClientInput): Company {
   const primaryContact = contacts.find((contact) => contact.isPrimary);
   return {
     id: companyId,
-    referenceCode: normalizeCompanyReferenceCode(input.referenceCode || input.name),
+    referenceCode: input.referenceCode
+      ? normalizeCompanyReferenceCode(input.referenceCode)
+      : deriveCompanyReferenceCode(input.name),
     name: input.name.trim(),
     segment: input.segment.trim(),
     description: input.description?.trim() || undefined,
@@ -185,8 +194,10 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
   return {
     ...existingWithoutBudgetPercentage,
     referenceCode: input.referenceCode !== undefined
-      ? normalizeCompanyReferenceCode(input.referenceCode || input.name || existing.name)
-      : existing.referenceCode || normalizeCompanyReferenceCode(existing.name),
+      ? input.referenceCode
+        ? normalizeCompanyReferenceCode(input.referenceCode)
+        : deriveCompanyReferenceCode(input.name || existing.name)
+      : existing.referenceCode || deriveCompanyReferenceCode(existing.name),
     name: input.name !== undefined ? input.name.trim() : existing.name,
     segment: input.segment !== undefined ? input.segment.trim() : existing.segment,
     description: input.description !== undefined ? input.description.trim() || undefined : existing.description,

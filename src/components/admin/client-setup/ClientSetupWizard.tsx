@@ -58,7 +58,7 @@ import {
 } from "@/lib/clientConfigurationStore";
 import { sendClientContactAccessAction, syncCompanyToSupabase } from "@/lib/clientPortalSupabase";
 import { getPerformanceSession } from "@/lib/performanceAuth";
-import { normalizeCompanyReferenceCode } from "@/lib/clientPortalStore";
+import { deriveCompanyReferenceCode, normalizeCompanyReferenceCode } from "@/lib/clientPortalStore";
 import { cn } from "@/lib/utils";
 import { maturityActiveCardClass } from "@/lib/maturityColors";
 
@@ -206,7 +206,9 @@ function createInitialState(company: Company | undefined, configuration: ClientC
     company: {
       ...defaultCompanyForm,
       name: company?.name || "",
-      referenceCode: normalizeCompanyReferenceCode(company?.referenceCode || company?.name || ""),
+      referenceCode: company?.referenceCode
+        ? normalizeCompanyReferenceCode(company.referenceCode)
+        : deriveCompanyReferenceCode(company?.name || ""),
       segment: company?.segment || "",
       segmentPreset: clientSegmentOptions.includes(company?.segment as (typeof clientSegmentOptions)[number])
         ? company?.segment || ""
@@ -264,7 +266,9 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
   return {
     company: {
       name: state.company.name,
-      referenceCode: normalizeCompanyReferenceCode(state.company.referenceCode || state.company.name),
+      referenceCode: state.company.referenceCode
+        ? normalizeCompanyReferenceCode(state.company.referenceCode)
+        : deriveCompanyReferenceCode(state.company.name),
       segment: state.company.segment,
       description: state.company.description,
       relationshipStatus: state.company.relationshipStatus,
@@ -758,10 +762,10 @@ export function ClientBasicDataStep({
           value={state.company.name}
           onChange={(event) => {
             const name = event.target.value;
-            const previousSuggestion = normalizeCompanyReferenceCode(state.company.name);
+            const previousSuggestion = deriveCompanyReferenceCode(state.company.name);
             updateCompanyField("name", name);
             if (!state.company.referenceCode || state.company.referenceCode === previousSuggestion) {
-              updateCompanyField("referenceCode", normalizeCompanyReferenceCode(name));
+              updateCompanyField("referenceCode", deriveCompanyReferenceCode(name));
             }
           }}
         />
