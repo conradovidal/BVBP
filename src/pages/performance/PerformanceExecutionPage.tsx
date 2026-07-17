@@ -28,6 +28,7 @@ import {
 import { EmptyState } from "@/components/performance/EmptyState";
 import { InitiativeDetailPanel } from "@/components/performance/initiatives/InitiativeDetailPanel";
 import { InitiativePillarContext } from "@/components/performance/initiatives/InitiativePillarContext";
+import { PerformancePageHeader } from "@/components/performance/PerformancePageHeader";
 import { InitiativePriorityList } from "@/components/performance/initiatives/InitiativePriorityList";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -102,8 +103,19 @@ const blankEvidenceForm: EvidenceInput = {
   note: "",
 };
 
+function getPriorityRank(priority?: InitiativePriority) {
+  if (priority === "Alta") return 0;
+  if (priority === "Média") return 1;
+  if (priority === "Baixa") return 2;
+  return 3;
+}
+
 function getSortedInitiatives(initiatives: PdcaCycle[]) {
-  return [...initiatives].sort((a, b) => (a.priorityOrder || 0) - (b.priorityOrder || 0));
+  return [...initiatives].sort((a, b) => {
+    const priorityDifference = getPriorityRank(a.priority) - getPriorityRank(b.priority);
+    if (priorityDifference) return priorityDifference;
+    return (a.priorityOrder || 0) - (b.priorityOrder || 0);
+  });
 }
 
 function initiativeToForm(initiative: PdcaCycle): PdcaCycleInput {
@@ -428,6 +440,7 @@ const PerformanceExecutionPage = () => {
     const oldIndex = sortedInitiatives.findIndex((initiative) => initiative.id === activeId);
     const overIndex = sortedInitiatives.findIndex((initiative) => initiative.id === overId);
     if (oldIndex < 0 || overIndex < 0) return;
+    if (sortedInitiatives[oldIndex].priority !== sortedInitiatives[overIndex].priority) return;
 
     const reorderedInitiatives = arrayMove(sortedInitiatives, oldIndex, overIndex);
     const nextInitiatives = reorderPdcaCycles(
@@ -446,15 +459,14 @@ const PerformanceExecutionPage = () => {
         <meta name="description" content="Prioridades, atividades e evidências para mover os ponteiros." />
       </Helmet>
 
-      <div className={`flex flex-col gap-4 ${isAdminPortal ? "lg:h-[calc(100dvh-7.75rem)]" : "lg:h-[calc(100dvh-3rem)]"}`}>
-        <section className="shrink-0">
-          <div>
-            {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Iniciativas</h1> : null}
-            <p className="mt-1 max-w-2xl text-sm leading-5 text-bvbp-muted-ink">
-              Prioridades, atividades e evidências para mover os ponteiros.
-            </p>
-          </div>
-        </section>
+      <div className={`flex flex-col ${isAdminPortal ? "lg:h-[calc(100dvh-7.75rem)]" : "lg:h-[calc(100dvh-3rem)]"}`}>
+        <div className="mb-7 shrink-0">
+          <PerformancePageHeader
+            title="Iniciativas"
+            description="Prioridades, atividades e evidências para mover os ponteiros."
+            showTitle={!isAdminPortal}
+          />
+        </div>
 
         <InitiativePillarContext
           configuration={configuration}
@@ -463,7 +475,7 @@ const PerformanceExecutionPage = () => {
           onSelect={applyPillarFilter}
         />
 
-        <section className="flex min-h-[360px] flex-1 flex-col overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
+        <section className="mt-4 flex min-h-[340px] flex-1 flex-col overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
           <div className="flex shrink-0 flex-col gap-3 border-b border-bvbp-ink/10 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="font-heading text-xl font-semibold text-bvbp-ink">Lista por prioridade</h2>
@@ -521,7 +533,7 @@ const PerformanceExecutionPage = () => {
                   initiatives={filteredInitiatives}
                   selectedInitiativeId={selectedInitiative?.id}
                   canManage={canManageInitiatives}
-                  canReorder={canManageInitiatives && pillarFilter === "all" && statusFilter === "all" && priorityFilter === "all"}
+                  canReorder={canManageInitiatives && pillarFilter === "all" && statusFilter === "all" && priorityFilter !== "unset"}
                   onSelect={selectInitiative}
                   onStatusChange={changeInitiativeStatus}
                   onPriorityChange={changeInitiativePriority}

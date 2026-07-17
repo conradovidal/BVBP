@@ -8,6 +8,7 @@ import { PillarPainsPanel } from "@/components/performance/pointers/PillarPainsP
 import { PointerPillarSelector } from "@/components/performance/pointers/PointerPillarSelector";
 import { TrackedMetricsGrid } from "@/components/performance/pointers/TrackedMetricsGrid";
 import { SectionHeader } from "@/components/performance/SectionHeader";
+import { PerformancePageHeader } from "@/components/performance/PerformancePageHeader";
 import { type Company } from "@/data/performanceSystem";
 import {
   buildPerformancePointersModel,
@@ -38,12 +39,11 @@ const PerformancePointersPage = () => {
       </Helmet>
 
       <div className={isAdminPortal ? "space-y-5" : "space-y-7"}>
-        <section className="space-y-1">
-          {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Ponteiros</h1> : null}
-          <p className="max-w-2xl text-sm leading-5 text-bvbp-muted-ink">
-            Ponteiros, dores e iniciativas por pilar.
-          </p>
-        </section>
+        <PerformancePageHeader
+          title="Ponteiros"
+          description="Ponteiros, dores e iniciativas por pilar."
+          showTitle={!isAdminPortal}
+        />
 
         <PointerPillarSelector
           pillars={diagnostic.pillars}

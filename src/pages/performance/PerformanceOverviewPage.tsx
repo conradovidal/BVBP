@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { SectionHeader } from "@/components/performance/SectionHeader";
+import { PerformancePageHeader } from "@/components/performance/PerformancePageHeader";
 import {
   ExecutiveReadingStrip,
   MaturityMapPanel,
@@ -32,14 +33,11 @@ const PerformanceOverviewPage = () => {
       </Helmet>
 
       <div className="space-y-7">
-        <section className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="min-w-0">
-            {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Visão geral</h1> : null}
-            <p className="mt-1 max-w-2xl text-sm leading-5 text-bvbp-muted-ink">
-              Leitura executiva dos pilares, ponteiros e iniciativas prioritárias.
-            </p>
-          </div>
-        </section>
+        <PerformancePageHeader
+          title="Visão geral"
+          description="Leitura executiva dos pilares, ponteiros e iniciativas prioritárias."
+          showTitle={!isAdminPortal}
+        />
 
         <section className="space-y-3">
           <SectionHeader title="Leitura executiva" />
