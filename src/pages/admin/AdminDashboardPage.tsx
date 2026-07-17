@@ -33,7 +33,7 @@ const AdminDashboardPage = () => {
         <title>Portal BVBP | Administração</title>
       </Helmet>
 
-      <div className="space-y-7">
+      <div className="space-y-5">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <p className="text-sm text-bvbp-muted-ink">Carteira BVBP, ponteiros e ciclos ativos.</p>
           <Button
@@ -48,11 +48,11 @@ const AdminDashboardPage = () => {
           </Button>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <MetricCard title="Ativos" value={formatNumber(summary.activeItems)} accent="blue" />
-          <MetricCard title="Oportunidades" value={formatNumber(summary.opportunities)} accent="orange" />
-          <MetricCard title="Potencial" value={`${formatCurrency(summary.mappedPotential)}/mês`} accent="green" />
-          <MetricCard title="Ações" value={formatNumber(summary.pendingActions)} accent="gray" />
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard title="Ativos" value={formatNumber(summary.activeItems)} accent="blue" compact />
+          <MetricCard title="Oportunidades" value={formatNumber(summary.opportunities)} accent="orange" compact />
+          <MetricCard title="Potencial" value={`${formatCurrency(summary.mappedPotential)}/mês`} accent="green" compact />
+          <MetricCard title="Ações" value={formatNumber(summary.pendingActions)} accent="gray" compact />
         </section>
 
         <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">

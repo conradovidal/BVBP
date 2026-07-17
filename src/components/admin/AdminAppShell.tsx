@@ -83,6 +83,8 @@ export function AdminAppShell() {
   const activeCompany = getBvbpWorkspaceCompany();
   const activeNavHref = getActiveAdminNavHref(location.pathname);
   const pageTitle = getAdminPageTitle(location.pathname);
+  const isClientEditorRoute = location.pathname === "/app/admin/clients/new" ||
+    /^\/app\/admin\/clients\/[^/]+\/edit$/.test(location.pathname);
 
   if (!isBvbpStaff(session)) {
     return <Navigate to="/app/performance/overview" replace />;
@@ -97,7 +99,7 @@ export function AdminAppShell() {
   };
 
   return (
-    <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
+    <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink lg:grid lg:h-dvh lg:grid-cols-[260px_minmax(0,1fr)] lg:overflow-hidden">
       <aside className="hidden border-r border-bvbp-gold/20 bg-bvbp-forest-dark text-bvbp-ivory lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-hidden">
         <div className="border-b border-bvbp-ivory/10 px-6 py-6">
           <a href="/" aria-label="Voltar para o site BVBP">
@@ -167,9 +169,18 @@ export function AdminAppShell() {
         </div>
       </aside>
 
-      <div className="min-w-0">
-        <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-          <nav className="-mx-4 mb-7 flex gap-2 overflow-x-auto border-b border-bvbp-ink/10 px-4 pb-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden lg:hidden">
+      <div className="min-w-0 lg:h-dvh lg:overflow-y-auto">
+        <main
+          className={cn(
+            "mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-6",
+            isClientEditorRoute && "lg:flex lg:h-full lg:max-w-none lg:flex-col lg:overflow-hidden",
+          )}
+        >
+          <header className="mb-4 border-b border-bvbp-ink/10 pb-3">
+            <h1 className="font-heading text-2xl font-semibold tracking-tight text-bvbp-ink sm:text-3xl">{pageTitle}</h1>
+          </header>
+
+          <nav className="-mx-4 mb-4 flex gap-2 overflow-x-auto border-b border-bvbp-ink/10 px-4 pb-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden lg:hidden">
             {adminNavItems
               .map((item) => {
                 const Icon = item.icon;
@@ -194,16 +205,13 @@ export function AdminAppShell() {
               })}
           </nav>
 
-          <header className="mb-7 border-b border-bvbp-ink/10 pb-5">
-            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.16em] text-bvbp-muted-ink">Portal BVBP</p>
-            <h1 className="mt-2 font-heading text-3xl font-semibold tracking-tight text-bvbp-ink sm:text-4xl">{pageTitle}</h1>
-          </header>
-
-          {!activeCompany && needsBvbpWorkspace(location.pathname) ? (
-            <EmptyBvbpWorkspaceState />
-          ) : (
-            <Outlet context={{ activeCompany }} />
-          )}
+          <div className={cn(isClientEditorRoute && "lg:min-h-0 lg:flex-1")}>
+            {!activeCompany && needsBvbpWorkspace(location.pathname) ? (
+              <EmptyBvbpWorkspaceState />
+            ) : (
+              <Outlet context={{ activeCompany }} />
+            )}
+          </div>
         </main>
       </div>
     </div>

@@ -203,8 +203,15 @@ export async function syncClientConfigurationToSupabase(config: ClientConfigurat
 }
 
 export async function deleteWorkspaceFromSupabase(workspaceId: string) {
-  const { error } = await supabase.from("client_workspaces").delete().eq("id", workspaceId);
-  return !error;
+  const { data, error } = await supabase
+    .from("client_workspaces")
+    .delete()
+    .eq("id", workspaceId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return false;
+  return data?.id === workspaceId;
 }
 
 export function syncClientConfigurationToSupabaseSoon(config: ClientConfiguration) {

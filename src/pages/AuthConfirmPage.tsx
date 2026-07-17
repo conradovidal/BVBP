@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLockup";
+import { PasswordResetRequestForm } from "@/components/auth/PasswordResetRequestForm";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -49,7 +50,7 @@ export default function AuthConfirmPage() {
     });
 
     if (error || !data.session) {
-      setErrorMessage("Este link é inválido, já foi usado ou expirou. Solicite um novo envio à equipe BVBP.");
+      setErrorMessage("Este link é inválido, já foi usado ou expirou. Você pode solicitar outro agora.");
       setVerifying(false);
       return;
     }
@@ -88,17 +89,18 @@ export default function AuthConfirmPage() {
             </p>
 
             {!request ? (
-              <div className="mt-6 rounded-[8px] border border-bvbp-risk/20 bg-bvbp-risk/5 p-4 text-sm leading-6 text-bvbp-muted-ink">
-                Este link está incompleto ou não é válido. Solicite um novo envio à equipe BVBP.
+              <div className="mt-6 space-y-4">
+                <div className="rounded-[8px] border border-bvbp-gold/30 bg-bvbp-gold/5 p-4 text-sm leading-6 text-bvbp-muted-ink">
+                  Este link está incompleto ou não é mais válido. Vamos gerar um novo acesso para o email cadastrado.
+                </div>
+                <PasswordResetRequestForm />
               </div>
             ) : errorMessage ? (
               <div className="mt-6 space-y-4">
-                <div className="rounded-[8px] border border-bvbp-risk/20 bg-bvbp-risk/5 p-4 text-sm leading-6 text-bvbp-muted-ink">
+                <div className="rounded-[8px] border border-bvbp-gold/30 bg-bvbp-gold/5 p-4 text-sm leading-6 text-bvbp-muted-ink">
                   {errorMessage}
                 </div>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/login">Voltar para o login</Link>
-                </Button>
+                <PasswordResetRequestForm />
               </div>
             ) : (
               <div className="mt-6 space-y-4">

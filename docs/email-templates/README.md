@@ -33,7 +33,7 @@ Antes de salvar, confira em **Authentication > URL Configuration**:
 - **Site URL**: `https://www.bvbp.com.br`;
 - **Redirect URLs**: mantenha autorizadas as variantes `https://www.bvbp.com.br/auth/**` e `https://bvbp.com.br/auth/**`, além dos destinos locais ou de preview realmente utilizados.
 
-Em **Authentication > Providers > Email**, configure a validade do OTP para `3600` segundos.
+Em **Authentication > Sign In / Providers > Email**, configure a validade do OTP para `86400` segundos (24 horas), limite recomendado para este fluxo.
 
 ## Variáveis utilizadas
 
@@ -52,7 +52,7 @@ Invite user e Reset password apontam para a página intermediária da BVBP:
 - convite: `https://www.bvbp.com.br/auth/confirm?token_hash={{ .TokenHash }}&type=invite`;
 - recuperação: `https://www.bvbp.com.br/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`.
 
-O endereço bruto do Supabase não deve aparecer no texto nem no destino do CTA. A página `/auth/confirm` remove o token da barra de endereço e só chama `verifyOtp` depois do clique explícito em **Continuar para definir senha**.
+O endereço bruto do Supabase não deve aparecer no texto nem no destino do CTA. A página `/auth/confirm` remove o token da barra de endereço e só chama `verifyOtp` depois do clique explícito em **Continuar para definir senha**. Quando o token já foi usado ou expirou, a mesma página permite solicitar uma recuperação sem expor se o email está cadastrado.
 
 ## Identidade visual auditada
 
@@ -102,7 +102,7 @@ Envie emails reais de cada evento para contas de teste. Não valide apenas pelo 
 
 1. Publique o frontend e confirme que `/auth/confirm` está disponível.
 2. Publique os templates **Invite user** e **Reset password** no Supabase.
-3. Confirme Site URL, allowlist e validade de `3600` segundos.
+3. Confirme Site URL, allowlist e validade de `86400` segundos (24 horas), com leitura de verificação depois da alteração.
 4. No domínio transacional do Resend, mantenha `click_tracking=false` e `open_tracking=false`; a reescrita de URLs pode interferir nos links do Supabase Auth.
 5. Abra uma URL de teste de `/auth/confirm` e confirme que nenhum `verifyOtp` ocorre antes do botão.
 6. Dispare apenas o destinatário solicitado. Exemplo de recuperação controlada:
@@ -117,3 +117,5 @@ Envie emails reais de cada evento para contas de teste. Não valide apenas pelo 
 7. Confirme que o email mostra apenas o endereço seguro da BVBP e não contém `ConfirmationURL` nem URL `supabase.co/auth`.
 
 Nunca envie para Conrado e Cristiano em conjunto por padrão. Cada endereço precisa constar explicitamente em `emails`, e o operador deve comparar os timestamps antes e depois do envio.
+
+O envio para `cristiano@bvbp.com.br` permanece bloqueado operacionalmente até o aceite explícito de Conrado sobre a versão publicada do portal.

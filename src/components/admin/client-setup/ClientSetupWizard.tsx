@@ -319,6 +319,8 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
 export function ClientSetupWizard({ mode, company, configuration, onCancel, onSave, onSaveDraft }: ClientSetupWizardProps) {
   const [activeStep, setActiveStep] = useState(0);
   const [state, setState] = useState(() => createInitialState(company, configuration));
+  const [savedStateSnapshot, setSavedStateSnapshot] = useState(() => JSON.stringify(createInitialState(company, configuration)));
+  const [hasSavedDraft, setHasSavedDraft] = useState(mode === "edit");
   const [savingAction, setSavingAction] = useState<"draft" | "final">();
   const [contactAccessLoadingId, setContactAccessLoadingId] = useState<string>();
   const isBasicValid = state.company.name.trim().length > 1 && state.company.segment.trim().length > 1;
@@ -342,6 +344,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
         ? arePointersValid
         : true;
   const canSaveDraft = state.company.name.trim().length > 1;
+  const isDirty = JSON.stringify(state) !== savedStateSnapshot;
 
   const updateCompanyField = <K extends keyof ClientSetupCompanyForm>(field: K, value: ClientSetupCompanyForm[K]) => {
     setState((current) => ({
@@ -572,6 +575,8 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
 
     try {
       await onSaveDraft(buildSaveInput(state));
+      setSavedStateSnapshot(JSON.stringify(state));
+      setHasSavedDraft(true);
       toast({
         title: "Rascunho salvo",
         description: "Você pode continuar o cadastro agora ou retomar pelo CRM depois.",
@@ -607,31 +612,31 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   };
 
   return (
-    <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none">
-      <div className="border-b border-bvbp-ink/10 p-4">
-        <div className="grid gap-2 sm:grid-cols-5">
+    <div className="flex h-[calc(100dvh-11rem)] min-h-[32rem] flex-col overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised shadow-none lg:h-auto lg:min-h-0 lg:flex-1">
+      <div className="shrink-0 border-b border-bvbp-ink/10 p-3">
+        <div className="grid grid-cols-5 gap-1.5">
           {steps.map((step, index) => (
             <button
               key={step}
               type="button"
               onClick={() => setActiveStep(index)}
               className={cn(
-                "rounded-[8px] border px-3 py-2 text-left text-sm font-semibold transition",
+                "min-w-0 rounded-[8px] border px-2 py-1.5 text-left text-xs font-semibold transition sm:px-3 sm:py-2 sm:text-sm",
                 activeStep === index
                   ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory"
                   : "border-bvbp-ink/10 bg-bvbp-ivory text-bvbp-muted-ink hover:bg-bvbp-inset hover:text-bvbp-ink",
               )}
             >
-              <span className="block font-label text-[10px] uppercase tracking-[0.12em] opacity-70">
+              <span className="block font-label text-[9px] uppercase tracking-[0.1em] opacity-70 sm:text-[10px]">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              {step}
+              <span className="block truncate">{step}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="p-5">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
         {activeStep === 0 && <ClientBasicDataStep {...stepProps} />}
         {activeStep === 1 && <ClientPainsStep {...stepProps} />}
         {activeStep === 2 && <ClientMetricsStep {...stepProps} />}
@@ -639,20 +644,25 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
         {activeStep === 4 && <ClientReviewStep {...stepProps} />}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-bvbp-ink/10 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+      <div className="shrink-0 border-t border-bvbp-ink/10 bg-bvbp-raised p-3 sm:flex sm:items-center sm:justify-between sm:gap-4">
+        <div className="mb-2 flex items-center justify-between gap-3 sm:mb-0 sm:justify-start">
+          <p className="text-xs font-medium text-bvbp-muted-ink" aria-live="polite">
+            {savingAction ? "Salvando..." : isDirty ? "Alterações não salvas" : hasSavedDraft ? "Rascunho salvo" : "Novo rascunho"}
+          </p>
+          <Button type="button" variant="outline" onClick={onCancel} className="hidden sm:inline-flex">Cancelar</Button>
+        </div>
+        <div className="grid grid-cols-3 gap-2 sm:flex sm:items-center">
           <Button
             type="button"
             variant="outline"
+            className="text-xs sm:text-sm"
             disabled={!canSaveDraft || Boolean(savingAction)}
             onClick={() => void handleSaveDraft()}
           >
-            <Save className="h-4 w-4" aria-hidden="true" />
-            {savingAction === "draft" ? "Salvando..." : "Salvar rascunho"}
+            <Save className="hidden h-4 w-4 sm:block" aria-hidden="true" />
+            <span className="sm:hidden">{savingAction === "draft" ? "Salvando..." : "Salvar"}</span>
+            <span className="hidden sm:inline">{savingAction === "draft" ? "Salvando..." : "Salvar rascunho"}</span>
           </Button>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             type="button"
             variant="outline"
@@ -664,7 +674,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
           {activeStep < steps.length - 1 ? (
             <Button
               type="button"
-              className="rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
+              className="rounded-[8px] bg-bvbp-forest text-xs text-bvbp-ivory hover:bg-bvbp-forest-dark sm:text-sm"
               disabled={!isCurrentStepValid}
               onClick={() => setActiveStep((current) => Math.min(steps.length - 1, current + 1))}
             >
@@ -673,12 +683,13 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
           ) : (
             <Button
               type="button"
-              className="rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
+              className="rounded-[8px] bg-bvbp-forest text-xs text-bvbp-ivory hover:bg-bvbp-forest-dark sm:text-sm"
               disabled={Boolean(savingAction) || !isBasicValid || !areContactsValid || !arePointersValid}
               onClick={() => void handleSave()}
             >
-              <Save className="h-4 w-4" aria-hidden="true" />
-              {savingAction === "final" ? "Salvando..." : mode === "create" ? "Concluir cadastro" : "Salvar alterações"}
+              <Save className="hidden h-4 w-4 sm:block" aria-hidden="true" />
+              <span className="sm:hidden">{savingAction === "final" ? "Salvando..." : mode === "create" ? "Concluir" : "Salvar"}</span>
+              <span className="hidden sm:inline">{savingAction === "final" ? "Salvando..." : mode === "create" ? "Concluir cadastro" : "Salvar alterações"}</span>
             </Button>
           )}
         </div>
