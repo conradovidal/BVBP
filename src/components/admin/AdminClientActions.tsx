@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronDown, Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -75,9 +75,15 @@ export function AdminClientActions({ companyId, companyName, onOpenWorkspace, on
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button type="button" size="sm" variant="outline" className="w-full justify-between" aria-label={`Ações de ${companyName}`}>
-            <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="w-[88px] justify-center gap-1.5 whitespace-nowrap px-3 lg:justify-self-end"
+            aria-label={`Ações de ${companyName}`}
+          >
             <span>Ações</span>
+            <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
