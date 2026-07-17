@@ -86,7 +86,7 @@ const AdminClientsPage = () => {
                     <div className="min-w-0 text-sm text-bvbp-ink">
                       <p className="font-semibold">{attentionPillar.label} · {attentionPillar.primaryMetricName}</p>
                       <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">
-                        Maturidade mínima {minimumMaturity}/5 · {criticalCount}/4 críticos
+                        Maturidade mínima {minimumMaturity}/5 · {criticalCount}/4 principais
                       </p>
                       <p className="text-xs leading-5 text-bvbp-muted-ink">{itemPointerCount} ponteiros acompanhados</p>
                     </div>

@@ -58,11 +58,13 @@ import {
 } from "@/lib/clientConfigurationStore";
 import { sendClientContactAccessAction, syncCompanyToSupabase } from "@/lib/clientPortalSupabase";
 import { getPerformanceSession } from "@/lib/performanceAuth";
+import { normalizeCompanyReferenceCode } from "@/lib/clientPortalStore";
 import { cn } from "@/lib/utils";
 import { maturityActiveCardClass } from "@/lib/maturityColors";
 
 interface ClientSetupCompanyForm {
   name: string;
+  referenceCode: string;
   segment: string;
   segmentPreset: string;
   description: string;
@@ -150,6 +152,7 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 
 const defaultCompanyForm: ClientSetupCompanyForm = {
   name: "",
+  referenceCode: "",
   segment: "",
   segmentPreset: "",
   description: "",
@@ -203,6 +206,7 @@ function createInitialState(company: Company | undefined, configuration: ClientC
     company: {
       ...defaultCompanyForm,
       name: company?.name || "",
+      referenceCode: normalizeCompanyReferenceCode(company?.referenceCode || company?.name || ""),
       segment: company?.segment || "",
       segmentPreset: clientSegmentOptions.includes(company?.segment as (typeof clientSegmentOptions)[number])
         ? company?.segment || ""
@@ -260,6 +264,7 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
   return {
     company: {
       name: state.company.name,
+      referenceCode: normalizeCompanyReferenceCode(state.company.referenceCode || state.company.name),
       segment: state.company.segment,
       description: state.company.description,
       relationshipStatus: state.company.relationshipStatus,
@@ -289,6 +294,7 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
 
   return {
     id: companyId,
+    referenceCode: input.referenceCode,
     name: input.name.trim(),
     segment: input.segment.trim(),
     employees: input.employees,
@@ -320,7 +326,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   const [hasSavedDraft, setHasSavedDraft] = useState(mode === "edit");
   const [savingAction, setSavingAction] = useState<"draft" | "final">();
   const [contactAccessLoadingId, setContactAccessLoadingId] = useState<string>();
-  const isBasicValid = state.company.name.trim().length > 1 && state.company.segment.trim().length > 1;
+  const isBasicValid = state.company.name.trim().length > 1 && state.company.referenceCode.length >= 2 && state.company.segment.trim().length > 1;
   const areContactsValid =
     state.company.contacts.every((contact) => (
       contact.name.trim().length > 1 &&
@@ -745,9 +751,31 @@ export function ClientBasicDataStep({
 
   return (
     <section className="grid gap-4 sm:grid-cols-2">
-      <div className="space-y-2 sm:col-span-2">
+      <div className="space-y-2">
         <Label htmlFor="client-name">Nome do cliente</Label>
-        <Input id="client-name" value={state.company.name} onChange={(event) => updateCompanyField("name", event.target.value)} />
+        <Input
+          id="client-name"
+          value={state.company.name}
+          onChange={(event) => {
+            const name = event.target.value;
+            const previousSuggestion = normalizeCompanyReferenceCode(state.company.name);
+            updateCompanyField("name", name);
+            if (!state.company.referenceCode || state.company.referenceCode === previousSuggestion) {
+              updateCompanyField("referenceCode", normalizeCompanyReferenceCode(name));
+            }
+          }}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="client-reference-code">Código do cliente</Label>
+        <Input
+          id="client-reference-code"
+          value={state.company.referenceCode}
+          onChange={(event) => updateCompanyField("referenceCode", normalizeCompanyReferenceCode(event.target.value))}
+          placeholder="NEXO"
+          maxLength={8}
+        />
+        <p className="text-xs text-bvbp-muted-ink">Usado nos identificadores de iniciativas e atividades.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="client-segment">Segmento</Label>
@@ -1283,7 +1311,7 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, updatePil
                           >
                             <span className="flex items-center gap-2 text-sm font-semibold text-bvbp-ink">
                               {metric.name}
-                              {pillar?.criticalMetricId === metric.id ? <Star className="h-3.5 w-3.5 fill-bvbp-gold text-bvbp-gold" aria-label="Ponteiro crítico" /> : null}
+                              {pillar?.criticalMetricId === metric.id ? <Star className="h-3.5 w-3.5 fill-bvbp-gold text-bvbp-gold" aria-label="Ponteiro principal" /> : null}
                             </span>
                             <span className="mt-1 block text-xs leading-5 text-bvbp-muted-ink">
                               {clientMetricUnitLabels[metric.unit]}
@@ -1327,7 +1355,7 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, updatePil
                         )}
                       >
                         <Star className={cn("h-4 w-4", pillar?.criticalMetricId === activeMetric.id && "fill-current")} aria-hidden="true" />
-                        {pillar?.criticalMetricId === activeMetric.id ? "Ponteiro crítico" : "Definir como crítico"}
+                        {pillar?.criticalMetricId === activeMetric.id ? "Ponteiro principal" : "Definir como principal"}
                       </Button>
                     </div>
 

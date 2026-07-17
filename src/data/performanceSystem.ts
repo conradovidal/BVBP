@@ -49,6 +49,7 @@ export interface ClientRelationshipEvent {
 
 export interface Company {
   id: string;
+  referenceCode?: string;
   name: string;
   segment: string;
   employees: number;
@@ -318,6 +319,7 @@ export interface PdcaAction {
 export interface PdcaCycle {
   id: string;
   companyId: string;
+  referenceNumber?: number;
   title: string;
   affectedPointer: string;
   affectedFlow?: string;
@@ -462,9 +464,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico financeiro possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("financial-1-revenue-cost-source", "O ponteiro crítico de Finanças está definido."),
-          criterion("financial-1-cash-commitments", "O ponteiro crítico possui baseline e fonte."),
-          criterion("financial-1-update-owner", "O ponteiro crítico possui meta e benchmark."),
+          criterion("financial-1-revenue-cost-source", "O ponteiro principal de Finanças está definido."),
+          criterion("financial-1-cash-commitments", "O ponteiro principal possui baseline e fonte."),
+          criterion("financial-1-update-owner", "O ponteiro principal possui meta e benchmark."),
         ],
       },
       {
@@ -513,9 +515,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico comercial possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("commercial-1-funnel-stages", "O ponteiro crítico de Comercial está definido."),
-          criterion("commercial-1-qualified-origin", "O ponteiro crítico possui baseline e fonte."),
-          criterion("commercial-1-owner-next-action", "O ponteiro crítico possui meta e benchmark."),
+          criterion("commercial-1-funnel-stages", "O ponteiro principal de Comercial está definido."),
+          criterion("commercial-1-qualified-origin", "O ponteiro principal possui baseline e fonte."),
+          criterion("commercial-1-owner-next-action", "O ponteiro principal possui meta e benchmark."),
         ],
       },
       {
@@ -564,9 +566,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico operacional possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("operation-1-critical-flow", "O ponteiro crítico de Operação está definido."),
-          criterion("operation-1-roles", "O ponteiro crítico possui baseline e fonte."),
-          criterion("operation-1-baseline", "O ponteiro crítico possui meta e benchmark."),
+          criterion("operation-1-critical-flow", "O ponteiro principal de Operação está definido."),
+          criterion("operation-1-roles", "O ponteiro principal possui baseline e fonte."),
+          criterion("operation-1-baseline", "O ponteiro principal possui meta e benchmark."),
         ],
       },
       {
@@ -615,9 +617,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico tecnológico possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("technology-1-inventory", "O ponteiro crítico de Tecnologia está definido."),
-          criterion("technology-1-owners", "O ponteiro crítico possui baseline e fonte."),
-          criterion("technology-1-access", "O ponteiro crítico possui meta e benchmark."),
+          criterion("technology-1-inventory", "O ponteiro principal de Tecnologia está definido."),
+          criterion("technology-1-owners", "O ponteiro principal possui baseline e fonte."),
+          criterion("technology-1-access", "O ponteiro principal possui meta e benchmark."),
         ],
       },
       {

@@ -159,14 +159,14 @@ function buildNextDecision(
 
   if (!criticalPointer) {
     return {
-      value: "Defina qual dos ponteiros acompanhados é o crítico deste pilar.",
-      source: "Ponteiro crítico pendente",
+      value: "Defina qual dos ponteiros acompanhados é o principal deste pilar.",
+      source: "Ponteiro principal pendente",
     };
   }
 
   if (!criticalPointer.hasBaseline) {
     return {
-      value: "Informe o baseline e a fonte do ponteiro crítico.",
+      value: "Informe o baseline e a fonte do ponteiro principal.",
       source: "Baseline pendente",
     };
   }

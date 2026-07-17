@@ -8,26 +8,29 @@ import { getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 interface ConnectedInitiativesPanelProps {
   initiatives: PdcaCycle[];
   initiativesHref: string;
+  limit?: number;
 }
 
-export function ConnectedInitiativesPanel({ initiatives, initiativesHref }: ConnectedInitiativesPanelProps) {
+export function ConnectedInitiativesPanel({ initiatives, initiativesHref, limit = 3 }: ConnectedInitiativesPanelProps) {
+  const visibleInitiatives = initiatives.slice(0, limit);
+
   return (
     <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
-            Iniciativas conectadas
+            Iniciativas prioritárias
           </p>
-          <p className="mt-1 text-sm leading-6 text-bvbp-muted-ink">Execução relacionada ao pilar selecionado.</p>
+          <p className="mt-1 text-sm leading-6 text-bvbp-muted-ink">As três prioridades mais altas deste pilar.</p>
         </div>
         <Button asChild variant="outline" size="sm">
           <Link to={initiativesHref}>Ver iniciativas</Link>
         </Button>
       </div>
 
-      {initiatives.length ? (
+      {visibleInitiatives.length ? (
         <ul className="mt-4 divide-y divide-bvbp-ink/10 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset">
-          {initiatives.map((initiative) => (
+          {visibleInitiatives.map((initiative) => (
             <li key={initiative.id} className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_auto]">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-3">

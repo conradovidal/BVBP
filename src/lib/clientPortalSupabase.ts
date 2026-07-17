@@ -293,7 +293,7 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
     contactsByWorkspace.set(contact.workspace_id, [...currentContacts, toClientContact(contact)]);
   });
 
-  const remoteCompanies = (workspaces || []).map((workspace) => {
+  const remoteCompanies: Company[] = (workspaces || []).map((workspace) => {
     const payload = workspace.company_payload as Partial<Company>;
     const remoteWorkspaceContacts = contactsByWorkspace.get(workspace.id) || [];
     const payloadContacts = payload.contacts || [];
@@ -306,6 +306,7 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
 
     return {
       id: workspace.id,
+      referenceCode: payload.referenceCode,
       name: payload.name || workspace.name,
       segment: payload.segment || workspace.segment,
       employees: typeof payload.employees === "number" ? payload.employees : 0,

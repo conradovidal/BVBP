@@ -4,12 +4,14 @@ import { CSS } from "@dnd-kit/utilities";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
-import type { InitiativePriority, PdcaCycle, PdcaStatus } from "@/data/performanceSystem";
+import type { Company, InitiativePriority, PdcaCycle, PdcaStatus } from "@/data/performanceSystem";
 import { formatMetricValue } from "@/lib/initiativeProgress";
+import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
 
 interface InitiativePriorityListProps {
   initiatives: PdcaCycle[];
+  company: Company;
   selectedInitiativeId?: string;
   canManage: boolean;
   canReorder?: boolean;
@@ -20,6 +22,7 @@ interface InitiativePriorityListProps {
 
 function SortableInitiativeRow({
   initiative,
+  company,
   isSelected,
   canManage,
   canReorder,
@@ -28,6 +31,7 @@ function SortableInitiativeRow({
   onPriorityChange,
 }: {
   initiative: PdcaCycle;
+  company: Company;
   isSelected: boolean;
   canManage: boolean;
   canReorder: boolean;
@@ -69,6 +73,7 @@ function SortableInitiativeRow({
       </button>
 
       <button type="button" className="min-w-0 text-left" onClick={() => onSelect(initiative)}>
+        <span className="mb-1 block font-label text-[10px] font-semibold text-bvbp-gold">{formatWorkItemReference(company, initiative.referenceNumber)}</span>
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-heading text-base font-bold leading-5 text-bvbp-ink">{initiative.title}</h2>
           {!initiative.pillarId || !initiative.metricId || !initiative.painLabel ? <StatusBadge label="Vínculo a revisar" /> : null}
@@ -116,6 +121,7 @@ function SortableInitiativeRow({
 
 export function InitiativePriorityList({
   initiatives,
+  company,
   selectedInitiativeId,
   canManage,
   canReorder = canManage,
@@ -130,6 +136,7 @@ export function InitiativePriorityList({
           <SortableInitiativeRow
             key={initiative.id}
             initiative={initiative}
+            company={company}
             isSelected={initiative.id === selectedInitiativeId}
             canManage={canManage}
             canReorder={canReorder && Boolean(initiative.priority)}

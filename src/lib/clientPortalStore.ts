@@ -15,6 +15,7 @@ import { PORTAL_STORAGE_KEYS, isCompanyList, readJsonStorage, writeJsonStorage }
 
 export interface NewClientInput {
   id?: string;
+  referenceCode?: string;
   name: string;
   segment: string;
   description?: string;
@@ -77,6 +78,7 @@ function normalizeCompany(company: Company) {
 
   return {
     ...company,
+    referenceCode: normalizeCompanyReferenceCode(company.referenceCode || company.name),
     contacts,
     relationshipEvents: (company.relationshipEvents || []).map((event) => {
       const createdByName = event.createdByName || event.createdBy || "Equipe BVBP";
@@ -85,6 +87,15 @@ function normalizeCompany(company: Company) {
     contactName: primaryContact?.name || company.contactName,
     contactEmail: primaryContact?.email || company.contactEmail,
   };
+}
+
+export function normalizeCompanyReferenceCode(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "")
+    .slice(0, 8);
 }
 
 export function getPortalCompanies(): Company[] {
@@ -137,6 +148,7 @@ export function buildPortalCompany(input: NewClientInput): Company {
   const primaryContact = contacts.find((contact) => contact.isPrimary);
   return {
     id: companyId,
+    referenceCode: normalizeCompanyReferenceCode(input.referenceCode || input.name),
     name: input.name.trim(),
     segment: input.segment.trim(),
     description: input.description?.trim() || undefined,
@@ -172,6 +184,9 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
 
   return {
     ...existingWithoutBudgetPercentage,
+    referenceCode: input.referenceCode !== undefined
+      ? normalizeCompanyReferenceCode(input.referenceCode || input.name || existing.name)
+      : existing.referenceCode || normalizeCompanyReferenceCode(existing.name),
     name: input.name !== undefined ? input.name.trim() : existing.name,
     segment: input.segment !== undefined ? input.segment.trim() : existing.segment,
     description: input.description !== undefined ? input.description.trim() || undefined : existing.description,

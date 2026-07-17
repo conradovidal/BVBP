@@ -115,6 +115,7 @@ export function isCompanyList(value: unknown): value is Company[] {
 
     return (
       typeof company.id === "string" &&
+      (company.referenceCode === undefined || typeof company.referenceCode === "string") &&
       typeof company.name === "string" &&
       typeof company.segment === "string" &&
       typeof company.employees === "number" &&
@@ -153,6 +154,7 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
     return (
       typeof cycle.id === "string" &&
       typeof cycle.companyId === "string" &&
+      (cycle.referenceNumber === undefined || typeof cycle.referenceNumber === "number") &&
       typeof cycle.title === "string" &&
       typeof cycle.affectedPointer === "string" &&
       typeof cycle.pdcaStatus === "string" &&

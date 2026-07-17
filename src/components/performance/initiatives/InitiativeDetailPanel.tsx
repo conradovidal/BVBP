@@ -1,4 +1,3 @@
-import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,7 +10,9 @@ import {
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { SectionHeader } from "@/components/performance/SectionHeader";
 import { InitiativeActivityBoard } from "@/components/performance/initiatives/InitiativeActivityBoard";
-import { bvbpPillarLabels, evidenceTypes, type EvidenceType, type PdcaCycle } from "@/data/performanceSystem";
+import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
+import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
+import { bvbpPillarLabels, evidenceTypes, type Company, type EvidenceType, type InitiativePriority, type PdcaCycle, type PdcaStatus } from "@/data/performanceSystem";
 import type { EvidenceInput } from "@/lib/pdcaCycleStore";
 import {
   type InitiativeActivity,
@@ -19,6 +20,7 @@ import {
   type InitiativeActivityStatus,
 } from "@/lib/initiativeActivityStore";
 import { calculateInitiativeProgress, formatMetricValue, getInitiativeImpactLabel } from "@/lib/initiativeProgress";
+import { formatWorkItemReference } from "@/lib/workItemReferences";
 
 function formatDateBr(value?: string) {
   if (!value) return "Sem data";
@@ -28,11 +30,14 @@ function formatDateBr(value?: string) {
 
 interface InitiativeDetailPanelProps {
   initiative: PdcaCycle | null;
+  company: Company;
   activities: InitiativeActivity[];
   activityForm: InitiativeActivityInput;
   evidenceForm: EvidenceInput;
   canManageInitiative: boolean;
   onEdit: () => void;
+  onStatusChange: (status: PdcaStatus) => void;
+  onPriorityChange: (priority: InitiativePriority) => void;
   onActivityFormChange: (value: InitiativeActivityInput) => void;
   onAddActivity: () => void;
   onUpdateActivity: (activity: InitiativeActivityInput) => void;
@@ -43,11 +48,14 @@ interface InitiativeDetailPanelProps {
 
 export function InitiativeDetailPanel({
   initiative,
+  company,
   activities,
   activityForm,
   evidenceForm,
   canManageInitiative,
   onEdit,
+  onStatusChange,
+  onPriorityChange,
   onActivityFormChange,
   onAddActivity,
   onUpdateActivity,
@@ -81,10 +89,12 @@ export function InitiativeDetailPanel({
     <section className="overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
       <div className="flex flex-col gap-4 border-b border-bvbp-ink/10 p-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
-          <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
-            Detalhe da iniciativa
+          <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-gold">
+            {formatWorkItemReference(company, initiative.referenceNumber)}
           </p>
-          <h2 className="mt-2 font-heading text-2xl font-bold text-bvbp-ink">{initiative.title}</h2>
+          <button type="button" tabIndex={-1} onClick={canManageInitiative ? onEdit : undefined} className="mt-2 text-left focus:outline-none">
+            <h2 className="font-heading text-2xl font-bold text-bvbp-ink">{initiative.title}</h2>
+          </button>
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="rounded-full bg-bvbp-inset px-2.5 py-1 text-xs font-semibold text-bvbp-muted-ink">
               {initiative.pillarId ? bvbpPillarLabels[initiative.pillarId] : "Vínculo a revisar"}
@@ -94,35 +104,20 @@ export function InitiativeDetailPanel({
             ) : null}
           </div>
         </div>
-        {canManageInitiative ? (
-          <Button
-            type="button"
-            variant="outline"
-            className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
-            onClick={onEdit}
-          >
-            <Pencil className="h-4 w-4" aria-hidden="true" />
-            Editar iniciativa
-          </Button>
-        ) : null}
       </div>
 
       <div className="grid lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-6 p-5">
           <section className="space-y-4">
-            <div>
+            <button type="button" onClick={canManageInitiative ? onEdit : undefined} className="w-full text-left">
               <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Hipótese</p>
               <p className="mt-2 text-sm leading-6 text-bvbp-ink">{initiative.hypothesis || "Hipótese a definir."}</p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
+            </button>
+            <div>
+              <button type="button" onClick={canManageInitiative ? onEdit : undefined} className="w-full text-left">
                 <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Por que importa</p>
                 <p className="mt-2 text-sm leading-6 text-bvbp-ink">{initiative.whyItMatters || "Impacto a detalhar."}</p>
-              </div>
-              <div>
-                <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Próxima decisão</p>
-                <p className="mt-2 text-sm leading-6 text-bvbp-ink">{initiative.nextDecision || "Definir próxima decisão."}</p>
-              </div>
+              </button>
             </div>
           </section>
 
@@ -137,8 +132,18 @@ export function InitiativeDetailPanel({
             </section>
           ) : null}
 
+          <InitiativeActivityBoard
+            activities={activities}
+            company={company}
+            formValue={activityForm}
+            onFormChange={onActivityFormChange}
+            onAddActivity={onAddActivity}
+            onUpdateActivity={onUpdateActivity}
+            onStatusChange={onActivityStatusChange}
+          />
+
           <section className="space-y-3">
-            <SectionHeader title="Evidências" />
+            <SectionHeader title="Comentários e evidências" />
             <div className="space-y-2">
               {initiative.evidences.map((evidence) => (
                 <article key={evidence.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
@@ -165,25 +170,17 @@ export function InitiativeDetailPanel({
             </div>
           </section>
 
-          <InitiativeActivityBoard
-            activities={activities}
-            formValue={activityForm}
-            onFormChange={onActivityFormChange}
-            onAddActivity={onAddActivity}
-            onUpdateActivity={onUpdateActivity}
-            onStatusChange={onActivityStatusChange}
-          />
         </div>
 
         <aside className="border-t border-bvbp-ink/10 bg-bvbp-inset p-4 lg:border-l lg:border-t-0">
           <div className="space-y-5 lg:sticky lg:top-0">
             <div className="flex flex-wrap gap-2">
-              <StatusBadge label={initiative.pdcaStatus} />
-              <span className="rounded-full border border-bvbp-ink/10 bg-bvbp-raised px-2.5 py-1 text-xs font-semibold text-bvbp-ink">
-                Prioridade {initiative.priority || "a definir"}
-              </span>
+              {canManageInitiative ? (
+                <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={onStatusChange} />
+              ) : <StatusBadge label={initiative.pdcaStatus} />}
+              <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={onPriorityChange} />
             </div>
-            <dl className="divide-y divide-bvbp-ink/10 text-sm">
+            <div className="divide-y divide-bvbp-ink/10 text-sm">
               {[
                 ["Responsável", initiative.owner || "Sem responsável"],
                 ["Equipe", initiative.teamMembers?.length ? initiative.teamMembers.join(", ") : "Sem equipe definida"],
@@ -195,12 +192,17 @@ export function InitiativeDetailPanel({
                 ["Fonte", sourceLabel],
                 ["Impacto", getInitiativeImpactLabel(initiative)],
               ].map(([label, value]) => (
-                <div key={label} className="py-3 first:pt-0">
-                  <dt className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</dt>
-                  <dd className="mt-1 font-semibold leading-5 text-bvbp-ink">{value}</dd>
-                </div>
+                <button
+                  type="button"
+                  key={label}
+                  onClick={canManageInitiative ? onEdit : undefined}
+                  className="block w-full py-3 text-left first:pt-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-bvbp-gold/45"
+                >
+                  <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</span>
+                  <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{value}</span>
+                </button>
               ))}
-            </dl>
+            </div>
           </div>
         </aside>
       </div>

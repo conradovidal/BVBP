@@ -158,8 +158,12 @@ function blankActivityForm(initiative?: PdcaCycle | null): InitiativeActivityInp
     initiativeId: initiative?.id || "",
     title: "",
     description: "",
+    definitionOfDone: "",
     owner: initiative?.owner || "",
+    startDate: "",
+    endDate: initiative?.deadline || "",
     dueDate: initiative?.deadline || "",
+    priority: "Média",
     status: "A fazer",
   };
 }
@@ -531,6 +535,7 @@ const PerformanceExecutionPage = () => {
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <InitiativePriorityList
                   initiatives={filteredInitiatives}
+                  company={activeCompany}
                   selectedInitiativeId={selectedInitiative?.id}
                   canManage={canManageInitiatives}
                   canReorder={canManageInitiatives && pillarFilter === "all" && statusFilter === "all" && priorityFilter !== "unset"}
@@ -554,6 +559,7 @@ const PerformanceExecutionPage = () => {
                 <div className="border-t border-bvbp-ink/10 p-3">
                   <InitiativePriorityList
                     initiatives={archivedInitiatives}
+                    company={activeCompany}
                     canManage={canManageInitiatives}
                     canReorder={false}
                     onSelect={selectInitiative}
@@ -575,11 +581,14 @@ const PerformanceExecutionPage = () => {
           </DialogHeader>
           <InitiativeDetailPanel
             initiative={selectedInitiative}
+            company={activeCompany}
             activities={selectedActivities}
             activityForm={activityForm}
             evidenceForm={evidenceForm}
             canManageInitiative={canManageInitiatives}
             onEdit={openEditInitiative}
+            onStatusChange={(status) => selectedInitiative && changeInitiativeStatus(selectedInitiative.id, status)}
+            onPriorityChange={(priority) => selectedInitiative && changeInitiativePriority(selectedInitiative.id, priority)}
             onActivityFormChange={setActivityForm}
             onAddActivity={addActivity}
             onUpdateActivity={updateActivity}

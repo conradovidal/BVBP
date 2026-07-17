@@ -1,13 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import { useLocation, useOutletContext, useSearchParams } from "react-router-dom";
 import { ConnectedInitiativesPanel } from "@/components/performance/pointers/ConnectedInitiativesPanel";
-import { CriticalPointerPanel } from "@/components/performance/pointers/CriticalPointerPanel";
-import { NextDecisionPanel } from "@/components/performance/pointers/NextDecisionPanel";
 import { PillarMaturityPanel } from "@/components/performance/pointers/PillarMaturityPanel";
-import { PillarPainsPanel } from "@/components/performance/pointers/PillarPainsPanel";
 import { PointerPillarSelector } from "@/components/performance/pointers/PointerPillarSelector";
-import { TrackedMetricsGrid } from "@/components/performance/pointers/TrackedMetricsGrid";
-import { SectionHeader } from "@/components/performance/SectionHeader";
+import { PointerSummaryStrip } from "@/components/performance/pointers/PointerSummaryStrip";
 import { PerformancePageHeader } from "@/components/performance/PerformancePageHeader";
 import { type Company } from "@/data/performanceSystem";
 import {
@@ -51,28 +47,15 @@ const PerformancePointersPage = () => {
           onSelect={setPillar}
         />
 
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-          <CriticalPointerPanel pointer={diagnostic.criticalPointer} />
-          <NextDecisionPanel nextDecision={diagnostic.nextDecision} />
-        </section>
+        <PointerSummaryStrip diagnostic={diagnostic} />
 
-        <section className="space-y-3">
-          <SectionHeader
-            title="Ponteiros acompanhados"
-            description={`${diagnostic.activePillar.label} · ${diagnostic.activePillar.description}`}
-          />
-          <TrackedMetricsGrid metrics={diagnostic.metrics} criticalMetricId={diagnostic.criticalMetricId} />
-        </section>
-
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-          <PillarPainsPanel pains={diagnostic.pains} />
+        <section className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
           <PillarMaturityPanel maturity={diagnostic.maturity} />
+          <ConnectedInitiativesPanel
+            initiatives={diagnostic.initiatives}
+            initiativesHref={initiativesHref}
+          />
         </section>
-
-        <ConnectedInitiativesPanel
-          initiatives={diagnostic.initiatives}
-          initiativesHref={initiativesHref}
-        />
       </div>
     </>
   );
