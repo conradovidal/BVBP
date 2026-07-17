@@ -13,7 +13,7 @@ import {
   type OverviewMetricView,
   type OverviewPillarSummary,
 } from "@/lib/performanceOverviewModel";
-import { formatCurrency } from "@/lib/performanceFormatters";
+import { getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 import { cn } from "@/lib/utils";
 import { maturityActiveCardClass, maturitySegmentClass } from "@/lib/maturityColors";
 
@@ -40,10 +40,6 @@ interface PillarOverviewDetailDialogProps {
   pillar: OverviewPillarSummary | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-function formatImpact(value: number) {
-  return value ? `${formatCurrency(value)}/mês` : "Impacto ainda não mensurado";
 }
 
 function DetailPanel({
@@ -220,7 +216,7 @@ export function PrioritizedInitiativesList({ initiatives, onSelect }: Prioritize
                 </span>
               </span>
               <span className="flex flex-wrap items-center gap-3 sm:justify-end">
-                <span className="text-xs font-semibold text-bvbp-positive">{formatImpact(cycle.estimatedImpact)}</span>
+                <span className="text-xs font-semibold text-bvbp-positive">{getInitiativeImpactLabel(cycle)}</span>
                 <StatusBadge label={cycle.pdcaStatus} />
               </span>
             </button>
