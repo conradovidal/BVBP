@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, LockKeyhole } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLockup";
+import { PasswordResetRequestForm } from "@/components/auth/PasswordResetRequestForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -156,8 +157,11 @@ export default function SetPasswordPage() {
                 </Button>
               </form>
             ) : (
-              <div className="mt-6 rounded-[8px] border border-bvbp-risk/20 bg-bvbp-risk/5 p-4 text-sm leading-6 text-bvbp-muted-ink">
-                Este link não tem uma sessão ativa ou pode ter expirado. Peça um novo convite para a equipe BVBP.
+              <div className="mt-6 space-y-4">
+                <div className="rounded-[8px] border border-bvbp-risk/20 bg-bvbp-risk/5 p-4 text-sm leading-6 text-bvbp-muted-ink">
+                  Este link não tem uma sessão ativa ou pode ter expirado. Você pode solicitar outro agora.
+                </div>
+                <PasswordResetRequestForm />
               </div>
             )}
           </div>
