@@ -453,12 +453,12 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
     levels: [
       {
         level: 1,
-        name: "Base dispersa",
-        description: "Informações financeiras existem, mas ainda estão fragmentadas ou sem rotina confiável.",
+        name: "Base BVBP",
+        description: "O diagnóstico financeiro possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("financial-1-revenue-cost-source", "Faturamento e custos estão registrados com fonte definida."),
-          criterion("financial-1-cash-commitments", "Caixa disponível e compromissos financeiros são conhecidos."),
-          criterion("financial-1-update-owner", "Existe um responsável pela atualização das informações financeiras."),
+          criterion("financial-1-revenue-cost-source", "O ponteiro crítico de Finanças está definido."),
+          criterion("financial-1-cash-commitments", "O ponteiro crítico possui baseline e fonte."),
+          criterion("financial-1-update-owner", "O ponteiro crítico possui meta e benchmark."),
         ],
       },
       {
@@ -504,12 +504,12 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
     levels: [
       {
         level: 1,
-        name: "Atuação dispersa",
-        description: "O esforço comercial acontece sem um funil consistente ou uma leitura compartilhada.",
+        name: "Base BVBP",
+        description: "O diagnóstico comercial possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("commercial-1-funnel-stages", "As etapas e os critérios do funil estão definidos."),
-          criterion("commercial-1-qualified-origin", "Leads qualificados são registrados com sua origem."),
-          criterion("commercial-1-owner-next-action", "Oportunidades possuem responsável e próxima ação."),
+          criterion("commercial-1-funnel-stages", "O ponteiro crítico de Comercial está definido."),
+          criterion("commercial-1-qualified-origin", "O ponteiro crítico possui baseline e fonte."),
+          criterion("commercial-1-owner-next-action", "O ponteiro crítico possui meta e benchmark."),
         ],
       },
       {
@@ -555,12 +555,12 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
     levels: [
       {
         level: 1,
-        name: "Operação reativa",
-        description: "A operação reage às demandas sem uma visão clara do fluxo e de seus responsáveis.",
+        name: "Base BVBP",
+        description: "O diagnóstico operacional possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("operation-1-critical-flow", "O fluxo operacional crítico está mapeado."),
-          criterion("operation-1-roles", "Papéis e responsáveis do fluxo estão definidos."),
-          criterion("operation-1-baseline", "Lead time ou entregas em atraso possuem baseline."),
+          criterion("operation-1-critical-flow", "O ponteiro crítico de Operação está definido."),
+          criterion("operation-1-roles", "O ponteiro crítico possui baseline e fonte."),
+          criterion("operation-1-baseline", "O ponteiro crítico possui meta e benchmark."),
         ],
       },
       {
@@ -606,12 +606,12 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
     levels: [
       {
         level: 1,
-        name: "Ferramentas dispersas",
-        description: "Ferramentas, acessos e dados existem sem uma organização compartilhada.",
+        name: "Base BVBP",
+        description: "O diagnóstico tecnológico possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("technology-1-inventory", "Ferramentas e dados críticos estão inventariados."),
-          criterion("technology-1-owners", "Existem responsáveis definidos pelas soluções críticas."),
-          criterion("technology-1-access", "Acessos estão organizados e revisados."),
+          criterion("technology-1-inventory", "O ponteiro crítico de Tecnologia está definido."),
+          criterion("technology-1-owners", "O ponteiro crítico possui baseline e fonte."),
+          criterion("technology-1-access", "O ponteiro crítico possui meta e benchmark."),
         ],
       },
       {

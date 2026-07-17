@@ -54,6 +54,7 @@ import { toast } from "@/hooks/use-toast";
 import {
   type ClientSetupInput,
   clientMetricUnitLabels,
+  withDerivedBaseMaturityCriteria,
 } from "@/lib/clientConfigurationStore";
 import { sendClientContactAccessAction, syncCompanyToSupabase } from "@/lib/clientPortalSupabase";
 import { getPerformanceSession } from "@/lib/performanceAuth";
@@ -1459,7 +1460,12 @@ export function ClientMetricsStep({ state, toggleMetric, updateMetric, updatePil
 export function ClientMaturityStep({ state, updatePillar }: StepProps) {
   const [activePillar, setActivePillar] = useState<BvbpPillarId>("financial");
   const [selectedLevelByPillar, setSelectedLevelByPillar] = useState<Partial<Record<BvbpPillarId, MaturityLevel>>>({});
-  const pillar = getPillarConfig(state, activePillar);
+  const derivedConfiguration = useMemo(
+    () => withDerivedBaseMaturityCriteria(state.configuration),
+    [state.configuration],
+  );
+  const getDerivedPillar = (pillarId: BvbpPillarId) => derivedConfiguration.pillars.find((item) => item.pillar === pillarId);
+  const pillar = getDerivedPillar(activePillar);
 
   if (!pillar) return null;
 
@@ -1474,7 +1480,7 @@ export function ClientMaturityStep({ state, updatePillar }: StepProps) {
     setActivePillar(pillarId);
     setSelectedLevelByPillar((current) => {
       if (current[pillarId]) return current;
-      const nextPillar = getPillarConfig(state, pillarId);
+      const nextPillar = getDerivedPillar(pillarId);
       const nextMaturity = getPillarMaturityState(
         pillarId,
         nextPillar?.completedMaturityCriterionIds || [],
@@ -1513,7 +1519,7 @@ export function ClientMaturityStep({ state, updatePillar }: StepProps) {
       <Tabs value={activePillar} onValueChange={(value) => selectPillar(value as BvbpPillarId)}>
         <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-[8px] bg-bvbp-inset p-1 sm:grid-cols-4">
           {bvbpPillarIds.map((pillarId) => {
-            const pillarConfig = getPillarConfig(state, pillarId);
+            const pillarConfig = getDerivedPillar(pillarId);
             const pillarMaturity = getPillarMaturityState(
               pillarId,
               pillarConfig?.completedMaturityCriterionIds || [],
@@ -1602,7 +1608,9 @@ export function ClientMaturityStep({ state, updatePillar }: StepProps) {
                       Critérios para avançar ao nível {selectedLevel + 1}
                     </p>
                     <p className="mt-1 text-xs text-bvbp-muted-ink">
-                      {definition.levels[selectedLevel]?.name}
+                      {selectedLevel === 1
+                        ? "Validados automaticamente pelos dados do diagnóstico."
+                        : definition.levels[selectedLevel]?.name}
                     </p>
                   </div>
                   {selectedLevelDefinition.criteria.map((criterion) => (
@@ -1612,7 +1620,8 @@ export function ClientMaturityStep({ state, updatePillar }: StepProps) {
                     >
                       <Checkbox
                         checked={completedIds.has(criterion.id)}
-                        onCheckedChange={() => toggleMaturityCriterion(criterion.id)}
+                        disabled={selectedLevel === 1}
+                        onCheckedChange={() => selectedLevel !== 1 && toggleMaturityCriterion(criterion.id)}
                       />
                       <span>{criterion.label}</span>
                     </label>

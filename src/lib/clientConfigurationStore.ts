@@ -119,6 +119,28 @@ function saveAllClientConfigurations(configurations: StoredClientConfiguration[]
   writeJsonStorage(PORTAL_STORAGE_KEYS.clientConfigurations, configurations);
 }
 
+export function withDerivedBaseMaturityCriteria<T extends Pick<ClientConfiguration, "metrics" | "pillars">>(config: T): T {
+  const metricById = new Map(config.metrics.map((metric) => [metric.id, metric]));
+
+  return {
+    ...config,
+    pillars: config.pillars.map((pillar) => {
+      const baseCriterionIds = maturityDefinitionsByPillar[pillar.pillar].levels[0].criteria.map((item) => item.id);
+      const criticalMetric = pillar.criticalMetricId ? metricById.get(pillar.criticalMetricId) : undefined;
+      const completedBaseCriteria = [
+        Boolean(criticalMetric),
+        criticalMetric?.currentValue !== undefined && Boolean(criticalMetric.source?.trim()),
+        Boolean(criticalMetric?.target?.trim()) && Boolean(criticalMetric?.benchmark?.trim()),
+      ];
+      const completedMaturityCriterionIds = pillar.completedMaturityCriterionIds
+        .filter((criterionId) => !baseCriterionIds.includes(criterionId))
+        .concat(baseCriterionIds.filter((_, index) => completedBaseCriteria[index]));
+
+      return { ...pillar, completedMaturityCriterionIds };
+    }),
+  };
+}
+
 function clampMaturityLevel(value: number): MaturityLevel {
   if (value <= 1) return 1;
   if (value >= 5) return 5;
@@ -198,7 +220,7 @@ function normalizeClientConfiguration(company: Company, storedConfig?: StoredCli
   const storedPillarById = new Map((storedConfig?.pillars || []).map((pillar) => [pillar.pillar, pillar]));
   const availableMetricIds = new Set([...defaultMetrics, ...customMetrics].map((metric) => metric.id));
 
-  return {
+  return withDerivedBaseMaturityCriteria({
     schemaVersion: 3,
     companyId: company.id,
     metrics: [...defaultMetrics, ...customMetrics],
@@ -215,7 +237,7 @@ function normalizeClientConfiguration(company: Company, storedConfig?: StoredCli
           : undefined,
       };
     }),
-  };
+  });
 }
 
 export function getClientConfiguration(company: Company): ClientConfiguration {
@@ -232,14 +254,15 @@ export function getClientConfiguration(company: Company): ClientConfiguration {
 }
 
 function storeClientConfiguration(config: ClientConfiguration) {
+  const normalizedConfig = withDerivedBaseMaturityCriteria(config);
   const configurations = readAllClientConfigurations();
-  const exists = configurations.some((configuration) => configuration.companyId === config.companyId);
+  const exists = configurations.some((configuration) => configuration.companyId === normalizedConfig.companyId);
   const nextConfigurations = exists
-    ? configurations.map((configuration) => (configuration.companyId === config.companyId ? config : configuration))
-    : [config, ...configurations];
+    ? configurations.map((configuration) => (configuration.companyId === normalizedConfig.companyId ? normalizedConfig : configuration))
+    : [normalizedConfig, ...configurations];
 
   saveAllClientConfigurations(nextConfigurations);
-  return config;
+  return normalizedConfig;
 }
 
 export function saveClientConfiguration(config: ClientConfiguration) {

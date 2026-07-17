@@ -75,9 +75,9 @@ export function AdminClientActions({ companyId, companyName, onOpenWorkspace, on
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button type="button" size="sm" variant="outline" aria-label={`Ações de ${companyName}`}>
+          <Button type="button" size="sm" variant="outline" className="w-full justify-between" aria-label={`Ações de ${companyName}`}>
             <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
-            <span className="sr-only sm:not-sr-only">Ações</span>
+            <span>Ações</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
