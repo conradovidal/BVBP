@@ -275,7 +275,7 @@ export function PerformanceAppShell() {
         </div>
       </aside>
 
-      <div className="min-w-0 lg:h-dvh lg:overflow-y-auto">
+      <div className="min-w-0 lg:h-dvh lg:overflow-y-auto lg:[scrollbar-gutter:stable]">
         <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
           <div className="mb-5 space-y-3 border-b border-bvbp-ink/10 pb-4 lg:hidden">
             <WorkspaceSwitcher

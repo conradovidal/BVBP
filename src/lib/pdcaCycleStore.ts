@@ -94,7 +94,7 @@ function normalizeActions(cycle: PdcaCycle): PdcaAction[] {
       title: cycle.plannedAction || cycle.nextDecision || "Definir próxima ação",
       owner: cycle.owner,
       deadline: cycle.deadline,
-      status: cycle.pdcaStatus === "Concluída" ? "Concluída" : cycle.pdcaStatus === "Arquivada" ? "Bloqueada" : "Aberta",
+      status: cycle.pdcaStatus === "Concluída" ? "Concluída" : cycle.pdcaStatus === "Arquivada" || cycle.pdcaStatus === "Pausada" ? "Bloqueada" : "Aberta",
     },
   ];
 }
@@ -175,11 +175,11 @@ function cycleFromImprovement(improvement: Improvement, company: Company, index:
 }
 
 function normalizePdcaStatus(status: string): PdcaStatus {
-  if (status === "Em refinamento" || status === "Em desenvolvimento" || status === "Em validação" || status === "Concluída" || status === "Descartada" || status === "Arquivada") return status;
+  if (status === "Em refinamento" || status === "Em desenvolvimento" || status === "Em validação" || status === "Pausada" || status === "Concluída" || status === "Descartada" || status === "Arquivada") return status;
   if (status === "Executar" || status === "Em andamento") return "Em desenvolvimento";
   if (status === "Medir" || status === "Aprender" || status === "Aguardando") return "Em validação";
   if (status === "Padronizar" || status === "Concluído") return "Concluída";
-  if (status === "Pausar" || status === "Pausado") return "Arquivada";
+  if (status === "Pausar" || status === "Pausado") return "Pausada";
   return "Em refinamento";
 }
 

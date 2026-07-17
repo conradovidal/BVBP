@@ -107,9 +107,10 @@ const statusPriority: Record<string, number> = {
   "Em refinamento": 0,
   "Em desenvolvimento": 1,
   "Em validação": 2,
-  Concluída: 3,
-  Descartada: 4,
-  Arquivada: 5,
+  Pausada: 3,
+  Concluída: 4,
+  Descartada: 5,
+  Arquivada: 6,
 };
 
 function hasMetricValue(metric: Pick<ClientMetricConfig, "currentValue">) {

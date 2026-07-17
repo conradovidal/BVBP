@@ -132,7 +132,7 @@ export function InitiativePriorityList({
             initiative={initiative}
             isSelected={initiative.id === selectedInitiativeId}
             canManage={canManage}
-            canReorder={canReorder}
+            canReorder={canReorder && Boolean(initiative.priority)}
             onSelect={onSelect}
             onStatusChange={onStatusChange}
             onPriorityChange={onPriorityChange}

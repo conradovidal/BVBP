@@ -254,7 +254,7 @@ export interface Improvement {
   ease: "Alta" | "Média" | "Baixa";
   owner: string;
   deadline: string;
-  pdcaStatus: "Planejar" | "Executar" | "Medir" | "Aprender" | "Padronizar" | "Pausar" | "Fazer agora" | "Em andamento" | "Aguardando" | "Concluído" | "Pausado" | "Em refinamento" | "Em desenvolvimento" | "Em validação" | "Concluída" | "Descartada" | "Arquivada";
+  pdcaStatus: "Planejar" | "Executar" | "Medir" | "Aprender" | "Padronizar" | "Pausar" | "Fazer agora" | "Em andamento" | "Aguardando" | "Concluído" | "Pausado" | "Pausada" | "Em refinamento" | "Em desenvolvimento" | "Em validação" | "Concluída" | "Descartada" | "Arquivada";
   priorityBucket: "Fazer agora" | "Planejar" | "Monitorar" | "Pausar";
   nextDecision?: string;
 }
@@ -263,6 +263,7 @@ export const pdcaStatuses = [
   "Em refinamento",
   "Em desenvolvimento",
   "Em validação",
+  "Pausada",
   "Concluída",
   "Descartada",
   "Arquivada",
@@ -2291,7 +2292,7 @@ export const bvbpInternalActions: Improvement[] = bvbpPdcaCycleSeeds.map((cycle)
   owner: cycle.owner,
   deadline: cycle.deadline,
   pdcaStatus: cycle.pdcaStatus,
-  priorityBucket: cycle.pdcaStatus === "Arquivada" ? "Pausar" : cycle.pdcaStatus === "Concluída" ? "Monitorar" : cycle.pdcaStatus === "Em refinamento" ? "Planejar" : "Fazer agora",
+  priorityBucket: cycle.pdcaStatus === "Arquivada" || cycle.pdcaStatus === "Pausada" ? "Pausar" : cycle.pdcaStatus === "Concluída" ? "Monitorar" : cycle.pdcaStatus === "Em refinamento" ? "Planejar" : "Fazer agora",
   nextDecision: cycle.nextDecision,
 }));
 
