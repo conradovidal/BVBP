@@ -543,7 +543,11 @@ const PerformanceExecutionPage = () => {
               >
                 <SelectTrigger aria-label="Status da iniciativa"><StatusBadge label={initiativeForm.pdcaStatus} /></SelectTrigger>
                 <SelectContent>
-                  {pdcaStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+                  {pdcaStatuses.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      <StatusBadge label={status} />
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

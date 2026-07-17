@@ -97,6 +97,7 @@ const App = () => (
                 <Route path="overview" element={<PerformanceOverviewPage />} />
                 <Route path="pointers" element={<PerformancePointersPage />} />
                 <Route path="initiatives" element={<PerformanceExecutionPage />} />
+                <Route path="profile" element={<AdminProfilePage showPageTitle />} />
                 <Route path="pdca" element={<Navigate to="/app/performance/initiatives" replace />} />
                 <Route path="funnel" element={<Navigate to="/app/performance/pointers?pillar=commercial" replace />} />
                 <Route path="operations" element={<Navigate to="/app/performance/pointers?pillar=operation" replace />} />
