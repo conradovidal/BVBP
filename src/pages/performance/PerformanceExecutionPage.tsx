@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DatePickerBr } from "@/components/ui/date-picker-br";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { StatusBadge } from "@/components/performance/StatusBadge";
 import {
   type Company,
   type BvbpPillarId,
@@ -74,16 +76,14 @@ import { parseMetricNumber } from "@/lib/initiativeProgress";
 const blankInitiativeForm: PdcaCycleInput = {
   title: "",
   affectedPointer: "",
-  affectedFlow: "",
   hypothesis: "",
   plannedAction: "",
   whyItMatters: "",
   owner: "",
   deadline: "",
-  pdcaStatus: "Planejar",
+  pdcaStatus: "Em refinamento",
   estimatedImpact: 0,
   nextDecision: "",
-  dataType: "Mockado",
   startDate: "",
   endDate: "",
   baseline: "",
@@ -117,7 +117,6 @@ function initiativeToForm(initiative: PdcaCycle): PdcaCycleInput {
     pdcaStatus: initiative.pdcaStatus,
     estimatedImpact: initiative.estimatedImpact,
     nextDecision: initiative.nextDecision,
-    dataType: initiative.dataType,
     startDate: initiative.startDate || "",
     endDate: initiative.deadline || initiative.endDate || "",
     baseline: initiative.baseline || "",
@@ -128,8 +127,11 @@ function initiativeToForm(initiative: PdcaCycle): PdcaCycleInput {
     metricNameSnapshot: initiative.metricNameSnapshot,
     metricUnit: initiative.metricUnit,
     metricDirection: initiative.metricDirection,
+    metricSourceSnapshot: initiative.metricSourceSnapshot,
+    metricValueOrigin: initiative.metricValueOrigin,
     baselineValue: initiative.baselineValue,
     targetValue: initiative.targetValue,
+    teamMembers: initiative.teamMembers || [],
     priorityOrder: initiative.priorityOrder || 0,
     actions: initiative.actions || [],
   };
@@ -160,7 +162,9 @@ const PerformanceExecutionPage = () => {
   const [evidenceForm, setEvidenceForm] = useState<EvidenceInput>(blankEvidenceForm);
   const [activityForm, setActivityForm] = useState<InitiativeActivityInput>(blankActivityForm());
   const [formError, setFormError] = useState("");
+  const [teamMembersInput, setTeamMembersInput] = useState("");
   const [pillarFilter, setPillarFilter] = useState<"all" | BvbpPillarId>("all");
+  const [archiveFilter, setArchiveFilter] = useState<"flow" | "archived">("flow");
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -176,18 +180,23 @@ const PerformanceExecutionPage = () => {
     setEvidenceForm(blankEvidenceForm);
     setActivityForm(blankActivityForm(nextInitiatives[0]));
     setPillarFilter("all");
+    setArchiveFilter("flow");
   }, [activeCompany]);
 
   const sortedInitiatives = useMemo(() => getSortedInitiatives(initiatives), [initiatives]);
+  const archiveScopedInitiatives = useMemo(
+    () => sortedInitiatives.filter((initiative) => archiveFilter === "archived" ? initiative.pdcaStatus === "Arquivada" : initiative.pdcaStatus !== "Arquivada"),
+    [archiveFilter, sortedInitiatives],
+  );
   const filteredInitiatives = useMemo(
-    () => pillarFilter === "all" ? sortedInitiatives : sortedInitiatives.filter((initiative) => initiativeMatchesPillar(initiative, pillarFilter)),
-    [pillarFilter, sortedInitiatives],
+    () => archiveScopedInitiatives.filter((initiative) => pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter)),
+    [archiveScopedInitiatives, pillarFilter],
   );
   const filteredInitiativeIds = useMemo(() => new Set(filteredInitiatives.map((initiative) => initiative.id)), [filteredInitiatives]);
   const filteredActivities = useMemo(() => activities.filter((activity) => filteredInitiativeIds.has(activity.initiativeId)), [activities, filteredInitiativeIds]);
   const selectedInitiative =
-    sortedInitiatives.find((initiative) => initiative.id === selectedInitiativeId) ||
-    (pillarFilter === "all" ? sortedInitiatives[0] : filteredInitiatives[0]) ||
+    filteredInitiatives.find((initiative) => initiative.id === selectedInitiativeId) ||
+    filteredInitiatives[0] ||
     null;
   const selectedActivities = selectedInitiative
     ? activities.filter((activity) => activity.initiativeId === selectedInitiative.id)
@@ -216,10 +225,22 @@ const PerformanceExecutionPage = () => {
   };
 
   const applyPillarFilter = (filter: "all" | BvbpPillarId) => {
-    const nextInitiative = filter === "all"
-      ? sortedInitiatives[0]
-      : sortedInitiatives.find((initiative) => initiativeMatchesPillar(initiative, filter));
+    const nextInitiative = sortedInitiatives.find((initiative) => (
+      (archiveFilter === "archived" ? initiative.pdcaStatus === "Arquivada" : initiative.pdcaStatus !== "Arquivada") &&
+      (filter === "all" || initiativeMatchesPillar(initiative, filter))
+    ));
     setPillarFilter(filter);
+    setSelectedInitiativeId(nextInitiative?.id || null);
+    setEvidenceForm(blankEvidenceForm);
+    setActivityForm(blankActivityForm(nextInitiative));
+  };
+
+  const applyArchiveFilter = (filter: "flow" | "archived") => {
+    const nextInitiative = sortedInitiatives.find((initiative) => (
+      (filter === "archived" ? initiative.pdcaStatus === "Arquivada" : initiative.pdcaStatus !== "Arquivada") &&
+      (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter))
+    ));
+    setArchiveFilter(filter);
     setSelectedInitiativeId(nextInitiative?.id || null);
     setEvidenceForm(blankEvidenceForm);
     setActivityForm(blankActivityForm(nextInitiative));
@@ -233,6 +254,7 @@ const PerformanceExecutionPage = () => {
       pillarId: pillarFilter === "all" ? undefined : pillarFilter,
       priorityOrder: initiatives.length,
     });
+    setTeamMembersInput("");
     setFormError("");
     setIsFormDialogOpen(true);
   };
@@ -241,6 +263,7 @@ const PerformanceExecutionPage = () => {
     if (!canManageInitiatives || !selectedInitiative) return;
 
     setInitiativeForm(initiativeToForm(selectedInitiative));
+    setTeamMembersInput((selectedInitiative.teamMembers || []).join(", "));
     setFormError("");
     setIsFormDialogOpen(true);
   };
@@ -259,7 +282,20 @@ const PerformanceExecutionPage = () => {
       return;
     }
 
-    const saved = upsertPdcaCycle(activeCompany, initiativeForm);
+    const teamMembers = Array.from(new Map(
+      teamMembersInput
+        .split(",")
+        .map((member) => member.trim().replace(/\s+/g, " "))
+        .filter(Boolean)
+        .map((member) => [member.toLocaleLowerCase("pt-BR"), member]),
+    ).values());
+    const invalidTeamMember = teamMembers.find((member) => member.split(" ").filter(Boolean).length < 2);
+    if (invalidTeamMember) {
+      setFormError(`Informe nome e sobrenome para ${invalidTeamMember}.`);
+      return;
+    }
+
+    const saved = upsertPdcaCycle(activeCompany, { ...initiativeForm, teamMembers });
     refreshInitiatives(saved.id);
     setSelectedInitiativeId(saved.id);
     setEvidenceForm(blankEvidenceForm);
@@ -277,6 +313,8 @@ const PerformanceExecutionPage = () => {
       metricNameSnapshot: undefined,
       metricUnit: undefined,
       metricDirection: undefined,
+      metricSourceSnapshot: undefined,
+      metricValueOrigin: undefined,
       baselineValue: undefined,
       targetValue: undefined,
       affectedPointer: "",
@@ -295,6 +333,8 @@ const PerformanceExecutionPage = () => {
       metricNameSnapshot: metric.name,
       metricUnit: metric.unit,
       metricDirection: metric.direction || "higher",
+      metricSourceSnapshot: metric.source,
+      metricValueOrigin: metric.valueOrigin,
       baselineValue,
       targetValue,
       affectedPointer: metric.name,
@@ -401,6 +441,11 @@ const PerformanceExecutionPage = () => {
           ) : null}
         </section>
 
+        <div className="flex flex-wrap gap-2" aria-label="Filtrar iniciativas arquivadas">
+          <Button type="button" size="sm" variant={archiveFilter === "flow" ? "default" : "outline"} onClick={() => applyArchiveFilter("flow")}>Fluxo atual</Button>
+          <Button type="button" size="sm" variant={archiveFilter === "archived" ? "default" : "outline"} onClick={() => applyArchiveFilter("archived")}>Arquivadas</Button>
+        </div>
+
         <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5" aria-label="Filtrar iniciativas por pilar">
           <button
             type="button"
@@ -408,11 +453,11 @@ const PerformanceExecutionPage = () => {
             className={`rounded-[8px] border px-3 py-2.5 text-left transition-colors ${pillarFilter === "all" ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
           >
             <span className="font-heading font-semibold">Todos</span>
-            <span className="mt-1 block text-xs opacity-75">{initiatives.length} iniciativa(s)</span>
+            <span className="mt-1 block text-xs opacity-75">{archiveScopedInitiatives.length} iniciativa(s)</span>
           </button>
           {bvbpPillarIds.map((pillarId) => {
             const pillar = configuration.pillars.find((item) => item.pillar === pillarId);
-            const initiativeCount = initiatives.filter((initiative) => initiativeMatchesPillar(initiative, pillarId)).length;
+            const initiativeCount = archiveScopedInitiatives.filter((initiative) => initiativeMatchesPillar(initiative, pillarId)).length;
             return (
               <button
                 type="button"
@@ -481,8 +526,8 @@ const PerformanceExecutionPage = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 md:col-span-2">
+          <div className="grid gap-4 md:grid-cols-6">
+            <div className="space-y-2 md:col-span-4">
               <Label htmlFor="initiative-title">Título</Label>
               <Input
                 id="initiative-title"
@@ -490,7 +535,19 @@ const PerformanceExecutionPage = () => {
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, title: event.target.value })}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
+              <Label>Status</Label>
+              <Select
+                value={initiativeForm.pdcaStatus}
+                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, pdcaStatus: value as PdcaStatus })}
+              >
+                <SelectTrigger aria-label="Status da iniciativa"><StatusBadge label={initiativeForm.pdcaStatus} /></SelectTrigger>
+                <SelectContent>
+                  {pdcaStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2 md:col-span-3">
               <Label>Pilar</Label>
               <Select
                 value={initiativeForm.pillarId || ""}
@@ -502,7 +559,7 @@ const PerformanceExecutionPage = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 md:col-span-3">
               <Label>Dor principal</Label>
               <Select
                 value={initiativeForm.painLabel || ""}
@@ -517,7 +574,7 @@ const PerformanceExecutionPage = () => {
               {initiativeForm.pillarId && !selectedPillarConfig?.pains.length ? <p className="text-xs text-bvbp-risk">Complete o diagnóstico de dores deste pilar antes de criar a iniciativa.</p> : null}
             </div>
             <div className="space-y-2 md:col-span-2">
-              <Label>Ponteiro principal</Label>
+              <Label>Ponteiro</Label>
               <Select
                 value={initiativeForm.metricId || ""}
                 onValueChange={(value) => {
@@ -531,62 +588,12 @@ const PerformanceExecutionPage = () => {
                   {availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{metric.name}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {initiativeForm.pillarId && !availableMetrics.length ? <p className="text-xs text-bvbp-risk">Selecione ao menos um ponteiro neste pilar antes de criar a iniciativa.</p> : null}
+              {initiativeForm.pillarId && !availableMetrics.length ? (
+                <p className="text-xs text-bvbp-risk">Este pilar ainda não possui um ponteiro cadastrado. Selecione outro pilar com ponteiros ou complete o diagnóstico antes de criar a iniciativa.</p>
+              ) : null}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="initiative-flow">Frente afetada</Label>
-              <Input
-                id="initiative-flow"
-                value={initiativeForm.affectedFlow}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, affectedFlow: event.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="initiative-owner">Responsável principal</Label>
-              <Input
-                id="initiative-owner"
-                value={initiativeForm.owner}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, owner: event.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select
-                value={initiativeForm.pdcaStatus}
-                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, pdcaStatus: value as PdcaStatus })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {pdcaStatuses.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="initiative-start">Data de início</Label>
-              <Input
-                id="initiative-start"
-                value={initiativeForm.startDate}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, startDate: event.target.value })}
-                placeholder="2026-06-30"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="initiative-deadline">Prazo</Label>
-              <Input
-                id="initiative-deadline"
-                value={initiativeForm.deadline}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, deadline: event.target.value, endDate: event.target.value })}
-                placeholder="2026-07-30"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="initiative-baseline">Baseline ({initiativeForm.metricUnit || "unidade do ponteiro"})</Label>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="initiative-baseline">Baseline</Label>
               <Input
                 id="initiative-baseline"
                 type="number"
@@ -594,8 +601,8 @@ const PerformanceExecutionPage = () => {
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, baselineValue: event.target.value === "" ? undefined : Number(event.target.value), baseline: event.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="initiative-target">Meta ({initiativeForm.metricUnit || "unidade do ponteiro"})</Label>
+            <div className="space-y-2 md:col-span-2">
+              <Label htmlFor="initiative-target">Meta</Label>
               <Input
                 id="initiative-target"
                 type="number"
@@ -603,49 +610,51 @@ const PerformanceExecutionPage = () => {
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, targetValue: event.target.value === "" ? undefined : Number(event.target.value), target: event.target.value })}
               />
             </div>
-            <div className="space-y-2">
-              <Label>Tipo de dado</Label>
-              <Select
-                value={initiativeForm.dataType}
-                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, dataType: value as PdcaCycle["dataType"] })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {["Mockado", "Estimado", "Real"].map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="space-y-2 md:col-span-3">
+              <Label htmlFor="initiative-owner">Responsável</Label>
+              <Input id="initiative-owner" value={initiativeForm.owner} onChange={(event) => setInitiativeForm({ ...initiativeForm, owner: event.target.value })} placeholder="Nome e sobrenome" />
             </div>
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-2 md:col-span-3">
+              <Label htmlFor="initiative-team">Equipe</Label>
+              <Input id="initiative-team" value={teamMembersInput} onChange={(event) => setTeamMembersInput(event.target.value)} placeholder="Nome Sobrenome, Nome Sobrenome" />
+              <p className="text-xs text-bvbp-muted-ink">Separe cada pessoa por vírgula.</p>
+            </div>
+            <div className="space-y-2 md:col-span-3">
+              <Label htmlFor="initiative-start">Data de início</Label>
+              <DatePickerBr id="initiative-start" value={initiativeForm.startDate} onChange={(value) => setInitiativeForm({ ...initiativeForm, startDate: value })} />
+            </div>
+            <div className="space-y-2 md:col-span-3">
+              <Label htmlFor="initiative-deadline">Prazo</Label>
+              <DatePickerBr id="initiative-deadline" value={initiativeForm.deadline} onChange={(value) => setInitiativeForm({ ...initiativeForm, deadline: value, endDate: value })} />
+            </div>
+            <div className="space-y-2 md:col-span-6">
               <Label htmlFor="initiative-hypothesis">Hipótese</Label>
               <Textarea
                 id="initiative-hypothesis"
                 value={initiativeForm.hypothesis}
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, hypothesis: event.target.value })}
+                placeholder="Se reduzirmos [causa] por meio de [ação], então [ponteiro] irá de [baseline] para [meta] porque [racional]."
               />
             </div>
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-2 md:col-span-6">
               <Label htmlFor="initiative-why">Por que importa</Label>
               <Textarea
                 id="initiative-why"
                 value={initiativeForm.whyItMatters}
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, whyItMatters: event.target.value })}
+                placeholder="Isso importa porque afeta [cliente/processo/resultado] em [impacto observável]."
               />
             </div>
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-2 md:col-span-6">
               <Label htmlFor="initiative-decision">Próxima decisão</Label>
               <Input
                 id="initiative-decision"
                 value={initiativeForm.nextDecision}
                 onChange={(event) => setInitiativeForm({ ...initiativeForm, nextDecision: event.target.value })}
+                placeholder="Decidir [o quê] quando [evidência ou critério] estiver disponível."
               />
             </div>
-            {formError && <p className="text-sm font-semibold text-bvbp-risk md:col-span-2">{formError}</p>}
+            {formError && <p className="text-sm font-semibold text-bvbp-risk md:col-span-6">{formError}</p>}
           </div>
 
           <DialogFooter>

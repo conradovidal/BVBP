@@ -5,17 +5,15 @@ import {
   type ClientPillarConfig,
   type Company,
   type MaturityLevelDefinition,
-  type OverviewPillarHighlight,
   type PdcaCycle,
   bvbpPillarIds,
   getPillarMaturityState,
   maturityDefinitionsByPillar,
-  getOverviewPillarHighlights,
 } from "@/data/performanceSystem";
 import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 import { formatCurrency, formatNumber } from "@/lib/performanceFormatters";
 
-export type OverviewDataStatus = "Real" | "Estimado" | "Mockado" | "Sem baseline";
+export type OverviewDataStatus = "Informado" | "Estimado" | "Fonte pendente" | "Sem baseline";
 
 export interface OverviewMetricView {
   id: string;
@@ -83,61 +81,11 @@ const pillarLabels: Record<BvbpPillarId, string> = {
   technology: "Tecnologia",
 };
 
-const fallbackHighlightIdByPillar: Record<BvbpPillarId, OverviewPillarHighlight["id"]> = {
-  financial: "financial",
-  commercial: "commercial",
-  operation: "operational",
-  technology: "automation",
-};
-
-const metricPriorityByPillar: Record<BvbpPillarId, string[]> = {
-  financial: [
-    "financial-faturamento",
-    "faturamento",
-    "receita",
-    "financial-potencial-mapeado",
-    "potencial mapeado",
-    "financial-margem",
-    "margem",
-    "financial-custo-operacional",
-    "custo operacional",
-  ],
-  commercial: [
-    "commercial-pipeline",
-    "pipeline",
-    "commercial-taxa-conversao",
-    "taxa de conversao",
-    "commercial-diagnosticos-agendados",
-    "diagnosticos agendados",
-    "commercial-propostas-enviadas",
-    "propostas enviadas",
-    "commercial-leads-qualificados",
-    "leads qualificados",
-  ],
-  operation: [
-    "operation-custo-operacional-mensal",
-    "custo operacional mensal",
-    "operation-horas-manuais",
-    "horas manuais",
-    "operation-retrabalho",
-    "retrabalho",
-    "operation-lead-time",
-    "lead time",
-    "operation-gargalos-mapeados",
-    "gargalos mapeados",
-  ],
-  technology: [
-    "technology-horas-economizadas",
-    "horas economizadas",
-    "technology-taxa-adocao",
-    "taxa de adocao",
-    "technology-automacoes-producao",
-    "automacoes em producao",
-    "technology-relatorios-manuais",
-    "relatorios manuais",
-    "technology-sistemas-criticos",
-    "sistemas criticos",
-  ],
+const pillarDescriptions: Record<BvbpPillarId, string> = {
+  financial: "Receita, margem, custo, caixa, risco e potencial.",
+  commercial: "Origem, conversão, pipeline, follow-up e proposta.",
+  operation: "Fluxo, espera, retrabalho, capacidade e entrega.",
+  technology: "Dados, IA, sistemas e automações quando movem um ponteiro real.",
 };
 
 const pillarKeywords: Record<BvbpPillarId, string[]> = {
@@ -148,12 +96,12 @@ const pillarKeywords: Record<BvbpPillarId, string[]> = {
 };
 
 const statusPriority: Record<string, number> = {
-  Planejar: 0,
-  Executar: 1,
-  Medir: 2,
-  Aprender: 3,
-  Padronizar: 4,
-  Pausar: 5,
+  "Em refinamento": 0,
+  "Em desenvolvimento": 1,
+  "Em validação": 2,
+  Concluída: 3,
+  Descartada: 4,
+  Arquivada: 5,
 };
 
 function hasMetricValue(metric: Pick<ClientMetricConfig, "currentValue">) {
@@ -167,28 +115,9 @@ function normalizeText(value: string) {
     .toLowerCase();
 }
 
-function metricMatchesPriority(metric: ClientMetricConfig, priority: string) {
-  const normalizedPriority = normalizeText(priority);
-  return normalizeText(metric.id) === normalizedPriority || normalizeText(metric.name) === normalizedPriority;
-}
-
-function pickPrimaryMetric(pillarId: BvbpPillarId, metrics: ClientMetricConfig[]) {
-  const priorities = metricPriorityByPillar[pillarId];
-
-  for (const priority of priorities) {
-    const metric = metrics.find((item) => metricMatchesPriority(item, priority) && hasMetricValue(item));
-    if (metric) return metric;
-  }
-
-  const firstWithValue = metrics.find(hasMetricValue);
-  if (firstWithValue) return firstWithValue;
-
-  for (const priority of priorities) {
-    const metric = metrics.find((item) => metricMatchesPriority(item, priority));
-    if (metric) return metric;
-  }
-
-  return metrics[0];
+function pickPrimaryMetric(pillar: ClientPillarConfig, metrics: ClientMetricConfig[]) {
+  if (!pillar.criticalMetricId) return undefined;
+  return metrics.find((metric) => metric.id === pillar.criticalMetricId);
 }
 
 export function formatOverviewMetricValue(unit: ClientMetricUnit, value?: number) {
@@ -202,51 +131,32 @@ export function formatOverviewMetricValue(unit: ClientMetricUnit, value?: number
 
 function dataStatusForMetric(metric: ClientMetricConfig): OverviewDataStatus {
   if (!hasMetricValue(metric)) return "Sem baseline";
-  return "Real";
-}
-
-function normalizeFallbackDataStatus(dataType: OverviewPillarHighlight["dataType"], value?: number): OverviewDataStatus {
-  if (value === undefined || value === null) return "Sem baseline";
-  if (dataType === "Real") return "Real";
-  if (dataType === "Mockado") return "Mockado";
-  return "Estimado";
+  if (!metric.source?.trim()) return "Fonte pendente";
+  return metric.valueOrigin === "estimated" ? "Estimado" : "Informado";
 }
 
 function metricViewFromConfig(metric: ClientMetricConfig): OverviewMetricView {
+  const dataType = dataStatusForMetric(metric);
+  const canDisplayValue = dataType === "Informado" || dataType === "Estimado";
+
   return {
     id: metric.id,
     name: metric.name,
     description: metric.description,
     formula: metric.formula,
     unit: metric.unit,
-    dataType: dataStatusForMetric(metric),
-    currentValue: metric.currentValue,
-    displayValue: formatOverviewMetricValue(metric.unit, metric.currentValue),
+    dataType,
+    currentValue: canDisplayValue ? metric.currentValue : undefined,
+    displayValue: canDisplayValue ? formatOverviewMetricValue(metric.unit, metric.currentValue) : dataType,
     target: metric.target,
-    source: metric.source || (metric.custom ? "Ponteiro personalizado" : "Catálogo BVBP"),
+    source: metric.source || "Fonte não informada",
     owner: metric.owner,
     custom: metric.custom,
   };
 }
 
-function metricViewFromFallback(highlight?: OverviewPillarHighlight): OverviewMetricView | undefined {
-  if (!highlight) return undefined;
-
-  return {
-    id: highlight.id,
-    name: highlight.metricLabel,
-    description: highlight.description,
-    unit: highlight.unit,
-    dataType: normalizeFallbackDataStatus(highlight.dataType, highlight.value),
-    currentValue: highlight.value,
-    displayValue: formatOverviewMetricValue(highlight.unit, highlight.value),
-    source: highlight.source,
-    custom: false,
-  };
-}
-
 export function isOverviewCycleActive(cycle: PdcaCycle) {
-  return cycle.pdcaStatus !== "Padronizar" && cycle.pdcaStatus !== "Pausar";
+  return ["Em refinamento", "Em desenvolvimento", "Em validação"].includes(cycle.pdcaStatus);
 }
 
 function parseDeadlineValue(deadline: string) {
@@ -299,33 +209,15 @@ export function initiativeMatchesPillar(cycle: PdcaCycle, pillarId: BvbpPillarId
   return pillarKeywords[pillarId].some((keyword) => keyword.length <= 2 ? words.has(keyword) : text.includes(keyword));
 }
 
-function buildFallbackMetricViews(highlight?: OverviewPillarHighlight): OverviewMetricView[] {
-  if (!highlight) return [];
-
-  return highlight.metrics.map((metric) => ({
-    id: `${highlight.id}-${metric.label}`,
-    name: metric.label,
-    description: highlight.description,
-    unit: metric.unit,
-    dataType: normalizeFallbackDataStatus(metric.dataType, metric.value),
-    currentValue: metric.value,
-    displayValue: formatOverviewMetricValue(metric.unit, metric.value),
-    source: metric.source,
-    custom: false,
-  }));
-}
-
 function buildPillarSummary(
   company: Company,
   pillarConfig: ClientPillarConfig,
   metrics: ClientMetricConfig[],
   cycles: PdcaCycle[],
-  fallback?: OverviewPillarHighlight,
 ): OverviewPillarSummary {
   const selectedMetricViews = metrics.map(metricViewFromConfig);
-  const fallbackPrimary = metricViewFromFallback(fallback);
-  const primaryMetric = pickPrimaryMetric(pillarConfig.pillar, metrics);
-  const primaryMetricView = primaryMetric ? metricViewFromConfig(primaryMetric) : fallbackPrimary;
+  const primaryMetric = pickPrimaryMetric(pillarConfig, metrics);
+  const primaryMetricView = primaryMetric ? metricViewFromConfig(primaryMetric) : undefined;
   const maturity = getPillarMaturityState(
     pillarConfig.pillar,
     pillarConfig.completedMaturityCriterionIds,
@@ -336,10 +228,14 @@ function buildPillarSummary(
   const evidence = relatedInitiatives.flatMap((cycle) =>
     cycle.evidences.map((item) => `${item.date} · ${item.description}`),
   );
-  const noBaselineCount = selectedMetricViews.filter((metric) => metric.dataType === "Sem baseline").length;
+  const noBaselineCount = selectedMetricViews.filter((metric) => metric.dataType === "Sem baseline" || metric.dataType === "Fonte pendente").length;
   const metricCount = selectedMetricViews.length;
   const signal =
-    noBaselineCount > 0
+    !metricCount
+      ? "Sem ponteiros"
+      : !primaryMetricView
+        ? "Crítico a definir"
+        : primaryMetricView.dataType === "Sem baseline" || primaryMetricView.dataType === "Fonte pendente"
       ? "Mapear baseline"
       : maturity.level <= 2
         ? "Atenção"
@@ -348,10 +244,10 @@ function buildPillarSummary(
   return {
     id: pillarConfig.pillar,
     label: pillarLabels[pillarConfig.pillar],
-    description: fallback?.description || `${pillarLabels[pillarConfig.pillar]} configurado localmente.`,
+    description: pillarDescriptions[pillarConfig.pillar],
     primaryMetricName: primaryMetricView?.name || "Ponteiro a definir",
     primaryMetricValue: primaryMetricView?.displayValue || "Sem baseline",
-    primaryMetricSource: primaryMetricView?.source || "Configuração local",
+    primaryMetricSource: primaryMetricView?.source || "Ainda não definido",
     dataStatus: primaryMetricView?.dataType || "Sem baseline",
     metricCount,
     noBaselineCount,
@@ -374,10 +270,18 @@ function buildPillarSummary(
     maturityLevels: maturityDefinitionsByPillar[pillarConfig.pillar].levels,
     pains: pillarConfig.pains,
     notes: pillarConfig.notes,
-    metrics: selectedMetricViews.length ? selectedMetricViews : buildFallbackMetricViews(fallback),
+    metrics: selectedMetricViews,
     relatedInitiatives,
     evidence,
-    nextDecision: relatedInitiatives.find((cycle) => cycle.nextDecision)?.nextDecision || "Definir próxima iniciativa conectada ao ponteiro crítico",
+    nextDecision: relatedInitiatives.find((cycle) => cycle.nextDecision)?.nextDecision || (
+      !metricCount
+        ? "Definir o primeiro ponteiro deste pilar"
+        : !primaryMetricView
+          ? "Definir qual ponteiro é crítico neste pilar"
+          : primaryMetricView.dataType === "Sem baseline" || primaryMetricView.dataType === "Fonte pendente"
+            ? "Informar baseline e fonte do ponteiro crítico"
+            : "Definir próxima iniciativa conectada ao ponteiro crítico"
+    ),
   };
 }
 
@@ -433,16 +337,12 @@ function buildExecutiveReading(pillars: OverviewPillarSummary[], prioritizedInit
 
 export function buildPerformanceOverviewModel(company: Company, cycles: PdcaCycle[]): PerformanceOverviewModel {
   const configuration = getClientConfiguration(company);
-  const fallbackHighlights = getOverviewPillarHighlights(company);
-  const fallbackByPillar = new Map(fallbackHighlights.map((highlight) => [highlight.id, highlight]));
   const metricById = new Map(configuration.metrics.map((metric) => [metric.id, metric]));
   const pillarSummaries = configuration.pillars.map((pillar) => {
     const metrics = pillar.selectedMetricIds
       .map((metricId) => metricById.get(metricId))
       .filter((metric): metric is ClientMetricConfig => Boolean(metric));
-    const fallback = fallbackByPillar.get(fallbackHighlightIdByPillar[pillar.pillar]);
-
-    return buildPillarSummary(company, pillar, metrics, cycles, fallback);
+    return buildPillarSummary(company, pillar, metrics, cycles);
   });
   const prioritizedInitiatives = getPrioritizedOverviewInitiatives(cycles);
 

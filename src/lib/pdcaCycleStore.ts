@@ -42,7 +42,17 @@ function savePdcaCycles(cycles: PdcaCycle[]) {
 
 function readAllPdcaCycles() {
   const { data: storedCycles } = readJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, isPdcaCycleList);
-  return storedCycles?.map(normalizeStoredCycle) || [];
+  const sourceCycles = storedCycles || [];
+  const normalizedCycles = sourceCycles.map(normalizeStoredCycle);
+
+  if (JSON.stringify(sourceCycles) !== JSON.stringify(normalizedCycles)) {
+    savePdcaCycles(normalizedCycles);
+    new Set(normalizedCycles.map((cycle) => cycle.companyId)).forEach((companyId) => {
+      syncCompanyCyclesFromList(companyId, normalizedCycles);
+    });
+  }
+
+  return normalizedCycles;
 }
 
 function syncCompanyCyclesFromList(companyId: string, cycles: PdcaCycle[]) {
@@ -83,7 +93,7 @@ function normalizeActions(cycle: PdcaCycle): PdcaAction[] {
       title: cycle.plannedAction || cycle.nextDecision || "Definir próxima ação",
       owner: cycle.owner,
       deadline: cycle.deadline,
-      status: cycle.pdcaStatus === "Padronizar" ? "Concluída" : cycle.pdcaStatus === "Pausar" ? "Bloqueada" : "Aberta",
+      status: cycle.pdcaStatus === "Concluída" ? "Concluída" : cycle.pdcaStatus === "Arquivada" ? "Bloqueada" : "Aberta",
     },
   ];
 }
@@ -91,17 +101,33 @@ function normalizeActions(cycle: PdcaCycle): PdcaAction[] {
 function normalizeStoredCycle(cycle: PdcaCycle, index = 0): PdcaCycle {
   const affectedPointer = normalizeAffectedPointer(cycle.affectedPointer);
   const firstEvidenceDate = cycle.evidences[0]?.date;
+  const pdcaStatus = normalizePdcaStatus(cycle.pdcaStatus);
 
   return {
     ...cycle,
     affectedPointer,
-    startDate: cycle.startDate || firstEvidenceDate || "2026-06-30",
+    pdcaStatus,
+    startDate: cycle.startDate || firstEvidenceDate,
     endDate: cycle.endDate || cycle.deadline,
-    baseline: cycle.baseline || "Linha de base a confirmar",
-    target: cycle.target || cycle.nextDecision || "Objetivo a confirmar",
+    baseline: cycle.baseline || "",
+    target: cycle.target || "",
+    metricValueOrigin: cycle.metricValueOrigin || (cycle.dataType === "Estimado" ? "estimated" : cycle.dataType === "Real" ? "informed" : undefined),
+    teamMembers: normalizeTeamMembers(cycle.teamMembers || []),
     priorityOrder: typeof cycle.priorityOrder === "number" ? cycle.priorityOrder : index,
-    actions: normalizeActions({ ...cycle, affectedPointer }),
+    actions: normalizeActions({ ...cycle, affectedPointer, pdcaStatus }),
   };
+}
+
+function normalizeTeamMembers(members: string[]) {
+  const seen = new Set<string>();
+  return members
+    .map((member) => member.trim().replace(/\s+/g, " "))
+    .filter((member) => {
+      const key = member.toLocaleLowerCase("pt-BR");
+      if (!member || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
 function cycleFromImprovement(improvement: Improvement, company: Company, index: number): PdcaCycle {
@@ -143,8 +169,12 @@ function cycleFromImprovement(improvement: Improvement, company: Company, index:
 }
 
 function normalizePdcaStatus(status: string): PdcaStatus {
-  if (status === "Executar" || status === "Medir" || status === "Aprender" || status === "Padronizar" || status === "Pausar") return status;
-  return "Planejar";
+  if (status === "Em refinamento" || status === "Em desenvolvimento" || status === "Em validação" || status === "Concluída" || status === "Descartada" || status === "Arquivada") return status;
+  if (status === "Executar" || status === "Em andamento") return "Em desenvolvimento";
+  if (status === "Medir" || status === "Aprender" || status === "Aguardando") return "Em validação";
+  if (status === "Padronizar" || status === "Concluído") return "Concluída";
+  if (status === "Pausar" || status === "Pausado") return "Arquivada";
+  return "Em refinamento";
 }
 
 function getSeedCyclesForCompany(company: Company) {
@@ -179,7 +209,7 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     companyId: company.id,
     title: input.title.trim(),
     affectedPointer: input.affectedPointer.trim(),
-    affectedFlow: input.affectedFlow.trim(),
+    affectedFlow: input.affectedFlow?.trim() || undefined,
     hypothesis: input.hypothesis.trim(),
     plannedAction: input.plannedAction.trim() || input.nextDecision.trim() || input.hypothesis.trim(),
     whyItMatters: input.whyItMatters.trim(),
@@ -189,18 +219,21 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     estimatedImpact: Number(input.estimatedImpact) || 0,
     nextDecision: input.nextDecision.trim(),
     dataType: input.dataType,
-    startDate: input.startDate?.trim() || "2026-06-30",
+    startDate: input.startDate?.trim() || undefined,
     endDate: input.deadline.trim() || input.endDate?.trim(),
-    baseline: input.baseline?.trim() || "Linha de base a confirmar",
-    target: input.target?.trim() || input.nextDecision.trim() || "Objetivo a confirmar",
+    baseline: input.baseline?.trim() || "",
+    target: input.target?.trim() || "",
     pillarId: input.pillarId,
     painLabel: input.painLabel?.trim() || undefined,
     metricId: input.metricId,
     metricNameSnapshot: input.metricNameSnapshot?.trim() || input.affectedPointer.trim() || undefined,
     metricUnit: input.metricUnit,
     metricDirection: input.metricDirection,
+    metricSourceSnapshot: input.metricSourceSnapshot?.trim() || undefined,
+    metricValueOrigin: input.metricValueOrigin,
     baselineValue: typeof input.baselineValue === "number" ? input.baselineValue : undefined,
     targetValue: typeof input.targetValue === "number" ? input.targetValue : undefined,
+    teamMembers: normalizeTeamMembers(input.teamMembers || []),
     priorityOrder: typeof input.priorityOrder === "number" ? input.priorityOrder : companyCycles.length,
     actions: input.actions || existing?.actions || [],
     evidences: existing?.evidences || [],
@@ -315,7 +348,7 @@ export function addBvbpPdcaEvidence(cycleId: string, input: EvidenceInput) {
 }
 
 export function buildBvbpWeeklySummary(cycles: PdcaCycle[]) {
-  const activeCycle = cycles.find((cycle) => cycle.pdcaStatus === "Executar") || cycles.find((cycle) => cycle.pdcaStatus === "Medir") || cycles[0];
+  const activeCycle = cycles.find((cycle) => cycle.pdcaStatus === "Em desenvolvimento") || cycles.find((cycle) => cycle.pdcaStatus === "Em validação") || cycles[0];
   const latestEvidence = cycles
     .flatMap((cycle) => cycle.evidences.map((evidence) => ({ cycle, evidence })))
     .sort((a, b) => b.evidence.date.localeCompare(a.evidence.date))[0];

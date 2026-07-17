@@ -31,7 +31,7 @@ interface PerformanceDetailDialogProps {
 }
 
 function formatImpact(value: PerformanceDetail["estimatedImpact"]) {
-  if (typeof value === "number") return value ? `${formatCurrency(value)}/mês` : "Estimado";
+  if (typeof value === "number") return value ? `${formatCurrency(value)}/mês` : "Impacto ainda não mensurado";
   return value;
 }
 

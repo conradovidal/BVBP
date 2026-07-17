@@ -1,24 +1,25 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "green" | "orange" | "red" | "blue" | "gray";
+type Tone = "green" | "orange" | "red" | "blue" | "lightBlue" | "gray";
 
 const toneClasses: Record<Tone, string> = {
   green: "text-bvbp-positive before:bg-bvbp-positive",
-  orange: "text-bvbp-caution before:bg-bvbp-gold",
+  orange: "text-bvbp-caution before:bg-bvbp-caution",
   red: "text-bvbp-risk before:bg-bvbp-risk",
   blue: "text-bvbp-forest before:bg-bvbp-forest",
+  lightBlue: "text-bvbp-signal before:bg-bvbp-signal/65",
   gray: "text-bvbp-muted-ink before:bg-bvbp-muted-ink/45",
 };
 
 function toneForLabel(label: string): Tone {
-  if (["Ativo", "Baixo", "Baixa", "Alta", "Em andamento", "Executar", "Medir", "Padronizar", "Fazer agora", "Forte", "Real"].includes(label)) {
+  if (["Ativo", "Baixo", "Baixa", "Alta", "Em andamento", "Fazer agora", "Forte", "Real", "Informado", "Concluída"].includes(label)) {
     return "green";
   }
-  if (["Onboarding", "Médio", "Média", "Planejado", "Planejar", "Monitorar", "Atenção", "Testar", "Validar", "Aprender", "Em desenho", "Estimado"].includes(label)) {
-    return "orange";
-  }
-  if (["Alto", "Atrasado"].includes(label)) return "red";
-  if (["Pausar", "Pausado", "Mockado"].includes(label)) return "gray";
+  if (["Em desenvolvimento"].includes(label)) return "blue";
+  if (["Em validação"].includes(label)) return "lightBlue";
+  if (["Alto", "Atrasado", "Atenção", "Tensão", "Descartada", "Fonte pendente"].includes(label)) return "red";
+  if (["Em refinamento", "Arquivada", "Pausar", "Pausado", "Mockado", "Estimado", "Sem baseline", "Sem ponteiros", "Crítico a definir"].includes(label)) return "gray";
+  if (["Médio", "Média", "Monitorar"].includes(label)) return "orange";
   return "blue";
 }
 

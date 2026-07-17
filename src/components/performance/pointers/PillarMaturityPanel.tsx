@@ -1,5 +1,6 @@
 import type { PointerPillarDiagnostic } from "@/lib/performancePointersModel";
 import { cn } from "@/lib/utils";
+import { maturityActiveCardClass } from "@/lib/maturityColors";
 
 interface PillarMaturityPanelProps {
   maturity: PointerPillarDiagnostic["maturity"];
@@ -37,7 +38,7 @@ export function PillarMaturityPanel({ maturity }: PillarMaturityPanelProps) {
             className={cn(
               "rounded-[8px] border px-3 py-2",
               level.level === maturity.currentLevel
-                ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory"
+                ? maturityActiveCardClass(level.level)
                 : "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-muted-ink",
             )}
           >

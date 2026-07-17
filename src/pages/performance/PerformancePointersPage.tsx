@@ -62,7 +62,7 @@ const PerformancePointersPage = () => {
             title="Ponteiros acompanhados"
             description={`${diagnostic.activePillar.label} · ${diagnostic.activePillar.description}`}
           />
-          <TrackedMetricsGrid metrics={diagnostic.metrics} />
+          <TrackedMetricsGrid metrics={diagnostic.metrics} criticalMetricId={diagnostic.criticalMetricId} />
         </section>
 
         <section className="grid gap-4 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">

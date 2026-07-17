@@ -17,11 +17,11 @@ export function CriticalPointerPanel({ pointer }: CriticalPointerPanelProps) {
   }
 
   return (
-    <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-none">
+    <article className="rounded-[8px] border border-bvbp-gold/70 bg-bvbp-raised p-5 shadow-none">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
-            Ponteiro crítico
+            <span className="text-bvbp-gold">Ponteiro crítico</span>
           </p>
           <h2 className="mt-3 font-heading text-2xl font-semibold leading-tight text-bvbp-ink">{pointer.name}</h2>
         </div>
