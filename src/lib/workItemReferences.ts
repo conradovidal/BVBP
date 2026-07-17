@@ -1,5 +1,5 @@
 import type { Company, PdcaCycle } from "@/data/performanceSystem";
-import { normalizeCompanyReferenceCode } from "@/lib/clientPortalStore";
+import { deriveCompanyReferenceCode, normalizeCompanyReferenceCode } from "@/lib/clientPortalStore";
 import { PORTAL_STORAGE_KEYS, readJsonStorage } from "@/lib/portalStorage";
 
 interface ReferencedActivity {
@@ -11,7 +11,9 @@ const isLooseCycleList = (value: unknown): value is PdcaCycle[] => Array.isArray
 const isLooseActivityList = (value: unknown): value is ReferencedActivity[] => Array.isArray(value);
 
 export function getCompanyReferenceCode(company: Pick<Company, "name" | "referenceCode">) {
-  return normalizeCompanyReferenceCode(company.referenceCode || company.name) || "ITEM";
+  return (company.referenceCode
+    ? normalizeCompanyReferenceCode(company.referenceCode)
+    : deriveCompanyReferenceCode(company.name)) || "ITEM";
 }
 
 export function formatWorkItemReference(company: Pick<Company, "name" | "referenceCode">, referenceNumber?: number) {
