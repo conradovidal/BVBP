@@ -25,6 +25,7 @@ export interface OverviewMetricView {
   currentValue?: number;
   displayValue: string;
   target?: string;
+  benchmark?: string;
   source: string;
   owner?: string;
   custom: boolean;
@@ -72,6 +73,13 @@ export interface PerformanceOverviewModel {
   pillarSummaries: OverviewPillarSummary[];
   maturitySummaries: OverviewPillarSummary[];
   prioritizedInitiatives: PdcaCycle[];
+}
+
+export interface PortfolioNextDecision {
+  title: string;
+  pillarLabel: string;
+  context: string;
+  owner?: string;
 }
 
 const pillarLabels: Record<BvbpPillarId, string> = {
@@ -149,6 +157,7 @@ function metricViewFromConfig(metric: ClientMetricConfig): OverviewMetricView {
     currentValue: canDisplayValue ? metric.currentValue : undefined,
     displayValue: canDisplayValue ? formatOverviewMetricValue(metric.unit, metric.currentValue) : dataType,
     target: metric.target,
+    benchmark: metric.benchmark,
     source: metric.source || "Fonte não informada",
     owner: metric.owner,
     custom: metric.custom,
@@ -285,7 +294,7 @@ function buildPillarSummary(
   };
 }
 
-function getAttentionPillar(pillars: OverviewPillarSummary[]) {
+export function getAttentionPillar(pillars: OverviewPillarSummary[]) {
   return [...pillars].sort((a, b) => {
     const maturityDiff = a.maturityLevel - b.maturityLevel;
     if (maturityDiff) return maturityDiff;
@@ -298,6 +307,55 @@ function getAttentionPillar(pillars: OverviewPillarSummary[]) {
 
     return bvbpPillarIds.indexOf(a.id) - bvbpPillarIds.indexOf(b.id);
   })[0];
+}
+
+function getPillarTransparencyGap(pillar: OverviewPillarSummary) {
+  const criticalMetric = pillar.metrics.find((metric) => metric.name === pillar.primaryMetricName);
+
+  if (!pillar.metricCount) return `Selecionar o primeiro ponteiro de ${pillar.label}`;
+  if (!criticalMetric) return `Definir o ponteiro crítico de ${pillar.label}`;
+  if (criticalMetric.dataType === "Sem baseline") return `Informar o baseline do ponteiro crítico de ${pillar.label}`;
+  if (criticalMetric.dataType === "Fonte pendente") return `Informar a fonte do ponteiro crítico de ${pillar.label}`;
+  if (!criticalMetric.target?.trim()) return `Definir a meta do ponteiro crítico de ${pillar.label}`;
+  if (!criticalMetric.benchmark?.trim()) return `Registrar o benchmark do ponteiro crítico de ${pillar.label}`;
+  return undefined;
+}
+
+export function getPortfolioNextDecision(model: PerformanceOverviewModel): PortfolioNextDecision {
+  const orderedPillars = [...model.pillarSummaries].sort((a, b) => {
+    const maturityDiff = a.maturityLevel - b.maturityLevel;
+    return maturityDiff || bvbpPillarIds.indexOf(a.id) - bvbpPillarIds.indexOf(b.id);
+  });
+
+  for (const pillar of orderedPillars) {
+    const gap = getPillarTransparencyGap(pillar);
+    if (gap) {
+      return {
+        title: gap,
+        pillarLabel: pillar.label,
+        context: `Completar a Base BVBP · maturidade ${pillar.maturityLevel}/5`,
+      };
+    }
+  }
+
+  const attentionPillar = getAttentionPillar(model.pillarSummaries);
+  const activeInitiative = sortOverviewInitiatives(attentionPillar.relatedInitiatives)
+    .find((cycle) => isOverviewCycleActive(cycle) && cycle.nextDecision.trim());
+
+  if (activeInitiative) {
+    return {
+      title: activeInitiative.nextDecision,
+      pillarLabel: attentionPillar.label,
+      context: `${attentionPillar.primaryMetricName} · maturidade ${attentionPillar.maturityLevel}/5`,
+      owner: activeInitiative.owner,
+    };
+  }
+
+  return {
+    title: `Criar a primeira iniciativa para mover ${attentionPillar.primaryMetricName}`,
+    pillarLabel: attentionPillar.label,
+    context: `Ponteiro crítico definido · maturidade ${attentionPillar.maturityLevel}/5`,
+  };
 }
 
 function getMainOpportunity(attentionPillar: OverviewPillarSummary, prioritizedInitiatives: PdcaCycle[]) {

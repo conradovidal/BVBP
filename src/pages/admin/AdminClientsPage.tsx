@@ -8,9 +8,13 @@ import { EmptyState } from "@/components/performance/EmptyState";
 import { MetricCard } from "@/components/performance/MetricCard";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { getExternalPortalCompanies, setActiveCompanyId } from "@/lib/clientPortalStore";
-import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 import { getPdcaCyclesForCompany } from "@/lib/pdcaCycleStore";
-import { isOverviewCycleActive } from "@/lib/performanceOverviewModel";
+import {
+  buildPerformanceOverviewModel,
+  getAttentionPillar,
+  getPortfolioNextDecision,
+  isOverviewCycleActive,
+} from "@/lib/performanceOverviewModel";
 import { formatNumber } from "@/lib/performanceFormatters";
 
 const AdminClientsPage = () => {
@@ -18,20 +22,23 @@ const AdminClientsPage = () => {
   const [, refreshPortfolio] = useState(0);
   const companies = getExternalPortalCompanies();
   const portfolioItems = companies.map((company) => {
-    const configuration = getClientConfiguration(company);
     const initiatives = getPdcaCyclesForCompany(company);
     const activeInitiatives = initiatives.filter(isOverviewCycleActive);
-    const nextDecision = activeInitiatives.find((initiative) => initiative.nextDecision.trim())?.nextDecision;
-    const pointerCount = configuration.pillars.reduce((total, pillar) => total + pillar.selectedMetricIds.length, 0);
-    const criticalCount = configuration.pillars.filter((pillar) => Boolean(pillar.criticalMetricId)).length;
+    const overview = buildPerformanceOverviewModel(company, initiatives);
+    const attentionPillar = getAttentionPillar(overview.pillarSummaries);
+    const nextDecision = getPortfolioNextDecision(overview);
+    const pointerCount = overview.pillarSummaries.reduce((total, pillar) => total + pillar.metricCount, 0);
+    const criticalCount = overview.pillarSummaries.filter((pillar) => pillar.primaryMetricName !== "Ponteiro a definir").length;
+    const minimumMaturity = Math.min(...overview.pillarSummaries.map((pillar) => pillar.maturityLevel));
 
     return {
       company,
       pointerCount,
       criticalCount,
       activeInitiativeCount: activeInitiatives.length,
-      nextDecision: nextDecision || "Definir próxima ação",
-      owner: company.bvbpOwner || "A definir",
+      minimumMaturity,
+      attentionPillar,
+      nextDecision,
     };
   });
   const prospectCount = companies.filter((company) => (company.relationshipStatus || company.status) === "Prospect").length;
@@ -65,24 +72,30 @@ const AdminClientsPage = () => {
         <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
           {portfolioItems.length ? (
             <>
-              <div className="hidden grid-cols-[minmax(150px,1.1fr)_110px_minmax(150px,0.8fr)_minmax(180px,1.2fr)_44px] gap-3 border-b border-bvbp-ink/10 px-4 py-3 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
-                <span>Cliente</span><span>Status</span><span>Ponteiros</span><span>Próxima decisão</span><span className="sr-only">Ações</span>
+              <div className="hidden grid-cols-[minmax(150px,0.9fr)_minmax(170px,0.9fr)_minmax(220px,1.4fr)_104px] gap-4 border-b border-bvbp-ink/10 px-4 py-3 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+                <span>Cliente</span><span>Diagnóstico</span><span>Próxima decisão</span><span>Ações</span>
               </div>
               <div className="divide-y divide-bvbp-ink/10">
-                {portfolioItems.map(({ company, pointerCount: itemPointerCount, criticalCount, nextDecision, owner }) => (
-                  <article key={company.id} className="grid gap-3 p-4 lg:grid-cols-[minmax(150px,1.1fr)_110px_minmax(150px,0.8fr)_minmax(180px,1.2fr)_44px] lg:items-center">
+                {portfolioItems.map(({ company, pointerCount: itemPointerCount, criticalCount, minimumMaturity, attentionPillar, nextDecision }) => (
+                  <article key={company.id} className="grid gap-4 p-4 lg:grid-cols-[minmax(150px,0.9fr)_minmax(170px,0.9fr)_minmax(220px,1.4fr)_104px] lg:items-center">
                     <div className="min-w-0">
                       <h2 className="truncate font-heading text-base font-semibold text-bvbp-ink">{company.name}</h2>
                       <p className="mt-1 truncate text-xs text-bvbp-muted-ink">{company.segment || "Segmento a definir"}</p>
-                    </div>
-                    <div><StatusBadge label={company.relationshipStatus || company.status || "Prospect"} /></div>
-                    <div className="text-sm text-bvbp-ink">
-                      <p className="font-semibold">{itemPointerCount} selecionado(s)</p>
-                      <p className="mt-1 text-xs text-bvbp-muted-ink">{criticalCount} crítico(s)</p>
+                      <div className="mt-2"><StatusBadge label={company.relationshipStatus || company.status || "Prospect"} /></div>
                     </div>
                     <div className="min-w-0 text-sm text-bvbp-ink">
-                      <p className="line-clamp-2">{nextDecision}</p>
-                      <p className="mt-1 text-xs text-bvbp-muted-ink">Responsável: {owner}</p>
+                      <p className="font-semibold">{attentionPillar.label} · {attentionPillar.primaryMetricName}</p>
+                      <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">
+                        Maturidade mínima {minimumMaturity}/5 · {criticalCount}/4 críticos
+                      </p>
+                      <p className="text-xs leading-5 text-bvbp-muted-ink">{itemPointerCount} ponteiros acompanhados</p>
+                    </div>
+                    <div className="min-w-0 text-sm text-bvbp-ink">
+                      <p className="line-clamp-2 font-medium leading-5">{nextDecision.title}</p>
+                      <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">
+                        {nextDecision.pillarLabel} · {nextDecision.context}
+                        {nextDecision.owner ? ` · ${nextDecision.owner}` : ""}
+                      </p>
                     </div>
                     <AdminClientActions
                       companyId={company.id}
