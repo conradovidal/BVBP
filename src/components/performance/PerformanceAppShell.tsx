@@ -1,11 +1,13 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   Check,
+  ChevronDown,
   ChevronsUpDown,
   LayoutDashboard,
   ListChecks,
   LogOut,
   Target,
+  UserRound,
   UsersRound,
 } from "lucide-react";
 import { useState } from "react";
@@ -137,7 +139,6 @@ export function PerformanceAppShell() {
   const session = getPerformanceSession();
   const accessibleCompanies = getAccessibleClientCompanies(session);
   const [activeCompany, setActiveCompany] = useState<Company | undefined>(() => getActiveClientCompanyForSession(session));
-  const canSwitchWorkspace = accessibleCompanies.length > 1;
   const isStaff = isBvbpStaff(session);
 
   const handleLogout = async () => {
@@ -183,15 +184,15 @@ export function PerformanceAppShell() {
   }
 
   return (
-    <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="hidden border-r border-bvbp-gold/20 bg-bvbp-forest-dark text-bvbp-ivory lg:flex lg:min-h-screen lg:flex-col">
+    <div className="min-h-screen bg-bvbp-ivory text-bvbp-ink lg:grid lg:h-dvh lg:grid-cols-[260px_minmax(0,1fr)] lg:overflow-hidden">
+      <aside className="hidden border-r border-bvbp-gold/20 bg-bvbp-forest-dark text-bvbp-ivory lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col lg:overflow-hidden">
         <div className="border-b border-bvbp-ivory/10 px-6 py-6">
           <a href="/" aria-label="Voltar para o site BVBP">
             <BrandLockup tone="light" size="lg" />
           </a>
         </div>
 
-        <nav className="flex-1 px-3 py-5">
+        <nav className="flex-1 overflow-y-auto px-3 py-5">
           {isStaff && (
             <NavLink
               to="/app/admin"
@@ -235,64 +236,65 @@ export function PerformanceAppShell() {
             })}
           </div>
         </nav>
-      </aside>
 
-      <div className="min-w-0">
-        <header className="sticky top-0 z-40 border-b border-bvbp-ink/10 bg-bvbp-raised/95 backdrop-blur">
-          <div className="flex min-h-16 flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-            <div className="min-w-0">
-              <p className="font-label text-[10px] font-medium uppercase tracking-[0.14em] text-bvbp-muted-ink">
-                Cliente
-              </p>
-              <div className="mt-1 hidden lg:block">
-                <p className="truncate font-heading text-lg font-semibold text-bvbp-ink">{activeCompany.name}</p>
-              </div>
-              <div className="mt-2 lg:hidden">
-                {canSwitchWorkspace ? (
-                  <WorkspaceSwitcher
-                    activeCompany={activeCompany}
-                    companies={accessibleCompanies}
-                    onCompanyChange={handleCompanyChange}
-                    variant="light"
-                  />
-                ) : (
-                  <p className="truncate font-heading text-lg font-semibold text-bvbp-ink">{activeCompany.name}</p>
-                )}
-              </div>
-              <p className="mt-1 text-sm text-bvbp-muted-ink">
-                {activeCompany.segment || "Workspace de performance"}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between gap-3 lg:justify-end">
-              <div className="min-w-0 text-left lg:text-right">
-                <p className="truncate text-sm font-semibold text-bvbp-ink">{session?.user.name}</p>
-                <p className="truncate text-xs text-bvbp-muted-ink">{session?.user.email}</p>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-[8px] border-bvbp-ink/15 bg-transparent text-bvbp-ink hover:bg-bvbp-inset"
-                onClick={() => void handleLogout()}
+        <div className="border-t border-bvbp-ivory/10 p-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 rounded-[8px] px-3 py-2.5 text-left transition-colors hover:bg-bvbp-ivory/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bvbp-gold"
               >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-bvbp-ivory/10">
+                  <UserRound className="h-4 w-4" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-semibold">{session?.user.name}</span>
+                  <span className="block truncate text-xs text-bvbp-ivory/60">{session?.user.roleLabel}</span>
+                </span>
+                <ChevronDown className="h-4 w-4 text-bvbp-ivory/60" aria-hidden="true" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="start" className="w-[228px] rounded-[8px]">
+              <DropdownMenuLabel className="font-normal">
+                <span className="block truncate text-sm font-semibold text-bvbp-ink">{session?.user.name}</span>
+                <span className="block truncate text-xs text-bvbp-muted-ink">{session?.user.email}</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <NavLink to="/app/performance/profile" className="gap-2">
+                  <UserRound className="h-4 w-4" aria-hidden="true" />
+                  Acessar perfil
+                </NavLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="gap-2" onSelect={() => void handleLogout()}>
                 <LogOut className="h-4 w-4" aria-hidden="true" />
                 Sair
-              </Button>
-            </div>
-          </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </aside>
 
-          <nav className="flex gap-2 overflow-x-auto border-t border-bvbp-ink/10 px-4 py-2 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden lg:hidden">
-            {isStaff && (
-              <NavLink
-                to="/app/admin"
-                className="inline-flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-sm font-semibold text-bvbp-muted-ink transition-colors hover:bg-bvbp-inset hover:text-bvbp-ink"
-              >
-                <UsersRound className="h-4 w-4" aria-hidden="true" />
-                Portal BVBP
-              </NavLink>
-            )}
-            {navItems
-              .map((item) => {
+      <div className="min-w-0 lg:h-dvh lg:overflow-y-auto">
+        <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-6">
+          <div className="mb-5 space-y-3 border-b border-bvbp-ink/10 pb-4 lg:hidden">
+            <WorkspaceSwitcher
+              activeCompany={activeCompany}
+              companies={accessibleCompanies}
+              onCompanyChange={handleCompanyChange}
+              variant="light"
+            />
+            <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden">
+              {isStaff && (
+                <NavLink
+                  to="/app/admin"
+                  className="inline-flex shrink-0 items-center gap-2 rounded-[8px] px-3 py-2 text-sm font-semibold text-bvbp-muted-ink transition-colors hover:bg-bvbp-inset hover:text-bvbp-ink"
+                >
+                  <UsersRound className="h-4 w-4" aria-hidden="true" />
+                  Portal BVBP
+                </NavLink>
+              )}
+              {navItems.map((item) => {
                 const Icon = item.icon;
 
                 return (
@@ -313,10 +315,8 @@ export function PerformanceAppShell() {
                   </NavLink>
                 );
               })}
-          </nav>
-        </header>
-
-        <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            </nav>
+          </div>
           <Outlet context={{ activeCompany }} />
         </main>
       </div>

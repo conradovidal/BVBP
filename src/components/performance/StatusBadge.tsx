@@ -3,12 +3,12 @@ import { cn } from "@/lib/utils";
 type Tone = "green" | "orange" | "red" | "blue" | "lightBlue" | "gray";
 
 const toneClasses: Record<Tone, string> = {
-  green: "text-bvbp-positive before:bg-bvbp-positive",
-  orange: "text-bvbp-caution before:bg-bvbp-caution",
-  red: "text-bvbp-risk before:bg-bvbp-risk",
-  blue: "text-bvbp-forest before:bg-bvbp-forest",
-  lightBlue: "text-bvbp-signal before:bg-bvbp-signal/65",
-  gray: "text-bvbp-muted-ink before:bg-bvbp-muted-ink/45",
+  green: "border-bvbp-positive/20 bg-bvbp-positive/10 text-bvbp-positive",
+  orange: "border-bvbp-caution/20 bg-bvbp-caution/10 text-bvbp-caution",
+  red: "border-bvbp-risk/20 bg-bvbp-risk/10 text-bvbp-risk",
+  blue: "border-bvbp-signal/25 bg-bvbp-signal/10 text-bvbp-signal",
+  lightBlue: "border-bvbp-signal/15 bg-bvbp-signal/5 text-bvbp-signal",
+  gray: "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-muted-ink",
 };
 
 function toneForLabel(label: string): Tone {
@@ -32,8 +32,7 @@ export function StatusBadge({ label, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "font-label inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] font-medium uppercase leading-none tracking-[0.04em]",
-        "before:block before:h-1.5 before:w-1.5 before:rounded-full",
+        "font-label inline-flex min-h-6 items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase leading-none tracking-[0.05em]",
         toneClasses[toneForLabel(label)],
         className
       )}

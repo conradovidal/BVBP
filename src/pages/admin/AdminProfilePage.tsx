@@ -2,7 +2,11 @@ import { Helmet } from "react-helmet-async";
 import { Mail, ShieldCheck, UserRound } from "lucide-react";
 import { getPerformanceSession } from "@/lib/performanceAuth";
 
-const AdminProfilePage = () => {
+interface AdminProfilePageProps {
+  showPageTitle?: boolean;
+}
+
+const AdminProfilePage = ({ showPageTitle = false }: AdminProfilePageProps) => {
   const session = getPerformanceSession();
 
   return (
@@ -10,6 +14,10 @@ const AdminProfilePage = () => {
       <Helmet>
         <title>Meu perfil | Portal BVBP</title>
       </Helmet>
+
+      {showPageTitle ? (
+        <h1 className="mb-5 font-heading text-3xl font-semibold tracking-tight text-bvbp-ink">Meu perfil</h1>
+      ) : null}
 
       <section className="max-w-2xl rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-6">
         <div className="flex items-start gap-4">

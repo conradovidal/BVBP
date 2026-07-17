@@ -44,7 +44,7 @@ export function InitiativeStatusMenu({ status, onChange, className }: Initiative
             onClick={() => onChange(item)}
             className="cursor-pointer items-center justify-between rounded-[8px] px-3 py-2 text-sm focus:bg-bvbp-inset focus:text-bvbp-ink"
           >
-            {item}
+            <StatusBadge label={item} />
             {item === status && <Check className="h-4 w-4 text-bvbp-forest" aria-hidden="true" />}
           </DropdownMenuItem>
         ))}
