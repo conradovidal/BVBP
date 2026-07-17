@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation, useOutletContext } from "react-router-dom";
+import { useLocation, useOutletContext, useSearchParams } from "react-router-dom";
 import {
   closestCenter,
   DndContext,
@@ -27,9 +27,8 @@ import {
 } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/performance/EmptyState";
 import { InitiativeDetailPanel } from "@/components/performance/initiatives/InitiativeDetailPanel";
+import { InitiativePillarContext } from "@/components/performance/initiatives/InitiativePillarContext";
 import { InitiativePriorityList } from "@/components/performance/initiatives/InitiativePriorityList";
-import { InitiativeSummaryCards } from "@/components/performance/initiatives/InitiativeSummaryCards";
-import { SectionHeader } from "@/components/performance/SectionHeader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -151,12 +150,14 @@ function blankActivityForm(initiative?: PdcaCycle | null): InitiativeActivityInp
 const PerformanceExecutionPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isAdminPortal = location.pathname.startsWith("/app/admin");
   const canManageInitiatives = isBvbpStaff(getPerformanceSession());
   const configuration = useMemo(() => getClientConfiguration(activeCompany), [activeCompany]);
   const [initiatives, setInitiatives] = useState<PdcaCycle[]>(() => getPdcaCyclesForCompany(activeCompany));
   const [activities, setActivities] = useState<InitiativeActivity[]>(() => getActivitiesForInitiatives(getPdcaCyclesForCompany(activeCompany)));
-  const [selectedInitiativeId, setSelectedInitiativeId] = useState<string | null>(() => initiatives[0]?.id || null);
+  const [selectedInitiativeId, setSelectedInitiativeId] = useState<string | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
   const [initiativeForm, setInitiativeForm] = useState<PdcaCycleInput>(blankInitiativeForm);
   const [evidenceForm, setEvidenceForm] = useState<EvidenceInput>(blankEvidenceForm);
@@ -164,7 +165,7 @@ const PerformanceExecutionPage = () => {
   const [formError, setFormError] = useState("");
   const [teamMembersInput, setTeamMembersInput] = useState("");
   const [pillarFilter, setPillarFilter] = useState<"all" | BvbpPillarId>("all");
-  const [archiveFilter, setArchiveFilter] = useState<"flow" | "archived">("flow");
+  const [statusFilter, setStatusFilter] = useState<"all" | PdcaStatus>("all");
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -175,29 +176,40 @@ const PerformanceExecutionPage = () => {
 
     setInitiatives(nextInitiatives);
     setActivities(getActivitiesForInitiatives(nextInitiatives));
-    setSelectedInitiativeId(nextInitiatives[0]?.id || null);
+    setSelectedInitiativeId(null);
+    setIsDetailDialogOpen(false);
     setIsFormDialogOpen(false);
     setEvidenceForm(blankEvidenceForm);
     setActivityForm(blankActivityForm(nextInitiatives[0]));
     setPillarFilter("all");
-    setArchiveFilter("flow");
+    setStatusFilter("all");
   }, [activeCompany]);
 
+  useEffect(() => {
+    const requestedInitiativeId = searchParams.get("initiative");
+    if (!requestedInitiativeId || !initiatives.some((initiative) => initiative.id === requestedInitiativeId)) return;
+
+    setSelectedInitiativeId(requestedInitiativeId);
+    setIsDetailDialogOpen(true);
+  }, [initiatives, searchParams]);
+
   const sortedInitiatives = useMemo(() => getSortedInitiatives(initiatives), [initiatives]);
-  const archiveScopedInitiatives = useMemo(
-    () => sortedInitiatives.filter((initiative) => archiveFilter === "archived" ? initiative.pdcaStatus === "Arquivada" : initiative.pdcaStatus !== "Arquivada"),
-    [archiveFilter, sortedInitiatives],
-  );
   const filteredInitiatives = useMemo(
-    () => archiveScopedInitiatives.filter((initiative) => pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter)),
-    [archiveScopedInitiatives, pillarFilter],
+    () => sortedInitiatives.filter((initiative) => (
+      initiative.pdcaStatus !== "Arquivada" &&
+      (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter)) &&
+      (statusFilter === "all" || initiative.pdcaStatus === statusFilter)
+    )),
+    [pillarFilter, sortedInitiatives, statusFilter],
   );
-  const filteredInitiativeIds = useMemo(() => new Set(filteredInitiatives.map((initiative) => initiative.id)), [filteredInitiatives]);
-  const filteredActivities = useMemo(() => activities.filter((activity) => filteredInitiativeIds.has(activity.initiativeId)), [activities, filteredInitiativeIds]);
-  const selectedInitiative =
-    filteredInitiatives.find((initiative) => initiative.id === selectedInitiativeId) ||
-    filteredInitiatives[0] ||
-    null;
+  const archivedInitiatives = useMemo(
+    () => sortedInitiatives.filter((initiative) => (
+      initiative.pdcaStatus === "Arquivada" &&
+      (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter))
+    )),
+    [pillarFilter, sortedInitiatives],
+  );
+  const selectedInitiative = initiatives.find((initiative) => initiative.id === selectedInitiativeId) || null;
   const selectedActivities = selectedInitiative
     ? activities.filter((activity) => activity.initiativeId === selectedInitiative.id)
     : [];
@@ -220,30 +232,16 @@ const PerformanceExecutionPage = () => {
 
   const selectInitiative = (initiative: PdcaCycle) => {
     setSelectedInitiativeId(initiative.id);
+    setIsDetailDialogOpen(true);
     setEvidenceForm(blankEvidenceForm);
     setActivityForm(blankActivityForm(initiative));
   };
 
-  const applyPillarFilter = (filter: "all" | BvbpPillarId) => {
-    const nextInitiative = sortedInitiatives.find((initiative) => (
-      (archiveFilter === "archived" ? initiative.pdcaStatus === "Arquivada" : initiative.pdcaStatus !== "Arquivada") &&
-      (filter === "all" || initiativeMatchesPillar(initiative, filter))
-    ));
-    setPillarFilter(filter);
-    setSelectedInitiativeId(nextInitiative?.id || null);
+  const applyPillarFilter = (pillarId: BvbpPillarId) => {
+    setPillarFilter((current) => current === pillarId ? "all" : pillarId);
+    setSelectedInitiativeId(null);
     setEvidenceForm(blankEvidenceForm);
-    setActivityForm(blankActivityForm(nextInitiative));
-  };
-
-  const applyArchiveFilter = (filter: "flow" | "archived") => {
-    const nextInitiative = sortedInitiatives.find((initiative) => (
-      (filter === "archived" ? initiative.pdcaStatus === "Arquivada" : initiative.pdcaStatus !== "Arquivada") &&
-      (pillarFilter === "all" || initiativeMatchesPillar(initiative, pillarFilter))
-    ));
-    setArchiveFilter(filter);
-    setSelectedInitiativeId(nextInitiative?.id || null);
-    setEvidenceForm(blankEvidenceForm);
-    setActivityForm(blankActivityForm(nextInitiative));
+    setActivityForm(blankActivityForm());
   };
 
   const openNewInitiative = () => {
@@ -262,6 +260,7 @@ const PerformanceExecutionPage = () => {
   const openEditInitiative = () => {
     if (!canManageInitiatives || !selectedInitiative) return;
 
+    setIsDetailDialogOpen(false);
     setInitiativeForm(initiativeToForm(selectedInitiative));
     setTeamMembersInput((selectedInitiative.teamMembers || []).join(", "));
     setFormError("");
@@ -298,10 +297,21 @@ const PerformanceExecutionPage = () => {
     const saved = upsertPdcaCycle(activeCompany, { ...initiativeForm, teamMembers });
     refreshInitiatives(saved.id);
     setSelectedInitiativeId(saved.id);
+    setIsDetailDialogOpen(true);
     setEvidenceForm(blankEvidenceForm);
     setActivityForm(blankActivityForm(saved));
     setFormError("");
     setIsFormDialogOpen(false);
+  };
+
+  const setDetailDialogOpen = (open: boolean) => {
+    setIsDetailDialogOpen(open);
+    if (!open) setSelectedInitiativeId(null);
+    if (open || !searchParams.has("initiative")) return;
+
+    const nextSearchParams = new URLSearchParams(searchParams);
+    nextSearchParams.delete("initiative");
+    setSearchParams(nextSearchParams, { replace: true });
   };
 
   const selectInitiativePillar = (pillarId: BvbpPillarId) => {
@@ -420,8 +430,8 @@ const PerformanceExecutionPage = () => {
         <meta name="description" content="Prioridades, atividades e evidências para mover os ponteiros." />
       </Helmet>
 
-      <div className={isAdminPortal ? "space-y-5" : "space-y-8"}>
-        <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className={`flex flex-col gap-4 ${isAdminPortal ? "lg:h-[calc(100dvh-7.75rem)]" : "lg:h-[calc(100dvh-3rem)]"}`}>
+        <section className="shrink-0">
           <div>
             {!isAdminPortal ? <h1 className="font-heading text-2xl font-bold text-bvbp-ink sm:text-3xl">Iniciativas</h1> : null}
             <p className="mt-1 text-sm font-semibold text-bvbp-ink">{activeCompany.name}</p>
@@ -429,91 +439,107 @@ const PerformanceExecutionPage = () => {
               Prioridades, atividades e evidências para mover os ponteiros.
             </p>
           </div>
-          {canManageInitiatives ? (
-            <Button
-              variant="outline"
-              className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-              onClick={openNewInitiative}
-            >
-              <Plus className="h-4 w-4" aria-hidden="true" />
-              Nova iniciativa
-            </Button>
-          ) : null}
         </section>
 
-        <div className="flex flex-wrap gap-2" aria-label="Filtrar iniciativas arquivadas">
-          <Button type="button" size="sm" variant={archiveFilter === "flow" ? "default" : "outline"} onClick={() => applyArchiveFilter("flow")}>Fluxo atual</Button>
-          <Button type="button" size="sm" variant={archiveFilter === "archived" ? "default" : "outline"} onClick={() => applyArchiveFilter("archived")}>Arquivadas</Button>
-        </div>
-
-        <section className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5" aria-label="Filtrar iniciativas por pilar">
-          <button
-            type="button"
-            onClick={() => applyPillarFilter("all")}
-            className={`rounded-[8px] border px-3 py-2.5 text-left transition-colors ${pillarFilter === "all" ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
-          >
-            <span className="font-heading font-semibold">Todos</span>
-            <span className="mt-1 block text-xs opacity-75">{archiveScopedInitiatives.length} iniciativa(s)</span>
-          </button>
-          {bvbpPillarIds.map((pillarId) => {
-            const pillar = configuration.pillars.find((item) => item.pillar === pillarId);
-            const initiativeCount = archiveScopedInitiatives.filter((initiative) => initiativeMatchesPillar(initiative, pillarId)).length;
-            return (
-              <button
-                type="button"
-                key={pillarId}
-                onClick={() => applyPillarFilter(pillarId)}
-                className={`rounded-[8px] border px-3 py-2.5 text-left transition-colors ${pillarFilter === pillarId ? "border-bvbp-forest bg-bvbp-forest text-bvbp-ivory" : "border-bvbp-ink/10 bg-bvbp-raised text-bvbp-ink"}`}
-              >
-                <span className="font-heading font-semibold">{bvbpPillarLabels[pillarId]}</span>
-                <span className="mt-1 block text-xs opacity-75">
-                  {pillar?.pains.length || 0} dores · {pillar?.selectedMetricIds.length || 0} ponteiros · {initiativeCount} iniciativas
-                </span>
-              </button>
-            );
-          })}
-        </section>
-
-        <InitiativeSummaryCards initiatives={filteredInitiatives} activities={filteredActivities} compact={isAdminPortal} />
-
-        <section className="space-y-4">
-          <SectionHeader
-            title="Lista por prioridade"
-            description={canManageInitiatives ? "Arraste para ordenar o que precisa vir primeiro." : "Prioridades definidas pela equipe BVBP."}
-          />
-          {filteredInitiatives.length ? (
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <InitiativePriorityList
-                initiatives={filteredInitiatives}
-                selectedInitiativeId={selectedInitiative?.id}
-                canManage={canManageInitiatives && pillarFilter === "all"}
-                onSelect={selectInitiative}
-                onStatusChange={changeInitiativeStatus}
-              />
-            </DndContext>
-          ) : (
-            <EmptyState
-              title="Nenhuma iniciativa registrada."
-              description="Crie a primeira iniciativa para conectar execução aos ponteiros."
-            />
-          )}
-        </section>
-
-        <InitiativeDetailPanel
-          initiative={selectedInitiative}
-          activities={selectedActivities}
-          activityForm={activityForm}
-          evidenceForm={evidenceForm}
-          canManageInitiative={canManageInitiatives}
-          onEdit={openEditInitiative}
-          onActivityFormChange={setActivityForm}
-          onAddActivity={addActivity}
-          onUpdateActivity={updateActivity}
-          onActivityStatusChange={changeActivityStatus}
-          onEvidenceFormChange={setEvidenceForm}
-          onAddEvidence={addEvidence}
+        <InitiativePillarContext
+          configuration={configuration}
+          activePillarId={pillarFilter}
+          onSelect={applyPillarFilter}
         />
+
+        <section className="flex min-h-[360px] flex-1 flex-col overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
+          <div className="flex shrink-0 flex-col gap-3 border-b border-bvbp-ink/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-heading text-xl font-semibold text-bvbp-ink">Lista por prioridade</h2>
+              <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">
+                {canManageInitiatives ? "Arraste para ordenar. Clique para abrir os detalhes." : "Clique para abrir os detalhes."}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as "all" | PdcaStatus)}>
+                <SelectTrigger className="h-9 w-[190px] bg-bvbp-ivory" aria-label="Filtrar por status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os status</SelectItem>
+                  {pdcaStatuses.filter((status) => status !== "Arquivada").map((status) => (
+                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {canManageInitiatives ? (
+                <Button
+                  className="h-9 rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
+                  onClick={openNewInitiative}
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  Nova iniciativa
+                </Button>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+            {filteredInitiatives.length ? (
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <InitiativePriorityList
+                  initiatives={filteredInitiatives}
+                  selectedInitiativeId={selectedInitiative?.id}
+                  canManage={canManageInitiatives}
+                  canReorder={canManageInitiatives && pillarFilter === "all" && statusFilter === "all"}
+                  onSelect={selectInitiative}
+                  onStatusChange={changeInitiativeStatus}
+                />
+              </DndContext>
+            ) : (
+              <EmptyState
+                title="Nenhuma iniciativa neste recorte."
+                description="Altere o pilar ou o status para visualizar outras iniciativas."
+              />
+            )}
+
+            {archivedInitiatives.length ? (
+              <details className="mt-4 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset">
+                <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-bvbp-muted-ink">
+                  Arquivadas ({archivedInitiatives.length})
+                </summary>
+                <div className="border-t border-bvbp-ink/10 p-3">
+                  <InitiativePriorityList
+                    initiatives={archivedInitiatives}
+                    canManage={canManageInitiatives}
+                    canReorder={false}
+                    onSelect={selectInitiative}
+                    onStatusChange={changeInitiativeStatus}
+                  />
+                </div>
+              </details>
+            ) : null}
+          </div>
+        </section>
       </div>
+
+      <Dialog open={isDetailDialogOpen} onOpenChange={setDetailDialogOpen}>
+        <DialogContent className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-3 sm:p-4">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{selectedInitiative?.title || "Detalhe da iniciativa"}</DialogTitle>
+            <DialogDescription>Detalhes, evidências e atividades conectadas à iniciativa.</DialogDescription>
+          </DialogHeader>
+          <InitiativeDetailPanel
+            initiative={selectedInitiative}
+            activities={selectedActivities}
+            activityForm={activityForm}
+            evidenceForm={evidenceForm}
+            canManageInitiative={canManageInitiatives}
+            onEdit={openEditInitiative}
+            onActivityFormChange={setActivityForm}
+            onAddActivity={addActivity}
+            onUpdateActivity={updateActivity}
+            onActivityStatusChange={changeActivityStatus}
+            onEvidenceFormChange={setEvidenceForm}
+            onAddEvidence={addEvidence}
+          />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
         <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
