@@ -3,15 +3,11 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/performance/EmptyState";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import type { PdcaCycle } from "@/data/performanceSystem";
-import { formatCurrency } from "@/lib/performanceFormatters";
+import { getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 
 interface ConnectedInitiativesPanelProps {
   initiatives: PdcaCycle[];
   initiativesHref: string;
-}
-
-function formatImpact(value: number) {
-  return value ? `${formatCurrency(value)}/mês` : "Estimado";
 }
 
 export function ConnectedInitiativesPanel({ initiatives, initiativesHref }: ConnectedInitiativesPanelProps) {
@@ -37,13 +33,14 @@ export function ConnectedInitiativesPanel({ initiatives, initiativesHref }: Conn
                 <div className="flex flex-wrap items-center gap-3">
                   <h3 className="font-heading text-base font-semibold leading-tight text-bvbp-ink">{initiative.title}</h3>
                   <StatusBadge label={initiative.pdcaStatus} />
+                  {!initiative.pillarId || !initiative.metricId || !initiative.painLabel ? <StatusBadge label="Vínculo a revisar" /> : null}
                 </div>
                 <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">{initiative.nextDecision}</p>
                 <p className="mt-2 text-xs leading-5 text-bvbp-muted-ink">
                   {initiative.affectedPointer} · {initiative.owner} · {initiative.deadline}
                 </p>
               </div>
-              <p className="text-sm font-semibold text-bvbp-positive md:text-right">{formatImpact(initiative.estimatedImpact)}</p>
+              <p className="text-sm font-semibold text-bvbp-positive md:text-right">{getInitiativeImpactLabel(initiative)}</p>
             </li>
           ))}
         </ul>

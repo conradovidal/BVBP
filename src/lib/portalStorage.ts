@@ -107,6 +107,8 @@ export function isCompanyList(value: unknown): value is Company[] {
         typeof event.occurredAt === "string" &&
         typeof event.createdAt === "string" &&
         typeof event.createdBy === "string" &&
+        (event.createdByUserId === undefined || typeof event.createdByUserId === "string") &&
+        (event.createdByName === undefined || typeof event.createdByName === "string") &&
         typeof event.notes === "string"
       ))
     );
@@ -120,6 +122,8 @@ export function isCompanyList(value: unknown): value is Company[] {
       typeof company.recurringRevenue === "number" &&
       typeof company.monthlyOperationalCost === "number" &&
       (company.budgetMethod === undefined || company.budgetMethod === "defined" || company.budgetMethod === "revenue_percentage") &&
+      (company.revenueRangeId === undefined || ["up_to_100k", "100k_300k", "300k_500k", "500k_1m", "1m_3m", "over_3m", "not_informed"].includes(company.revenueRangeId)) &&
+      (company.budgetRangeId === undefined || ["up_to_5k", "5k_10k", "10k_20k", "20k_40k", "40k_80k", "over_80k", "undefined"].includes(company.budgetRangeId)) &&
       (company.budgetAmount === undefined || typeof company.budgetAmount === "number") &&
       (company.budgetPercentage === undefined || typeof company.budgetPercentage === "number") &&
       hasValidContacts &&
@@ -152,6 +156,14 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
       typeof cycle.title === "string" &&
       typeof cycle.affectedPointer === "string" &&
       typeof cycle.pdcaStatus === "string" &&
+      (cycle.pillarId === undefined || ["financial", "commercial", "operation", "technology"].includes(cycle.pillarId)) &&
+      (cycle.painLabel === undefined || typeof cycle.painLabel === "string") &&
+      (cycle.metricId === undefined || typeof cycle.metricId === "string") &&
+      (cycle.metricNameSnapshot === undefined || typeof cycle.metricNameSnapshot === "string") &&
+      (cycle.metricUnit === undefined || typeof cycle.metricUnit === "string") &&
+      (cycle.metricDirection === undefined || ["higher", "lower", "target"].includes(cycle.metricDirection)) &&
+      (cycle.baselineValue === undefined || typeof cycle.baselineValue === "number") &&
+      (cycle.targetValue === undefined || typeof cycle.targetValue === "number") &&
       hasValidEvidence &&
       hasValidLearnings
     );

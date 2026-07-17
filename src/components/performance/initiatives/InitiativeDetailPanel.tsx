@@ -11,15 +11,14 @@ import {
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { SectionHeader } from "@/components/performance/SectionHeader";
 import { InitiativeActivityBoard } from "@/components/performance/initiatives/InitiativeActivityBoard";
-import type { EvidenceType, PdcaCycle } from "@/data/performanceSystem";
-import { evidenceTypes } from "@/data/performanceSystem";
+import { bvbpPillarLabels, evidenceTypes, type EvidenceType, type PdcaCycle } from "@/data/performanceSystem";
 import type { EvidenceInput } from "@/lib/pdcaCycleStore";
 import {
   type InitiativeActivity,
   type InitiativeActivityInput,
   type InitiativeActivityStatus,
 } from "@/lib/initiativeActivityStore";
-import { formatCurrency } from "@/lib/performanceFormatters";
+import { calculateInitiativeProgress, formatMetricValue, getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 
 interface InitiativeDetailPanelProps {
   initiative: PdcaCycle | null;
@@ -34,10 +33,6 @@ interface InitiativeDetailPanelProps {
   onActivityStatusChange: (activityId: string, status: InitiativeActivityStatus) => void;
   onEvidenceFormChange: (value: EvidenceInput) => void;
   onAddEvidence: () => void;
-}
-
-function formatImpact(value: number) {
-  return value ? `${formatCurrency(value)}/mês` : "Sem baseline";
 }
 
 export function InitiativeDetailPanel({
@@ -64,6 +59,10 @@ export function InitiativeDetailPanel({
       </section>
     );
   }
+  const progress = calculateInitiativeProgress(initiative);
+  const baselineLabel = initiative.baselineValue === undefined
+    ? initiative.baseline || "Sem baseline"
+    : formatMetricValue(initiative.baselineValue, initiative.metricUnit);
 
   return (
     <section className="space-y-6 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5">
@@ -76,6 +75,10 @@ export function InitiativeDetailPanel({
           <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
             {initiative.affectedPointer} · {initiative.affectedFlow || "Frente a definir"}
           </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {initiative.pillarId ? <StatusBadge label={bvbpPillarLabels[initiative.pillarId]} /> : <StatusBadge label="Vínculo a revisar" />}
+            {initiative.painLabel ? <StatusBadge label={initiative.painLabel} /> : null}
+          </div>
         </div>
         {canManageInitiative ? (
           <Button
@@ -95,9 +98,9 @@ export function InitiativeDetailPanel({
           ["Responsável", initiative.owner || "Sem responsável"],
           ["Prazo", initiative.deadline || initiative.endDate || "Sem prazo"],
           ["Status", initiative.pdcaStatus],
-          ["Impacto", formatImpact(initiative.estimatedImpact)],
+          ["Impacto", getInitiativeImpactLabel(initiative)],
           ["Tipo", initiative.dataType],
-          ["Baseline", initiative.baseline || "Sem baseline"],
+          ["Baseline", baselineLabel],
         ].map(([label, value]) => (
           <div key={label} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
             <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</p>
@@ -105,6 +108,17 @@ export function InitiativeDetailPanel({
           </div>
         ))}
       </section>
+
+      {progress !== undefined ? (
+        <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4">
+          <div className="flex items-center justify-between gap-3 text-sm font-semibold text-bvbp-ink">
+            <span>Progresso até a meta</span><span>{progress}%</span>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-bvbp-ink/10">
+            <div className="h-full rounded-full bg-bvbp-positive" style={{ width: `${progress}%` }} />
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-4 lg:grid-cols-3">
         <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4 lg:col-span-2">

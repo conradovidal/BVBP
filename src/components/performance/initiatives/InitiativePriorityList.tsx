@@ -4,7 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
 import type { PdcaCycle, PdcaStatus } from "@/data/performanceSystem";
-import { formatCurrency } from "@/lib/performanceFormatters";
+import { getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 import { cn } from "@/lib/utils";
 
 interface InitiativePriorityListProps {
@@ -13,10 +13,6 @@ interface InitiativePriorityListProps {
   canManage: boolean;
   onSelect: (initiative: PdcaCycle) => void;
   onStatusChange: (initiativeId: string, status: PdcaStatus) => void;
-}
-
-function formatImpact(value: number) {
-  return value ? `${formatCurrency(value)}/mês` : "Sem baseline";
 }
 
 function SortableInitiativeRow({
@@ -69,6 +65,7 @@ function SortableInitiativeRow({
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="font-heading text-base font-bold leading-5 text-bvbp-ink">{initiative.title}</h2>
           {isSelected && <span className="text-xs font-semibold text-bvbp-forest">Selecionada</span>}
+          {!initiative.pillarId || !initiative.metricId || !initiative.painLabel ? <StatusBadge label="Vínculo a revisar" /> : null}
         </div>
         <p className="mt-1 text-xs font-semibold text-bvbp-muted-ink">{initiative.affectedPointer}</p>
         <p className="mt-2 line-clamp-2 text-sm leading-6 text-bvbp-muted-ink">
@@ -83,7 +80,7 @@ function SortableInitiativeRow({
 
       <button type="button" className="flex flex-wrap items-center gap-2 text-left" onClick={() => onSelect(initiative)}>
         <StatusBadge label={initiative.dataType} />
-        <span className="text-xs font-semibold text-bvbp-positive">{formatImpact(initiative.estimatedImpact)}</span>
+        <span className="text-xs font-semibold text-bvbp-positive">{getInitiativeImpactLabel(initiative)}</span>
       </button>
 
       <div onClick={(event) => event.stopPropagation()}>

@@ -19,6 +19,8 @@ export type BvbpPillarId = "financial" | "commercial" | "operation" | "technolog
 
 export type ClientMetricUnit = "currency" | "percentage" | "hours" | "count" | "days" | "text";
 export type ClientBudgetMethod = "defined" | "revenue_percentage";
+export type ClientRevenueRangeId = "up_to_100k" | "100k_300k" | "300k_500k" | "500k_1m" | "1m_3m" | "over_3m" | "not_informed";
+export type ClientBudgetRangeId = "up_to_5k" | "5k_10k" | "10k_20k" | "20k_40k" | "40k_80k" | "over_80k" | "undefined";
 export type ClientContactAccessLevel = "collaborator" | "viewer";
 export type ClientMetricDirection = "higher" | "lower" | "target";
 export type ClientRelationshipEventType = "meeting" | "proposal" | "follow_up" | "contract_start" | "note";
@@ -40,6 +42,8 @@ export interface ClientRelationshipEvent {
   occurredAt: string;
   createdAt: string;
   createdBy: string;
+  createdByUserId?: string;
+  createdByName?: string;
   notes: string;
 }
 
@@ -55,8 +59,10 @@ export interface Company {
   bvbpOwner?: string;
   companySize?: string;
   reportedRevenue?: number;
+  revenueRangeId?: ClientRevenueRangeId;
   budgetMethod?: ClientBudgetMethod;
   budgetAmount?: number;
+  budgetRangeId?: ClientBudgetRangeId;
   budgetPercentage?: number;
   startDate?: string;
   contactName?: string;
@@ -312,6 +318,14 @@ export interface PdcaCycle {
   endDate?: string;
   baseline?: string;
   target?: string;
+  pillarId?: BvbpPillarId;
+  painLabel?: string;
+  metricId?: string;
+  metricNameSnapshot?: string;
+  metricUnit?: ClientMetricUnit;
+  metricDirection?: ClientMetricDirection;
+  baselineValue?: number;
+  targetValue?: number;
   priorityOrder?: number;
   actions?: PdcaAction[];
   evidences: PdcaEvidence[];
@@ -380,6 +394,40 @@ export const bvbpPillarLabels: Record<BvbpPillarId, string> = {
 };
 
 export const bvbpPillarIds: BvbpPillarId[] = ["financial", "commercial", "operation", "technology"];
+
+export const clientSegmentOptions = [
+  "Serviços profissionais/consultoria",
+  "Tecnologia/SaaS",
+  "Indústria",
+  "Distribuição/atacado",
+  "Varejo/E-commerce",
+  "Saúde",
+  "Educação",
+  "Construção/engenharia",
+  "Logística/transportes",
+  "Serviços financeiros",
+  "Agronegócio",
+] as const;
+
+export const clientRevenueRanges: Array<{ id: ClientRevenueRangeId; label: string }> = [
+  { id: "up_to_100k", label: "Até R$ 100 mil" },
+  { id: "100k_300k", label: "R$ 100–300 mil" },
+  { id: "300k_500k", label: "R$ 300–500 mil" },
+  { id: "500k_1m", label: "R$ 500 mil–1 milhão" },
+  { id: "1m_3m", label: "R$ 1–3 milhões" },
+  { id: "over_3m", label: "Acima de R$ 3 milhões" },
+  { id: "not_informed", label: "Não informado" },
+];
+
+export const clientBudgetRanges: Array<{ id: ClientBudgetRangeId; label: string }> = [
+  { id: "up_to_5k", label: "Até R$ 5 mil" },
+  { id: "5k_10k", label: "R$ 5–10 mil" },
+  { id: "10k_20k", label: "R$ 10–20 mil" },
+  { id: "20k_40k", label: "R$ 20–40 mil" },
+  { id: "40k_80k", label: "R$ 40–80 mil" },
+  { id: "over_80k", label: "Acima de R$ 80 mil" },
+  { id: "undefined", label: "A definir" },
+];
 
 function criterion(id: string, label: string): MaturityCriterionDefinition {
   return { id, label };

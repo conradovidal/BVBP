@@ -282,7 +282,8 @@ export function getPrioritizedOverviewInitiatives(cycles: PdcaCycle[]) {
   return sortOverviewInitiatives(cycles).slice(0, 5);
 }
 
-function cycleMatchesPillar(cycle: PdcaCycle, pillarId: BvbpPillarId) {
+export function initiativeMatchesPillar(cycle: PdcaCycle, pillarId: BvbpPillarId) {
+  if (cycle.pillarId) return cycle.pillarId === pillarId;
   const text = normalizeText(
     [
       cycle.title,
@@ -293,8 +294,9 @@ function cycleMatchesPillar(cycle: PdcaCycle, pillarId: BvbpPillarId) {
       cycle.nextDecision,
     ].join(" "),
   );
+  const words = new Set(text.split(/[^a-z0-9]+/).filter(Boolean));
 
-  return pillarKeywords[pillarId].some((keyword) => text.includes(keyword));
+  return pillarKeywords[pillarId].some((keyword) => keyword.length <= 2 ? words.has(keyword) : text.includes(keyword));
 }
 
 function buildFallbackMetricViews(highlight?: OverviewPillarHighlight): OverviewMetricView[] {
@@ -330,7 +332,7 @@ function buildPillarSummary(
   );
   const completedCriterionIds = new Set(pillarConfig.completedMaturityCriterionIds);
   const pendingCurrentCriteria = maturity.current.criteria.filter((criterion) => !completedCriterionIds.has(criterion.id));
-  const relatedInitiatives = cycles.filter((cycle) => cycleMatchesPillar(cycle, pillarConfig.pillar));
+  const relatedInitiatives = cycles.filter((cycle) => initiativeMatchesPillar(cycle, pillarConfig.pillar));
   const evidence = relatedInitiatives.flatMap((cycle) =>
     cycle.evidences.map((item) => `${item.date} · ${item.description}`),
   );

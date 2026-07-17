@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   type BvbpPillarId,
   type ClientBudgetMethod,
+  type ClientBudgetRangeId,
   type ClientContact,
   type ClientContactAccessLevel,
   type ClientConfiguration,
@@ -35,10 +36,14 @@ import {
   type ClientRelationshipStatus,
   type ClientRelationshipEvent,
   type ClientRelationshipEventType,
+  type ClientRevenueRangeId,
   type Company,
   type MaturityLevel,
   bvbpPillarIds,
   bvbpPillarLabels,
+  clientBudgetRanges,
+  clientRevenueRanges,
+  clientSegmentOptions,
   getPillarMaturityState,
   maturityDefinitionsByPillar,
   painCatalogByPillar,
@@ -56,6 +61,7 @@ import { cn } from "@/lib/utils";
 interface ClientSetupCompanyForm {
   name: string;
   segment: string;
+  segmentPreset: string;
   description: string;
   relationshipStatus: ClientRelationshipStatus;
   bvbpOwner: string;
@@ -65,8 +71,10 @@ interface ClientSetupCompanyForm {
   recurringRevenue: string;
   monthlyOperationalCost: string;
   reportedRevenue: string;
+  revenueRangeId: ClientRevenueRangeId;
   budgetMethod: ClientBudgetMethod;
   budgetAmount: string;
+  budgetRangeId: ClientBudgetRangeId;
   budgetPercentage: string;
   contacts: ClientContact[];
   relationshipEvents: ClientRelationshipEvent[];
@@ -141,6 +149,7 @@ const currencyFormatter = new Intl.NumberFormat("pt-BR", {
 const defaultCompanyForm: ClientSetupCompanyForm = {
   name: "",
   segment: "",
+  segmentPreset: "",
   description: "",
   relationshipStatus: "Prospect",
   bvbpOwner: "BVBP",
@@ -150,8 +159,10 @@ const defaultCompanyForm: ClientSetupCompanyForm = {
   recurringRevenue: "",
   monthlyOperationalCost: "",
   reportedRevenue: "",
+  revenueRangeId: "not_informed",
   budgetMethod: "defined",
   budgetAmount: "",
+  budgetRangeId: "undefined",
   budgetPercentage: "",
   contacts: [],
   relationshipEvents: [],
@@ -192,6 +203,11 @@ function createInitialState(company: Company | undefined, configuration: ClientC
       ...defaultCompanyForm,
       name: company?.name || "",
       segment: company?.segment || "",
+      segmentPreset: clientSegmentOptions.includes(company?.segment as (typeof clientSegmentOptions)[number])
+        ? company?.segment || ""
+        : company?.segment
+          ? "other"
+          : "",
       description: company?.description || "",
       relationshipStatus: company?.relationshipStatus || company?.status || "Onboarding",
       bvbpOwner: company?.bvbpOwner || "BVBP",
@@ -201,8 +217,10 @@ function createInitialState(company: Company | undefined, configuration: ClientC
       recurringRevenue: toStringValue(company?.recurringRevenue ?? defaultCompanyForm.recurringRevenue),
       monthlyOperationalCost: toStringValue(company?.monthlyOperationalCost ?? defaultCompanyForm.monthlyOperationalCost),
       reportedRevenue: toStringValue(company?.reportedRevenue),
+      revenueRangeId: company?.revenueRangeId || "not_informed",
       budgetMethod: company?.budgetMethod || "defined",
       budgetAmount: toStringValue(company?.budgetAmount),
+      budgetRangeId: company?.budgetRangeId || "undefined",
       budgetPercentage: toStringValue(company?.budgetPercentage),
       contacts,
       relationshipEvents: company?.relationshipEvents || [],
@@ -238,11 +256,7 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
   const primaryContact = state.company.contacts.find((contact) => contact.isPrimary);
   const reportedRevenue = toOptionalNumber(state.company.reportedRevenue);
   const budgetPercentage = toOptionalNumber(state.company.budgetPercentage);
-  const budgetAmount = state.company.budgetMethod === "revenue_percentage"
-    ? reportedRevenue && budgetPercentage
-      ? Math.round(reportedRevenue * (budgetPercentage / 100))
-      : undefined
-    : toOptionalNumber(state.company.budgetAmount);
+  const budgetAmount = toOptionalNumber(state.company.budgetAmount);
 
   return {
     company: {
@@ -257,9 +271,11 @@ function buildSaveInput(state: ClientSetupFormState): ClientSetupInput {
       recurringRevenue: toNumber(state.company.recurringRevenue),
       monthlyOperationalCost,
       reportedRevenue,
+      revenueRangeId: state.company.revenueRangeId,
       budgetMethod: state.company.budgetMethod,
       budgetAmount,
-      budgetPercentage: state.company.budgetMethod === "revenue_percentage" ? budgetPercentage : undefined,
+      budgetRangeId: state.company.budgetRangeId,
+      budgetPercentage,
       startDate: state.company.startDate,
       contactName: primaryContact?.name || "",
       contactEmail: primaryContact?.email || "",
@@ -285,8 +301,10 @@ function buildCompanySnapshot(companyId: string, state: ClientSetupFormState): C
     bvbpOwner: input.bvbpOwner?.trim() || undefined,
     companySize: input.companySize?.trim() || undefined,
     reportedRevenue: input.reportedRevenue,
+    revenueRangeId: input.revenueRangeId,
     budgetMethod: input.budgetMethod,
     budgetAmount: input.budgetAmount,
+    budgetRangeId: input.budgetRangeId,
     budgetPercentage: input.budgetPercentage,
     startDate: input.startDate?.trim() || undefined,
     contactName: input.contactName,
@@ -681,22 +699,19 @@ export function ClientBasicDataStep({
   contactAccessLoadingId,
   onContactAccessAction,
 }: StepProps) {
-  const currentUserName = getPerformanceSession()?.user.name || "Equipe BVBP";
+  const currentUser = getPerformanceSession()?.user;
+  const currentUserName = currentUser?.name || "Equipe BVBP";
   const [eventDraft, setEventDraft] = useState({
     type: "meeting" as ClientRelationshipEventType,
     occurredAt: new Intl.DateTimeFormat("en-CA").format(new Date()),
-    createdBy: currentUserName,
     notes: "",
   });
-  const estimatedBudget = state.company.reportedRevenue.trim() && state.company.budgetPercentage.trim()
-    ? Math.round(toNumber(state.company.reportedRevenue) * (toNumber(state.company.budgetPercentage) / 100))
-    : undefined;
   const relationshipEvents = [...state.company.relationshipEvents].sort((a, b) => (
     `${b.occurredAt}-${b.createdAt}`.localeCompare(`${a.occurredAt}-${a.createdAt}`)
   ));
 
   const addRelationshipEvent = () => {
-    if (!eventDraft.occurredAt || !eventDraft.createdBy.trim() || !eventDraft.notes.trim()) return;
+    if (!eventDraft.occurredAt || !eventDraft.notes.trim()) return;
     const createdAt = new Date().toISOString();
 
     updateCompanyField("relationshipEvents", [
@@ -705,7 +720,9 @@ export function ClientBasicDataStep({
         type: eventDraft.type,
         occurredAt: eventDraft.occurredAt,
         createdAt,
-        createdBy: eventDraft.createdBy.trim(),
+        createdBy: currentUserName,
+        createdByUserId: currentUser?.id,
+        createdByName: currentUserName,
         notes: eventDraft.notes.trim(),
       },
       ...state.company.relationshipEvents,
@@ -721,8 +738,26 @@ export function ClientBasicDataStep({
       </div>
       <div className="space-y-2">
         <Label htmlFor="client-segment">Segmento</Label>
-        <Input id="client-segment" value={state.company.segment} onChange={(event) => updateCompanyField("segment", event.target.value)} />
+        <Select
+          value={state.company.segmentPreset}
+          onValueChange={(value) => {
+            updateCompanyField("segmentPreset", value);
+            updateCompanyField("segment", value === "other" ? "" : value);
+          }}
+        >
+          <SelectTrigger id="client-segment" aria-label="Segmento"><SelectValue placeholder="Selecione o segmento" /></SelectTrigger>
+          <SelectContent>
+            {clientSegmentOptions.map((segment) => <SelectItem key={segment} value={segment}>{segment}</SelectItem>)}
+            <SelectItem value="other">Outro</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+      {state.company.segmentPreset === "other" ? (
+        <div className="space-y-2">
+          <Label htmlFor="client-segment-other">Outro segmento</Label>
+          <Input id="client-segment-other" value={state.company.segment} onChange={(event) => updateCompanyField("segment", event.target.value)} placeholder="Informe o segmento" />
+        </div>
+      ) : null}
       <div className="space-y-2">
         <Label>Fase do relacionamento</Label>
         <Select
@@ -753,75 +788,46 @@ export function ClientBasicDataStep({
       </div>
       <div className="space-y-4 border-t border-bvbp-ink/10 pt-5 sm:col-span-2">
         <div>
-          <h2 className="font-heading text-lg font-semibold text-bvbp-ink">Budget</h2>
+          <h2 className="font-heading text-lg font-semibold text-bvbp-ink">Faturamento e budget mensal</h2>
           <p className="mt-1 text-sm text-bvbp-muted-ink">
-            Registre o orçamento disponível ou estime uma referência a partir do faturamento mensal.
+            Selecione faixas para qualificação e registre valores exatos somente quando forem conhecidos.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>Forma de definição</Label>
+            <Label>Faixa de faturamento mensal</Label>
             <Select
-              value={state.company.budgetMethod}
-              onValueChange={(value) => updateCompanyField("budgetMethod", value as ClientBudgetMethod)}
+              value={state.company.revenueRangeId}
+              onValueChange={(value) => updateCompanyField("revenueRangeId", value as ClientRevenueRangeId)}
             >
-              <SelectTrigger aria-label="Forma de definição do budget">
-                <SelectValue />
-              </SelectTrigger>
+              <SelectTrigger aria-label="Faixa de faturamento mensal"><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="defined">Orçamento informado pelo cliente</SelectItem>
-                <SelectItem value="revenue_percentage">Estimativa sobre o faturamento</SelectItem>
+                {clientRevenueRanges.map((range) => <SelectItem key={range.id} value={range.id}>{range.label}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
-          {state.company.budgetMethod === "defined" ? (
-            <div className="space-y-2">
-              <Label htmlFor="client-budget-amount">Budget disponível (R$)</Label>
-              <Input
-                id="client-budget-amount"
-                type="number"
-                min="0"
-                value={state.company.budgetAmount}
-                onChange={(event) => updateCompanyField("budgetAmount", event.target.value)}
-                placeholder="Ex.: 15000"
-              />
-            </div>
-          ) : (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="client-reported-revenue">Faturamento mensal informado (R$)</Label>
-                <Input
-                  id="client-reported-revenue"
-                  type="number"
-                  min="0"
-                  value={state.company.reportedRevenue}
-                  onChange={(event) => updateCompanyField("reportedRevenue", event.target.value)}
-                  placeholder="Ex.: 500000"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="client-budget-percentage">Percentual destinado (%)</Label>
-                <Input
-                  id="client-budget-percentage"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={state.company.budgetPercentage}
-                  onChange={(event) => updateCompanyField("budgetPercentage", event.target.value)}
-                  placeholder="Ex.: 3"
-                />
-              </div>
-              <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Budget estimado</p>
-                <p className="mt-2 font-heading text-xl font-semibold text-bvbp-ink">
-                  {estimatedBudget === undefined
-                    ? "A calcular"
-                    : currencyFormatter.format(estimatedBudget)}
-                </p>
-              </div>
-            </>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="client-reported-revenue">Faturamento exato (R$, opcional)</Label>
+            <Input id="client-reported-revenue" type="number" min="0" value={state.company.reportedRevenue} onChange={(event) => updateCompanyField("reportedRevenue", event.target.value)} placeholder="Ex.: 500000" />
+          </div>
+          <div className="space-y-2">
+            <Label>Faixa de budget mensal</Label>
+            <Select value={state.company.budgetRangeId} onValueChange={(value) => updateCompanyField("budgetRangeId", value as ClientBudgetRangeId)}>
+              <SelectTrigger aria-label="Faixa de budget mensal"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {clientBudgetRanges.map((range) => <SelectItem key={range.id} value={range.id}>{range.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="client-budget-amount">Budget exato (R$, opcional)</Label>
+            <Input id="client-budget-amount" type="number" min="0" value={state.company.budgetAmount} onChange={(event) => updateCompanyField("budgetAmount", event.target.value)} placeholder="Ex.: 15000" />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="client-budget-percentage">Percentual informado ou estimado (opcional)</Label>
+            <Input id="client-budget-percentage" type="number" min="0" max="100" step="0.1" value={state.company.budgetPercentage} onChange={(event) => updateCompanyField("budgetPercentage", event.target.value)} placeholder="Ex.: 3" />
+            <p className="text-xs text-bvbp-muted-ink">Registro manual para a qualificação; não representa benchmark de mercado.</p>
+          </div>
         </div>
       </div>
       <div className="space-y-3 border-t border-bvbp-ink/10 pt-5 sm:col-span-2">
@@ -988,7 +994,7 @@ export function ClientBasicDataStep({
         )}
       </div>
       <div className="border-t border-bvbp-ink/10 pt-3 sm:col-span-2">
-        <Accordion type="single" collapsible defaultValue="relationship-log">
+        <Accordion type="single" collapsible>
           <AccordionItem value="relationship-log" className="border-0">
             <AccordionTrigger className="py-3 text-left hover:no-underline">
               <span className="flex items-center gap-3">
@@ -1034,14 +1040,6 @@ export function ClientBasicDataStep({
                       onChange={(event) => setEventDraft((current) => ({ ...current, occurredAt: event.target.value }))}
                     />
                   </div>
-                  <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="relationship-event-owner">Quem registrou</Label>
-                    <Input
-                      id="relationship-event-owner"
-                      value={eventDraft.createdBy}
-                      onChange={(event) => setEventDraft((current) => ({ ...current, createdBy: event.target.value }))}
-                    />
-                  </div>
                   <div className="space-y-2 sm:col-span-2 lg:col-span-3">
                     <Label htmlFor="relationship-event-notes">Registro</Label>
                     <Textarea
@@ -1056,7 +1054,7 @@ export function ClientBasicDataStep({
                     <Button
                       type="button"
                       className="w-full rounded-[8px] bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark"
-                      disabled={!eventDraft.occurredAt || !eventDraft.createdBy.trim() || !eventDraft.notes.trim()}
+                      disabled={!eventDraft.occurredAt || !eventDraft.notes.trim()}
                       onClick={addRelationshipEvent}
                     >
                       <Plus className="h-4 w-4" aria-hidden="true" />
@@ -1077,7 +1075,7 @@ export function ClientBasicDataStep({
                         </time>
                       </div>
                       <p className="mt-2 text-sm leading-6 text-bvbp-ink">{event.notes}</p>
-                      <p className="mt-2 text-xs text-bvbp-muted-ink">Registrado por {event.createdBy}</p>
+                      <p className="mt-2 text-xs text-bvbp-muted-ink">Registrado por {event.createdByName || event.createdBy}</p>
                     </li>
                   ))}
                 </ol>
@@ -1607,6 +1605,8 @@ export function ClientReviewStep({ state }: StepProps) {
   }, [state.configuration.metrics, state.configuration.pillars]);
   const primaryContact = state.company.contacts.find((contact) => contact.isPrimary);
   const reviewBudget = buildSaveInput(state).company.budgetAmount;
+  const revenueRangeLabel = clientRevenueRanges.find((range) => range.id === state.company.revenueRangeId)?.label;
+  const budgetRangeLabel = clientBudgetRanges.find((range) => range.id === state.company.budgetRangeId)?.label;
 
   return (
     <section className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
@@ -1617,10 +1617,9 @@ export function ClientReviewStep({ state }: StepProps) {
           <p>{state.company.segment || "Segmento não informado"}</p>
           <p>{state.company.relationshipStatus}</p>
           <p>Responsável: {state.company.bvbpOwner || "BVBP"}</p>
+          <p>Faturamento mensal: {revenueRangeLabel || "Não informado"}</p>
           <p>
-            Budget: {reviewBudget
-              ? currencyFormatter.format(reviewBudget)
-              : "Não informado"}
+            Budget mensal: {budgetRangeLabel || "A definir"}{reviewBudget ? ` · ${currencyFormatter.format(reviewBudget)} exatos` : ""}
           </p>
           <p>Contato: {primaryContact?.name || "Não informado"}{primaryContact?.title ? ` · ${primaryContact.title}` : ""}</p>
           <p>Acesso principal: {contactAccessLevelLabels[primaryContact?.accessLevel || "collaborator"]}</p>

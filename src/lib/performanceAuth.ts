@@ -95,6 +95,9 @@ export async function refreshPerformanceSessionFromSupabase(): Promise<Performan
   const user = userData.user;
 
   if (userError || !user?.email) {
+    if (portalRuntimeConfig.enableMockAuth) {
+      return getPerformanceSession();
+    }
     window.localStorage.removeItem(PERFORMANCE_SESSION_KEY);
     return null;
   }
