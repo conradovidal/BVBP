@@ -2,6 +2,8 @@ import {
   BVBP_COMPANY_ID,
   type ClientContact,
   type ClientBudgetMethod,
+  type ClientBudgetRangeId,
+  type ClientRevenueRangeId,
   type ClientRelationshipStatus,
   type ClientRelationshipEvent,
   type Company,
@@ -24,8 +26,10 @@ export interface NewClientInput {
   recurringRevenue: number;
   monthlyOperationalCost: number;
   reportedRevenue?: number;
+  revenueRangeId?: ClientRevenueRangeId;
   budgetMethod?: ClientBudgetMethod;
   budgetAmount?: number;
+  budgetRangeId?: ClientBudgetRangeId;
   budgetPercentage?: number;
   startDate?: string;
   contactName?: string;
@@ -35,6 +39,10 @@ export interface NewClientInput {
 }
 
 export type UpdateClientInput = Partial<NewClientInput>;
+
+function hasOwnField<T extends object>(value: T, field: PropertyKey) {
+  return Object.prototype.hasOwnProperty.call(value, field);
+}
 
 function normalizeContacts(companyId: string, contacts: ClientContact[] | undefined, contactName?: string, contactEmail?: string) {
   const sourceContacts = contacts?.length
@@ -71,7 +79,10 @@ function normalizeCompany(company: Company) {
   return {
     ...company,
     contacts,
-    relationshipEvents: company.relationshipEvents || [],
+    relationshipEvents: (company.relationshipEvents || []).map((event) => {
+      const createdByName = event.createdByName || event.createdBy || "Equipe BVBP";
+      return { ...event, createdBy: event.createdBy || createdByName, createdByName };
+    }),
     contactName: primaryContact?.name || company.contactName,
     contactEmail: primaryContact?.email || company.contactEmail,
   };
@@ -138,8 +149,10 @@ export function buildPortalCompany(input: NewClientInput): Company {
     recurringRevenue: input.recurringRevenue,
     monthlyOperationalCost: input.monthlyOperationalCost,
     reportedRevenue: input.reportedRevenue,
+    revenueRangeId: input.revenueRangeId,
     budgetMethod: input.budgetMethod,
     budgetAmount: input.budgetAmount,
+    budgetRangeId: input.budgetRangeId,
     budgetPercentage: input.budgetPercentage,
     startDate: input.startDate?.trim() || undefined,
     contactName: primaryContact?.name || input.contactName?.trim() || undefined,
@@ -169,10 +182,12 @@ export function buildUpdatedPortalCompany(existing: Company, input: UpdateClient
     monthlyRevenue: input.monthlyRevenue ?? existing.monthlyRevenue,
     recurringRevenue: input.recurringRevenue ?? existing.recurringRevenue,
     monthlyOperationalCost: input.monthlyOperationalCost ?? existing.monthlyOperationalCost,
-    reportedRevenue: input.reportedRevenue !== undefined ? input.reportedRevenue : existing.reportedRevenue,
+    reportedRevenue: hasOwnField(input, "reportedRevenue") ? input.reportedRevenue : existing.reportedRevenue,
+    revenueRangeId: input.revenueRangeId !== undefined ? input.revenueRangeId : existing.revenueRangeId,
     budgetMethod: input.budgetMethod !== undefined ? input.budgetMethod : existing.budgetMethod,
-    budgetAmount: input.budgetAmount !== undefined ? input.budgetAmount : existing.budgetAmount,
-    budgetPercentage: input.budgetPercentage !== undefined ? input.budgetPercentage : existing.budgetPercentage,
+    budgetAmount: hasOwnField(input, "budgetAmount") ? input.budgetAmount : existing.budgetAmount,
+    budgetRangeId: input.budgetRangeId !== undefined ? input.budgetRangeId : existing.budgetRangeId,
+    budgetPercentage: hasOwnField(input, "budgetPercentage") ? input.budgetPercentage : existing.budgetPercentage,
     startDate: input.startDate !== undefined ? input.startDate.trim() || undefined : existing.startDate,
     contactName: primaryContact?.name || undefined,
     contactEmail: primaryContact?.email || undefined,

@@ -309,14 +309,21 @@ export async function hydratePortalFromSupabase(session?: Session | null) {
       bvbpOwner: payload.bvbpOwner,
       companySize: payload.companySize,
       reportedRevenue: payload.reportedRevenue,
+      revenueRangeId: payload.revenueRangeId,
       budgetMethod: payload.budgetMethod,
       budgetAmount: payload.budgetAmount,
+      budgetRangeId: payload.budgetRangeId,
       budgetPercentage: payload.budgetPercentage,
       startDate: payload.startDate,
       contactName: primaryContact?.name || payload.contactName,
       contactEmail: primaryContact?.email || payload.contactEmail,
       contacts: workspaceContacts,
-      relationshipEvents: Array.isArray(payload.relationshipEvents) ? payload.relationshipEvents : [],
+      relationshipEvents: Array.isArray(payload.relationshipEvents)
+        ? payload.relationshipEvents.map((event) => {
+            const createdByName = event.createdByName || event.createdBy || "Equipe BVBP";
+            return { ...event, createdBy: event.createdBy || createdByName, createdByName };
+          })
+        : [],
       relationshipStatus: workspace.relationship_status as Company["relationshipStatus"],
       status: workspace.relationship_status as Company["status"],
     } satisfies Company;
