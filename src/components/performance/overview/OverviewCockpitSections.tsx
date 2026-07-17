@@ -113,7 +113,7 @@ export function OverviewPillarCard({ pillar, onSelect }: OverviewPillarCardProps
         "group h-full rounded-[8px] border bg-bvbp-raised p-4 text-left transition hover:bg-bvbp-raised/80 focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45",
         pillar.primaryMetricName === "Ponteiro a definir" ? "border-bvbp-ink/10 hover:border-bvbp-forest/30" : "border-bvbp-gold/55 hover:border-bvbp-gold",
       )}
-      aria-label={`Abrir detalhe do pilar ${pillar.label}`}
+      aria-label={`Ver ponteiros do pilar ${pillar.label}`}
     >
       <div className="flex h-full min-h-[178px] flex-col justify-between gap-5">
         <div>
@@ -150,7 +150,7 @@ export function MaturityMapPanel({ pillars, onSelect }: MaturityMapPanelProps) {
           key={pillar.id}
           onClick={() => onSelect(pillar)}
           className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-left transition hover:border-bvbp-forest/30 hover:bg-bvbp-raised/80 focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45"
-          aria-label={`Abrir maturidade de ${pillar.label}`}
+          aria-label={`Ver maturidade e ponteiros de ${pillar.label}`}
         >
           <div className="flex items-start justify-between gap-3">
             <div>

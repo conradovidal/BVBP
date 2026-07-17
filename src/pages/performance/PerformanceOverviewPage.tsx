@@ -1,61 +1,33 @@
-import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation, useOutletContext } from "react-router-dom";
-import { PerformanceDetailDialog, type PerformanceDetail } from "@/components/performance/PerformanceDetailDialog";
+import { useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { SectionHeader } from "@/components/performance/SectionHeader";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import {
   ExecutiveReadingStrip,
   MaturityMapPanel,
   OverviewPillarCard,
-  PillarOverviewDetailDialog,
   PrioritizedInitiativesList,
 } from "@/components/performance/overview/OverviewCockpitSections";
 import { type Company, type PdcaCycle, getCompanyRelationshipStatus, isBvbpInternalWorkspace } from "@/data/performanceSystem";
-import {
-  buildPerformanceOverviewModel,
-  type OverviewPillarSummary,
-} from "@/lib/performanceOverviewModel";
+import { buildPerformanceOverviewModel, type OverviewPillarSummary } from "@/lib/performanceOverviewModel";
 import { getPdcaCyclesForCompany } from "@/lib/pdcaCycleStore";
-
-function initiativeDetail(cycle: PdcaCycle): PerformanceDetail {
-  return {
-    title: cycle.title,
-    subtitle: `${cycle.affectedPointer} · ${cycle.pdcaStatus}`,
-    status: cycle.pdcaStatus,
-    affectedPointer: cycle.affectedPointer,
-    estimatedImpact: cycle.estimatedImpact,
-    description: cycle.hypothesis,
-    whyItMatters: cycle.whyItMatters,
-    facts: [
-      { label: "Responsável", value: cycle.owner },
-      { label: "Início", value: cycle.startDate || "A confirmar" },
-      { label: "Fim", value: cycle.endDate || cycle.deadline },
-      { label: "Baseline", value: cycle.baseline || "A confirmar" },
-      { label: "Objetivo", value: cycle.target || "A confirmar" },
-    ],
-    evidence: cycle.evidences.map((evidence) => evidence.description),
-    connectedActions: cycle.actions?.map((action) => `${action.title} · ${action.owner}`) || [cycle.plannedAction],
-    nextDecision: cycle.nextDecision,
-  };
-}
 
 const PerformanceOverviewPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
   const location = useLocation();
-  const [selectedPillar, setSelectedPillar] = useState<OverviewPillarSummary | null>(null);
-  const [initiative, setInitiative] = useState<PerformanceDetail | null>(null);
+  const navigate = useNavigate();
   const isInternalWorkspace = isBvbpInternalWorkspace(activeCompany);
   const cycles = getPdcaCyclesForCompany(activeCompany);
   const overview = buildPerformanceOverviewModel(activeCompany, cycles);
   const pageTitle = isInternalWorkspace ? "Portal BVBP" : "Visão geral";
   const isAdminPortal = location.pathname.startsWith("/app/admin");
+  const pointersHref = isAdminPortal ? "/app/admin/pointers" : "/app/performance/pointers";
+  const initiativesHref = isAdminPortal ? "/app/admin/initiatives" : "/app/performance/initiatives";
   const contextLabel = isInternalWorkspace ? "Workspace interno" : activeCompany.name;
   const relationshipStatus = getCompanyRelationshipStatus(activeCompany);
 
-  const openInitiative = (cycle: PdcaCycle) => {
-    setInitiative(initiativeDetail(cycle));
-  };
+  const openPillar = (pillar: OverviewPillarSummary) => navigate(`${pointersHref}?pillar=${pillar.id}`);
+  const openInitiative = (cycle: PdcaCycle) => navigate(`${initiativesHref}?initiative=${cycle.id}`);
 
   return (
     <>
@@ -87,14 +59,14 @@ const PerformanceOverviewPage = () => {
           <SectionHeader title="Pilares e ponteiros principais" />
           <div className="grid items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {overview.pillarSummaries.map((pillar) => (
-              <OverviewPillarCard key={pillar.id} pillar={pillar} onSelect={setSelectedPillar} />
+              <OverviewPillarCard key={pillar.id} pillar={pillar} onSelect={openPillar} />
             ))}
           </div>
         </section>
 
         <section className="space-y-3">
           <SectionHeader title="Mapa BVBP de maturidade" />
-          <MaturityMapPanel pillars={overview.maturitySummaries} onSelect={setSelectedPillar} />
+          <MaturityMapPanel pillars={overview.maturitySummaries} onSelect={openPillar} />
         </section>
 
         <section className="space-y-3">
@@ -103,16 +75,6 @@ const PerformanceOverviewPage = () => {
         </section>
       </div>
 
-      <PillarOverviewDetailDialog
-        pillar={selectedPillar}
-        open={Boolean(selectedPillar)}
-        onOpenChange={(open) => !open && setSelectedPillar(null)}
-      />
-      <PerformanceDetailDialog
-        detail={initiative}
-        open={Boolean(initiative)}
-        onOpenChange={(open) => !open && setInitiative(null)}
-      />
     </>
   );
 };
