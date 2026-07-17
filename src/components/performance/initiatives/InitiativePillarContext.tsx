@@ -41,7 +41,7 @@ export function InitiativePillarContext({
       {activePillar ? (
         <div className="grid min-h-[76px] items-center gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset px-4 py-3 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1.2fr)]">
           <div>
-            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Ponteiro crítico</p>
+            <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Ponteiro principal</p>
             <p className="mt-1 text-sm font-semibold text-bvbp-ink">{criticalMetric?.name || "A definir"}</p>
           </div>
           <div>

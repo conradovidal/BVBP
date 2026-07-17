@@ -23,6 +23,7 @@ interface ExecutiveReadingStripProps {
 
 interface OverviewPillarCardProps {
   pillar: OverviewPillarSummary;
+  highlighted?: boolean;
   onSelect: (pillar: OverviewPillarSummary) => void;
 }
 
@@ -104,37 +105,46 @@ export function ExecutiveReadingStrip({ items }: ExecutiveReadingStripProps) {
   );
 }
 
-export function OverviewPillarCard({ pillar, onSelect }: OverviewPillarCardProps) {
+export function OverviewPillarCard({ pillar, highlighted = false, onSelect }: OverviewPillarCardProps) {
+  const supportMetrics = pillar.metrics.filter((metric) => metric.name !== pillar.primaryMetricName);
+
   return (
     <button
       type="button"
       onClick={() => onSelect(pillar)}
       className={cn(
-        "group h-full rounded-[8px] border bg-bvbp-raised p-4 text-left transition hover:bg-bvbp-raised/80 focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45",
-        pillar.primaryMetricName === "Ponteiro a definir" ? "border-bvbp-ink/10 hover:border-bvbp-forest/30" : "border-bvbp-gold/55 hover:border-bvbp-gold",
+        "group h-full rounded-[8px] border p-4 text-left transition focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45",
+        highlighted
+          ? "border-bvbp-gold bg-bvbp-forest text-white shadow-sm"
+          : "border-bvbp-ink/10 bg-bvbp-raised hover:border-bvbp-forest/30 hover:bg-bvbp-raised/80",
       )}
       aria-label={`Ver ponteiros do pilar ${pillar.label}`}
     >
-      <div className="flex h-full min-h-[178px] flex-col justify-between gap-5">
+      <div className="flex h-full min-h-[188px] flex-col justify-between gap-5">
         <div>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="font-heading text-lg font-semibold text-bvbp-ink">{pillar.label}</p>
-              <p className={cn("mt-1 text-xs font-medium leading-5", pillar.primaryMetricName === "Ponteiro a definir" ? "text-bvbp-muted-ink" : "text-bvbp-gold")}>{pillar.primaryMetricName}</p>
-            </div>
-            <StatusBadge label={pillar.signal} />
-          </div>
-          <p className="mt-6 font-heading text-2xl font-semibold leading-none text-bvbp-ink">
+          <p className={cn("font-heading text-lg font-semibold", highlighted ? "text-white" : "text-bvbp-ink")}>{pillar.label}</p>
+          <p className={cn("mt-4 font-label text-[10px] font-semibold uppercase tracking-[0.08em]", highlighted ? "text-bvbp-gold" : "text-bvbp-gold")}>Ponteiro principal</p>
+          <p className={cn("mt-1 text-sm font-semibold leading-5", highlighted ? "text-white" : "text-bvbp-ink")}>{pillar.primaryMetricName}</p>
+          <p className={cn("mt-2 font-heading text-2xl font-semibold leading-none", highlighted ? "text-white" : "text-bvbp-ink")}>
             {pillar.primaryMetricValue}
           </p>
         </div>
 
-        <div className="space-y-2 border-t border-bvbp-ink/10 pt-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge label={pillar.dataStatus} />
-            <span className="text-xs font-medium text-bvbp-muted-ink">{pillar.context}</span>
+        <div className={cn("space-y-3 border-t pt-3", highlighted ? "border-white/20" : "border-bvbp-ink/10")}>
+          {supportMetrics.length ? (
+            <div>
+              <p className={cn("font-label text-[10px] font-semibold uppercase tracking-[0.08em]", highlighted ? "text-white/60" : "text-bvbp-muted-ink")}>Ponteiros de suporte</p>
+              <p className={cn("mt-1 text-xs font-medium leading-5", highlighted ? "text-white" : "text-bvbp-ink")}>
+                {supportMetrics.map((metric) => `${metric.name}: ${metric.displayValue}`).join(" · ")}
+              </p>
+            </div>
+          ) : null}
+          <div>
+            <p className={cn("font-label text-[10px] font-semibold uppercase tracking-[0.08em]", highlighted ? "text-white/60" : "text-bvbp-muted-ink")}>Dores</p>
+            <p className={cn("mt-1 line-clamp-2 text-xs leading-5", highlighted ? "text-white/85" : "text-bvbp-muted-ink")}>
+              {pillar.pains.length ? pillar.pains.slice(0, 3).join(" · ") : "Nenhuma dor registrada"}
+            </p>
           </div>
-          <p className="line-clamp-2 text-xs leading-5 text-bvbp-muted-ink">{pillar.primaryMetricSource}</p>
         </div>
       </div>
     </button>
@@ -152,13 +162,8 @@ export function MaturityMapPanel({ pillars, onSelect }: MaturityMapPanelProps) {
           className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-left transition hover:border-bvbp-forest/30 hover:bg-bvbp-raised/80 focus:outline-none focus:ring-2 focus:ring-bvbp-gold/45"
           aria-label={`Ver maturidade e ponteiros de ${pillar.label}`}
         >
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="font-heading text-base font-semibold text-bvbp-ink">{pillar.label}</h3>
-              <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">Nível {pillar.maturityLevel} · {pillar.currentLevelName}</p>
-            </div>
-            <StatusBadge label={pillar.signal} />
-          </div>
+          <h3 className="font-heading text-base font-semibold text-bvbp-ink">{pillar.label}</h3>
+          <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">Nível {pillar.maturityLevel} · {pillar.currentLevelName}</p>
 
           <div className="mt-5 flex gap-1.5" aria-label={`${pillar.label}: nível ${pillar.maturityLevel} de 5`}>
             {[1, 2, 3, 4, 5].map((step) => (
@@ -191,7 +196,7 @@ export function PrioritizedInitiativesList({ initiatives, onSelect }: Prioritize
   if (!initiatives.length) {
     return (
       <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-sm text-bvbp-muted-ink">
-        Nenhuma iniciativa priorizada ainda. Defina uma iniciativa conectada ao ponteiro crítico.
+        Nenhuma iniciativa priorizada ainda. Defina uma iniciativa conectada ao ponteiro principal.
       </div>
     );
   }
@@ -206,7 +211,10 @@ export function PrioritizedInitiativesList({ initiatives, onSelect }: Prioritize
               onClick={() => onSelect(cycle)}
               className="grid w-full gap-3 px-4 py-4 text-left text-sm leading-6 text-bvbp-ink transition hover:bg-bvbp-inset focus:outline-none focus:ring-2 focus:ring-inset focus:ring-bvbp-gold/45 sm:grid-cols-[40px_minmax(0,1fr)_auto]"
             >
-              <span className="font-label text-xs font-semibold text-bvbp-muted-ink">
+              <span className={cn(
+                "flex h-7 w-7 items-center justify-center rounded-full font-label text-xs font-semibold",
+                index === 0 ? "bg-bvbp-gold text-bvbp-forest" : "text-bvbp-muted-ink",
+              )}>
                 {String(index + 1).padStart(2, "0")}
               </span>
               <span className="min-w-0">

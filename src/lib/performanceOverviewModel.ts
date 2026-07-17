@@ -182,6 +182,15 @@ function parseDeadlineValue(deadline: string) {
 export function sortOverviewInitiatives(cycles: PdcaCycle[]) {
   return [...cycles]
     .sort((a, b) => {
+      const priorityRank = (priority?: PdcaCycle["priority"]) => {
+        if (priority === "Alta") return 0;
+        if (priority === "Média") return 1;
+        if (priority === "Baixa") return 2;
+        return 3;
+      };
+      const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
+      if (priorityDiff) return priorityDiff;
+
       const activeDiff = Number(isOverviewCycleActive(b)) - Number(isOverviewCycleActive(a));
       if (activeDiff) return activeDiff;
 
@@ -244,7 +253,7 @@ function buildPillarSummary(
     !metricCount
       ? "Sem ponteiros"
       : !primaryMetricView
-        ? "Crítico a definir"
+        ? "Principal a definir"
         : primaryMetricView.dataType === "Sem baseline" || primaryMetricView.dataType === "Fonte pendente"
       ? "Mapear baseline"
       : maturity.level <= 2
@@ -287,10 +296,10 @@ function buildPillarSummary(
       !metricCount
         ? "Definir o primeiro ponteiro deste pilar"
         : !primaryMetricView
-          ? "Definir qual ponteiro é crítico neste pilar"
+          ? "Definir o ponteiro principal deste pilar"
           : primaryMetricView.dataType === "Sem baseline" || primaryMetricView.dataType === "Fonte pendente"
-            ? "Informar baseline e fonte do ponteiro crítico"
-            : "Definir próxima iniciativa conectada ao ponteiro crítico"
+            ? "Informar baseline e fonte do ponteiro principal"
+            : "Definir próxima iniciativa conectada ao ponteiro principal"
     ),
   };
 }
@@ -314,11 +323,11 @@ function getPillarTransparencyGap(pillar: OverviewPillarSummary) {
   const criticalMetric = pillar.metrics.find((metric) => metric.name === pillar.primaryMetricName);
 
   if (!pillar.metricCount) return `Selecionar o primeiro ponteiro de ${pillar.label}`;
-  if (!criticalMetric) return `Definir o ponteiro crítico de ${pillar.label}`;
-  if (criticalMetric.dataType === "Sem baseline") return `Informar o baseline do ponteiro crítico de ${pillar.label}`;
-  if (criticalMetric.dataType === "Fonte pendente") return `Informar a fonte do ponteiro crítico de ${pillar.label}`;
-  if (!criticalMetric.target?.trim()) return `Definir a meta do ponteiro crítico de ${pillar.label}`;
-  if (!criticalMetric.benchmark?.trim()) return `Registrar o benchmark do ponteiro crítico de ${pillar.label}`;
+  if (!criticalMetric) return `Definir o ponteiro principal de ${pillar.label}`;
+  if (criticalMetric.dataType === "Sem baseline") return `Informar o baseline do ponteiro principal de ${pillar.label}`;
+  if (criticalMetric.dataType === "Fonte pendente") return `Informar a fonte do ponteiro principal de ${pillar.label}`;
+  if (!criticalMetric.target?.trim()) return `Definir a meta do ponteiro principal de ${pillar.label}`;
+  if (!criticalMetric.benchmark?.trim()) return `Registrar o benchmark do ponteiro principal de ${pillar.label}`;
   return undefined;
 }
 
@@ -355,7 +364,7 @@ export function getPortfolioNextDecision(model: PerformanceOverviewModel): Portf
   return {
     title: `Criar a primeira iniciativa para mover ${attentionPillar.primaryMetricName}`,
     pillarLabel: attentionPillar.label,
-    context: `Ponteiro crítico definido · maturidade ${attentionPillar.maturityLevel}/5`,
+    context: `Ponteiro principal definido · maturidade ${attentionPillar.maturityLevel}/5`,
   };
 }
 
@@ -377,8 +386,8 @@ function buildExecutiveReading(pillars: OverviewPillarSummary[], prioritizedInit
       meta: `Nível ${attentionPillar.maturityLevel} · ${attentionPillar.currentLevelName}`,
     },
     {
-      label: "Ponteiro crítico principal",
-      value: attentionPillar.primaryMetricName || "Definir ponteiro crítico",
+      label: "Ponteiro principal",
+      value: attentionPillar.primaryMetricName || "Definir ponteiro principal",
       meta: `${attentionPillar.primaryMetricValue} · ${attentionPillar.dataStatus}`,
     },
     {
@@ -388,7 +397,7 @@ function buildExecutiveReading(pillars: OverviewPillarSummary[], prioritizedInit
     },
     {
       label: "Próxima decisão",
-      value: initiativeWithDecision?.nextDecision || "Definir próxima iniciativa conectada ao ponteiro crítico",
+      value: initiativeWithDecision?.nextDecision || "Definir próxima iniciativa conectada ao ponteiro principal",
       meta: initiativeWithDecision?.owner ? `Responsável: ${initiativeWithDecision.owner}` : "Sem responsável definido",
     },
   ];

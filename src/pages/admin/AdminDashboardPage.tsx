@@ -108,7 +108,7 @@ const AdminDashboardPage = () => {
                   <TableHead>Nome</TableHead>
                   <TableHead>Tipo</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Ponteiro crítico</TableHead>
+                  <TableHead>Ponteiro principal</TableHead>
                   <TableHead>Potencial mapeado</TableHead>
                   <TableHead>Próxima ação</TableHead>
                   <TableHead>Responsável</TableHead>

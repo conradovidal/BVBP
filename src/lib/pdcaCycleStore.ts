@@ -16,6 +16,7 @@ import {
 import { syncPdcaCyclesForCompanySoon } from "@/lib/clientPortalSupabase";
 import { portalRuntimeConfig } from "@/lib/portalRuntimeConfig";
 import { PORTAL_STORAGE_KEYS, isPdcaCycleList, readJsonStorage, writeJsonStorage } from "@/lib/portalStorage";
+import { getNextCompanyWorkItemReferenceNumber } from "@/lib/workItemReferences";
 
 export type PdcaCycleInput = Omit<PdcaCycle, "id" | "companyId" | "evidences" | "learnings" | "actions"> & {
   id?: string;
@@ -45,6 +46,21 @@ function readAllPdcaCycles() {
   const { data: storedCycles } = readJsonStorage(PORTAL_STORAGE_KEYS.pdcaCycles, isPdcaCycleList);
   const sourceCycles = storedCycles || [];
   const normalizedCycles = sourceCycles.map(normalizeStoredCycle);
+  const nextReferenceByCompany = new Map<string, number>();
+  normalizedCycles.forEach((cycle) => {
+    const current = nextReferenceByCompany.get(cycle.companyId) || 1;
+    if (cycle.referenceNumber) {
+      nextReferenceByCompany.set(cycle.companyId, Math.max(current, cycle.referenceNumber + 1));
+    }
+  });
+  normalizedCycles
+    .filter((cycle) => !cycle.referenceNumber)
+    .sort((a, b) => (a.priorityOrder || 0) - (b.priorityOrder || 0))
+    .forEach((cycle) => {
+      const next = nextReferenceByCompany.get(cycle.companyId) || 1;
+      cycle.referenceNumber = next;
+      nextReferenceByCompany.set(cycle.companyId, next + 1);
+    });
 
   if (JSON.stringify(sourceCycles) !== JSON.stringify(normalizedCycles)) {
     savePdcaCycles(normalizedCycles);
@@ -213,6 +229,7 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
   const nextCycle = normalizeStoredCycle({
     id: input.id || `${company.id}-cycle-${now}`,
     companyId: company.id,
+    referenceNumber: existing?.referenceNumber || getNextCompanyWorkItemReferenceNumber(company.id),
     title: input.title.trim(),
     affectedPointer: input.affectedPointer.trim(),
     affectedFlow: input.affectedFlow?.trim() || undefined,

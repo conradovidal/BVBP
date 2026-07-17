@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionHeader } from "@/components/performance/SectionHeader";
 import { ActivityCard } from "@/components/performance/initiatives/ActivityCard";
 import { ActivityForm } from "@/components/performance/initiatives/ActivityForm";
@@ -9,9 +10,11 @@ import {
   type InitiativeActivityInput,
   type InitiativeActivityStatus,
 } from "@/lib/initiativeActivityStore";
+import type { Company, InitiativePriority } from "@/data/performanceSystem";
 
 interface InitiativeActivityBoardProps {
   activities: InitiativeActivity[];
+  company: Company;
   formValue: InitiativeActivityInput;
   onFormChange: (value: InitiativeActivityInput) => void;
   onAddActivity: () => void;
@@ -21,6 +24,7 @@ interface InitiativeActivityBoardProps {
 
 export function InitiativeActivityBoard({
   activities,
+  company,
   formValue,
   onFormChange,
   onAddActivity,
@@ -29,7 +33,9 @@ export function InitiativeActivityBoard({
 }: InitiativeActivityBoardProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const activeStatuses: InitiativeActivityStatus[] = ["Em validação", "Em andamento", "A fazer"];
-  const completedActivities = activities.filter((activity) => activity.status === "Concluído");
+  const priorityRank = (priority?: InitiativePriority) => priority === "Alta" ? 0 : priority === "Média" ? 1 : priority === "Baixa" ? 2 : 3;
+  const sortedActivities = [...activities].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority) || a.createdAt.localeCompare(b.createdAt));
+  const completedActivities = sortedActivities.filter((activity) => activity.status === "Concluído");
 
   const submitActivity = () => {
     if (!formValue.title.trim()) return;
@@ -40,7 +46,7 @@ export function InitiativeActivityBoard({
   const activityRows = (statusActivities: InitiativeActivity[]) => (
     <div className="divide-y divide-bvbp-ink/10">
       {statusActivities.map((activity) => (
-        <ActivityCard key={activity.id} activity={activity} onStatusChange={onStatusChange} onUpdate={onUpdateActivity} />
+        <ActivityCard key={activity.id} activity={activity} company={company} onStatusChange={onStatusChange} onUpdate={onUpdateActivity} />
       ))}
       {!statusActivities.length ? <p className="py-4 text-sm text-bvbp-muted-ink">Nenhuma atividade neste estágio.</p> : null}
     </div>
@@ -56,12 +62,15 @@ export function InitiativeActivityBoard({
         </Button>
       </div>
 
-      {isFormOpen ? (
-        <div className="space-y-2">
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent withinContentArea className="max-w-xl bg-bvbp-ivory">
+          <DialogHeader>
+            <DialogTitle>Nova atividade</DialogTitle>
+            <DialogDescription>Defina o resultado esperado, responsável, prioridade e datas.</DialogDescription>
+          </DialogHeader>
           <ActivityForm value={formValue} onChange={onFormChange} onSubmit={submitActivity} />
-          <Button type="button" variant="ghost" size="sm" onClick={() => setIsFormOpen(false)}>Cancelar</Button>
-        </div>
-      ) : null}
+        </DialogContent>
+      </Dialog>
 
       <div className="space-y-3">
         <details className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset">
@@ -72,7 +81,7 @@ export function InitiativeActivityBoard({
         </details>
 
         {activeStatuses.map((status) => {
-          const statusActivities = activities.filter((activity) => activity.status === status);
+          const statusActivities = sortedActivities.filter((activity) => activity.status === status);
 
           return (
             <section key={status} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised px-4">

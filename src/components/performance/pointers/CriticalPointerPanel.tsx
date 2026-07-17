@@ -21,7 +21,7 @@ export function CriticalPointerPanel({ pointer }: CriticalPointerPanelProps) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
-            <span className="text-bvbp-gold">Ponteiro crítico</span>
+            <span className="text-bvbp-gold">Ponteiro principal</span>
           </p>
           <h2 className="mt-3 font-heading text-2xl font-semibold leading-tight text-bvbp-ink">{pointer.name}</h2>
         </div>

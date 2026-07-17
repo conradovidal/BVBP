@@ -9,6 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
+import type { Company } from "@/data/performanceSystem";
+import { formatWorkItemReference } from "@/lib/workItemReferences";
 import {
   type InitiativeActivity,
   type InitiativeActivityInput,
@@ -18,19 +21,24 @@ import {
 
 interface ActivityCardProps {
   activity: InitiativeActivity;
+  company: Company;
   onStatusChange: (activityId: string, status: InitiativeActivityStatus) => void;
   onUpdate: (activity: InitiativeActivityInput) => void;
 }
 
-export function ActivityCard({ activity, onStatusChange, onUpdate }: ActivityCardProps) {
+export function ActivityCard({ activity, company, onStatusChange, onUpdate }: ActivityCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<InitiativeActivityInput>({
     id: activity.id,
     initiativeId: activity.initiativeId,
     title: activity.title,
     description: activity.description || "",
+    definitionOfDone: activity.definitionOfDone || activity.description || "",
     owner: activity.owner || "",
-    dueDate: activity.dueDate || "",
+    startDate: activity.startDate || "",
+    endDate: activity.endDate || activity.dueDate || "",
+    dueDate: activity.endDate || activity.dueDate || "",
+    priority: activity.priority,
     status: activity.status,
   });
 
@@ -49,9 +57,9 @@ export function ActivityCard({ activity, onStatusChange, onUpdate }: ActivityCar
           placeholder="Título da atividade"
         />
         <Textarea
-          value={draft.description || ""}
-          onChange={(event) => setDraft({ ...draft, description: event.target.value })}
-          placeholder="Descrição curta"
+          value={draft.definitionOfDone || draft.description || ""}
+          onChange={(event) => setDraft({ ...draft, definitionOfDone: event.target.value, description: event.target.value })}
+          placeholder="Definição de pronto"
           className="min-h-20"
         />
         <Input
@@ -60,9 +68,14 @@ export function ActivityCard({ activity, onStatusChange, onUpdate }: ActivityCar
           placeholder="Responsável"
         />
         <Input
-          value={draft.dueDate || ""}
-          onChange={(event) => setDraft({ ...draft, dueDate: event.target.value })}
-          placeholder="Prazo"
+          type="date"
+          value={draft.startDate || ""}
+          onChange={(event) => setDraft({ ...draft, startDate: event.target.value })}
+        />
+        <Input
+          type="date"
+          value={draft.endDate || draft.dueDate || ""}
+          onChange={(event) => setDraft({ ...draft, endDate: event.target.value, dueDate: event.target.value })}
         />
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={() => setIsEditing(false)}>
@@ -86,13 +99,17 @@ export function ActivityCard({ activity, onStatusChange, onUpdate }: ActivityCar
   return (
     <article className="flex flex-col gap-3 py-3 md:flex-row md:items-center md:justify-between">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold leading-5 text-bvbp-ink">{activity.title}</p>
-        {activity.description && <p className="mt-1 line-clamp-2 text-xs leading-5 text-bvbp-muted-ink">{activity.description}</p>}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="font-label text-[10px] font-semibold text-bvbp-gold">{formatWorkItemReference(company, activity.referenceNumber)}</span>
+          <p className="text-sm font-semibold leading-5 text-bvbp-ink">{activity.title}</p>
+        </div>
+        {(activity.definitionOfDone || activity.description) && <p className="mt-1 line-clamp-2 text-xs leading-5 text-bvbp-muted-ink">Pronto quando: {activity.definitionOfDone || activity.description}</p>}
         <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">
-          {activity.owner || "Sem responsável"} · {activity.dueDate || "Sem prazo"}
+          {activity.owner || "Sem responsável"} · {activity.startDate || "Sem início"} → {activity.endDate || activity.dueDate || "Sem prazo"}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
+        <InitiativePriorityMenu priority={activity.priority} canManage onChange={(priority) => onUpdate({ ...activity, priority })} />
         <Select value={activity.status} onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}>
           <SelectTrigger className="h-8 w-[150px] bg-bvbp-ivory text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
