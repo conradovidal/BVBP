@@ -31,7 +31,7 @@ function formatDateBr(value?: string) {
   return month && day ? `${day}/${month}` : value;
 }
 
-export const activityListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(180px,1fr)_110px_40px_120px_60px]";
+export const activityListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(160px,1fr)_104px_68px_108px_66px]";
 
 interface ActivityCardProps {
   activity: InitiativeActivity;
