@@ -2,6 +2,8 @@ import {
   type BvbpPillarId,
   type ClientConfiguration,
   type ClientMetricConfig,
+  type ClientMetricMeasurement,
+  type ClientMetricMeasurementContext,
   type ClientMetricValueOrigin,
   type ClientMetricUnit,
   type ClientPillarConfig,
@@ -185,6 +187,16 @@ function normalizeMetric(
   const valueOrigin = currentValue === undefined
     ? undefined
     : storedMetric?.valueOrigin || (storedSource?.toLowerCase().includes("estim") ? "estimated" : "informed");
+  const measurements = Array.isArray(storedMetric?.measurements)
+    ? storedMetric.measurements.filter((measurement): measurement is ClientMetricMeasurement => Boolean(
+        measurement &&
+        typeof measurement.id === "string" &&
+        typeof measurement.value === "number" &&
+        typeof measurement.measuredAt === "string" &&
+        ["Reunião", "Dado", "Decisão", "Estimativa"].includes(measurement.context) &&
+        typeof measurement.createdAt === "string",
+      ))
+    : [];
 
   return {
     id: storedMetric?.id || fallback.id,
@@ -200,6 +212,7 @@ function normalizeMetric(
     direction: storedMetric?.direction || fallback.direction || "higher",
     source: isGeneratedSeed ? undefined : storedSource,
     owner: storedMetric?.owner,
+    measurements,
     custom,
   };
 }
@@ -221,7 +234,7 @@ function normalizeClientConfiguration(company: Company, storedConfig?: StoredCli
   const availableMetricIds = new Set([...defaultMetrics, ...customMetrics].map((metric) => metric.id));
 
   return withDerivedBaseMaturityCriteria({
-    schemaVersion: 3,
+    schemaVersion: 4,
     companyId: company.id,
     metrics: [...defaultMetrics, ...customMetrics],
     pillars: defaultConfig.pillars.map((pillar) => {
@@ -305,7 +318,7 @@ async function persistClientBundle(company: Company, configuration: ClientConfig
 export async function createClientWithConfiguration(input: ClientSetupInput) {
   const company = buildPortalCompany(input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     companyId: company.id,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -321,7 +334,7 @@ export async function updateClientWithConfiguration(companyId: string, input: Cl
 
   const company = buildUpdatedPortalCompany(existingCompany, input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -337,7 +350,7 @@ export async function upsertClientWithConfiguration(companyId: string, input: Cl
     : buildPortalCompany({ ...input.company, id: companyId });
 
   const configuration: ClientConfiguration = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -364,6 +377,7 @@ export function addCustomClientMetric(companyId: string, input: CustomClientMetr
     target: input.target?.trim() || undefined,
     source: input.source?.trim() || undefined,
     owner: company.bvbpOwner,
+    measurements: [],
     custom: true,
   };
   const nextConfiguration: ClientConfiguration = {
@@ -378,6 +392,47 @@ export function addCustomClientMetric(companyId: string, input: CustomClientMetr
 
   saveClientConfiguration(nextConfiguration);
   return metric;
+}
+
+export interface ClientMetricMeasurementInput {
+  value: number;
+  measuredAt: string;
+  context: ClientMetricMeasurementContext;
+  source?: string;
+  note?: string;
+  createdByName?: string;
+}
+
+export function updateClientMetricMeasurement(company: Company, metricId: string, input: ClientMetricMeasurementInput) {
+  if (!Number.isFinite(input.value) || !input.measuredAt || !input.context) return undefined;
+  const configuration = getClientConfiguration(company);
+  const metric = configuration.metrics.find((item) => item.id === metricId);
+  if (!metric) return undefined;
+
+  const now = new Date().toISOString();
+  const measurement: ClientMetricMeasurement = {
+    id: `measurement-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    value: input.value,
+    measuredAt: input.measuredAt,
+    context: input.context,
+    source: input.source?.trim() || undefined,
+    note: input.note?.trim() || undefined,
+    createdAt: now,
+    createdByName: input.createdByName?.trim() || undefined,
+  };
+  const nextConfiguration: ClientConfiguration = {
+    ...configuration,
+    metrics: configuration.metrics.map((item) => item.id === metricId ? {
+      ...item,
+      currentValue: input.value,
+      valueOrigin: input.context === "Estimativa" ? "estimated" : "informed",
+      source: input.source?.trim() || item.source,
+      measurements: [measurement, ...(item.measurements || [])],
+    } : item),
+  };
+
+  saveClientConfiguration(nextConfiguration);
+  return { configuration: nextConfiguration, measurement };
 }
 
 export function getSelectedClientMetricsByPillar(company: Company, pillarId: BvbpPillarId) {

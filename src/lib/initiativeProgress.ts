@@ -16,16 +16,15 @@ export function getLatestObservedValue(cycle: PdcaCycle) {
   return undefined;
 }
 
-export function calculateInitiativeProgress(cycle: PdcaCycle) {
+export function calculateInitiativeProgress(cycle: PdcaCycle, currentValue?: number) {
   const baseline = cycle.baselineValue ?? parseMetricNumber(cycle.baseline);
   const target = cycle.targetValue ?? parseMetricNumber(cycle.target);
-  const observed = getLatestObservedValue(cycle);
-  if (baseline === undefined || target === undefined || observed === undefined || baseline === target) return undefined;
+  if (baseline === undefined || target === undefined || currentValue === undefined || baseline === target) return undefined;
 
   let progress: number;
-  if (cycle.metricDirection === "lower") progress = (baseline - observed) / (baseline - target);
-  else if (cycle.metricDirection === "target") progress = 1 - Math.abs(observed - target) / Math.abs(baseline - target);
-  else progress = (observed - baseline) / (target - baseline);
+  if (cycle.metricDirection === "lower") progress = (baseline - currentValue) / (baseline - target);
+  else if (cycle.metricDirection === "target") progress = 1 - Math.abs(currentValue - target) / Math.abs(baseline - target);
+  else progress = (currentValue - baseline) / (target - baseline);
 
   return Math.round(Math.min(1, Math.max(0, progress)) * 100);
 }
@@ -37,9 +36,8 @@ export function formatMetricValue(value: number, unit: ClientMetricUnit | undefi
   return `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 }).format(value)}${suffix}`;
 }
 
-export function getInitiativeImpactLabel(cycle: PdcaCycle) {
-  const observed = getLatestObservedValue(cycle);
-  const progress = calculateInitiativeProgress(cycle);
-  if (observed === undefined || progress === undefined) return "Impacto ainda não mensurado";
-  return `${formatMetricValue(observed, cycle.metricUnit)} · ${progress}% da meta`;
+export function getInitiativeImpactLabel(cycle: PdcaCycle, currentValue?: number) {
+  const progress = calculateInitiativeProgress(cycle, currentValue);
+  if (currentValue === undefined || progress === undefined) return "Progresso ainda não mensurado";
+  return `Atual ${formatMetricValue(currentValue, cycle.metricUnit)} · ${progress}% do caminho`;
 }

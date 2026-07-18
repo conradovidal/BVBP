@@ -35,6 +35,7 @@ interface MaturityMapPanelProps {
 interface PrioritizedInitiativesListProps {
   initiatives: PdcaCycle[];
   onSelect: (cycle: PdcaCycle) => void;
+  currentValueByMetricId: Map<string, number>;
 }
 
 interface PillarOverviewDetailDialogProps {
@@ -192,7 +193,7 @@ export function MaturityMapPanel({ pillars, onSelect }: MaturityMapPanelProps) {
   );
 }
 
-export function PrioritizedInitiativesList({ initiatives, onSelect }: PrioritizedInitiativesListProps) {
+export function PrioritizedInitiativesList({ initiatives, onSelect, currentValueByMetricId }: PrioritizedInitiativesListProps) {
   if (!initiatives.length) {
     return (
       <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-4 text-sm text-bvbp-muted-ink">
@@ -224,7 +225,7 @@ export function PrioritizedInitiativesList({ initiatives, onSelect }: Prioritize
                 </span>
               </span>
               <span className="flex flex-wrap items-center gap-3 sm:justify-end">
-                <span className="text-xs font-semibold text-bvbp-positive">{getInitiativeImpactLabel(cycle)}</span>
+                <span className="text-xs font-semibold text-bvbp-positive">{getInitiativeImpactLabel(cycle, cycle.metricId ? currentValueByMetricId.get(cycle.metricId) : undefined)}</span>
                 <StatusBadge label={cycle.pdcaStatus} />
               </span>
             </button>
