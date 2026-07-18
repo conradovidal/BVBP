@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Check, ChevronDown, Minus } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronDown, CircleDashed, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,17 +19,19 @@ interface InitiativePriorityMenuProps {
   priority?: InitiativePriority;
   canManage: boolean;
   onChange: (priority: InitiativePriority) => void;
+  compact?: boolean;
 }
 
-export function InitiativePriorityMenu({ priority, canManage, onChange }: InitiativePriorityMenuProps) {
+export function InitiativePriorityMenu({ priority, canManage, onChange, compact = false }: InitiativePriorityMenuProps) {
   const current = priority ? priorityMeta[priority] : null;
   const CurrentIcon = current?.icon;
+  const DisplayIcon = CurrentIcon || CircleDashed;
 
   if (!canManage) {
     return (
       <span className={cn("inline-flex items-center gap-1.5 text-xs font-semibold", current?.className || "text-bvbp-muted-ink")}>
-        {CurrentIcon ? <CurrentIcon className="h-4 w-4" aria-hidden="true" /> : null}
-        {priority || "A definir"}
+        <DisplayIcon className={cn("h-4 w-4", current?.className || "text-bvbp-muted-ink")} aria-hidden="true" />
+        {compact ? null : priority || "A definir"}
       </span>
     );
   }
@@ -37,10 +39,10 @@ export function InitiativePriorityMenu({ priority, canManage, onChange }: Initia
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="sm" className="h-8 justify-start gap-1.5 px-2" aria-label={`Alterar prioridade: ${priority || "A definir"}`}>
-          {CurrentIcon ? <CurrentIcon className={cn("h-4 w-4", current.className)} aria-hidden="true" /> : null}
-          <span className="text-xs font-semibold">{priority || "A definir"}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-bvbp-muted-ink" aria-hidden="true" />
+        <Button type="button" variant="ghost" size="sm" className={cn("h-8 justify-start gap-1.5 px-2", compact && "w-8 justify-center px-0")} aria-label={`Alterar prioridade: ${priority || "A definir"}`}>
+          <DisplayIcon className={cn("h-4 w-4", current?.className || "text-bvbp-muted-ink")} aria-hidden="true" />
+          {compact ? null : <span className="text-xs font-semibold">{priority || "A definir"}</span>}
+          {compact ? null : <ChevronDown className="h-3.5 w-3.5 text-bvbp-muted-ink" aria-hidden="true" />}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">

@@ -1,4 +1,4 @@
-import { Check, ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -31,7 +31,6 @@ export function InitiativeStatusMenu({ status, onChange, className }: Initiative
           aria-label={`Alterar status: ${status}`}
         >
           <StatusBadge label={status} />
-          <ChevronDown className="h-3.5 w-3.5 text-bvbp-muted-ink" aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

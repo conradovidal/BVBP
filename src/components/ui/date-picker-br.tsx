@@ -12,6 +12,7 @@ interface DatePickerBrProps {
   placeholder?: string;
   id?: string;
   className?: string;
+  displayMode?: "full" | "compact";
 }
 
 function parseDate(value?: string) {
@@ -20,8 +21,9 @@ function parseDate(value?: string) {
   return isValid(date) ? date : undefined;
 }
 
-export function DatePickerBr({ value, onChange, placeholder = "dd/mm/aaaa", id, className }: DatePickerBrProps) {
+export function DatePickerBr({ value, onChange, placeholder = "dd/mm/aaaa", id, className, displayMode = "full" }: DatePickerBrProps) {
   const selected = parseDate(value);
+  const isCompact = displayMode === "compact";
 
   return (
     <Popover>
@@ -32,12 +34,14 @@ export function DatePickerBr({ value, onChange, placeholder = "dd/mm/aaaa", id, 
           variant="outline"
           className={cn(
             "h-10 w-full justify-between border-bvbp-ink/10 bg-bvbp-raised px-3 font-normal",
+            isCompact && "h-8 w-auto min-w-8 justify-center border-0 bg-transparent px-1 text-xs shadow-none hover:bg-bvbp-inset",
             !selected && "text-bvbp-muted-ink",
             className,
           )}
+          aria-label={selected ? `Alterar prazo: ${format(selected, "dd/MM/yyyy")}` : "Definir prazo"}
         >
-          {selected ? format(selected, "dd/MM/yyyy") : placeholder}
-          <CalendarDays className="h-4 w-4 text-bvbp-muted-ink" aria-hidden="true" />
+          {selected ? format(selected, isCompact ? "dd/MM" : "dd/MM/yyyy") : isCompact ? null : placeholder}
+          {!isCompact || !selected ? <CalendarDays className="h-4 w-4 text-bvbp-muted-ink" aria-hidden="true" /> : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto p-0">

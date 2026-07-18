@@ -166,6 +166,8 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
       typeof cycle.affectedPointer === "string" &&
       typeof cycle.pdcaStatus === "string" &&
       (cycle.pillarId === undefined || ["financial", "commercial", "operation", "technology"].includes(cycle.pillarId)) &&
+      (cycle.focusType === undefined || ["metric", "pain", "maturity"].includes(cycle.focusType)) &&
+      (cycle.maturityTargetLevel === undefined || [1, 2, 3, 4, 5].includes(cycle.maturityTargetLevel)) &&
       (cycle.painLabel === undefined || typeof cycle.painLabel === "string") &&
       (cycle.metricId === undefined || typeof cycle.metricId === "string") &&
       (cycle.metricNameSnapshot === undefined || typeof cycle.metricNameSnapshot === "string") &&

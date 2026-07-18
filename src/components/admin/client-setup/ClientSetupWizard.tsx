@@ -330,7 +330,7 @@ export function ClientSetupWizard({ mode, company, configuration, onCancel, onSa
   const [hasSavedDraft, setHasSavedDraft] = useState(mode === "edit");
   const [savingAction, setSavingAction] = useState<"draft" | "final">();
   const [contactAccessLoadingId, setContactAccessLoadingId] = useState<string>();
-  const isBasicValid = state.company.name.trim().length > 1 && state.company.referenceCode.length >= 2 && state.company.segment.trim().length > 1;
+  const isBasicValid = state.company.name.trim().length > 1 && state.company.referenceCode.length === 2 && state.company.segment.trim().length > 1;
   const areContactsValid =
     state.company.contacts.every((contact) => (
       contact.name.trim().length > 1 &&
@@ -776,10 +776,10 @@ export function ClientBasicDataStep({
           id="client-reference-code"
           value={state.company.referenceCode}
           onChange={(event) => updateCompanyField("referenceCode", normalizeCompanyReferenceCode(event.target.value))}
-          placeholder="NEXO"
-          maxLength={8}
+          placeholder="NX"
+          maxLength={2}
         />
-        <p className="text-xs text-bvbp-muted-ink">Usado nos identificadores de iniciativas e atividades.</p>
+        <p className="text-xs text-bvbp-muted-ink">Use duas letras. O código identifica iniciativas e atividades.</p>
       </div>
       <div className="space-y-2">
         <Label htmlFor="client-segment">Segmento</Label>

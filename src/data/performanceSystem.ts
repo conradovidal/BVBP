@@ -25,6 +25,7 @@ export type ClientContactAccessLevel = "collaborator" | "viewer";
 export type ClientMetricDirection = "higher" | "lower" | "target";
 export type ClientRelationshipEventType = "meeting" | "proposal" | "follow_up" | "contract_start" | "note";
 export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
+export type InitiativeFocusType = "metric" | "pain" | "maturity";
 
 export interface ClientContact {
   id: string;
@@ -306,7 +307,7 @@ export interface PdcaEvidence {
 export interface PdcaHistoryEntry {
   id: string;
   createdAt: string;
-  kind: "created" | "status" | "priority" | "deadline" | "owner" | "activity_status" | "activity_priority";
+  kind: "created" | "status" | "priority" | "deadline" | "owner" | "focus" | "content" | "team" | "start_date" | "activity_status" | "activity_priority";
   description: string;
   createdByName?: string;
 }
@@ -346,6 +347,8 @@ export interface PdcaCycle {
   baseline?: string;
   target?: string;
   pillarId?: BvbpPillarId;
+  focusType?: InitiativeFocusType;
+  maturityTargetLevel?: MaturityLevel;
   painLabel?: string;
   metricId?: string;
   metricNameSnapshot?: string;
