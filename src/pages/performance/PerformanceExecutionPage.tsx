@@ -14,7 +14,7 @@ import {
   arrayMove,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePickerBr } from "@/components/ui/date-picker-br";
 import {
@@ -627,175 +627,91 @@ const PerformanceExecutionPage = () => {
       </Dialog>
 
       <Dialog open={isFormDialogOpen} onOpenChange={setIsFormDialogOpen}>
-        <DialogContent withinContentArea className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
+        <DialogContent withinContentArea className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-0">
           <DialogHeader>
-            <DialogTitle className="font-heading text-2xl text-bvbp-ink">
-              Nova iniciativa
-            </DialogTitle>
-            <DialogDescription>
-              Cadastre a iniciativa com os mesmos vínculos e metadados exibidos no detalhe final.
-            </DialogDescription>
+            <DialogTitle className="sr-only">Nova iniciativa</DialogTitle>
+            <DialogDescription className="sr-only">Cadastre a iniciativa na mesma composição usada para consultar e editar.</DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 md:grid-cols-6">
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="initiative-title">Título</Label>
-              <Input
-                id="initiative-title"
-                value={initiativeForm.title}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, title: event.target.value })}
-              />
+          <div className="flex items-start gap-3 border-b border-bvbp-ink/10 p-5 pr-12">
+            <div className="min-w-0 flex-1">
+              <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-gold">Nova iniciativa</p>
+              <Input id="initiative-title" value={initiativeForm.title} onChange={(event) => setInitiativeForm({ ...initiativeForm, title: event.target.value })} placeholder="Título da iniciativa" className="mt-2 h-11 max-w-2xl font-heading text-xl font-semibold" />
             </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>Status</Label>
-              <Select
-                value={initiativeForm.pdcaStatus}
-                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, pdcaStatus: value as PdcaStatus })}
-              >
-                <SelectTrigger aria-label="Status da iniciativa"><StatusBadge label={initiativeForm.pdcaStatus} /></SelectTrigger>
-                <SelectContent>
-                  {pdcaStatuses.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      <StatusBadge label={status} />
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>Prioridade</Label>
-              <Select
-                value={initiativeForm.priority || "Média"}
-                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, priority: value as InitiativePriority })}
-              >
-                <SelectTrigger aria-label="Prioridade da iniciativa"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {initiativePriorities.map((priority) => <SelectItem key={priority} value={priority}>{priority}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 md:col-span-3">
-              <Label>Pilar</Label>
-              <Select
-                value={initiativeForm.pillarId || ""}
-                onValueChange={(value) => selectInitiativePillar(value as BvbpPillarId)}
-              >
-                <SelectTrigger><SelectValue placeholder="Selecione o pilar" /></SelectTrigger>
-                <SelectContent>
-                  {bvbpPillarIds.map((pillarId) => <SelectItem key={pillarId} value={pillarId}>{bvbpPillarLabels[pillarId]}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 md:col-span-3">
-              <Label>Dor principal</Label>
-              <Select
-                value={initiativeForm.painLabel || ""}
-                onValueChange={(value) => setInitiativeForm({ ...initiativeForm, painLabel: value })}
-                disabled={!selectedPillarConfig?.pains.length}
-              >
-                <SelectTrigger><SelectValue placeholder={initiativeForm.pillarId ? "Selecione a dor" : "Selecione o pilar primeiro"} /></SelectTrigger>
-                <SelectContent>
-                  {(selectedPillarConfig?.pains || []).map((pain) => <SelectItem key={pain} value={pain}>{pain}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {initiativeForm.pillarId && !selectedPillarConfig?.pains.length ? <p className="text-xs text-bvbp-risk">Complete o diagnóstico de dores deste pilar antes de criar a iniciativa.</p> : null}
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label>Ponteiro</Label>
-              <Select
-                value={initiativeForm.metricId || ""}
-                onValueChange={(value) => {
-                  const metric = availableMetrics.find((item) => item.id === value);
-                  if (metric) selectInitiativeMetric(metric);
-                }}
-                disabled={!availableMetrics.length}
-              >
-                <SelectTrigger><SelectValue placeholder={initiativeForm.pillarId ? "Selecione o ponteiro" : "Selecione o pilar primeiro"} /></SelectTrigger>
-                <SelectContent>
-                  {availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{metric.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              {initiativeForm.pillarId && !availableMetrics.length ? (
-                <p className="text-xs text-bvbp-risk">Este pilar ainda não possui um ponteiro cadastrado. Selecione outro pilar com ponteiros ou complete o diagnóstico antes de criar a iniciativa.</p>
-              ) : null}
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="initiative-baseline">Baseline</Label>
-              <Input
-                id="initiative-baseline"
-                type="number"
-                value={initiativeForm.baselineValue ?? ""}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, baselineValue: event.target.value === "" ? undefined : Number(event.target.value), baseline: event.target.value })}
-              />
-            </div>
-            <div className="space-y-2 md:col-span-2">
-              <Label htmlFor="initiative-target">Meta</Label>
-              <Input
-                id="initiative-target"
-                type="number"
-                value={initiativeForm.targetValue ?? ""}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, targetValue: event.target.value === "" ? undefined : Number(event.target.value), target: event.target.value })}
-              />
-            </div>
-            <div className="space-y-2 md:col-span-3">
-              <Label htmlFor="initiative-owner">Responsável</Label>
-              <Input id="initiative-owner" value={initiativeForm.owner} onChange={(event) => setInitiativeForm({ ...initiativeForm, owner: event.target.value })} placeholder="Nome e sobrenome" />
-            </div>
-            <div className="space-y-2 md:col-span-3">
-              <Label htmlFor="initiative-team">Equipe</Label>
-              <Input id="initiative-team" value={teamMembersInput} onChange={(event) => setTeamMembersInput(event.target.value)} placeholder="Nome Sobrenome, Nome Sobrenome" />
-              <p className="text-xs text-bvbp-muted-ink">Separe cada pessoa por vírgula.</p>
-            </div>
-            <div className="space-y-2 md:col-span-3">
-              <Label htmlFor="initiative-start">Data de início</Label>
-              <DatePickerBr id="initiative-start" value={initiativeForm.startDate} onChange={(value) => setInitiativeForm({ ...initiativeForm, startDate: value })} />
-            </div>
-            <div className="space-y-2 md:col-span-3">
-              <Label htmlFor="initiative-deadline">Prazo</Label>
-              <DatePickerBr id="initiative-deadline" value={initiativeForm.deadline} onChange={(value) => setInitiativeForm({ ...initiativeForm, deadline: value, endDate: value })} />
-            </div>
-            <div className="space-y-2 md:col-span-6">
-              <Label htmlFor="initiative-hypothesis">Hipótese</Label>
-              <Textarea
-                id="initiative-hypothesis"
-                value={initiativeForm.hypothesis}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, hypothesis: event.target.value })}
-                placeholder="Se reduzirmos [causa] por meio de [ação], então [ponteiro] irá de [baseline] para [meta] porque [racional]."
-              />
-            </div>
-            <div className="space-y-2 md:col-span-6">
-              <Label htmlFor="initiative-why">Por que importa</Label>
-              <Textarea
-                id="initiative-why"
-                value={initiativeForm.whyItMatters}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, whyItMatters: event.target.value })}
-                placeholder="Isso importa porque afeta [cliente/processo/resultado] em [impacto observável]."
-              />
-            </div>
-            <div className="space-y-2 md:col-span-6">
-              <Label htmlFor="initiative-decision">Próxima decisão</Label>
-              <Input
-                id="initiative-decision"
-                value={initiativeForm.nextDecision}
-                onChange={(event) => setInitiativeForm({ ...initiativeForm, nextDecision: event.target.value })}
-                placeholder="Decidir [o quê] quando [evidência ou critério] estiver disponível."
-              />
-            </div>
-            {formError && <p className="text-sm font-semibold text-bvbp-risk md:col-span-6">{formError}</p>}
+            <Button type="button" size="icon" onClick={saveInitiative} disabled={!canSaveInitiative} aria-label="Criar iniciativa"><Check className="h-4 w-4" /></Button>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsFormDialogOpen(false)}>
-              Cancelar
-            </Button>
-            <Button
-              variant="outline"
-              className="rounded-[8px] border-bvbp-forest bg-bvbp-forest text-bvbp-ivory hover:bg-bvbp-forest-dark hover:text-bvbp-ivory"
-              onClick={saveInitiative}
-              disabled={!canSaveInitiative}
-            >
-              Salvar iniciativa
-            </Button>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_280px]">
+            <div className="space-y-5 p-5">
+              <div className="space-y-2">
+                <Label htmlFor="initiative-hypothesis">Hipótese</Label>
+                <Textarea id="initiative-hypothesis" value={initiativeForm.hypothesis} onChange={(event) => setInitiativeForm({ ...initiativeForm, hypothesis: event.target.value })} placeholder="Se reduzirmos [causa] por meio de [ação], então [ponteiro] irá de [baseline] para [meta] porque [racional]." className="min-h-28" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="initiative-why">Por que importa</Label>
+                <Textarea id="initiative-why" value={initiativeForm.whyItMatters} onChange={(event) => setInitiativeForm({ ...initiativeForm, whyItMatters: event.target.value })} placeholder="Isso importa porque afeta [cliente/processo/resultado] em [impacto observável]." className="min-h-24" />
+              </div>
+              {formError ? <p className="text-sm font-semibold text-bvbp-risk">{formError}</p> : null}
+            </div>
+
+            <aside className="space-y-3 border-t border-bvbp-ink/10 bg-bvbp-inset p-4 lg:border-l lg:border-t-0">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1.5">
+                  <Label>Status</Label>
+                  <Select value={initiativeForm.pdcaStatus} onValueChange={(value) => setInitiativeForm({ ...initiativeForm, pdcaStatus: value as PdcaStatus })}>
+                    <SelectTrigger aria-label="Status da iniciativa"><StatusBadge label={initiativeForm.pdcaStatus} /></SelectTrigger>
+                    <SelectContent>{pdcaStatuses.map((status) => <SelectItem key={status} value={status}><StatusBadge label={status} /></SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Prioridade</Label>
+                  <Select value={initiativeForm.priority || "Média"} onValueChange={(value) => setInitiativeForm({ ...initiativeForm, priority: value as InitiativePriority })}>
+                    <SelectTrigger aria-label="Prioridade da iniciativa"><SelectValue /></SelectTrigger>
+                    <SelectContent>{initiativePriorities.map((priority) => <SelectItem key={priority} value={priority}>{priority}</SelectItem>)}</SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Pilar</Label>
+                <Select value={initiativeForm.pillarId || ""} onValueChange={(value) => selectInitiativePillar(value as BvbpPillarId)}>
+                  <SelectTrigger><SelectValue placeholder="Selecione o pilar" /></SelectTrigger>
+                  <SelectContent>{bvbpPillarIds.map((pillarId) => <SelectItem key={pillarId} value={pillarId}>{bvbpPillarLabels[pillarId]}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Dor principal</Label>
+                <Select value={initiativeForm.painLabel || ""} onValueChange={(value) => setInitiativeForm({ ...initiativeForm, painLabel: value })} disabled={!selectedPillarConfig?.pains.length}>
+                  <SelectTrigger><SelectValue placeholder={initiativeForm.pillarId ? "Selecione a dor" : "Selecione o pilar primeiro"} /></SelectTrigger>
+                  <SelectContent>{(selectedPillarConfig?.pains || []).map((pain) => <SelectItem key={pain} value={pain}>{pain}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Ponteiro</Label>
+                <Select value={initiativeForm.metricId || ""} onValueChange={(value) => { const metric = availableMetrics.find((item) => item.id === value); if (metric) selectInitiativeMetric(metric); }} disabled={!availableMetrics.length}>
+                  <SelectTrigger><SelectValue placeholder={initiativeForm.pillarId ? "Selecione o ponteiro" : "Selecione o pilar primeiro"} /></SelectTrigger>
+                  <SelectContent>{availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{metric.name}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              {initiativeForm.pillarId && !selectedPillarConfig?.pains.length ? <p className="text-xs text-bvbp-risk">Complete o diagnóstico de dores deste pilar antes de criar a iniciativa.</p> : null}
+              {initiativeForm.pillarId && !availableMetrics.length ? <p className="text-xs text-bvbp-risk">Este pilar ainda não possui ponteiro cadastrado.</p> : null}
+
+              <Input id="initiative-owner" value={initiativeForm.owner} onChange={(event) => setInitiativeForm({ ...initiativeForm, owner: event.target.value })} placeholder="Responsável" aria-label="Responsável" />
+              <Input id="initiative-team" value={teamMembersInput} onChange={(event) => setTeamMembersInput(event.target.value)} placeholder="Equipe, separada por vírgula" aria-label="Equipe" />
+              <div className="grid grid-cols-2 gap-2">
+                <DatePickerBr id="initiative-start" value={initiativeForm.startDate} onChange={(value) => setInitiativeForm({ ...initiativeForm, startDate: value })} placeholder="Início" />
+                <DatePickerBr id="initiative-deadline" value={initiativeForm.deadline} onChange={(value) => setInitiativeForm({ ...initiativeForm, deadline: value, endDate: value })} placeholder="Prazo" />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Input id="initiative-baseline" type="number" value={initiativeForm.baselineValue ?? ""} onChange={(event) => setInitiativeForm({ ...initiativeForm, baselineValue: event.target.value === "" ? undefined : Number(event.target.value), baseline: event.target.value })} placeholder="Baseline" />
+                <Input id="initiative-target" type="number" value={initiativeForm.targetValue ?? ""} onChange={(event) => setInitiativeForm({ ...initiativeForm, targetValue: event.target.value === "" ? undefined : Number(event.target.value), target: event.target.value })} placeholder="Meta" />
+              </div>
+            </aside>
+          </div>
+
+          <DialogFooter className="border-t border-bvbp-ink/10 p-4">
+            <Button variant="ghost" onClick={() => setIsFormDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={saveInitiative} disabled={!canSaveInitiative}><Check className="h-4 w-4" /> Criar iniciativa</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
