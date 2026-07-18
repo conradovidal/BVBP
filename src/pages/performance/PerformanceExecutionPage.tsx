@@ -145,7 +145,8 @@ const PerformanceExecutionPage = () => {
   const isAdminPortal = location.pathname.startsWith("/app/admin");
   const performanceSession = getPerformanceSession();
   const canManageInitiatives = isBvbpStaff(performanceSession);
-  const configuration = useMemo(() => getClientConfiguration(activeCompany), [activeCompany]);
+  const [, setConfigurationVersion] = useState(0);
+  const configuration = getClientConfiguration(activeCompany);
   const [initiatives, setInitiatives] = useState<PdcaCycle[]>(() => getPdcaCyclesForCompany(activeCompany));
   const [activities, setActivities] = useState<InitiativeActivity[]>(() => getActivitiesForInitiatives(getPdcaCyclesForCompany(activeCompany)));
   const [selectedInitiativeId, setSelectedInitiativeId] = useState<string | null>(null);
@@ -633,6 +634,8 @@ const PerformanceExecutionPage = () => {
             onReorderActivities={reorderActivities}
             onEvidenceFormChange={setEvidenceForm}
             onAddEvidence={addEvidence}
+            onMetricUpdated={() => { setConfigurationVersion((current) => current + 1); refreshInitiatives(selectedInitiative?.id); }}
+            createdByName={performanceSession?.user.name}
           />
         </DialogContent>
       </Dialog>

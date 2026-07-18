@@ -134,7 +134,7 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
       </div>
 
       <Dialog open={isDefinitionOpen} onOpenChange={setIsDefinitionOpen}>
-        <DialogContent withinContentArea className="max-w-lg bg-bvbp-ivory">
+        <DialogContent withinContentArea className="w-[calc(100%-2rem)] !max-w-md gap-3 bg-bvbp-ivory p-5">
           <DialogHeader>
             <DialogTitle>{formatWorkItemReference(company, activity.referenceNumber)}</DialogTitle>
             <DialogDescription>Definição de pronto</DialogDescription>

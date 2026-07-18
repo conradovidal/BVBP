@@ -224,6 +224,7 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
       typeof metric.description === "string" &&
       typeof metric.unit === "string" &&
       (metric.valueOrigin === undefined || ["informed", "estimated"].includes(metric.valueOrigin)) &&
+      (metric.measurements === undefined || Array.isArray(metric.measurements)) &&
       (
         typeof metric.formula === "string" ||
         typeof (metric as { dataType?: unknown }).dataType === "string"
@@ -232,7 +233,7 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
     ));
 
     const schemaVersion = (config as { schemaVersion?: number }).schemaVersion;
-    const hasValidSchema = schemaVersion === undefined || schemaVersion === 2 || schemaVersion === 3;
+    const hasValidSchema = schemaVersion === undefined || schemaVersion === 2 || schemaVersion === 3 || schemaVersion === 4;
 
     return hasValidSchema && typeof config.companyId === "string" && hasValidPillars && hasValidMetrics;
   });

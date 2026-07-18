@@ -1,6 +1,7 @@
 import type { PdcaCycle } from "@/data/performanceSystem";
 import type { OverviewMetricView } from "@/lib/performanceOverviewModel";
 import type { PointerPillarDiagnostic } from "@/lib/performancePointersModel";
+import { PencilLine } from "lucide-react";
 
 interface PointerSummaryStripProps {
   diagnostic: PointerPillarDiagnostic;
@@ -18,10 +19,12 @@ function PointerBlock({
   label,
   metrics,
   initiatives,
+  onUpdateMetric,
 }: {
   label: string;
   metrics: OverviewMetricView[];
   initiatives: PdcaCycle[];
+  onUpdateMetric?: (metricId: string) => void;
 }) {
   return (
     <article className="min-w-0 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5 shadow-[0_8px_24px_rgba(26,25,23,0.035)]">
@@ -39,6 +42,11 @@ function PointerBlock({
                 {pains.length ? (
                   <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">Dores: {pains.join(" · ")}</p>
                 ) : null}
+                {onUpdateMetric ? (
+                  <button type="button" onClick={() => onUpdateMetric(metric.id)} className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-bvbp-forest hover:underline">
+                    <PencilLine className="h-3.5 w-3.5" aria-hidden="true" /> Atualizar valor
+                  </button>
+                ) : null}
               </div>
             );
           })}
@@ -50,7 +58,7 @@ function PointerBlock({
   );
 }
 
-export function PointerSummaryStrip({ diagnostic }: PointerSummaryStripProps) {
+export function PointerSummaryStrip({ diagnostic, onUpdateMetric }: PointerSummaryStripProps & { onUpdateMetric?: (metricId: string) => void }) {
   const primary = diagnostic.criticalMetricId
     ? diagnostic.metrics.filter((metric) => metric.id === diagnostic.criticalMetricId)
     : [];
@@ -59,8 +67,8 @@ export function PointerSummaryStrip({ diagnostic }: PointerSummaryStripProps) {
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1fr_1fr_1.05fr]">
-      <PointerBlock label="Ponteiro principal" metrics={primary} initiatives={diagnostic.initiatives} />
-      <PointerBlock label="Ponteiros de suporte" metrics={support} initiatives={diagnostic.initiatives} />
+      <PointerBlock label="Ponteiro principal" metrics={primary} initiatives={diagnostic.initiatives} onUpdateMetric={onUpdateMetric} />
+      <PointerBlock label="Ponteiros de suporte" metrics={support} initiatives={diagnostic.initiatives} onUpdateMetric={onUpdateMetric} />
       <article className="rounded-[8px] border border-bvbp-forest/20 bg-bvbp-forest p-5 text-white shadow-[0_8px_24px_rgba(10,49,39,0.10)]">
         <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-white/60">Próxima ação priorizada</p>
         {priorityInitiative ? (

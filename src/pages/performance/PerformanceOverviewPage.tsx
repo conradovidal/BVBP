@@ -10,12 +10,15 @@ import {
 import { type Company, type PdcaCycle } from "@/data/performanceSystem";
 import { buildPerformanceOverviewModel, getAttentionPillar, type OverviewPillarSummary } from "@/lib/performanceOverviewModel";
 import { getPdcaCyclesForCompany } from "@/lib/pdcaCycleStore";
+import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 
 const PerformanceOverviewPage = () => {
   const { activeCompany } = useOutletContext<{ activeCompany: Company }>();
   const location = useLocation();
   const navigate = useNavigate();
   const cycles = getPdcaCyclesForCompany(activeCompany);
+  const configuration = getClientConfiguration(activeCompany);
+  const currentValueByMetricId = new Map(configuration.metrics.flatMap((metric) => metric.currentValue === undefined ? [] : [[metric.id, metric.currentValue] as const]));
   const overview = buildPerformanceOverviewModel(activeCompany, cycles);
   const attentionPillar = getAttentionPillar(overview.pillarSummaries);
   const isAdminPortal = location.pathname.startsWith("/app/admin");
@@ -55,7 +58,7 @@ const PerformanceOverviewPage = () => {
 
         <section className="space-y-3">
           <SectionHeader title="Iniciativas priorizadas" />
-          <PrioritizedInitiativesList initiatives={overview.prioritizedInitiatives} onSelect={openInitiative} />
+          <PrioritizedInitiativesList initiatives={overview.prioritizedInitiatives} onSelect={openInitiative} currentValueByMetricId={currentValueByMetricId} />
         </section>
       </div>
 

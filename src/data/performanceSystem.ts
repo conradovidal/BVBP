@@ -93,7 +93,21 @@ export interface ClientMetricConfig {
   direction?: ClientMetricDirection;
   source?: string;
   owner?: string;
+  measurements?: ClientMetricMeasurement[];
   custom: boolean;
+}
+
+export type ClientMetricMeasurementContext = "Reunião" | "Dado" | "Decisão" | "Estimativa";
+
+export interface ClientMetricMeasurement {
+  id: string;
+  value: number;
+  measuredAt: string;
+  context: ClientMetricMeasurementContext;
+  source?: string;
+  note?: string;
+  createdAt: string;
+  createdByName?: string;
 }
 
 export interface ClientPillarConfig {
@@ -106,7 +120,7 @@ export interface ClientPillarConfig {
 }
 
 export interface ClientConfiguration {
-  schemaVersion: 3;
+  schemaVersion: 4;
   companyId: string;
   pillars: ClientPillarConfig[];
   metrics: ClientMetricConfig[];
@@ -934,7 +948,7 @@ export function createDefaultClientConfiguration(
   );
 
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     companyId: company.id,
     metrics,
     pillars: bvbpPillarIds.map((pillar) => {
