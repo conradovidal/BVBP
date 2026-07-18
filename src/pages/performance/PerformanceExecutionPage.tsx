@@ -560,11 +560,11 @@ const PerformanceExecutionPage = () => {
             <span aria-hidden="true" />
             <span>ID</span>
             <span>Iniciativa</span>
-            <span>Responsável</span>
+            <span className="text-center">Responsável</span>
             <span>Ponteiro</span>
-            <span>Prioridade</span>
-            <span>Prazo</span>
-            <span>Status</span>
+            <span className="text-center">Prioridade</span>
+            <span className="text-center">Prazo</span>
+            <span className="text-center">Status</span>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto">

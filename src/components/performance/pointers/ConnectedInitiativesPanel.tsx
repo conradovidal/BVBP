@@ -41,6 +41,7 @@ export function ConnectedInitiativesPanel({ initiatives, metrics, onOpenInitiati
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-heading text-base font-semibold leading-tight text-bvbp-ink">{initiative.title}</h3>
                       <StatusBadge label={initiative.pdcaStatus} />
+                      {initiative.priority === "Alta" ? <span className="inline-flex h-6 items-center rounded-full border border-bvbp-gold/40 bg-bvbp-gold/10 px-2.5 font-label text-[10px] font-semibold uppercase tracking-[0.05em] text-bvbp-gold">Prioridade alta</span> : null}
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-bvbp-muted-ink">
                       <span>{initiative.owner || "Responsável a definir"}</span>

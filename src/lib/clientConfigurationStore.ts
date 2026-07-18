@@ -9,6 +9,7 @@ import {
   type ClientPillarConfig,
   type Company,
   type MaturityLevel,
+  type MaturityHistoryEntry,
   type MaturityMapItem,
   type OverviewPillarHighlight,
   bvbpPillarIds,
@@ -165,10 +166,23 @@ function normalizePillarConfig(
           defaultPillar.pillar,
           clampMaturityLevel(storedPillar.maturityLevel || 1),
         );
+  const maturityHistory = Array.isArray(storedPillar?.maturityHistory)
+    ? storedPillar.maturityHistory.filter((entry): entry is MaturityHistoryEntry => Boolean(
+        entry &&
+        typeof entry.id === "string" &&
+        validCriterionIds.has(entry.criterionId) &&
+        typeof entry.criterionLabel === "string" &&
+        entry.pillar === defaultPillar.pillar &&
+        [1, 2, 3, 4, 5].includes(entry.level) &&
+        ["checked", "unchecked"].includes(entry.action) &&
+        typeof entry.createdAt === "string",
+      ))
+    : [];
 
   return {
     pillar: defaultPillar.pillar,
     completedMaturityCriterionIds,
+    maturityHistory,
     selectedMetricIds: Array.isArray(storedPillar?.selectedMetricIds) ? storedPillar.selectedMetricIds : defaultPillar.selectedMetricIds,
     criticalMetricId: storedPillar?.criticalMetricId,
     pains: storedPillar?.pains || [],
@@ -234,7 +248,7 @@ function normalizeClientConfiguration(company: Company, storedConfig?: StoredCli
   const availableMetricIds = new Set([...defaultMetrics, ...customMetrics].map((metric) => metric.id));
 
   return withDerivedBaseMaturityCriteria({
-    schemaVersion: 4,
+    schemaVersion: 5,
     companyId: company.id,
     metrics: [...defaultMetrics, ...customMetrics],
     pillars: defaultConfig.pillars.map((pillar) => {
@@ -284,6 +298,58 @@ export function saveClientConfiguration(config: ClientConfiguration) {
   return config;
 }
 
+export interface ToggleMaturityCriterionInput {
+  company: Company;
+  pillarId: BvbpPillarId;
+  criterionId: string;
+  createdByUserId?: string;
+  createdByName?: string;
+}
+
+export function toggleMaturityCriterion(input: ToggleMaturityCriterionInput) {
+  const configuration = getClientConfiguration(input.company);
+  const pillar = configuration.pillars.find((item) => item.pillar === input.pillarId);
+  const definition = maturityDefinitionsByPillar[input.pillarId];
+  const levelDefinition = definition.levels.find((level) => level.criteria.some((item) => item.id === input.criterionId));
+  const criterion = levelDefinition?.criteria.find((item) => item.id === input.criterionId);
+
+  if (!pillar || !levelDefinition || !criterion || levelDefinition.level === 1) return undefined;
+
+  const maturity = getPillarMaturityState(input.pillarId, pillar.completedMaturityCriterionIds);
+  if (levelDefinition.level > maturity.level) return undefined;
+
+  const completed = new Set(pillar.completedMaturityCriterionIds);
+  const wasCompleted = completed.has(input.criterionId);
+  if (wasCompleted) completed.delete(input.criterionId);
+  else completed.add(input.criterionId);
+
+  const historyEntry: MaturityHistoryEntry = {
+    id: globalThis.crypto?.randomUUID?.() || `${input.pillarId}-${input.criterionId}-${Date.now()}`,
+    criterionId: input.criterionId,
+    criterionLabel: criterion.label,
+    level: levelDefinition.level,
+    pillar: input.pillarId,
+    action: wasCompleted ? "unchecked" : "checked",
+    createdAt: new Date().toISOString(),
+    createdByUserId: input.createdByUserId,
+    createdByName: input.createdByName,
+  };
+
+  const nextConfiguration: ClientConfiguration = {
+    ...configuration,
+    schemaVersion: 5,
+    pillars: configuration.pillars.map((item) => item.pillar === input.pillarId
+      ? {
+          ...item,
+          completedMaturityCriterionIds: Array.from(completed),
+          maturityHistory: [...item.maturityHistory, historyEntry],
+        }
+      : item),
+  };
+
+  return saveClientConfiguration(nextConfiguration);
+}
+
 async function rollbackCompanyPersistence(company: Company, previousCompany?: Company) {
   if (previousCompany) {
     await syncCompanyToSupabase(previousCompany);
@@ -318,7 +384,7 @@ async function persistClientBundle(company: Company, configuration: ClientConfig
 export async function createClientWithConfiguration(input: ClientSetupInput) {
   const company = buildPortalCompany(input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 4,
+    schemaVersion: 5,
     companyId: company.id,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -334,7 +400,7 @@ export async function updateClientWithConfiguration(companyId: string, input: Cl
 
   const company = buildUpdatedPortalCompany(existingCompany, input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 4,
+    schemaVersion: 5,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -350,7 +416,7 @@ export async function upsertClientWithConfiguration(companyId: string, input: Cl
     : buildPortalCompany({ ...input.company, id: companyId });
 
   const configuration: ClientConfiguration = {
-    schemaVersion: 4,
+    schemaVersion: 5,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
