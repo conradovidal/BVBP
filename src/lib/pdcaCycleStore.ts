@@ -8,6 +8,7 @@ import {
   type PdcaActionStatus,
   type PdcaCycle,
   type PdcaEvidence,
+  type PdcaHistoryEntry,
   type PdcaStatus,
   bvbpPdcaCycleSeeds,
   getImprovementsForCompany,
@@ -28,6 +29,13 @@ export interface EvidenceInput {
   type: EvidenceType;
   observedValue?: string;
   note?: string;
+  createdByName?: string;
+}
+
+export interface PdcaHistoryInput {
+  kind: PdcaHistoryEntry["kind"];
+  description: string;
+  createdByName?: string;
 }
 
 export interface PdcaActionInput {
@@ -133,6 +141,7 @@ function normalizeStoredCycle(cycle: PdcaCycle, index = 0): PdcaCycle {
     priority: normalizeInitiativePriority(cycle.priority),
     priorityOrder: typeof cycle.priorityOrder === "number" ? cycle.priorityOrder : index,
     actions: normalizeActions({ ...cycle, affectedPointer, pdcaStatus }),
+    history: Array.isArray(cycle.history) ? cycle.history : [],
   };
 }
 
@@ -221,11 +230,29 @@ export function getPdcaCyclesForCompany(company: Company) {
     .sort((a, b) => (a.priorityOrder || 0) - (b.priorityOrder || 0));
 }
 
-export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
+export function upsertPdcaCycle(company: Company, input: PdcaCycleInput, createdByName?: string) {
   const cycles = readAllPdcaCycles();
   const now = Date.now();
   const existing = input.id ? cycles.find((cycle) => cycle.id === input.id) : undefined;
   const companyCycles = cycles.filter((cycle) => cycle.companyId === company.id);
+  let history = existing?.history || [{
+    id: `history-created-${now}`,
+    createdAt: new Date(now).toISOString(),
+    kind: "created" as const,
+    description: "Iniciativa criada.",
+  }];
+  if (existing && existing.pdcaStatus !== input.pdcaStatus) {
+    history = prependHistory(history, { kind: "status", description: `Status alterado de ${existing.pdcaStatus} para ${input.pdcaStatus}.`, createdByName });
+  }
+  if (existing && existing.priority !== input.priority) {
+    history = prependHistory(history, { kind: "priority", description: `Prioridade alterada de ${existing.priority || "A definir"} para ${input.priority || "A definir"}.`, createdByName });
+  }
+  if (existing && (existing.deadline || "") !== input.deadline.trim()) {
+    history = prependHistory(history, { kind: "deadline", description: `Prazo alterado de ${existing.deadline || "Sem data"} para ${input.deadline.trim() || "Sem data"}.`, createdByName });
+  }
+  if (existing && existing.owner !== input.owner.trim()) {
+    history = prependHistory(history, { kind: "owner", description: `Responsável alterado de ${existing.owner || "A definir"} para ${input.owner.trim() || "A definir"}.`, createdByName });
+  }
   const nextCycle = normalizeStoredCycle({
     id: input.id || `${company.id}-cycle-${now}`,
     companyId: company.id,
@@ -262,6 +289,7 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
     actions: input.actions || existing?.actions || [],
     evidences: existing?.evidences || [],
     learnings: existing?.learnings || [],
+    history,
   });
   const nextCycles = existing
     ? cycles.map((cycle) => (cycle.id === nextCycle.id ? nextCycle : cycle))
@@ -272,9 +300,20 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput) {
   return nextCycle;
 }
 
-export function updatePdcaCycleStatus(cycleId: string, pdcaStatus: PdcaStatus) {
+export function updatePdcaCycleStatus(cycleId: string, pdcaStatus: PdcaStatus, createdByName?: string) {
   const cycles = readAllPdcaCycles();
-  const nextCycles = cycles.map((cycle) => (cycle.id === cycleId ? { ...cycle, pdcaStatus } : cycle));
+  const nextCycles = cycles.map((cycle) => {
+    if (cycle.id !== cycleId || cycle.pdcaStatus === pdcaStatus) return cycle;
+    return {
+      ...cycle,
+      pdcaStatus,
+      history: prependHistory(cycle.history, {
+        kind: "status",
+        description: `Status alterado de ${cycle.pdcaStatus} para ${pdcaStatus}.`,
+        createdByName,
+      }),
+    };
+  });
   const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
 
   savePdcaCycles(nextCycles);
@@ -284,9 +323,20 @@ export function updatePdcaCycleStatus(cycleId: string, pdcaStatus: PdcaStatus) {
   return nextCycles.find((cycle) => cycle.id === cycleId);
 }
 
-export function updatePdcaCyclePriority(cycleId: string, priority: InitiativePriority) {
+export function updatePdcaCyclePriority(cycleId: string, priority: InitiativePriority, createdByName?: string) {
   const cycles = readAllPdcaCycles();
-  const nextCycles = cycles.map((cycle) => (cycle.id === cycleId ? { ...cycle, priority } : cycle));
+  const nextCycles = cycles.map((cycle) => {
+    if (cycle.id !== cycleId || cycle.priority === priority) return cycle;
+    return {
+      ...cycle,
+      priority,
+      history: prependHistory(cycle.history, {
+        kind: "priority",
+        description: `Prioridade alterada de ${cycle.priority || "A definir"} para ${priority}.`,
+        createdByName,
+      }),
+    };
+  });
   const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
 
   savePdcaCycles(nextCycles);
@@ -323,6 +373,7 @@ export function addPdcaEvidence(cycleId: string, input: EvidenceInput) {
     description: input.description.trim(),
     observedValue: input.observedValue?.trim() || undefined,
     note: input.note?.trim() || undefined,
+    createdByName: input.createdByName?.trim() || undefined,
   };
   const nextCycles = cycles.map((cycle) =>
     cycle.id === cycleId ? { ...cycle, evidences: [evidence, ...cycle.evidences] } : cycle,
@@ -334,6 +385,29 @@ export function addPdcaEvidence(cycleId: string, input: EvidenceInput) {
     syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
   }
   return evidence;
+}
+
+function prependHistory(history: PdcaHistoryEntry[] | undefined, input: PdcaHistoryInput): PdcaHistoryEntry[] {
+  const now = new Date().toISOString();
+  return [{
+    id: `history-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: now,
+    kind: input.kind,
+    description: input.description.trim(),
+    createdByName: input.createdByName?.trim() || undefined,
+  }, ...(history || [])];
+}
+
+export function addPdcaHistory(cycleId: string, input: PdcaHistoryInput) {
+  const cycles = readAllPdcaCycles();
+  const nextCycles = cycles.map((cycle) => cycle.id === cycleId
+    ? { ...cycle, history: prependHistory(cycle.history, input) }
+    : cycle);
+  const updatedCycle = nextCycles.find((cycle) => cycle.id === cycleId);
+
+  savePdcaCycles(nextCycles);
+  if (updatedCycle) syncCompanyCyclesFromList(updatedCycle.companyId, nextCycles);
+  return updatedCycle;
 }
 
 export function upsertPdcaAction(cycleId: string, input: PdcaActionInput) {

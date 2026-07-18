@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
-import type { InitiativeActivityInput } from "@/lib/initiativeActivityStore";
+import { initiativeActivityStatuses, type InitiativeActivityInput, type InitiativeActivityStatus } from "@/lib/initiativeActivityStore";
 
 interface ActivityFormProps {
   value: InitiativeActivityInput;
@@ -33,16 +34,16 @@ export function ActivityForm({ value, onChange, onSubmit }: ActivityFormProps) {
       />
       <Input
         type="date"
-        value={value.startDate || ""}
-        onChange={(event) => onChange({ ...value, startDate: event.target.value })}
-        aria-label="Data de início"
-      />
-      <Input
-        type="date"
         value={value.endDate || value.dueDate || ""}
         onChange={(event) => onChange({ ...value, endDate: event.target.value, dueDate: event.target.value })}
         aria-label="Data de término"
       />
+      <Select value={value.status || "A fazer"} onValueChange={(status) => onChange({ ...value, status: status as InitiativeActivityStatus })}>
+        <SelectTrigger aria-label="Status da atividade"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {initiativeActivityStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+        </SelectContent>
+      </Select>
       <div className="flex items-center rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised px-2">
         <span className="mr-auto text-xs font-semibold text-bvbp-muted-ink">Prioridade</span>
         <InitiativePriorityMenu priority={value.priority} canManage onChange={(priority) => onChange({ ...value, priority })} />

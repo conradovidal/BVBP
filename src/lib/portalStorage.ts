@@ -150,6 +150,13 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
       typeof learning.date === "string" &&
       typeof learning.description === "string"
     ));
+    const hasValidHistory = cycle.history === undefined || (Array.isArray(cycle.history) && cycle.history.every((entry) => (
+      !!entry &&
+      typeof entry.id === "string" &&
+      typeof entry.createdAt === "string" &&
+      typeof entry.kind === "string" &&
+      typeof entry.description === "string"
+    )));
 
     return (
       typeof cycle.id === "string" &&
@@ -171,7 +178,8 @@ export function isPdcaCycleList(value: unknown): value is PdcaCycle[] {
       (cycle.teamMembers === undefined || (Array.isArray(cycle.teamMembers) && cycle.teamMembers.every((member) => typeof member === "string"))) &&
       (cycle.priority === undefined || ["Alta", "Média", "Baixa"].includes(cycle.priority)) &&
       hasValidEvidence &&
-      hasValidLearnings
+      hasValidLearnings &&
+      hasValidHistory
     );
   });
 }
