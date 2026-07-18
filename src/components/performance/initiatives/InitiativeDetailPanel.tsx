@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -12,7 +12,7 @@ import { SectionHeader } from "@/components/performance/SectionHeader";
 import { InitiativeActivityBoard } from "@/components/performance/initiatives/InitiativeActivityBoard";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
 import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
-import { bvbpPillarLabels, evidenceTypes, type Company, type EvidenceType, type InitiativePriority, type PdcaCycle, type PdcaStatus } from "@/data/performanceSystem";
+import { bvbpPillarLabels, type Company, type EvidenceType, type InitiativePriority, type PdcaCycle, type PdcaStatus } from "@/data/performanceSystem";
 import type { EvidenceInput } from "@/lib/pdcaCycleStore";
 import {
   type InitiativeActivity,
@@ -22,10 +22,18 @@ import {
 import { calculateInitiativeProgress, formatMetricValue, getInitiativeImpactLabel } from "@/lib/initiativeProgress";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 
+const commentTypes: EvidenceType[] = ["Comentário", "Aprendizado", "Reunião", "Decisão", "Dado"];
+
 function formatDateBr(value?: string) {
   if (!value) return "Sem data";
   const [year, month, day] = value.split("-");
   return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
+function formatDateTimeBr(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(date);
 }
 
 interface InitiativeDetailPanelProps {
@@ -42,6 +50,7 @@ interface InitiativeDetailPanelProps {
   onAddActivity: () => void;
   onUpdateActivity: (activity: InitiativeActivityInput) => void;
   onActivityStatusChange: (activityId: string, status: InitiativeActivityStatus) => void;
+  onReorderActivities: (orderedIds: string[]) => void;
   onEvidenceFormChange: (value: EvidenceInput) => void;
   onAddEvidence: () => void;
 }
@@ -60,6 +69,7 @@ export function InitiativeDetailPanel({
   onAddActivity,
   onUpdateActivity,
   onActivityStatusChange,
+  onReorderActivities,
   onEvidenceFormChange,
   onAddEvidence,
 }: InitiativeDetailPanelProps) {
@@ -68,7 +78,7 @@ export function InitiativeDetailPanel({
       <section className="rounded-[8px] border border-dashed border-bvbp-ink/15 bg-bvbp-raised p-6 text-center">
         <p className="font-heading text-lg font-semibold text-bvbp-ink">Selecione uma iniciativa</p>
         <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">
-          O detalhe aparece aqui, com hipótese, evidências e atividades conectadas.
+          O detalhe aparece aqui, com hipótese, atividades, comentários e histórico.
         </p>
       </section>
     );
@@ -136,37 +146,63 @@ export function InitiativeDetailPanel({
             activities={activities}
             company={company}
             formValue={activityForm}
+            canManage={canManageInitiative}
             onFormChange={onActivityFormChange}
             onAddActivity={onAddActivity}
             onUpdateActivity={onUpdateActivity}
             onStatusChange={onActivityStatusChange}
+            onReorder={onReorderActivities}
           />
 
           <section className="space-y-3">
-            <SectionHeader title="Comentários e evidências" />
-            <div className="space-y-2">
-              {initiative.evidences.map((evidence) => (
-                <article key={evidence.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge label={evidence.type} />
-                    <span className="text-xs font-semibold text-bvbp-muted-ink/70">{evidence.date}</span>
-                    {evidence.observedValue && <span className="text-xs font-semibold text-bvbp-positive">{evidence.observedValue}</span>}
+            <SectionHeader title="Comentários e histórico" description="Contexto registrado pela equipe e alterações automáticas da iniciativa." />
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="space-y-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
+                <h3 className="font-heading text-base font-semibold text-bvbp-ink">Comentários</h3>
+                {canManageInitiative ? (
+                  <div className="space-y-2 rounded-[8px] bg-bvbp-inset p-3">
+                    <Select value={evidenceForm.type} onValueChange={(value) => onEvidenceFormChange({ ...evidenceForm, type: value as EvidenceType })}>
+                      <SelectTrigger className="bg-bvbp-raised" aria-label="Classificação do comentário"><SelectValue /></SelectTrigger>
+                      <SelectContent>{commentTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Textarea
+                      value={evidenceForm.description}
+                      onChange={(event) => onEvidenceFormChange({ ...evidenceForm, description: event.target.value })}
+                      placeholder="Registre o contexto, aprendizado, reunião, decisão ou dado relevante."
+                      className="min-h-20 bg-bvbp-raised"
+                    />
+                    <Button className="w-full" variant="outline" onClick={onAddEvidence} disabled={!evidenceForm.description.trim()}>Adicionar comentário</Button>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-bvbp-ink">{evidence.description}</p>
-                  {evidence.note && <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">{evidence.note}</p>}
-                </article>
-              ))}
-              {!initiative.evidences.length && <p className="text-sm leading-6 text-bvbp-muted-ink">Nenhuma evidência registrada ainda.</p>}
-            </div>
-            <div className="grid gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset p-3 md:grid-cols-[160px_minmax(0,1fr)]">
-              <Select value={evidenceForm.type} onValueChange={(value) => onEvidenceFormChange({ ...evidenceForm, type: value as EvidenceType })}>
-                <SelectTrigger className="bg-bvbp-raised"><SelectValue /></SelectTrigger>
-                <SelectContent>{evidenceTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
-              </Select>
-              <Input value={evidenceForm.description} onChange={(event) => onEvidenceFormChange({ ...evidenceForm, description: event.target.value })} placeholder="Descrição da evidência" />
-              <Input value={evidenceForm.observedValue} onChange={(event) => onEvidenceFormChange({ ...evidenceForm, observedValue: event.target.value })} placeholder="Valor observado" />
-              <Input value={evidenceForm.note} onChange={(event) => onEvidenceFormChange({ ...evidenceForm, note: event.target.value })} placeholder="Observação" />
-              <Button className="md:col-span-2" variant="outline" onClick={onAddEvidence} disabled={!evidenceForm.description.trim()}>Registrar evidência</Button>
+                ) : null}
+                <div className="space-y-2">
+                  {initiative.evidences.map((evidence) => (
+                    <article key={evidence.id} className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <StatusBadge label={evidence.type} />
+                        <span className="text-xs font-semibold text-bvbp-muted-ink/70">{formatDateBr(evidence.date)}</span>
+                        {evidence.createdByName ? <span className="text-xs text-bvbp-muted-ink">{evidence.createdByName}</span> : null}
+                      </div>
+                      <p className="mt-2 text-sm leading-6 text-bvbp-ink">{evidence.description}</p>
+                    </article>
+                  ))}
+                  {!initiative.evidences.length ? <p className="py-3 text-sm leading-6 text-bvbp-muted-ink">Nenhum comentário registrado.</p> : null}
+                </div>
+              </div>
+
+              <div className="space-y-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3">
+                <h3 className="font-heading text-base font-semibold text-bvbp-ink">Histórico de alterações</h3>
+                <div className="space-y-2">
+                  {(initiative.history || []).map((entry) => (
+                    <article key={entry.id} className="border-l-2 border-bvbp-ink/10 py-1 pl-3">
+                      <p className="text-sm leading-5 text-bvbp-ink">{entry.description}</p>
+                      <p className="mt-1 text-xs text-bvbp-muted-ink">
+                        {formatDateTimeBr(entry.createdAt)}{entry.createdByName ? ` · ${entry.createdByName}` : ""}
+                      </p>
+                    </article>
+                  ))}
+                  {!initiative.history?.length ? <p className="py-3 text-sm leading-6 text-bvbp-muted-ink">As próximas alterações de status, prioridade e prazo aparecerão aqui.</p> : null}
+                </div>
+              </div>
             </div>
           </section>
 

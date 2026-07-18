@@ -276,7 +276,7 @@ export const initiativePriorities = ["Alta", "Média", "Baixa"] as const;
 
 export type InitiativePriority = (typeof initiativePriorities)[number];
 
-export const evidenceTypes = ["Dado", "Reunião", "Cliente", "Entrega", "Aprendizado", "Decisão"] as const;
+export const evidenceTypes = ["Comentário", "Aprendizado", "Reunião", "Decisão", "Dado", "Cliente", "Entrega"] as const;
 
 export type EvidenceType = (typeof evidenceTypes)[number];
 
@@ -300,6 +300,15 @@ export interface PdcaEvidence {
   type: EvidenceType;
   observedValue?: string;
   note?: string;
+  createdByName?: string;
+}
+
+export interface PdcaHistoryEntry {
+  id: string;
+  createdAt: string;
+  kind: "created" | "status" | "priority" | "deadline" | "owner" | "activity_status" | "activity_priority";
+  description: string;
+  createdByName?: string;
 }
 
 export interface PdcaLearning {
@@ -352,6 +361,7 @@ export interface PdcaCycle {
   actions?: PdcaAction[];
   evidences: PdcaEvidence[];
   learnings: PdcaLearning[];
+  history?: PdcaHistoryEntry[];
 }
 
 export interface FunnelMetric {

@@ -20,6 +20,7 @@ export interface InitiativeActivity {
   dueDate?: string;
   priority?: InitiativePriority;
   status: InitiativeActivityStatus;
+  order?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -36,6 +37,7 @@ export interface InitiativeActivityInput {
   dueDate?: string;
   priority?: InitiativePriority;
   status?: InitiativeActivityStatus;
+  order?: number;
 }
 
 function isInitiativeActivityStatus(value: unknown): value is InitiativeActivityStatus {
@@ -74,13 +76,27 @@ function readAllActivities() {
     nextByCompany.set(companyId, Math.max(nextByCompany.get(companyId) || 1, activity.referenceNumber + 1));
   });
   let changed = false;
+  const nextOrderByInitiative = new Map<string, number>();
+  activities.forEach((activity) => {
+    if (typeof activity.order !== "number") return;
+    nextOrderByInitiative.set(activity.initiativeId, Math.max(nextOrderByInitiative.get(activity.initiativeId) || 0, activity.order + 1));
+  });
   const normalized = activities.map((activity) => {
     const companyId = cycleById.get(activity.initiativeId)?.companyId;
-    if (!companyId || activity.referenceNumber) return activity;
-    const next = nextByCompany.get(companyId) || 1;
-    nextByCompany.set(companyId, next + 1);
-    changed = true;
-    return { ...activity, referenceNumber: next };
+    let nextActivity = activity;
+    if (companyId && !activity.referenceNumber) {
+      const next = nextByCompany.get(companyId) || 1;
+      nextByCompany.set(companyId, next + 1);
+      nextActivity = { ...nextActivity, referenceNumber: next };
+      changed = true;
+    }
+    if (typeof activity.order !== "number") {
+      const nextOrder = nextOrderByInitiative.get(activity.initiativeId) || 0;
+      nextOrderByInitiative.set(activity.initiativeId, nextOrder + 1);
+      nextActivity = { ...nextActivity, order: nextOrder };
+      changed = true;
+    }
+    return nextActivity;
   });
   if (changed) {
     saveActivities(normalized);
@@ -112,6 +128,7 @@ function activityFromAction(initiativeId: string, action: PdcaAction, index: num
     owner: action.owner || undefined,
     dueDate: action.deadline || undefined,
     status: activityStatusFromAction(action),
+    order: index,
     createdAt: now,
     updatedAt: now,
   };
@@ -176,6 +193,10 @@ export function upsertInitiativeActivity(input: InitiativeActivityInput) {
     dueDate: input.endDate?.trim() || input.dueDate?.trim() || undefined,
     priority: input.priority || existing?.priority || "Média",
     status: input.status || existing?.status || "A fazer",
+    order: existing?.order ?? input.order ?? Math.max(
+      -1,
+      ...activities.filter((item) => item.initiativeId === input.initiativeId).map((item) => item.order ?? -1),
+    ) + 1,
     createdAt: existing?.createdAt || now,
     updatedAt: now,
   };
@@ -186,6 +207,20 @@ export function upsertInitiativeActivity(input: InitiativeActivityInput) {
   saveActivities(nextActivities);
   syncInitiativeActivitiesForInitiativeSoon(activity.initiativeId, nextActivities);
   return activity;
+}
+
+export function reorderInitiativeActivities(initiativeId: string, orderedIds: string[]) {
+  const activities = readAllActivities();
+  const orderById = new Map(orderedIds.map((id, index) => [id, index]));
+  const nextActivities = activities.map((activity) => (
+    activity.initiativeId === initiativeId && orderById.has(activity.id)
+      ? { ...activity, order: orderById.get(activity.id), updatedAt: new Date().toISOString() }
+      : activity
+  ));
+
+  saveActivities(nextActivities);
+  syncInitiativeActivitiesForInitiativeSoon(initiativeId, nextActivities);
+  return nextActivities.filter((activity) => activity.initiativeId === initiativeId);
 }
 
 export function updateInitiativeActivityStatus(activityId: string, status: InitiativeActivityStatus) {

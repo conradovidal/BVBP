@@ -58,11 +58,13 @@ import {
   type InitiativeActivity,
   type InitiativeActivityInput,
   type InitiativeActivityStatus,
+  reorderInitiativeActivities,
   updateInitiativeActivityStatus,
   upsertInitiativeActivity,
 } from "@/lib/initiativeActivityStore";
 import {
   addPdcaEvidence,
+  addPdcaHistory,
   getPdcaCyclesForCompany,
   reorderPdcaCycles,
   updatePdcaCyclePriority,
@@ -98,7 +100,7 @@ const blankInitiativeForm: PdcaCycleInput = {
 
 const blankEvidenceForm: EvidenceInput = {
   description: "",
-  type: "Aprendizado",
+  type: "Comentário",
   observedValue: "",
   note: "",
 };
@@ -173,7 +175,8 @@ const PerformanceExecutionPage = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdminPortal = location.pathname.startsWith("/app/admin");
-  const canManageInitiatives = isBvbpStaff(getPerformanceSession());
+  const performanceSession = getPerformanceSession();
+  const canManageInitiatives = isBvbpStaff(performanceSession);
   const configuration = useMemo(() => getClientConfiguration(activeCompany), [activeCompany]);
   const [initiatives, setInitiatives] = useState<PdcaCycle[]>(() => getPdcaCyclesForCompany(activeCompany));
   const [activities, setActivities] = useState<InitiativeActivity[]>(() => getActivitiesForInitiatives(getPdcaCyclesForCompany(activeCompany)));
@@ -319,7 +322,7 @@ const PerformanceExecutionPage = () => {
       return;
     }
 
-    const saved = upsertPdcaCycle(activeCompany, { ...initiativeForm, teamMembers });
+    const saved = upsertPdcaCycle(activeCompany, { ...initiativeForm, teamMembers }, performanceSession?.user.name);
     refreshInitiatives(saved.id);
     setSelectedInitiativeId(saved.id);
     setIsDetailDialogOpen(true);
@@ -397,21 +400,21 @@ const PerformanceExecutionPage = () => {
   const changeInitiativeStatus = (initiativeId: string, status: PdcaStatus) => {
     if (!canManageInitiatives) return;
 
-    updatePdcaCycleStatus(initiativeId, status);
+    updatePdcaCycleStatus(initiativeId, status, performanceSession?.user.name);
     refreshInitiatives(selectedInitiativeId || initiativeId);
   };
 
   const changeInitiativePriority = (initiativeId: string, priority: InitiativePriority) => {
     if (!canManageInitiatives) return;
 
-    updatePdcaCyclePriority(initiativeId, priority);
+    updatePdcaCyclePriority(initiativeId, priority, performanceSession?.user.name);
     refreshInitiatives(selectedInitiativeId || initiativeId);
   };
 
   const addEvidence = () => {
     if (!selectedInitiative || !evidenceForm.description.trim()) return;
 
-    addPdcaEvidence(selectedInitiative.id, evidenceForm);
+    addPdcaEvidence(selectedInitiative.id, { ...evidenceForm, createdByName: performanceSession?.user.name });
     setEvidenceForm(blankEvidenceForm);
     refreshInitiatives(selectedInitiative.id);
   };
@@ -419,18 +422,56 @@ const PerformanceExecutionPage = () => {
   const addActivity = () => {
     if (!selectedInitiative || !activityForm.title.trim()) return;
 
-    upsertInitiativeActivity({ ...activityForm, initiativeId: selectedInitiative.id });
+    const created = upsertInitiativeActivity({ ...activityForm, initiativeId: selectedInitiative.id });
+    addPdcaHistory(selectedInitiative.id, {
+      kind: "created",
+      description: `${created.title.replace(/[.:;!?]+$/, "")}: atividade criada.`,
+      createdByName: performanceSession?.user.name,
+    });
     setActivities(getActivitiesForInitiatives(initiatives));
     setActivityForm(blankActivityForm(selectedInitiative));
   };
 
   const updateActivity = (activity: InitiativeActivityInput) => {
-    upsertInitiativeActivity(activity);
-    setActivities(getActivitiesForInitiatives(initiatives));
+    const previous = activity.id ? activities.find((item) => item.id === activity.id) : undefined;
+    const updated = upsertInitiativeActivity(activity);
+    if (selectedInitiative && previous) {
+      if (previous.priority !== updated.priority) {
+        addPdcaHistory(selectedInitiative.id, {
+          kind: "activity_priority",
+          description: `${updated.title.replace(/[.:;!?]+$/, "")}: prioridade alterada de ${previous.priority || "A definir"} para ${updated.priority || "A definir"}.`,
+          createdByName: performanceSession?.user.name,
+        });
+      }
+      const previousDeadline = previous.endDate || previous.dueDate || "";
+      const nextDeadline = updated.endDate || updated.dueDate || "";
+      if (previousDeadline !== nextDeadline) {
+        addPdcaHistory(selectedInitiative.id, {
+          kind: "deadline",
+          description: `${updated.title.replace(/[.:;!?]+$/, "")}: prazo alterado de ${previousDeadline || "Sem data"} para ${nextDeadline || "Sem data"}.`,
+          createdByName: performanceSession?.user.name,
+        });
+      }
+    }
+    refreshInitiatives(selectedInitiative?.id);
   };
 
   const changeActivityStatus = (activityId: string, status: InitiativeActivityStatus) => {
-    updateInitiativeActivityStatus(activityId, status);
+    const previous = activities.find((activity) => activity.id === activityId);
+    const updated = updateInitiativeActivityStatus(activityId, status);
+    if (selectedInitiative && previous && updated && previous.status !== updated.status) {
+      addPdcaHistory(selectedInitiative.id, {
+        kind: "activity_status",
+        description: `${updated.title.replace(/[.:;!?]+$/, "")}: status alterado de ${previous.status} para ${updated.status}.`,
+        createdByName: performanceSession?.user.name,
+      });
+    }
+    refreshInitiatives(selectedInitiative?.id);
+  };
+
+  const reorderActivities = (orderedIds: string[]) => {
+    if (!selectedInitiative || !canManageInitiatives) return;
+    reorderInitiativeActivities(selectedInitiative.id, orderedIds);
     setActivities(getActivitiesForInitiatives(initiatives));
   };
 
@@ -460,14 +501,14 @@ const PerformanceExecutionPage = () => {
     <>
       <Helmet>
         <title>Iniciativas | BVBP Performance System</title>
-        <meta name="description" content="Prioridades, atividades e evidências para mover os ponteiros." />
+        <meta name="description" content="Prioridades, atividades e histórico para mover os ponteiros." />
       </Helmet>
 
       <div className={`flex flex-col ${isAdminPortal ? "lg:h-[calc(100dvh-7.75rem)]" : "lg:h-[calc(100dvh-3rem)]"}`}>
         <div className="mb-7 shrink-0">
           <PerformancePageHeader
             title="Iniciativas"
-            description="Prioridades, atividades e evidências para mover os ponteiros."
+            description="Prioridades, atividades e histórico para mover os ponteiros."
             showTitle={!isAdminPortal}
           />
         </div>
@@ -577,7 +618,7 @@ const PerformanceExecutionPage = () => {
         <DialogContent withinContentArea className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-3 sm:p-4">
           <DialogHeader className="sr-only">
             <DialogTitle>{selectedInitiative?.title || "Detalhe da iniciativa"}</DialogTitle>
-            <DialogDescription>Detalhes, evidências e atividades conectadas à iniciativa.</DialogDescription>
+            <DialogDescription>Detalhes, atividades, comentários e histórico da iniciativa.</DialogDescription>
           </DialogHeader>
           <InitiativeDetailPanel
             initiative={selectedInitiative}
@@ -593,6 +634,7 @@ const PerformanceExecutionPage = () => {
             onAddActivity={addActivity}
             onUpdateActivity={updateActivity}
             onActivityStatusChange={changeActivityStatus}
+            onReorderActivities={reorderActivities}
             onEvidenceFormChange={setEvidenceForm}
             onAddEvidence={addEvidence}
           />
