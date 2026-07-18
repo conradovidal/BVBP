@@ -18,6 +18,7 @@ import { StatusBadge } from "@/components/performance/StatusBadge";
 import type { Company } from "@/data/performanceSystem";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
+import { activityListGridClass } from "@/components/performance/initiatives/initiativeListLayout";
 import {
   type InitiativeActivity,
   type InitiativeActivityInput,
@@ -30,8 +31,6 @@ function formatDateBr(value?: string) {
   const [, month, day] = value.split("-");
   return month && day ? `${day}/${month}` : value;
 }
-
-export const activityListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(160px,1fr)_104px_68px_108px_66px]";
 
 interface ActivityCardProps {
   activity: InitiativeActivity;
@@ -77,7 +76,7 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
         isDragging && "relative z-20 opacity-80",
       )}
     >
-      <div className={cn("grid items-center gap-2 px-3 py-2.5", activityListGridClass)}>
+      <div className={cn("grid items-center gap-3 px-3 py-2.5", activityListGridClass)}>
         <button
           type="button"
           className={cn(
@@ -114,17 +113,6 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
         <InitiativePriorityMenu priority={activity.priority} canManage={canManage} compact onChange={(priority) => onUpdate({ ...activity, priority })} />
 
         {canManage ? (
-          <Select value={activity.status} onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}>
-            <SelectTrigger hideIcon className="h-8 justify-center border-0 bg-transparent px-0 text-xs shadow-none" aria-label={`Status de ${activity.title}`}>
-              <StatusBadge label={activity.status} />
-            </SelectTrigger>
-            <SelectContent>
-              {initiativeActivityStatuses.map((status) => <SelectItem key={status} value={status}><StatusBadge label={status} /></SelectItem>)}
-            </SelectContent>
-          </Select>
-        ) : <span className="text-xs font-semibold text-bvbp-muted-ink">{activity.status}</span>}
-
-        {canManage ? (
           <DatePickerBr
             id={`activity-deadline-${activity.id}`}
             value={activity.endDate || activity.dueDate || ""}
@@ -132,6 +120,17 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
             displayMode="compact"
           />
         ) : <span className="text-sm font-normal text-bvbp-ink">{formatDateBr(activity.endDate || activity.dueDate)}</span>}
+
+        {canManage ? (
+          <Select value={activity.status} onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}>
+            <SelectTrigger hideIcon className="flex h-8 items-center justify-center border-0 bg-transparent px-0 text-xs shadow-none" aria-label={`Status de ${activity.title}`}>
+              <StatusBadge label={activity.status} />
+            </SelectTrigger>
+            <SelectContent>
+              {initiativeActivityStatuses.map((status) => <SelectItem key={status} value={status}><StatusBadge label={status} /></SelectItem>)}
+            </SelectContent>
+          </Select>
+        ) : <span className="text-xs font-semibold text-bvbp-muted-ink">{activity.status}</span>}
       </div>
 
       <Dialog open={isDefinitionOpen} onOpenChange={setIsDefinitionOpen}>

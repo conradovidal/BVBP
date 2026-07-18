@@ -1,12 +1,16 @@
 import type { PointerPillarDiagnostic } from "@/lib/performancePointersModel";
 import { cn } from "@/lib/utils";
 import { maturityActiveCardClass } from "@/lib/maturityColors";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface PillarMaturityPanelProps {
   maturity: PointerPillarDiagnostic["maturity"];
+  canManage?: boolean;
+  onToggleCriterion?: (criterionId: string) => void;
 }
 
-export function PillarMaturityPanel({ maturity }: PillarMaturityPanelProps) {
+export function PillarMaturityPanel({ maturity, canManage = false, onToggleCriterion }: PillarMaturityPanelProps) {
+  const completedIds = new Set(maturity.completedCriterionIds);
   return (
     <article className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-5">
       <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">
@@ -52,7 +56,22 @@ export function PillarMaturityPanel({ maturity }: PillarMaturityPanelProps) {
         <p className="font-semibold text-bvbp-ink">
           {maturity.currentLevel === 5 ? "Situação atual" : "Critérios para avançar"}
         </p>
-        <p className="mt-1 text-bvbp-muted-ink">{maturity.advancementCriteria}</p>
+        {maturity.currentCriteria.length ? (
+          <div className="mt-3 space-y-2">
+            {maturity.currentCriteria.map((criterion) => (
+              <label key={criterion.id} className="flex items-start gap-3 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised px-3 py-2.5 text-bvbp-ink">
+                <Checkbox
+                  checked={completedIds.has(criterion.id)}
+                  disabled={!canManage || maturity.currentLevel === 1}
+                  onCheckedChange={() => onToggleCriterion?.(criterion.id)}
+                  aria-label={criterion.label}
+                />
+                <span className="leading-5">{criterion.label}</span>
+              </label>
+            ))}
+            {maturity.currentLevel === 1 ? <p className="text-xs text-bvbp-muted-ink">Os critérios da base são validados pelos dados do diagnóstico.</p> : null}
+          </div>
+        ) : <p className="mt-1 text-bvbp-muted-ink">{maturity.advancementCriteria}</p>}
       </section>
     </article>
   );

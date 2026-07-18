@@ -14,12 +14,12 @@ const toneClasses: Record<Tone, string> = {
 const initiativeStatusClasses: Record<string, string> = {
   "Em refinamento": "border-bvbp-ink/10 bg-bvbp-ink/10 text-bvbp-ink",
   "Em desenvolvimento": "border-bvbp-signal bg-bvbp-signal text-white",
-  "Em validação": "border-bvbp-signal/75 bg-bvbp-signal/75 text-white",
+  "Em validação": "border-[#6f8990] bg-[#6f8990] text-white",
   "Pausada": "border-bvbp-muted-ink/45 bg-bvbp-muted-ink/45 text-white",
   "Concluída": "border-bvbp-positive bg-bvbp-positive text-white",
   "Descartada": "border-bvbp-risk bg-bvbp-risk text-white",
   "Arquivada": "border-bvbp-muted-ink bg-bvbp-muted-ink text-white",
-  "A fazer": "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-ink",
+  "A fazer": "border-bvbp-ink/15 bg-bvbp-raised text-bvbp-ink",
   "Em andamento": "border-bvbp-signal bg-bvbp-signal text-white",
   "Concluído": "border-bvbp-positive bg-bvbp-positive text-white",
 };
@@ -45,7 +45,7 @@ export function StatusBadge({ label, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
-        "font-label inline-flex min-h-6 items-center whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase leading-none tracking-[0.05em]",
+        "font-label inline-flex h-6 items-center justify-center whitespace-nowrap rounded-full border px-2.5 text-[10px] font-semibold uppercase leading-none tracking-[0.05em]",
         initiativeStatusClasses[label] || toneClasses[toneForLabel(label)],
         className
       )}
