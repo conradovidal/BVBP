@@ -10,7 +10,7 @@ import { getInitiativeFocusLabel, inferInitiativeFocusType } from "@/lib/initiat
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
 
-export const initiativeListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(180px,1.4fr)_110px_minmax(140px,1fr)_40px_60px_120px]";
+export const initiativeListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(160px,1.35fr)_104px_minmax(120px,1fr)_68px_66px_108px]";
 
 function formatCompactDate(value?: string) {
   if (!value) return "—";
