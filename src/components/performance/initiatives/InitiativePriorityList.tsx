@@ -9,6 +9,12 @@ import { formatMetricValue } from "@/lib/initiativeProgress";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
 
+function formatDateBr(value?: string) {
+  if (!value) return "Sem prazo";
+  const [year, month, day] = value.split("-");
+  return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
 interface InitiativePriorityListProps {
   initiatives: PdcaCycle[];
   company: Company;
@@ -53,15 +59,15 @@ function SortableInitiativeRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "grid gap-3 rounded-[8px] border bg-bvbp-raised p-3 shadow-none transition-colors lg:grid-cols-[32px_minmax(240px,1.45fr)_minmax(120px,0.65fr)_minmax(140px,0.7fr)_105px_160px] lg:items-center",
-        isSelected ? "border-bvbp-forest/45 bg-bvbp-inset" : "border-bvbp-ink/10 hover:border-bvbp-ink/20",
+        "grid gap-2 border-b border-bvbp-ink/10 bg-bvbp-raised px-3 py-2.5 shadow-none transition-colors last:border-b-0 lg:grid-cols-[20px_56px_minmax(160px,1.4fr)_90px_90px_minmax(125px,0.8fr)_75px_120px_80px] lg:items-center",
+        isSelected ? "bg-bvbp-inset" : "hover:bg-bvbp-inset/60",
         isDragging && "relative z-20 opacity-80",
       )}
     >
       <button
         type="button"
         className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-bvbp-ink/10 text-bvbp-muted-ink",
+          "inline-flex h-7 w-6 items-center justify-center text-bvbp-muted-ink",
           canReorder ? "cursor-grab active:cursor-grabbing" : "cursor-default opacity-35",
         )}
         aria-label={`Arrastar ${initiative.title}`}
@@ -72,20 +78,25 @@ function SortableInitiativeRow({
         <GripVertical className="h-4 w-4" aria-hidden="true" />
       </button>
 
+      <span className="truncate font-label text-[9px] font-medium text-bvbp-gold">{formatWorkItemReference(company, initiative.referenceNumber)}</span>
+
       <button type="button" className="min-w-0 text-left" onClick={() => onSelect(initiative)}>
-        <span className="mb-1 block font-label text-[10px] font-semibold text-bvbp-gold">{formatWorkItemReference(company, initiative.referenceNumber)}</span>
-        <div className="flex flex-wrap items-center gap-2">
-          <h2 className="font-heading text-base font-bold leading-5 text-bvbp-ink">{initiative.title}</h2>
+        <div className="flex min-w-0 items-center gap-2">
+          <h2 className="truncate text-sm font-medium leading-5 text-bvbp-ink">{initiative.title}</h2>
           {!initiative.pillarId || !initiative.metricId || !initiative.painLabel ? <StatusBadge label="Vínculo a revisar" /> : null}
         </div>
       </button>
 
+      <button type="button" className="min-w-0 truncate text-left text-sm font-normal text-bvbp-ink" onClick={() => onSelect(initiative)}>
+        {initiative.owner || "A definir"}
+      </button>
+
       <button type="button" className="min-w-0 text-left" onClick={() => onSelect(initiative)}>
-        <span className="text-sm font-semibold text-bvbp-ink">{initiative.affectedPointer || "A definir"}</span>
+        <span className="text-sm font-normal text-bvbp-ink">{initiative.affectedPointer || "A definir"}</span>
       </button>
 
       <button type="button" className="grid gap-1 text-left" onClick={() => onSelect(initiative)}>
-        <span className="text-sm font-semibold text-bvbp-ink">
+        <span className="text-sm font-normal text-bvbp-ink">
           {initiative.baselineValue === undefined
             ? initiative.baseline || "A definir"
             : formatMetricValue(initiative.baselineValue, initiative.metricUnit)}
@@ -115,6 +126,10 @@ function SortableInitiativeRow({
           <StatusBadge label={initiative.pdcaStatus} />
         )}
       </div>
+
+      <button type="button" className="text-left text-sm font-normal text-bvbp-ink" onClick={() => onSelect(initiative)}>
+        {formatDateBr(initiative.deadline || initiative.endDate)}
+      </button>
     </article>
   );
 }
@@ -131,7 +146,7 @@ export function InitiativePriorityList({
 }: InitiativePriorityListProps) {
   return (
     <SortableContext items={initiatives.map((initiative) => initiative.id)} strategy={verticalListSortingStrategy}>
-      <div className="space-y-3">
+      <div>
         {initiatives.map((initiative) => (
           <SortableInitiativeRow
             key={initiative.id}

@@ -19,6 +19,9 @@ const initiativeStatusClasses: Record<string, string> = {
   "Concluída": "border-bvbp-positive bg-bvbp-positive text-white",
   "Descartada": "border-bvbp-risk bg-bvbp-risk text-white",
   "Arquivada": "border-bvbp-muted-ink bg-bvbp-muted-ink text-white",
+  "A fazer": "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-ink",
+  "Em andamento": "border-bvbp-signal bg-bvbp-signal text-white",
+  "Concluído": "border-bvbp-positive bg-bvbp-positive text-white",
 };
 
 function toneForLabel(label: string): Tone {

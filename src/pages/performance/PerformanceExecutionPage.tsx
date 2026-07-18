@@ -77,6 +77,7 @@ import { getPerformanceSession, isBvbpStaff } from "@/lib/performanceAuth";
 import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 import { initiativeMatchesPillar } from "@/lib/performanceOverviewModel";
 import { parseMetricNumber } from "@/lib/initiativeProgress";
+import { formatWorkItemReference } from "@/lib/workItemReferences";
 
 const blankInitiativeForm: PdcaCycleInput = {
   title: "",
@@ -118,41 +119,6 @@ function getSortedInitiatives(initiatives: PdcaCycle[]) {
     if (priorityDifference) return priorityDifference;
     return (a.priorityOrder || 0) - (b.priorityOrder || 0);
   });
-}
-
-function initiativeToForm(initiative: PdcaCycle): PdcaCycleInput {
-  return {
-    id: initiative.id,
-    title: initiative.title,
-    affectedPointer: initiative.affectedPointer,
-    affectedFlow: initiative.affectedFlow,
-    hypothesis: initiative.hypothesis,
-    plannedAction: initiative.plannedAction,
-    whyItMatters: initiative.whyItMatters,
-    owner: initiative.owner,
-    deadline: initiative.deadline || initiative.endDate || "",
-    pdcaStatus: initiative.pdcaStatus,
-    estimatedImpact: initiative.estimatedImpact,
-    nextDecision: initiative.nextDecision,
-    startDate: initiative.startDate || "",
-    endDate: initiative.deadline || initiative.endDate || "",
-    baseline: initiative.baseline || "",
-    target: initiative.target || "",
-    pillarId: initiative.pillarId,
-    painLabel: initiative.painLabel,
-    metricId: initiative.metricId,
-    metricNameSnapshot: initiative.metricNameSnapshot,
-    metricUnit: initiative.metricUnit,
-    metricDirection: initiative.metricDirection,
-    metricSourceSnapshot: initiative.metricSourceSnapshot,
-    metricValueOrigin: initiative.metricValueOrigin,
-    baselineValue: initiative.baselineValue,
-    targetValue: initiative.targetValue,
-    teamMembers: initiative.teamMembers || [],
-    priority: initiative.priority,
-    priorityOrder: initiative.priorityOrder || 0,
-    actions: initiative.actions || [],
-  };
 }
 
 function blankActivityForm(initiative?: PdcaCycle | null): InitiativeActivityInput {
@@ -285,16 +251,6 @@ const PerformanceExecutionPage = () => {
     setIsFormDialogOpen(true);
   };
 
-  const openEditInitiative = () => {
-    if (!canManageInitiatives || !selectedInitiative) return;
-
-    setIsDetailDialogOpen(false);
-    setInitiativeForm(initiativeToForm(selectedInitiative));
-    setTeamMembersInput((selectedInitiative.teamMembers || []).join(", "));
-    setFormError("");
-    setIsFormDialogOpen(true);
-  };
-
   const saveInitiative = () => {
     if (!canManageInitiatives) return;
 
@@ -330,6 +286,25 @@ const PerformanceExecutionPage = () => {
     setActivityForm(blankActivityForm(saved));
     setFormError("");
     setIsFormDialogOpen(false);
+  };
+
+  const saveInlineInitiative = (input: PdcaCycleInput) => {
+    if (!canManageInitiatives || !input.id || !input.title.trim() || !input.pillarId || !input.painLabel || !input.metricId) return false;
+    const pillar = configuration.pillars.find((item) => item.pillar === input.pillarId);
+    const metric = configuration.metrics.find((item) => item.id === input.metricId);
+    if (!pillar?.pains.includes(input.painLabel) || !pillar.selectedMetricIds.includes(input.metricId) || metric?.pillar !== input.pillarId) return false;
+
+    const teamMembers = Array.from(new Map(
+      (input.teamMembers || [])
+        .map((member) => member.trim().replace(/\s+/g, " "))
+        .filter(Boolean)
+        .map((member) => [member.toLocaleLowerCase("pt-BR"), member]),
+    ).values());
+    if (teamMembers.some((member) => member.split(" ").filter(Boolean).length < 2)) return false;
+
+    const saved = upsertPdcaCycle(activeCompany, { ...input, teamMembers }, performanceSession?.user.name);
+    refreshInitiatives(saved.id);
+    return true;
   };
 
   const setDetailDialogOpen = (open: boolean) => {
@@ -425,7 +400,7 @@ const PerformanceExecutionPage = () => {
     const created = upsertInitiativeActivity({ ...activityForm, initiativeId: selectedInitiative.id });
     addPdcaHistory(selectedInitiative.id, {
       kind: "created",
-      description: `${created.title.replace(/[.:;!?]+$/, "")}: atividade criada.`,
+      description: `${formatWorkItemReference(activeCompany, created.referenceNumber)}: atividade criada.`,
       createdByName: performanceSession?.user.name,
     });
     setActivities(getActivitiesForInitiatives(initiatives));
@@ -436,10 +411,18 @@ const PerformanceExecutionPage = () => {
     const previous = activity.id ? activities.find((item) => item.id === activity.id) : undefined;
     const updated = upsertInitiativeActivity(activity);
     if (selectedInitiative && previous) {
+      const activityReference = formatWorkItemReference(activeCompany, updated.referenceNumber);
       if (previous.priority !== updated.priority) {
         addPdcaHistory(selectedInitiative.id, {
           kind: "activity_priority",
-          description: `${updated.title.replace(/[.:;!?]+$/, "")}: prioridade alterada de ${previous.priority || "A definir"} para ${updated.priority || "A definir"}.`,
+          description: `${activityReference}: prioridade alterada de ${previous.priority || "A definir"} para ${updated.priority || "A definir"}.`,
+          createdByName: performanceSession?.user.name,
+        });
+      }
+      if ((previous.owner || "") !== (updated.owner || "")) {
+        addPdcaHistory(selectedInitiative.id, {
+          kind: "owner",
+          description: `${activityReference}: responsável alterado de ${previous.owner || "A definir"} para ${updated.owner || "A definir"}.`,
           createdByName: performanceSession?.user.name,
         });
       }
@@ -448,7 +431,7 @@ const PerformanceExecutionPage = () => {
       if (previousDeadline !== nextDeadline) {
         addPdcaHistory(selectedInitiative.id, {
           kind: "deadline",
-          description: `${updated.title.replace(/[.:;!?]+$/, "")}: prazo alterado de ${previousDeadline || "Sem data"} para ${nextDeadline || "Sem data"}.`,
+          description: `${activityReference}: prazo alterado de ${previousDeadline || "Sem data"} para ${nextDeadline || "Sem data"}.`,
           createdByName: performanceSession?.user.name,
         });
       }
@@ -462,7 +445,7 @@ const PerformanceExecutionPage = () => {
     if (selectedInitiative && previous && updated && previous.status !== updated.status) {
       addPdcaHistory(selectedInitiative.id, {
         kind: "activity_status",
-        description: `${updated.title.replace(/[.:;!?]+$/, "")}: status alterado de ${previous.status} para ${updated.status}.`,
+        description: `${formatWorkItemReference(activeCompany, updated.referenceNumber)}: status alterado de ${previous.status} para ${updated.status}.`,
         createdByName: performanceSession?.user.name,
       });
     }
@@ -562,16 +545,19 @@ const PerformanceExecutionPage = () => {
             </div>
           </div>
 
-          <div className="hidden shrink-0 grid-cols-[32px_minmax(240px,1.45fr)_minmax(120px,0.65fr)_minmax(140px,0.7fr)_105px_160px] gap-3 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+          <div className="hidden shrink-0 grid-cols-[20px_56px_minmax(160px,1.4fr)_90px_90px_minmax(125px,0.8fr)_75px_120px_80px] gap-2 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
             <span aria-hidden="true" />
+            <span>ID</span>
             <span>Iniciativa</span>
+            <span>Responsável</span>
             <span>Ponteiro</span>
             <span>Baseline → meta</span>
             <span>Prioridade</span>
             <span>Status</span>
+            <span>Prazo</span>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto p-3">
+          <div className="min-h-0 flex-1 overflow-y-auto">
             {filteredInitiatives.length ? (
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <InitiativePriorityList
@@ -627,9 +613,8 @@ const PerformanceExecutionPage = () => {
             activityForm={activityForm}
             evidenceForm={evidenceForm}
             canManageInitiative={canManageInitiatives}
-            onEdit={openEditInitiative}
-            onStatusChange={(status) => selectedInitiative && changeInitiativeStatus(selectedInitiative.id, status)}
-            onPriorityChange={(priority) => selectedInitiative && changeInitiativePriority(selectedInitiative.id, priority)}
+            configuration={configuration}
+            onSaveInitiative={saveInlineInitiative}
             onActivityFormChange={setActivityForm}
             onAddActivity={addActivity}
             onUpdateActivity={updateActivity}
@@ -645,10 +630,10 @@ const PerformanceExecutionPage = () => {
         <DialogContent withinContentArea className="max-h-[90vh] max-w-4xl overflow-y-auto bg-bvbp-ivory">
           <DialogHeader>
             <DialogTitle className="font-heading text-2xl text-bvbp-ink">
-              {initiativeForm.id ? "Editar iniciativa" : "Nova iniciativa"}
+              Nova iniciativa
             </DialogTitle>
             <DialogDescription>
-              Conecte ponteiro, responsável, baseline, objetivo e próxima decisão.
+              Cadastre a iniciativa com os mesmos vínculos e metadados exibidos no detalhe final.
             </DialogDescription>
           </DialogHeader>
 
