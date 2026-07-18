@@ -73,15 +73,7 @@ export function InitiativeActivityBoard({
 
   return (
     <section className="space-y-4">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <SectionHeader title="Atividades" description="Itens executáveis da iniciativa, ordenados conforme a sequência de trabalho." />
-        {canManage ? (
-          <Button type="button" size="sm" variant="outline" onClick={() => setIsFormOpen(true)}>
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            Nova atividade
-          </Button>
-        ) : null}
-      </div>
+      <SectionHeader title="Atividades" description="Itens executáveis da iniciativa, ordenados conforme a sequência de trabalho." />
 
       <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
         <DialogContent withinContentArea className="max-w-xl bg-bvbp-ivory">
@@ -94,8 +86,9 @@ export function InitiativeActivityBoard({
       </Dialog>
 
       <div className="overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset">
-        <div className="hidden grid-cols-[28px_minmax(160px,1fr)_90px_85px_125px_75px] gap-2 border-b border-bvbp-ink/10 px-3 py-2 font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+        <div className="hidden grid-cols-[14px_45px_minmax(130px,1fr)_90px_65px_100px_95px] gap-2 border-b border-bvbp-ink/10 px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
           <span aria-hidden="true" />
+          <span>ID</span>
           <span>Atividade</span>
           <span>Responsável</span>
           <span>Prioridade</span>
@@ -104,7 +97,7 @@ export function InitiativeActivityBoard({
         </div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={sortedActivities.map((activity) => activity.id)} strategy={verticalListSortingStrategy}>
-            <div className="space-y-2 p-2">
+            <div>
               {sortedActivities.map((activity) => (
                 <ActivityCard
                   key={activity.id}
@@ -117,6 +110,16 @@ export function InitiativeActivityBoard({
                 />
               ))}
               {!sortedActivities.length ? <p className="p-4 text-center text-sm text-bvbp-muted-ink">Nenhuma atividade cadastrada.</p> : null}
+              {canManage ? (
+                <button
+                  type="button"
+                  onClick={() => setIsFormOpen(true)}
+                  className="flex w-full items-center gap-2 border-t border-dashed border-bvbp-ink/15 px-4 py-3 text-left text-sm text-bvbp-muted-ink transition-colors hover:bg-bvbp-raised hover:text-bvbp-ink"
+                >
+                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  Adicionar atividade
+                </button>
+              ) : null}
             </div>
           </SortableContext>
         </DndContext>

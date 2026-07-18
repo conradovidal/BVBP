@@ -11,6 +11,7 @@ interface DatePickerBrProps {
   onChange: (value: string) => void;
   placeholder?: string;
   id?: string;
+  className?: string;
 }
 
 function parseDate(value?: string) {
@@ -19,7 +20,7 @@ function parseDate(value?: string) {
   return isValid(date) ? date : undefined;
 }
 
-export function DatePickerBr({ value, onChange, placeholder = "dd/mm/aaaa", id }: DatePickerBrProps) {
+export function DatePickerBr({ value, onChange, placeholder = "dd/mm/aaaa", id, className }: DatePickerBrProps) {
   const selected = parseDate(value);
 
   return (
@@ -32,6 +33,7 @@ export function DatePickerBr({ value, onChange, placeholder = "dd/mm/aaaa", id }
           className={cn(
             "h-10 w-full justify-between border-bvbp-ink/10 bg-bvbp-raised px-3 font-normal",
             !selected && "text-bvbp-muted-ink",
+            className,
           )}
         >
           {selected ? format(selected, "dd/MM/yyyy") : placeholder}

@@ -1,17 +1,20 @@
-import { useState } from "react";
-import { ChevronDown, ChevronUp, GripVertical } from "lucide-react";
+import { useEffect, useState } from "react";
+import { GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
+import { DatePickerBr } from "@/components/ui/date-picker-br";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
+import { StatusBadge } from "@/components/performance/StatusBadge";
 import type { Company } from "@/data/performanceSystem";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
@@ -38,26 +41,29 @@ interface ActivityCardProps {
 }
 
 export function ActivityCard({ activity, company, canManage, canReorder, onStatusChange, onUpdate }: ActivityCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isDefinitionOpen, setIsDefinitionOpen] = useState(false);
   const [definitionOfDone, setDefinitionOfDone] = useState("");
+  const [owner, setOwner] = useState(activity.owner || "");
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: activity.id,
     disabled: !canReorder,
   });
   const style = { transform: CSS.Transform.toString(transform), transition };
 
+  useEffect(() => setOwner(activity.owner || ""), [activity.owner]);
+
   const saveDefinition = () => {
     onUpdate({ ...activity, definitionOfDone, description: definitionOfDone });
-    setIsExpanded(false);
+    setIsDefinitionOpen(false);
   };
 
   const cancelDefinition = () => {
-    setIsExpanded(false);
+    setIsDefinitionOpen(false);
   };
 
-  const toggleDefinition = () => {
-    if (!isExpanded) setDefinitionOfDone(activity.definitionOfDone || activity.description || "");
-    setIsExpanded((current) => !current);
+  const openDefinition = () => {
+    setDefinitionOfDone(activity.definitionOfDone || activity.description || "");
+    setIsDefinitionOpen(true);
   };
 
   return (
@@ -65,15 +71,15 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
       ref={setNodeRef}
       style={style}
       className={cn(
-        "rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised",
+        "border-b border-bvbp-ink/10 bg-bvbp-raised last:border-b-0",
         isDragging && "relative z-20 opacity-80",
       )}
     >
-      <div className="grid items-center gap-2 p-3 lg:grid-cols-[28px_minmax(160px,1fr)_90px_85px_125px_75px]">
+      <div className="grid items-center gap-2 px-3 py-2.5 lg:grid-cols-[14px_45px_minmax(130px,1fr)_90px_65px_100px_95px]">
         <button
           type="button"
           className={cn(
-            "inline-flex h-8 w-8 items-center justify-center rounded-[8px] border border-bvbp-ink/10 text-bvbp-muted-ink",
+            "inline-flex h-7 w-6 items-center justify-center text-bvbp-muted-ink",
             canReorder ? "cursor-grab active:cursor-grabbing" : "cursor-default opacity-35",
           )}
           aria-label={`Arrastar ${activity.title}`}
@@ -84,55 +90,70 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
           <GripVertical className="h-4 w-4" aria-hidden="true" />
         </button>
 
-        <button type="button" className="min-w-0 text-left" onClick={toggleDefinition}>
-          <span className="font-label text-[10px] font-semibold text-bvbp-gold">
-            {formatWorkItemReference(company, activity.referenceNumber)}
-          </span>
-          <span className="mt-1 flex items-start gap-2 text-sm font-semibold leading-5 text-bvbp-ink">
-            <span className="min-w-0 flex-1">{activity.title}</span>
-            {isExpanded ? <ChevronUp className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" /> : <ChevronDown className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}
-          </span>
+        <span className="truncate font-label text-[9px] font-medium text-bvbp-gold">
+          {formatWorkItemReference(company, activity.referenceNumber)}
+        </span>
+
+        <button type="button" className="min-w-0 truncate text-left text-sm font-medium text-bvbp-ink hover:underline" onClick={openDefinition}>
+          {activity.title}
         </button>
 
-        <span className="text-sm font-medium text-bvbp-ink">{activity.owner || "A definir"}</span>
+        {canManage ? (
+          <Input
+            value={owner}
+            onChange={(event) => setOwner(event.target.value)}
+            onBlur={() => owner.trim() !== (activity.owner || "") && onUpdate({ ...activity, owner })}
+            className="h-8 min-w-0 border-0 bg-transparent px-1 text-xs font-normal shadow-none focus-visible:ring-1"
+            placeholder="A definir"
+            aria-label={`Responsável por ${activity.title}`}
+          />
+        ) : <span className="truncate text-sm font-normal text-bvbp-ink">{activity.owner || "A definir"}</span>}
 
         <InitiativePriorityMenu priority={activity.priority} canManage={canManage} onChange={(priority) => onUpdate({ ...activity, priority })} />
 
         {canManage ? (
           <Select value={activity.status} onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}>
-            <SelectTrigger className="h-8 border-0 bg-transparent px-2 text-xs shadow-none" aria-label={`Status de ${activity.title}`}>
-              <SelectValue />
+            <SelectTrigger className="h-8 border-0 bg-transparent px-1 text-xs shadow-none" aria-label={`Status de ${activity.title}`}>
+              <StatusBadge label={activity.status} />
             </SelectTrigger>
             <SelectContent>
-              {initiativeActivityStatuses.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}
+              {initiativeActivityStatuses.map((status) => <SelectItem key={status} value={status}><StatusBadge label={status} /></SelectItem>)}
             </SelectContent>
           </Select>
         ) : <span className="text-xs font-semibold text-bvbp-muted-ink">{activity.status}</span>}
 
-        <span className="text-sm font-medium text-bvbp-ink">{formatDateBr(activity.endDate || activity.dueDate)}</span>
+        {canManage ? (
+          <DatePickerBr
+            id={`activity-deadline-${activity.id}`}
+            value={activity.endDate || activity.dueDate || ""}
+            onChange={(value) => onUpdate({ ...activity, endDate: value, dueDate: value })}
+            className="h-8 border-0 bg-transparent px-1 shadow-none"
+          />
+        ) : <span className="text-sm font-normal text-bvbp-ink">{formatDateBr(activity.endDate || activity.dueDate)}</span>}
       </div>
 
-      {isExpanded ? (
-        <div className="border-t border-bvbp-ink/10 bg-bvbp-inset p-3">
-          <label className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink" htmlFor={`definition-${activity.id}`}>
-            Definição de pronto
-          </label>
+      <Dialog open={isDefinitionOpen} onOpenChange={setIsDefinitionOpen}>
+        <DialogContent withinContentArea className="max-w-lg bg-bvbp-ivory">
+          <DialogHeader>
+            <DialogTitle>{formatWorkItemReference(company, activity.referenceNumber)}</DialogTitle>
+            <DialogDescription>Definição de pronto</DialogDescription>
+          </DialogHeader>
           <Textarea
             id={`definition-${activity.id}`}
             value={definitionOfDone}
             onChange={(event) => setDefinitionOfDone(event.target.value)}
             placeholder="O que precisa ser verdade para considerar esta atividade concluída?"
-            className="mt-2 min-h-20 bg-bvbp-raised"
+            className="min-h-28 bg-bvbp-raised"
             readOnly={!canManage}
           />
           {canManage ? (
-            <div className="mt-3 flex justify-end gap-2">
+            <DialogFooter>
               <Button type="button" size="sm" variant="ghost" onClick={cancelDefinition}>Cancelar</Button>
               <Button type="button" size="sm" onClick={saveDefinition}>Salvar definição</Button>
-            </div>
+            </DialogFooter>
           ) : null}
-        </div>
-      ) : null}
+        </DialogContent>
+      </Dialog>
     </article>
   );
 }
