@@ -127,16 +127,29 @@ function normalizeStoredCycle(cycle: PdcaCycle, index = 0): PdcaCycle {
   const affectedPointer = normalizeAffectedPointer(cycle.affectedPointer);
   const firstEvidenceDate = cycle.evidences[0]?.date;
   const pdcaStatus = normalizePdcaStatus(cycle.pdcaStatus);
+  const focusType = cycle.focusType || (cycle.metricId ? "metric" : cycle.painLabel ? "pain" : undefined);
 
   return {
     ...cycle,
     affectedPointer,
     pdcaStatus,
+    focusType,
+    maturityTargetLevel: focusType === "maturity" ? cycle.maturityTargetLevel : undefined,
+    painLabel: focusType === "pain" ? cycle.painLabel : undefined,
+    metricId: focusType === "metric" ? cycle.metricId : undefined,
+    metricNameSnapshot: focusType === "metric" ? cycle.metricNameSnapshot : undefined,
+    metricUnit: focusType === "metric" ? cycle.metricUnit : undefined,
+    metricDirection: focusType === "metric" ? cycle.metricDirection : undefined,
+    metricSourceSnapshot: focusType === "metric" ? cycle.metricSourceSnapshot : undefined,
+    metricValueOrigin: focusType === "metric"
+      ? cycle.metricValueOrigin || (cycle.dataType === "Estimado" ? "estimated" : cycle.dataType === "Real" ? "informed" : undefined)
+      : undefined,
+    baselineValue: focusType === "metric" ? cycle.baselineValue : undefined,
+    targetValue: focusType === "metric" ? cycle.targetValue : undefined,
     startDate: cycle.startDate || firstEvidenceDate,
     endDate: cycle.endDate || cycle.deadline,
-    baseline: cycle.baseline || "",
-    target: cycle.target || "",
-    metricValueOrigin: cycle.metricValueOrigin || (cycle.dataType === "Estimado" ? "estimated" : cycle.dataType === "Real" ? "informed" : undefined),
+    baseline: focusType === "metric" ? cycle.baseline || "" : "",
+    target: focusType === "metric" ? cycle.target || "" : "",
     teamMembers: normalizeTeamMembers(cycle.teamMembers || []),
     priority: normalizeInitiativePriority(cycle.priority),
     priorityOrder: typeof cycle.priorityOrder === "number" ? cycle.priorityOrder : index,
@@ -253,12 +266,56 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput, created
   if (existing && existing.owner !== input.owner.trim()) {
     history = prependHistory(history, { kind: "owner", description: `Responsável alterado de ${existing.owner || "A definir"} para ${input.owner.trim() || "A definir"}.`, createdByName });
   }
+  const focusType = input.focusType || (input.metricId ? "metric" : input.painLabel ? "pain" : undefined);
+  const nextFocusLabel = focusType === "metric"
+    ? input.metricNameSnapshot || input.affectedPointer || "Ponteiro a definir"
+    : focusType === "pain"
+      ? input.painLabel || "Dor a definir"
+      : focusType === "maturity"
+        ? `Maturidade ${input.maturityTargetLevel || "a definir"}/5`
+        : "Vínculo a revisar";
+  const previousFocusLabel = existing?.focusType === "metric" || (!existing?.focusType && existing?.metricId)
+    ? existing.metricNameSnapshot || existing.affectedPointer
+    : existing?.focusType === "pain" || (!existing?.focusType && existing?.painLabel)
+      ? existing.painLabel
+      : existing?.focusType === "maturity"
+        ? `Maturidade ${existing.maturityTargetLevel || "a definir"}/5`
+        : "Vínculo a revisar";
+  if (existing && (
+    (existing.focusType || (existing.metricId ? "metric" : existing.painLabel ? "pain" : undefined)) !== focusType ||
+    previousFocusLabel !== nextFocusLabel
+  )) {
+    history = prependHistory(history, { kind: "focus", description: `Foco alterado de ${previousFocusLabel || "Vínculo a revisar"} para ${nextFocusLabel}.`, createdByName });
+  }
+  if (existing && existing.title !== input.title.trim()) {
+    history = prependHistory(history, { kind: "content", description: "Título da iniciativa atualizado.", createdByName });
+  }
+  if (existing && existing.hypothesis !== input.hypothesis.trim()) {
+    history = prependHistory(history, { kind: "content", description: "Hipótese da iniciativa atualizada.", createdByName });
+  }
+  if (existing && existing.whyItMatters !== input.whyItMatters.trim()) {
+    history = prependHistory(history, { kind: "content", description: "Relevância da iniciativa atualizada.", createdByName });
+  }
+  if (existing && JSON.stringify(existing.teamMembers || []) !== JSON.stringify(normalizeTeamMembers(input.teamMembers || []))) {
+    history = prependHistory(history, { kind: "team", description: "Equipe da iniciativa atualizada.", createdByName });
+  }
+  if (existing && (existing.startDate || "") !== (input.startDate?.trim() || "")) {
+    history = prependHistory(history, { kind: "start_date", description: `Início alterado de ${existing.startDate || "Sem data"} para ${input.startDate?.trim() || "Sem data"}.`, createdByName });
+  }
+  const isMetricFocus = focusType === "metric";
+  const isPainFocus = focusType === "pain";
   const nextCycle = normalizeStoredCycle({
     id: input.id || `${company.id}-cycle-${now}`,
     companyId: company.id,
     referenceNumber: existing?.referenceNumber || getNextCompanyWorkItemReferenceNumber(company.id),
     title: input.title.trim(),
-    affectedPointer: input.affectedPointer.trim(),
+    affectedPointer: isMetricFocus
+      ? input.affectedPointer.trim()
+      : isPainFocus
+        ? input.painLabel?.trim() || ""
+        : focusType === "maturity"
+          ? `Maturidade ${input.maturityTargetLevel || ""}/5`
+          : input.affectedPointer.trim(),
     affectedFlow: input.affectedFlow?.trim() || undefined,
     hypothesis: input.hypothesis.trim(),
     plannedAction: input.plannedAction.trim() || input.nextDecision.trim() || input.hypothesis.trim(),
@@ -274,15 +331,17 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput, created
     baseline: input.baseline?.trim() || "",
     target: input.target?.trim() || "",
     pillarId: input.pillarId,
-    painLabel: input.painLabel?.trim() || undefined,
-    metricId: input.metricId,
-    metricNameSnapshot: input.metricNameSnapshot?.trim() || input.affectedPointer.trim() || undefined,
-    metricUnit: input.metricUnit,
-    metricDirection: input.metricDirection,
-    metricSourceSnapshot: input.metricSourceSnapshot?.trim() || undefined,
-    metricValueOrigin: input.metricValueOrigin,
-    baselineValue: typeof input.baselineValue === "number" ? input.baselineValue : undefined,
-    targetValue: typeof input.targetValue === "number" ? input.targetValue : undefined,
+    focusType,
+    maturityTargetLevel: focusType === "maturity" ? input.maturityTargetLevel : undefined,
+    painLabel: isPainFocus ? input.painLabel?.trim() || undefined : undefined,
+    metricId: isMetricFocus ? input.metricId : undefined,
+    metricNameSnapshot: isMetricFocus ? input.metricNameSnapshot?.trim() || input.affectedPointer.trim() || undefined : undefined,
+    metricUnit: isMetricFocus ? input.metricUnit : undefined,
+    metricDirection: isMetricFocus ? input.metricDirection : undefined,
+    metricSourceSnapshot: isMetricFocus ? input.metricSourceSnapshot?.trim() || undefined : undefined,
+    metricValueOrigin: isMetricFocus ? input.metricValueOrigin : undefined,
+    baselineValue: isMetricFocus && typeof input.baselineValue === "number" ? input.baselineValue : undefined,
+    targetValue: isMetricFocus && typeof input.targetValue === "number" ? input.targetValue : undefined,
     teamMembers: normalizeTeamMembers(input.teamMembers || []),
     priority: normalizeInitiativePriority(input.priority),
     priorityOrder: typeof input.priorityOrder === "number" ? input.priorityOrder : companyCycles.length,
@@ -298,6 +357,17 @@ export function upsertPdcaCycle(company: Company, input: PdcaCycleInput, created
   savePdcaCycles(nextCycles);
   syncCompanyCyclesFromList(company.id, nextCycles);
   return nextCycle;
+}
+
+export function updatePdcaCycleFields(
+  company: Company,
+  cycleId: string,
+  patch: Partial<PdcaCycleInput>,
+  createdByName?: string,
+) {
+  const existing = getPdcaCyclesForCompany(company).find((cycle) => cycle.id === cycleId);
+  if (!existing) return undefined;
+  return upsertPdcaCycle(company, { ...existing, ...patch, id: cycleId }, createdByName);
 }
 
 export function updatePdcaCycleStatus(cycleId: string, pdcaStatus: PdcaStatus, createdByName?: string) {

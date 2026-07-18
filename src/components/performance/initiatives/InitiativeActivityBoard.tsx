@@ -13,14 +13,15 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionHeader } from "@/components/performance/SectionHeader";
-import { ActivityCard } from "@/components/performance/initiatives/ActivityCard";
+import { ActivityCard, activityListGridClass } from "@/components/performance/initiatives/ActivityCard";
 import { ActivityForm } from "@/components/performance/initiatives/ActivityForm";
 import {
   type InitiativeActivity,
   type InitiativeActivityInput,
   type InitiativeActivityStatus,
 } from "@/lib/initiativeActivityStore";
-import type { Company } from "@/data/performanceSystem";
+import type { Company, InitiativePriority } from "@/data/performanceSystem";
+import { cn } from "@/lib/utils";
 
 interface InitiativeActivityBoardProps {
   activities: InitiativeActivity[];
@@ -50,7 +51,8 @@ export function InitiativeActivityBoard({
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
-  const sortedActivities = [...activities].sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || a.createdAt.localeCompare(b.createdAt));
+  const priorityRank = (priority?: InitiativePriority) => priority === "Alta" ? 0 : priority === "Média" ? 1 : priority === "Baixa" ? 2 : 3;
+  const sortedActivities = [...activities].sort((a, b) => priorityRank(a.priority) - priorityRank(b.priority) || (a.order ?? 0) - (b.order ?? 0) || a.createdAt.localeCompare(b.createdAt));
 
   const submitActivity = () => {
     if (!formValue.title.trim()) return;
@@ -65,6 +67,7 @@ export function InitiativeActivityBoard({
     const from = sortedActivities.findIndex((activity) => activity.id === activeId);
     const to = sortedActivities.findIndex((activity) => activity.id === overId);
     if (from < 0 || to < 0) return;
+    if (sortedActivities[from].priority !== sortedActivities[to].priority) return;
     const reordered = [...sortedActivities];
     const [moved] = reordered.splice(from, 1);
     reordered.splice(to, 0, moved);
@@ -86,7 +89,7 @@ export function InitiativeActivityBoard({
       </Dialog>
 
       <div className="overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset">
-        <div className="hidden grid-cols-[14px_45px_minmax(130px,1fr)_90px_65px_100px_95px] gap-2 border-b border-bvbp-ink/10 px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+        <div className={cn("hidden gap-2 border-b border-bvbp-ink/10 px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink min-[1180px]:grid", activityListGridClass)}>
           <span aria-hidden="true" />
           <span>ID</span>
           <span>Atividade</span>
@@ -104,7 +107,7 @@ export function InitiativeActivityBoard({
                   activity={activity}
                   company={company}
                   canManage={canManage}
-                  canReorder={canManage}
+                  canReorder={canManage && Boolean(activity.priority)}
                   onStatusChange={onStatusChange}
                   onUpdate={onUpdateActivity}
                 />

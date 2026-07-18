@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DatePickerBr } from "@/components/ui/date-picker-br";
@@ -16,7 +16,7 @@ import { SectionHeader } from "@/components/performance/SectionHeader";
 import { InitiativeActivityBoard } from "@/components/performance/initiatives/InitiativeActivityBoard";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
 import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
-import { bvbpPillarIds, bvbpPillarLabels, type ClientConfiguration, type ClientMetricConfig, type Company, type EvidenceType, type PdcaCycle } from "@/data/performanceSystem";
+import { bvbpPillarIds, bvbpPillarLabels, type BvbpPillarId, type ClientConfiguration, type ClientMetricConfig, type Company, type EvidenceType, type InitiativeFocusType, type PdcaCycle } from "@/data/performanceSystem";
 import type { EvidenceInput, PdcaCycleInput } from "@/lib/pdcaCycleStore";
 import {
   type InitiativeActivity,
@@ -25,6 +25,7 @@ import {
 } from "@/lib/initiativeActivityStore";
 import { calculateInitiativeProgress, formatMetricValue, getInitiativeImpactLabel, parseMetricNumber } from "@/lib/initiativeProgress";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
+import { getInitiativeFocusLabel, getNextMaturityTarget, inferInitiativeFocusType } from "@/lib/initiativeFocus";
 
 const commentTypes: EvidenceType[] = ["Comentário", "Aprendizado", "Reunião", "Decisão", "Dado"];
 
@@ -48,7 +49,7 @@ interface InitiativeDetailPanelProps {
   evidenceForm: EvidenceInput;
   canManageInitiative: boolean;
   configuration: ClientConfiguration;
-  onSaveInitiative: (input: PdcaCycleInput) => boolean;
+  onSaveInitiative: (initiativeId: string, patch: Partial<PdcaCycleInput>) => boolean;
   onActivityFormChange: (value: InitiativeActivityInput) => void;
   onAddActivity: () => void;
   onUpdateActivity: (activity: InitiativeActivityInput) => void;
@@ -75,13 +76,28 @@ export function InitiativeDetailPanel({
   onEvidenceFormChange,
   onAddEvidence,
 }: InitiativeDetailPanelProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState<PdcaCycleInput | null>(null);
+  type EditableField = "title" | "hypothesis" | "whyItMatters" | "owner" | "team" | "startDate" | "deadline" | "focus" | "baseline" | "target" | "source";
+  const [editingField, setEditingField] = useState<EditableField | null>(null);
+  const [draftValue, setDraftValue] = useState("");
+  const [focusDraft, setFocusDraft] = useState<Partial<PdcaCycleInput>>({});
+  const editorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setIsEditing(false);
-    setEditForm(null);
+    setEditingField(null);
+    setDraftValue("");
+    setFocusDraft({});
   }, [initiative?.id]);
+
+  useEffect(() => {
+    if (!editingField) return;
+    const cancelOnOutsideClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (editorRef.current?.contains(target) || target.closest("[data-radix-popper-content-wrapper]")) return;
+      setEditingField(null);
+    };
+    document.addEventListener("mousedown", cancelOnOutsideClick);
+    return () => document.removeEventListener("mousedown", cancelOnOutsideClick);
+  }, [editingField]);
 
   if (!initiative) {
     return (
@@ -105,43 +121,63 @@ export function InitiativeDetailPanel({
     ? `${initiative.metricValueOrigin === "estimated" ? "Estimado · " : ""}${initiative.metricSourceSnapshot}`
     : "Não informada";
 
-  const startEditing = () => {
-    if (!canManageInitiative || isEditing) return;
-    setEditForm({
-      ...initiative,
-      id: initiative.id,
-      actions: initiative.actions || [],
-      teamMembers: initiative.teamMembers || [],
-    });
-    setIsEditing(true);
-  };
-
-  const saveEditing = () => {
-    if (!editForm) return;
-    if (onSaveInitiative(editForm)) {
-      setIsEditing(false);
-      setEditForm(null);
+  const startEditing = (field: EditableField, value = "") => {
+    if (!canManageInitiative) return;
+    setDraftValue(value);
+    setEditingField(field);
+    if (field === "focus") {
+      setFocusDraft({
+        pillarId: initiative.pillarId,
+        focusType: inferInitiativeFocusType(initiative),
+        metricId: initiative.metricId,
+        metricNameSnapshot: initiative.metricNameSnapshot,
+        affectedPointer: initiative.affectedPointer,
+        painLabel: initiative.painLabel,
+        maturityTargetLevel: initiative.maturityTargetLevel,
+        metricUnit: initiative.metricUnit,
+        metricDirection: initiative.metricDirection,
+        metricSourceSnapshot: initiative.metricSourceSnapshot,
+        metricValueOrigin: initiative.metricValueOrigin,
+        baseline: initiative.baseline,
+        target: initiative.target,
+        baselineValue: initiative.baselineValue,
+        targetValue: initiative.targetValue,
+      });
     }
   };
 
-  const cancelEditing = () => {
-    setIsEditing(false);
-    setEditForm(null);
+  const savePatch = (patch: Partial<PdcaCycleInput>) => {
+    if (onSaveInitiative(initiative.id, patch)) setEditingField(null);
   };
 
-  const selectedPillar = editForm?.pillarId
-    ? configuration.pillars.find((pillar) => pillar.pillar === editForm.pillarId)
+  const saveTextField = () => {
+    if (!editingField) return;
+    const patchByField: Partial<Record<EditableField, Partial<PdcaCycleInput>>> = {
+      title: { title: draftValue },
+      hypothesis: { hypothesis: draftValue },
+      whyItMatters: { whyItMatters: draftValue },
+      owner: { owner: draftValue },
+      team: { teamMembers: draftValue.split(",").map((name) => name.trim()).filter(Boolean) },
+      baseline: { baseline: draftValue, baselineValue: parseMetricNumber(draftValue) },
+      target: { target: draftValue, targetValue: parseMetricNumber(draftValue) },
+      source: { metricSourceSnapshot: draftValue },
+    };
+    const patch = patchByField[editingField];
+    if (patch) savePatch(patch);
+  };
+
+  const selectedPillar = focusDraft.pillarId
+    ? configuration.pillars.find((pillar) => pillar.pillar === focusDraft.pillarId)
     : undefined;
   const selectedMetricIds = new Set(selectedPillar?.selectedMetricIds || []);
-  const availableMetrics = editForm?.pillarId
-    ? configuration.metrics.filter((metric) => metric.pillar === editForm.pillarId && selectedMetricIds.has(metric.id))
+  const availableMetrics = focusDraft.pillarId
+    ? configuration.metrics.filter((metric) => metric.pillar === focusDraft.pillarId && selectedMetricIds.has(metric.id))
     : [];
 
-  const selectPillar = (pillarId: PdcaCycleInput["pillarId"]) => {
-    if (!editForm || !pillarId) return;
-    setEditForm({
-      ...editForm,
+  const selectPillar = (pillarId: BvbpPillarId) => {
+    setFocusDraft({
       pillarId,
+      focusType: undefined,
       painLabel: undefined,
       metricId: undefined,
       metricNameSnapshot: undefined,
@@ -154,9 +190,9 @@ export function InitiativeDetailPanel({
   };
 
   const selectMetric = (metric: ClientMetricConfig) => {
-    if (!editForm) return;
-    setEditForm({
-      ...editForm,
+    setFocusDraft((current) => ({
+      ...current,
+      focusType: "metric",
       metricId: metric.id,
       metricNameSnapshot: metric.name,
       metricUnit: metric.unit,
@@ -168,20 +204,63 @@ export function InitiativeDetailPanel({
       targetValue: parseMetricNumber(metric.target),
       baseline: metric.currentValue === undefined ? "" : String(metric.currentValue),
       target: metric.target || "",
-    });
+    }));
+  };
+
+  const selectFocusType = (focusType: InitiativeFocusType) => {
+    setFocusDraft((current) => ({
+      pillarId: current.pillarId,
+      focusType,
+      maturityTargetLevel: focusType === "maturity" ? getNextMaturityTarget(configuration, current.pillarId) : undefined,
+    }));
+  };
+
+  const isFocusDraftValid = Boolean(
+    focusDraft.pillarId &&
+    (focusDraft.focusType === "metric"
+      ? availableMetrics.some((metric) => metric.id === focusDraft.metricId)
+      : focusDraft.focusType === "pain"
+        ? Boolean(focusDraft.painLabel && selectedPillar?.pains.includes(focusDraft.painLabel))
+        : focusDraft.focusType === "maturity" && Boolean(focusDraft.maturityTargetLevel)),
+  );
+
+  const renderEditableMetadata = (field: EditableField, label: string, value: string, editValue = value) => {
+    if (editingField === field) {
+      return (
+        <div ref={editorRef} className="py-3 first:pt-0">
+          <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</span>
+          <div className="mt-1 flex items-center gap-1">
+            <Input value={draftValue} onChange={(event) => setDraftValue(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setEditingField(null); if (event.key === "Enter") saveTextField(); }} className="h-8 min-w-0 bg-bvbp-raised" autoFocus />
+            <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => setEditingField(null)} aria-label={`Cancelar ${label}`}><X className="h-3.5 w-3.5" /></Button>
+            <Button type="button" size="icon" className="h-8 w-8" onClick={saveTextField} aria-label={`Salvar ${label}`}><Check className="h-3.5 w-3.5" /></Button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <button type="button" onClick={() => startEditing(field, editValue === "Sem responsável" || editValue === "Sem equipe definida" || editValue === "Não informada" ? "" : editValue)} className="block w-full py-3 text-left first:pt-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-bvbp-gold/45">
+        <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</span>
+        <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{value}</span>
+      </button>
+    );
   };
 
   return (
-    <section className="overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised">
-      <div className="flex flex-col gap-4 border-b border-bvbp-ink/10 p-5 lg:flex-row lg:items-start lg:justify-between">
+    <section className="overflow-hidden bg-bvbp-raised">
+      <div className="flex flex-col gap-4 border-b border-bvbp-ink/10 p-5 pr-14 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-gold">
             {formatWorkItemReference(company, initiative.referenceNumber)}
           </p>
-          {isEditing && editForm ? (
-            <Input value={editForm.title} onChange={(event) => setEditForm({ ...editForm, title: event.target.value })} className="mt-2 h-10 max-w-2xl font-heading text-xl font-semibold" aria-label="Título da iniciativa" />
+          {editingField === "title" ? (
+            <div ref={editorRef} className="mt-2 flex max-w-2xl items-center gap-2">
+              <Input value={draftValue} onChange={(event) => setDraftValue(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setEditingField(null); if (event.key === "Enter") saveTextField(); }} className="h-10 font-heading text-xl font-semibold" aria-label="Título da iniciativa" autoFocus />
+              <Button type="button" size="icon" onClick={saveTextField} aria-label="Salvar título"><Check className="h-4 w-4" /></Button>
+              <Button type="button" size="icon" variant="ghost" onClick={() => setEditingField(null)} aria-label="Cancelar edição"><X className="h-4 w-4" /></Button>
+            </div>
           ) : (
-            <button type="button" onClick={startEditing} className="mt-2 text-left focus:outline-none">
+            <button type="button" onClick={() => startEditing("title", initiative.title)} className="mt-2 text-left focus:outline-none">
               <h2 className="font-heading text-2xl font-semibold text-bvbp-ink">{initiative.title}</h2>
             </button>
           )}
@@ -189,45 +268,70 @@ export function InitiativeDetailPanel({
             <span className="rounded-full bg-bvbp-inset px-2.5 py-1 text-xs font-semibold text-bvbp-muted-ink">
               {initiative.pillarId ? bvbpPillarLabels[initiative.pillarId] : "Vínculo a revisar"}
             </span>
-            {initiative.painLabel ? (
-              <span className="rounded-full bg-bvbp-inset px-2.5 py-1 text-xs font-semibold text-bvbp-muted-ink">{initiative.painLabel}</span>
-            ) : null}
+            <button type="button" onClick={() => startEditing("focus")} className="rounded-full bg-bvbp-inset px-2.5 py-1 text-xs font-semibold text-bvbp-muted-ink">{getInitiativeFocusLabel(initiative)}</button>
           </div>
+          {editingField === "focus" ? (
+            <div ref={editorRef} className="mt-3 grid max-w-3xl gap-2 rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-3 sm:grid-cols-[1fr_1fr_1.3fr_auto]">
+              <Select value={focusDraft.pillarId || ""} onValueChange={(value) => selectPillar(value as BvbpPillarId)}>
+                <SelectTrigger aria-label="Pilar"><SelectValue placeholder="Pilar" /></SelectTrigger>
+                <SelectContent>{bvbpPillarIds.map((pillarId) => <SelectItem key={pillarId} value={pillarId}>{bvbpPillarLabels[pillarId]}</SelectItem>)}</SelectContent>
+              </Select>
+              <Select value={focusDraft.focusType || ""} onValueChange={(value) => selectFocusType(value as InitiativeFocusType)} disabled={!focusDraft.pillarId}>
+                <SelectTrigger aria-label="Tipo de foco"><SelectValue placeholder="Tipo de foco" /></SelectTrigger>
+                <SelectContent><SelectItem value="metric">Ponteiro</SelectItem><SelectItem value="pain">Dor</SelectItem><SelectItem value="maturity">Maturidade</SelectItem></SelectContent>
+              </Select>
+              {focusDraft.focusType === "metric" ? (
+                <Select value={focusDraft.metricId || ""} onValueChange={(value) => { const metric = availableMetrics.find((item) => item.id === value); if (metric) selectMetric(metric); }} disabled={!availableMetrics.length}>
+                  <SelectTrigger aria-label="Ponteiro"><SelectValue placeholder="Selecione o ponteiro" /></SelectTrigger>
+                  <SelectContent>{availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{metric.name}</SelectItem>)}</SelectContent>
+                </Select>
+              ) : focusDraft.focusType === "pain" ? (
+                <Select value={focusDraft.painLabel || ""} onValueChange={(painLabel) => setFocusDraft((current) => ({ ...current, painLabel, affectedPointer: painLabel }))} disabled={!selectedPillar?.pains.length}>
+                  <SelectTrigger aria-label="Dor"><SelectValue placeholder="Selecione a dor" /></SelectTrigger>
+                  <SelectContent>{(selectedPillar?.pains || []).map((pain) => <SelectItem key={pain} value={pain}>{pain}</SelectItem>)}</SelectContent>
+                </Select>
+              ) : (
+                <div className="flex h-10 items-center rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised px-3 text-sm text-bvbp-ink">
+                  {focusDraft.maturityTargetLevel ? `Próximo nível: ${focusDraft.maturityTargetLevel}/5` : "Nível máximo alcançado"}
+                </div>
+              )}
+              <div className="flex items-center justify-end gap-1">
+                <Button type="button" size="icon" variant="ghost" onClick={() => setEditingField(null)} aria-label="Cancelar foco"><X className="h-4 w-4" /></Button>
+                <Button type="button" size="icon" disabled={!isFocusDraftValid} onClick={() => savePatch(focusDraft)} aria-label="Salvar foco"><Check className="h-4 w-4" /></Button>
+              </div>
+            </div>
+          ) : null}
         </div>
-        {isEditing ? (
-          <div className="flex shrink-0 gap-2">
-            <Button type="button" size="icon" variant="ghost" onClick={cancelEditing} aria-label="Cancelar edição"><X className="h-4 w-4" /></Button>
-            <Button type="button" size="icon" onClick={saveEditing} aria-label="Salvar alterações"><Check className="h-4 w-4" /></Button>
-          </div>
-        ) : null}
       </div>
 
       <div className="grid lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-6 p-5">
           <section className="space-y-4">
-            {isEditing && editForm ? (
-              <div>
+            {editingField === "hypothesis" ? (
+              <div ref={editorRef}>
                 <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Hipótese</p>
-                <Textarea className="mt-2" value={editForm.hypothesis} onChange={(event) => setEditForm({ ...editForm, hypothesis: event.target.value })} />
+                <Textarea className="mt-2" value={draftValue} onChange={(event) => setDraftValue(event.target.value)} onKeyDown={(event) => event.key === "Escape" && setEditingField(null)} autoFocus />
+                <div className="mt-2 flex justify-end gap-2"><Button type="button" size="icon" variant="ghost" onClick={() => setEditingField(null)} aria-label="Cancelar edição"><X className="h-4 w-4" /></Button><Button type="button" size="icon" onClick={saveTextField} aria-label="Salvar hipótese"><Check className="h-4 w-4" /></Button></div>
               </div>
-            ) : <button type="button" onClick={startEditing} className="w-full text-left">
+            ) : <button type="button" onClick={() => startEditing("hypothesis", initiative.hypothesis)} className="w-full text-left">
               <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Hipótese</p>
               <p className="mt-2 text-sm leading-6 text-bvbp-ink">{initiative.hypothesis || "Hipótese a definir."}</p>
             </button>}
             <div>
-              {isEditing && editForm ? (
-                <div>
+              {editingField === "whyItMatters" ? (
+                <div ref={editorRef}>
                   <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Por que importa</p>
-                  <Textarea className="mt-2" value={editForm.whyItMatters} onChange={(event) => setEditForm({ ...editForm, whyItMatters: event.target.value })} />
+                  <Textarea className="mt-2" value={draftValue} onChange={(event) => setDraftValue(event.target.value)} onKeyDown={(event) => event.key === "Escape" && setEditingField(null)} autoFocus />
+                  <div className="mt-2 flex justify-end gap-2"><Button type="button" size="icon" variant="ghost" onClick={() => setEditingField(null)} aria-label="Cancelar edição"><X className="h-4 w-4" /></Button><Button type="button" size="icon" onClick={saveTextField} aria-label="Salvar relevância"><Check className="h-4 w-4" /></Button></div>
                 </div>
-              ) : <button type="button" onClick={startEditing} className="w-full text-left">
+              ) : <button type="button" onClick={() => startEditing("whyItMatters", initiative.whyItMatters)} className="w-full text-left">
                 <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Por que importa</p>
                 <p className="mt-2 text-sm leading-6 text-bvbp-ink">{initiative.whyItMatters || "Impacto a detalhar."}</p>
               </button>}
             </div>
           </section>
 
-          {progress !== undefined ? (
+          {inferInitiativeFocusType(initiative) === "metric" && progress !== undefined ? (
             <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-ivory p-4">
               <div className="flex items-center justify-between gap-3 text-sm font-semibold text-bvbp-ink">
                 <span>Progresso até a meta</span><span>{progress}%</span>
@@ -306,65 +410,34 @@ export function InitiativeDetailPanel({
 
         <aside className="border-t border-bvbp-ink/10 bg-bvbp-inset p-4 lg:border-l lg:border-t-0">
           <div className="space-y-5 lg:sticky lg:top-0">
-            <div className="flex flex-wrap gap-2">
-              {canManageInitiative && isEditing && editForm ? (
-                <InitiativeStatusMenu
-                  status={editForm.pdcaStatus}
-                  onChange={(status) => setEditForm({ ...editForm, pdcaStatus: status })}
-                />
-              ) : canManageInitiative ? <button type="button" onClick={startEditing}><StatusBadge label={initiative.pdcaStatus} /></button> : <StatusBadge label={initiative.pdcaStatus} />}
-              {canManageInitiative && isEditing && editForm ? (
-                <InitiativePriorityMenu priority={editForm.priority} canManage onChange={(priority) => setEditForm({ ...editForm, priority })} />
-              ) : canManageInitiative ? (
-                <button type="button" onClick={startEditing}><InitiativePriorityMenu priority={initiative.priority} canManage={false} onChange={() => undefined} /></button>
-              ) : <InitiativePriorityMenu priority={initiative.priority} canManage={false} onChange={() => undefined} />}
+            <div className="flex flex-wrap items-center gap-2">
+              {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} /> : <StatusBadge label={initiative.pdcaStatus} />}
+              <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} />
             </div>
-            {isEditing && editForm ? (
-              <div className="space-y-3 text-sm">
-                <Select value={editForm.pillarId || ""} onValueChange={(value) => selectPillar(value as PdcaCycleInput["pillarId"])}>
-                  <SelectTrigger aria-label="Pilar"><SelectValue placeholder="Pilar" /></SelectTrigger>
-                  <SelectContent>{bvbpPillarIds.map((pillarId) => <SelectItem key={pillarId} value={pillarId}>{bvbpPillarLabels[pillarId]}</SelectItem>)}</SelectContent>
-                </Select>
-                <Select value={editForm.painLabel || ""} onValueChange={(value) => setEditForm({ ...editForm, painLabel: value })} disabled={!selectedPillar?.pains.length}>
-                  <SelectTrigger aria-label="Dor principal"><SelectValue placeholder="Dor principal" /></SelectTrigger>
-                  <SelectContent>{(selectedPillar?.pains || []).map((pain) => <SelectItem key={pain} value={pain}>{pain}</SelectItem>)}</SelectContent>
-                </Select>
-                <Select value={editForm.metricId || ""} onValueChange={(value) => { const metric = availableMetrics.find((item) => item.id === value); if (metric) selectMetric(metric); }} disabled={!availableMetrics.length}>
-                  <SelectTrigger aria-label="Ponteiro"><SelectValue placeholder="Ponteiro" /></SelectTrigger>
-                  <SelectContent>{availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{metric.name}</SelectItem>)}</SelectContent>
-                </Select>
-                <Input value={editForm.owner} onChange={(event) => setEditForm({ ...editForm, owner: event.target.value })} placeholder="Responsável" aria-label="Responsável" />
-                <Input value={(editForm.teamMembers || []).join(", ")} onChange={(event) => setEditForm({ ...editForm, teamMembers: event.target.value.split(",").map((name) => name.trim()).filter(Boolean) })} placeholder="Equipe" aria-label="Equipe" />
-                <DatePickerBr id="initiative-inline-start" value={editForm.startDate} onChange={(value) => setEditForm({ ...editForm, startDate: value })} />
-                <DatePickerBr id="initiative-inline-deadline" value={editForm.deadline} onChange={(value) => setEditForm({ ...editForm, deadline: value, endDate: value })} />
-                <div className="grid grid-cols-2 gap-2">
-                  <Input type="number" value={editForm.baselineValue ?? ""} onChange={(event) => setEditForm({ ...editForm, baselineValue: event.target.value ? Number(event.target.value) : undefined, baseline: event.target.value })} placeholder="Baseline" aria-label="Baseline" />
-                  <Input type="number" value={editForm.targetValue ?? ""} onChange={(event) => setEditForm({ ...editForm, targetValue: event.target.value ? Number(event.target.value) : undefined, target: event.target.value })} placeholder="Meta" aria-label="Meta" />
-                </div>
+            <div className="divide-y divide-bvbp-ink/10 text-sm">
+              {renderEditableMetadata("owner", "Responsável", initiative.owner || "Sem responsável")}
+              {renderEditableMetadata("team", "Equipe", initiative.teamMembers?.length ? initiative.teamMembers.join(", ") : "Sem equipe definida")}
+              <div className="py-3">
+                <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Início</span>
+                {editingField === "startDate" ? <div ref={editorRef} className="mt-1"><DatePickerBr id="initiative-inline-start" value={initiative.startDate} onChange={(startDate) => savePatch({ startDate })} /></div> : <button type="button" className="mt-1 font-semibold text-bvbp-ink" onClick={() => startEditing("startDate")}>{formatDateBr(initiative.startDate)}</button>}
               </div>
-            ) : <div className="divide-y divide-bvbp-ink/10 text-sm">
-              {[
-                ["Responsável", initiative.owner || "Sem responsável"],
-                ["Equipe", initiative.teamMembers?.length ? initiative.teamMembers.join(", ") : "Sem equipe definida"],
-                ["Início", formatDateBr(initiative.startDate)],
-                ["Prazo", formatDateBr(initiative.deadline || initiative.endDate)],
-                ["Ponteiro", initiative.affectedPointer || "A definir"],
-                ["Baseline", baselineLabel],
-                ["Meta", targetLabel],
-                ["Fonte", sourceLabel],
-                ["Impacto", getInitiativeImpactLabel(initiative)],
-              ].map(([label, value]) => (
-                <button
-                  type="button"
-                  key={label}
-                  onClick={startEditing}
-                  className="block w-full py-3 text-left first:pt-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-bvbp-gold/45"
-                >
-                  <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">{label}</span>
-                  <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{value}</span>
-                </button>
-              ))}
-            </div>}
+              <div className="py-3">
+                <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Prazo</span>
+                {editingField === "deadline" ? <div ref={editorRef} className="mt-1"><DatePickerBr id="initiative-inline-deadline" value={initiative.deadline || initiative.endDate} onChange={(deadline) => savePatch({ deadline, endDate: deadline })} /></div> : <button type="button" className="mt-1 font-semibold text-bvbp-ink" onClick={() => startEditing("deadline")}>{formatDateBr(initiative.deadline || initiative.endDate)}</button>}
+              </div>
+              <button type="button" onClick={() => startEditing("focus")} className="block w-full py-3 text-left">
+                <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Foco</span>
+                <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{getInitiativeFocusLabel(initiative)}</span>
+              </button>
+              {inferInitiativeFocusType(initiative) === "metric" ? (
+                <>
+                  {renderEditableMetadata("baseline", "Baseline", baselineLabel)}
+                  {renderEditableMetadata("target", "Meta", targetLabel)}
+                  {renderEditableMetadata("source", "Fonte", sourceLabel, initiative.metricSourceSnapshot || "")}
+                  <div className="py-3"><span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Impacto</span><span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{getInitiativeImpactLabel(initiative)}</span></div>
+                </>
+              ) : null}
+            </div>
           </div>
         </aside>
       </div>

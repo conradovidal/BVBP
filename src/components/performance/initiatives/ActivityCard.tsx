@@ -27,9 +27,11 @@ import {
 
 function formatDateBr(value?: string) {
   if (!value) return "Sem prazo";
-  const [year, month, day] = value.split("-");
-  return year && month && day ? `${day}/${month}/${year}` : value;
+  const [, month, day] = value.split("-");
+  return month && day ? `${day}/${month}` : value;
 }
+
+export const activityListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(180px,1fr)_110px_40px_120px_60px]";
 
 interface ActivityCardProps {
   activity: InitiativeActivity;
@@ -75,7 +77,7 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
         isDragging && "relative z-20 opacity-80",
       )}
     >
-      <div className="grid items-center gap-2 px-3 py-2.5 lg:grid-cols-[14px_45px_minmax(130px,1fr)_90px_65px_100px_95px]">
+      <div className={cn("grid items-center gap-2 px-3 py-2.5", activityListGridClass)}>
         <button
           type="button"
           className={cn(
@@ -90,7 +92,7 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
           <GripVertical className="h-4 w-4" aria-hidden="true" />
         </button>
 
-        <span className="truncate font-label text-[9px] font-medium text-bvbp-gold">
+        <span className="flex h-7 items-center truncate font-label text-[11px] font-semibold tracking-[0.02em] text-bvbp-gold">
           {formatWorkItemReference(company, activity.referenceNumber)}
         </span>
 
@@ -103,17 +105,17 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
             value={owner}
             onChange={(event) => setOwner(event.target.value)}
             onBlur={() => owner.trim() !== (activity.owner || "") && onUpdate({ ...activity, owner })}
-            className="h-8 min-w-0 border-0 bg-transparent px-1 text-xs font-normal shadow-none focus-visible:ring-1"
+            className="h-8 min-w-0 truncate whitespace-nowrap border-0 bg-transparent px-1 text-xs font-normal shadow-none focus-visible:ring-1"
             placeholder="A definir"
             aria-label={`Responsável por ${activity.title}`}
           />
         ) : <span className="truncate text-sm font-normal text-bvbp-ink">{activity.owner || "A definir"}</span>}
 
-        <InitiativePriorityMenu priority={activity.priority} canManage={canManage} onChange={(priority) => onUpdate({ ...activity, priority })} />
+        <InitiativePriorityMenu priority={activity.priority} canManage={canManage} compact onChange={(priority) => onUpdate({ ...activity, priority })} />
 
         {canManage ? (
           <Select value={activity.status} onValueChange={(value) => onStatusChange(activity.id, value as InitiativeActivityStatus)}>
-            <SelectTrigger className="h-8 border-0 bg-transparent px-1 text-xs shadow-none" aria-label={`Status de ${activity.title}`}>
+            <SelectTrigger hideIcon className="h-8 justify-center border-0 bg-transparent px-0 text-xs shadow-none" aria-label={`Status de ${activity.title}`}>
               <StatusBadge label={activity.status} />
             </SelectTrigger>
             <SelectContent>
@@ -127,7 +129,7 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
             id={`activity-deadline-${activity.id}`}
             value={activity.endDate || activity.dueDate || ""}
             onChange={(value) => onUpdate({ ...activity, endDate: value, dueDate: value })}
-            className="h-8 border-0 bg-transparent px-1 shadow-none"
+            displayMode="compact"
           />
         ) : <span className="text-sm font-normal text-bvbp-ink">{formatDateBr(activity.endDate || activity.dueDate)}</span>}
       </div>

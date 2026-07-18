@@ -92,17 +92,24 @@ function normalizeCompany(company: Company) {
 }
 
 export function normalizeCompanyReferenceCode(value: string) {
-  return value
+  const normalized = value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 8);
+    .replace(/[^A-Z0-9]/g, "");
+  if (normalized === "NEXO") return "NX";
+  return normalized.slice(0, 2);
 }
 
 export function deriveCompanyReferenceCode(name: string) {
   const firstWord = name.trim().split(/\s+/)[0] || name;
-  return normalizeCompanyReferenceCode(firstWord);
+  const normalized = firstWord
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "");
+  const consonants = normalized.replace(/[AEIOU]/g, "");
+  return normalizeCompanyReferenceCode(consonants.length >= 2 ? consonants : normalized);
 }
 
 export function getPortalCompanies(): Company[] {

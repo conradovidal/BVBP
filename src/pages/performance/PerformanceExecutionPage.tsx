@@ -29,7 +29,7 @@ import { EmptyState } from "@/components/performance/EmptyState";
 import { InitiativeDetailPanel } from "@/components/performance/initiatives/InitiativeDetailPanel";
 import { InitiativePillarContext } from "@/components/performance/initiatives/InitiativePillarContext";
 import { PerformancePageHeader } from "@/components/performance/PerformancePageHeader";
-import { InitiativePriorityList } from "@/components/performance/initiatives/InitiativePriorityList";
+import { InitiativePriorityList, initiativeListGridClass } from "@/components/performance/initiatives/InitiativePriorityList";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -45,6 +45,7 @@ import {
   type Company,
   type BvbpPillarId,
   type ClientMetricConfig,
+  type InitiativeFocusType,
   type InitiativePriority,
   type PdcaCycle,
   type PdcaStatus,
@@ -69,6 +70,7 @@ import {
   reorderPdcaCycles,
   updatePdcaCyclePriority,
   updatePdcaCycleStatus,
+  updatePdcaCycleFields,
   upsertPdcaCycle,
   type EvidenceInput,
   type PdcaCycleInput,
@@ -77,6 +79,7 @@ import { getPerformanceSession, isBvbpStaff } from "@/lib/performanceAuth";
 import { getClientConfiguration } from "@/lib/clientConfigurationStore";
 import { initiativeMatchesPillar } from "@/lib/performanceOverviewModel";
 import { parseMetricNumber } from "@/lib/initiativeProgress";
+import { getNextMaturityTarget, inferInitiativeFocusType } from "@/lib/initiativeFocus";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 
 const blankInitiativeForm: PdcaCycleInput = {
@@ -254,14 +257,19 @@ const PerformanceExecutionPage = () => {
   const saveInitiative = () => {
     if (!canManageInitiatives) return;
 
-    if (!initiativeForm.title.trim() || !initiativeForm.pillarId || !initiativeForm.painLabel || !initiativeForm.metricId) {
-      setFormError("Título, pilar, dor principal e ponteiro principal são obrigatórios.");
+    if (!initiativeForm.title.trim() || !initiativeForm.pillarId || !initiativeForm.focusType) {
+      setFormError("Título, pilar e foco principal são obrigatórios.");
       return;
     }
     const pillar = configuration.pillars.find((item) => item.pillar === initiativeForm.pillarId);
     const metric = configuration.metrics.find((item) => item.id === initiativeForm.metricId);
-    if (!pillar?.pains.includes(initiativeForm.painLabel) || !pillar.selectedMetricIds.includes(initiativeForm.metricId) || metric?.pillar !== initiativeForm.pillarId) {
-      setFormError("A dor e o ponteiro precisam pertencer ao pilar selecionado.");
+    const validFocus = initiativeForm.focusType === "metric"
+      ? Boolean(initiativeForm.metricId && pillar?.selectedMetricIds.includes(initiativeForm.metricId) && metric?.pillar === initiativeForm.pillarId)
+      : initiativeForm.focusType === "pain"
+        ? Boolean(initiativeForm.painLabel && pillar?.pains.includes(initiativeForm.painLabel))
+        : Boolean(initiativeForm.maturityTargetLevel);
+    if (!validFocus) {
+      setFormError("Escolha um foco válido dentro do pilar selecionado.");
       return;
     }
 
@@ -288,21 +296,27 @@ const PerformanceExecutionPage = () => {
     setIsFormDialogOpen(false);
   };
 
-  const saveInlineInitiative = (input: PdcaCycleInput) => {
-    if (!canManageInitiatives || !input.id || !input.title.trim() || !input.pillarId || !input.painLabel || !input.metricId) return false;
-    const pillar = configuration.pillars.find((item) => item.pillar === input.pillarId);
-    const metric = configuration.metrics.find((item) => item.id === input.metricId);
-    if (!pillar?.pains.includes(input.painLabel) || !pillar.selectedMetricIds.includes(input.metricId) || metric?.pillar !== input.pillarId) return false;
+  const saveInlineInitiative = (initiativeId: string, patch: Partial<PdcaCycleInput>) => {
+    if (!canManageInitiatives) return false;
+    const existing = initiatives.find((initiative) => initiative.id === initiativeId);
+    if (!existing) return false;
+    const candidate = { ...existing, ...patch };
+    if (!candidate.title.trim()) return false;
+    if (patch.teamMembers?.some((member) => member.split(" ").filter(Boolean).length < 2)) return false;
+    const focusType = inferInitiativeFocusType(candidate);
+    const pillar = configuration.pillars.find((item) => item.pillar === candidate.pillarId);
+    const metric = configuration.metrics.find((item) => item.id === candidate.metricId);
+    const hasValidFocus = focusType === "metric"
+      ? Boolean(candidate.metricId && pillar?.selectedMetricIds.includes(candidate.metricId) && metric?.pillar === candidate.pillarId)
+      : focusType === "pain"
+        ? Boolean(candidate.painLabel && pillar?.pains.includes(candidate.painLabel))
+        : focusType === "maturity"
+          ? Boolean(candidate.maturityTargetLevel)
+          : false;
+    if (!candidate.pillarId || !hasValidFocus) return false;
 
-    const teamMembers = Array.from(new Map(
-      (input.teamMembers || [])
-        .map((member) => member.trim().replace(/\s+/g, " "))
-        .filter(Boolean)
-        .map((member) => [member.toLocaleLowerCase("pt-BR"), member]),
-    ).values());
-    if (teamMembers.some((member) => member.split(" ").filter(Boolean).length < 2)) return false;
-
-    const saved = upsertPdcaCycle(activeCompany, { ...input, teamMembers }, performanceSession?.user.name);
+    const saved = updatePdcaCycleFields(activeCompany, initiativeId, patch, performanceSession?.user.name);
+    if (!saved) return false;
     refreshInitiatives(saved.id);
     return true;
   };
@@ -321,6 +335,8 @@ const PerformanceExecutionPage = () => {
     setInitiativeForm((current) => ({
       ...current,
       pillarId,
+      focusType: undefined,
+      maturityTargetLevel: undefined,
       painLabel: undefined,
       metricId: undefined,
       metricNameSnapshot: undefined,
@@ -342,6 +358,7 @@ const PerformanceExecutionPage = () => {
     const targetValue = parseMetricNumber(metric.target);
     setInitiativeForm((current) => ({
       ...current,
+      focusType: "metric",
       metricId: metric.id,
       metricNameSnapshot: metric.name,
       metricUnit: metric.unit,
@@ -358,6 +375,27 @@ const PerformanceExecutionPage = () => {
     setFormError("");
   };
 
+  const selectInitiativeFocusType = (focusType: InitiativeFocusType) => {
+    setInitiativeForm((current) => ({
+      ...current,
+      focusType,
+      painLabel: undefined,
+      metricId: undefined,
+      metricNameSnapshot: undefined,
+      metricUnit: undefined,
+      metricDirection: undefined,
+      metricSourceSnapshot: undefined,
+      metricValueOrigin: undefined,
+      maturityTargetLevel: focusType === "maturity" ? getNextMaturityTarget(configuration, current.pillarId) : undefined,
+      baselineValue: undefined,
+      targetValue: undefined,
+      affectedPointer: "",
+      baseline: "",
+      target: "",
+    }));
+    setFormError("");
+  };
+
   const selectedPillarConfig = initiativeForm.pillarId
     ? configuration.pillars.find((pillar) => pillar.pillar === initiativeForm.pillarId)
     : undefined;
@@ -367,9 +405,12 @@ const PerformanceExecutionPage = () => {
     : [];
   const canSaveInitiative = Boolean(
     initiativeForm.title.trim() &&
-    initiativeForm.painLabel &&
-    selectedPillarConfig?.pains.includes(initiativeForm.painLabel) &&
-    availableMetrics.some((metric) => metric.id === initiativeForm.metricId),
+    initiativeForm.pillarId &&
+    (initiativeForm.focusType === "metric"
+      ? availableMetrics.some((metric) => metric.id === initiativeForm.metricId)
+      : initiativeForm.focusType === "pain"
+        ? Boolean(initiativeForm.painLabel && selectedPillarConfig?.pains.includes(initiativeForm.painLabel))
+        : initiativeForm.focusType === "maturity" && Boolean(initiativeForm.maturityTargetLevel)),
   );
 
   const changeInitiativeStatus = (initiativeId: string, status: PdcaStatus) => {
@@ -383,6 +424,12 @@ const PerformanceExecutionPage = () => {
     if (!canManageInitiatives) return;
 
     updatePdcaCyclePriority(initiativeId, priority, performanceSession?.user.name);
+    refreshInitiatives(selectedInitiativeId || initiativeId);
+  };
+
+  const changeInitiativeDeadline = (initiativeId: string, deadline: string) => {
+    if (!canManageInitiatives) return;
+    updatePdcaCycleFields(activeCompany, initiativeId, { deadline, endDate: deadline }, performanceSession?.user.name);
     refreshInitiatives(selectedInitiativeId || initiativeId);
   };
 
@@ -545,16 +592,15 @@ const PerformanceExecutionPage = () => {
             </div>
           </div>
 
-          <div className="hidden shrink-0 grid-cols-[20px_56px_minmax(160px,1.4fr)_90px_90px_minmax(125px,0.8fr)_75px_120px_80px] gap-2 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink lg:grid">
+          <div className={`hidden shrink-0 gap-2 border-b border-bvbp-ink/10 bg-bvbp-inset px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink min-[1180px]:grid ${initiativeListGridClass}`}>
             <span aria-hidden="true" />
             <span>ID</span>
             <span>Iniciativa</span>
             <span>Responsável</span>
-            <span>Ponteiro</span>
-            <span>Baseline → meta</span>
+            <span>Foco</span>
             <span>Prioridade</span>
-            <span>Status</span>
             <span>Prazo</span>
+            <span>Status</span>
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto">
@@ -569,6 +615,7 @@ const PerformanceExecutionPage = () => {
                   onSelect={selectInitiative}
                   onStatusChange={changeInitiativeStatus}
                   onPriorityChange={changeInitiativePriority}
+                  onDeadlineChange={changeInitiativeDeadline}
                 />
               </DndContext>
             ) : (
@@ -592,6 +639,7 @@ const PerformanceExecutionPage = () => {
                     onSelect={selectInitiative}
                     onStatusChange={changeInitiativeStatus}
                     onPriorityChange={changeInitiativePriority}
+                    onDeadlineChange={changeInitiativeDeadline}
                   />
                 </div>
               </details>
@@ -601,7 +649,7 @@ const PerformanceExecutionPage = () => {
       </div>
 
       <Dialog open={isDetailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent withinContentArea className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-3 sm:p-4">
+        <DialogContent withinContentArea className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-0">
           <DialogHeader className="sr-only">
             <DialogTitle>{selectedInitiative?.title || "Detalhe da iniciativa"}</DialogTitle>
             <DialogDescription>Detalhes, atividades, comentários e histórico da iniciativa.</DialogDescription>
@@ -680,21 +728,39 @@ const PerformanceExecutionPage = () => {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label>Dor principal</Label>
-                <Select value={initiativeForm.painLabel || ""} onValueChange={(value) => setInitiativeForm({ ...initiativeForm, painLabel: value })} disabled={!selectedPillarConfig?.pains.length}>
-                  <SelectTrigger><SelectValue placeholder={initiativeForm.pillarId ? "Selecione a dor" : "Selecione o pilar primeiro"} /></SelectTrigger>
+                <Label>Tipo de foco</Label>
+                <Select value={initiativeForm.focusType || ""} onValueChange={(value) => selectInitiativeFocusType(value as InitiativeFocusType)} disabled={!initiativeForm.pillarId}>
+                  <SelectTrigger><SelectValue placeholder="Selecione o foco" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">Ponteiro</SelectItem>
+                    <SelectItem value="pain">Dor</SelectItem>
+                    <SelectItem value="maturity">Próximo nível de maturidade</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {initiativeForm.focusType === "pain" ? <div className="space-y-1.5">
+                <Label>Dor</Label>
+                <Select value={initiativeForm.painLabel || ""} onValueChange={(value) => setInitiativeForm({ ...initiativeForm, painLabel: value, affectedPointer: value })} disabled={!selectedPillarConfig?.pains.length}>
+                  <SelectTrigger><SelectValue placeholder="Selecione a dor" /></SelectTrigger>
                   <SelectContent>{(selectedPillarConfig?.pains || []).map((pain) => <SelectItem key={pain} value={pain}>{pain}</SelectItem>)}</SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-1.5">
+              </div> : null}
+              {initiativeForm.focusType === "metric" ? <div className="space-y-1.5">
                 <Label>Ponteiro</Label>
                 <Select value={initiativeForm.metricId || ""} onValueChange={(value) => { const metric = availableMetrics.find((item) => item.id === value); if (metric) selectInitiativeMetric(metric); }} disabled={!availableMetrics.length}>
-                  <SelectTrigger><SelectValue placeholder={initiativeForm.pillarId ? "Selecione o ponteiro" : "Selecione o pilar primeiro"} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Selecione o ponteiro" /></SelectTrigger>
                   <SelectContent>{availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{metric.name}</SelectItem>)}</SelectContent>
                 </Select>
-              </div>
-              {initiativeForm.pillarId && !selectedPillarConfig?.pains.length ? <p className="text-xs text-bvbp-risk">Complete o diagnóstico de dores deste pilar antes de criar a iniciativa.</p> : null}
-              {initiativeForm.pillarId && !availableMetrics.length ? <p className="text-xs text-bvbp-risk">Este pilar ainda não possui ponteiro cadastrado.</p> : null}
+              </div> : null}
+              {initiativeForm.focusType === "maturity" ? (
+                <div className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-raised p-3 text-sm text-bvbp-ink">
+                  {initiativeForm.maturityTargetLevel
+                    ? `Próximo nível: ${initiativeForm.maturityTargetLevel}/5`
+                    : "Este pilar já alcançou o nível máximo de maturidade."}
+                </div>
+              ) : null}
+              {initiativeForm.focusType === "pain" && !selectedPillarConfig?.pains.length ? <p className="text-xs text-bvbp-risk">Este pilar ainda não possui dor cadastrada.</p> : null}
+              {initiativeForm.focusType === "metric" && !availableMetrics.length ? <p className="text-xs text-bvbp-risk">Este pilar ainda não possui ponteiro cadastrado.</p> : null}
 
               <Input id="initiative-owner" value={initiativeForm.owner} onChange={(event) => setInitiativeForm({ ...initiativeForm, owner: event.target.value })} placeholder="Responsável" aria-label="Responsável" />
               <Input id="initiative-team" value={teamMembersInput} onChange={(event) => setTeamMembersInput(event.target.value)} placeholder="Equipe, separada por vírgula" aria-label="Equipe" />
@@ -702,10 +768,10 @@ const PerformanceExecutionPage = () => {
                 <DatePickerBr id="initiative-start" value={initiativeForm.startDate} onChange={(value) => setInitiativeForm({ ...initiativeForm, startDate: value })} placeholder="Início" />
                 <DatePickerBr id="initiative-deadline" value={initiativeForm.deadline} onChange={(value) => setInitiativeForm({ ...initiativeForm, deadline: value, endDate: value })} placeholder="Prazo" />
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              {initiativeForm.focusType === "metric" ? <div className="grid grid-cols-2 gap-2">
                 <Input id="initiative-baseline" type="number" value={initiativeForm.baselineValue ?? ""} onChange={(event) => setInitiativeForm({ ...initiativeForm, baselineValue: event.target.value === "" ? undefined : Number(event.target.value), baseline: event.target.value })} placeholder="Baseline" />
                 <Input id="initiative-target" type="number" value={initiativeForm.targetValue ?? ""} onChange={(event) => setInitiativeForm({ ...initiativeForm, targetValue: event.target.value === "" ? undefined : Number(event.target.value), target: event.target.value })} placeholder="Meta" />
-              </div>
+              </div> : null}
             </aside>
           </div>
 
