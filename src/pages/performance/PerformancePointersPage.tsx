@@ -16,7 +16,7 @@ import {
   type PointerPillarId,
 } from "@/lib/performancePointersModel";
 import { getPdcaCyclesForCompany } from "@/lib/pdcaCycleStore";
-import { getClientConfiguration, saveClientConfiguration } from "@/lib/clientConfigurationStore";
+import { getClientConfiguration, toggleMaturityCriterion as persistMaturityCriterionToggle } from "@/lib/clientConfigurationStore";
 import { getPerformanceSession, isBvbpStaff } from "@/lib/performanceAuth";
 import { addPdcaEvidence, addPdcaHistory, updatePdcaCycleFields, type EvidenceInput } from "@/lib/pdcaCycleStore";
 import { getActivitiesForInitiatives, reorderInitiativeActivities, updateInitiativeActivityStatus, upsertInitiativeActivity, type InitiativeActivityInput, type InitiativeActivityStatus } from "@/lib/initiativeActivityStore";
@@ -142,19 +142,14 @@ const PerformancePointersPage = () => {
 
   const toggleMaturityCriterion = (criterionId: string) => {
     if (!canManageMaturity) return;
-    const configuration = getClientConfiguration(activeCompany);
-    const nextConfiguration = {
-      ...configuration,
-      pillars: configuration.pillars.map((pillar) => {
-        if (pillar.pillar !== activePillarId) return pillar;
-        const completed = new Set(pillar.completedMaturityCriterionIds);
-        if (completed.has(criterionId)) completed.delete(criterionId);
-        else completed.add(criterionId);
-        return { ...pillar, completedMaturityCriterionIds: Array.from(completed) };
-      }),
-    };
-    saveClientConfiguration(nextConfiguration);
-    setConfigurationVersion((current) => current + 1);
+    const updated = persistMaturityCriterionToggle({
+      company: activeCompany,
+      pillarId: activePillarId,
+      criterionId,
+      createdByUserId: performanceSession?.user.id,
+      createdByName: performanceSession?.user.name,
+    });
+    if (updated) setConfigurationVersion((current) => current + 1);
   };
 
   const setPillar = (pillarId: PointerPillarId) => {

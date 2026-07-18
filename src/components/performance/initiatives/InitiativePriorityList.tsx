@@ -93,7 +93,7 @@ function SortableInitiativeRow({
         </div>
       </button>
 
-      <button type="button" className="min-w-0 truncate text-left text-sm font-normal text-bvbp-ink" onClick={() => onSelect(initiative)}>
+      <button type="button" className="min-w-0 truncate text-center text-sm font-normal text-bvbp-ink" onClick={() => onSelect(initiative)}>
         {initiative.owner || "A definir"}
       </button>
 
@@ -101,7 +101,7 @@ function SortableInitiativeRow({
         {getInitiativeMetricLabel(initiative)}
       </button>
 
-      <div onClick={(event) => event.stopPropagation()}>
+      <div className="flex items-center justify-center" onClick={(event) => event.stopPropagation()}>
         <InitiativePriorityMenu
           priority={initiative.priority}
           canManage={canManage}
@@ -110,7 +110,7 @@ function SortableInitiativeRow({
         />
       </div>
 
-      <div onClick={(event) => event.stopPropagation()}>
+      <div className="flex items-center justify-center" onClick={(event) => event.stopPropagation()}>
         {canManage ? (
           <DatePickerBr
             id={`initiative-deadline-${initiative.id}`}
@@ -121,7 +121,7 @@ function SortableInitiativeRow({
         ) : <span className="text-xs text-bvbp-ink">{formatCompactDate(initiative.deadline || initiative.endDate)}</span>}
       </div>
 
-      <div onClick={(event) => event.stopPropagation()}>
+      <div className="flex items-center justify-center" onClick={(event) => event.stopPropagation()}>
         {canManage ? (
           <InitiativeStatusMenu
             status={initiative.pdcaStatus}

@@ -200,6 +200,18 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
         advancementCriteria?: unknown;
       };
       const hasV2Maturity = Array.isArray(storedPillar.completedMaturityCriterionIds);
+      const hasValidMaturityHistory = storedPillar.maturityHistory === undefined || (
+        Array.isArray(storedPillar.maturityHistory) && storedPillar.maturityHistory.every((entry) => (
+          !!entry &&
+          typeof entry.id === "string" &&
+          typeof entry.criterionId === "string" &&
+          typeof entry.criterionLabel === "string" &&
+          typeof entry.level === "number" &&
+          typeof entry.pillar === "string" &&
+          ["checked", "unchecked"].includes(entry.action) &&
+          typeof entry.createdAt === "string"
+        ))
+      );
       const hasLegacyMaturity = (
         typeof storedPillar.maturityLevel === "number" &&
         typeof storedPillar.currentLevelName === "string" &&
@@ -210,6 +222,7 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
       return (
         typeof storedPillar.pillar === "string" &&
         (hasV2Maturity || hasLegacyMaturity) &&
+        hasValidMaturityHistory &&
         Array.isArray(storedPillar.selectedMetricIds) &&
         (storedPillar.criticalMetricId === undefined || typeof storedPillar.criticalMetricId === "string") &&
         Array.isArray(storedPillar.pains) &&
@@ -233,7 +246,7 @@ export function isClientConfigurationList(value: unknown): value is ClientConfig
     ));
 
     const schemaVersion = (config as { schemaVersion?: number }).schemaVersion;
-    const hasValidSchema = schemaVersion === undefined || schemaVersion === 2 || schemaVersion === 3 || schemaVersion === 4;
+    const hasValidSchema = schemaVersion === undefined || schemaVersion === 2 || schemaVersion === 3 || schemaVersion === 4 || schemaVersion === 5;
 
     return hasValidSchema && typeof config.companyId === "string" && hasValidPillars && hasValidMetrics;
   });

@@ -113,6 +113,7 @@ export interface ClientMetricMeasurement {
 export interface ClientPillarConfig {
   pillar: BvbpPillarId;
   completedMaturityCriterionIds: string[];
+  maturityHistory: MaturityHistoryEntry[];
   selectedMetricIds: string[];
   criticalMetricId?: string;
   pains: string[];
@@ -120,10 +121,24 @@ export interface ClientPillarConfig {
 }
 
 export interface ClientConfiguration {
-  schemaVersion: 4;
+  schemaVersion: 5;
   companyId: string;
   pillars: ClientPillarConfig[];
   metrics: ClientMetricConfig[];
+}
+
+export type MaturityHistoryAction = "checked" | "unchecked";
+
+export interface MaturityHistoryEntry {
+  id: string;
+  criterionId: string;
+  criterionLabel: string;
+  level: MaturityLevel;
+  pillar: BvbpPillarId;
+  action: MaturityHistoryAction;
+  createdAt: string;
+  createdByUserId?: string;
+  createdByName?: string;
 }
 
 export type ClientMetricValueOrigin = "informed" | "estimated";
@@ -948,7 +963,7 @@ export function createDefaultClientConfiguration(
   );
 
   return {
-    schemaVersion: 4,
+    schemaVersion: 5,
     companyId: company.id,
     metrics,
     pillars: bvbpPillarIds.map((pillar) => {
@@ -957,6 +972,7 @@ export function createDefaultClientConfiguration(
       return {
         pillar,
         completedMaturityCriterionIds: getMaturityCriterionIdsForLevel(pillar, maturityLevel),
+        maturityHistory: [],
         selectedMetricIds: selectDefaults ? defaultSelectedMetricIdsByPillar[pillar] : [],
         criticalMetricId: undefined,
         pains: [],

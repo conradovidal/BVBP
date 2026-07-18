@@ -25,7 +25,7 @@ import {
   type InitiativeActivityInput,
   type InitiativeActivityStatus,
 } from "@/lib/initiativeActivityStore";
-import { calculateInitiativeProgress, formatMetricValue, getInitiativeImpactLabel, parseMetricNumber } from "@/lib/initiativeProgress";
+import { calculateInitiativeProgress, formatMetricValue, parseMetricNumber } from "@/lib/initiativeProgress";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { getInitiativeMetricLabel } from "@/lib/initiativeFocus";
 
@@ -201,7 +201,7 @@ export function InitiativeDetailPanel({
 
   return (
     <section className="overflow-hidden bg-bvbp-raised">
-      <div className="flex flex-col gap-4 border-b border-bvbp-ink/10 p-5 pr-14 lg:flex-row lg:items-start lg:justify-between">
+      <div className="border-b border-bvbp-ink/10 p-5 pr-14">
         <div className="min-w-0 flex-1">
           <p className="font-label text-xs font-semibold uppercase tracking-[0.08em] text-bvbp-gold">
             {formatWorkItemReference(company, initiative.referenceNumber)}
@@ -231,11 +231,9 @@ export function InitiativeDetailPanel({
                 </Select>
               </div>
             ) : <button type="button" onClick={() => startEditing("focus")} className="h-6 rounded-full bg-bvbp-inset px-2.5 text-xs font-semibold text-bvbp-muted-ink">{getInitiativeMetricLabel(initiative)}</button>}
+            {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} /> : <StatusBadge label={initiative.pdcaStatus} />}
+            <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} />
           </div>
-        </div>
-        <div className="flex shrink-0 flex-wrap items-center gap-2 pt-1">
-          {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} /> : <StatusBadge label={initiative.pdcaStatus} />}
-          <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} />
         </div>
       </div>
 
@@ -345,7 +343,30 @@ export function InitiativeDetailPanel({
           <div className="space-y-5 lg:sticky lg:top-0">
             <div className="divide-y divide-bvbp-ink/10 text-sm">
               {renderEditableMetadata("owner", "Responsável", initiative.owner || "Sem responsável")}
-              {renderEditableMetadata("team", "Equipe", initiative.teamMembers?.length ? initiative.teamMembers.join(", ") : "Sem equipe definida")}
+              <button type="button" onClick={() => startEditing("focus")} className="block h-[68px] w-full py-3 text-left">
+                <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Ponteiro</span>
+                <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{getInitiativeMetricLabel(initiative)}</span>
+              </button>
+              {initiative.metricId ? (
+                <div className="grid h-[88px] grid-cols-3 gap-2 py-3">
+                  {editingField === "baseline" ? <div ref={editorRef} className="min-w-0 rounded-[6px] bg-bvbp-raised px-2 py-2">
+                    <span className="block font-label text-[9px] font-semibold uppercase tracking-[0.06em] text-bvbp-muted-ink">Baseline</span>
+                    <div className="mt-1 flex gap-1"><Input value={draftValue} onChange={(event) => setDraftValue(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setEditingField(null); if (event.key === "Enter") saveTextField(); }} className="h-7 min-w-0 px-1.5" autoFocus /><Button type="button" size="icon" className="h-7 w-7 shrink-0" onClick={saveTextField}><Check className="h-3 w-3" /></Button></div>
+                  </div> : <button type="button" onClick={() => startEditing("baseline", initiative.baselineValue === undefined ? initiative.baseline : String(initiative.baselineValue))} className="min-w-0 rounded-[6px] bg-bvbp-raised px-2 text-left focus-visible:ring-2 focus-visible:ring-bvbp-gold/45">
+                    <span className="block font-label text-[9px] font-semibold uppercase tracking-[0.06em] text-bvbp-muted-ink">Baseline</span><span className="mt-1 block truncate font-semibold text-bvbp-ink">{baselineLabel}</span>
+                  </button>}
+                  <button type="button" onClick={() => canManageInitiative && setMeasurementOpen(true)} className="min-w-0 rounded-[6px] bg-bvbp-raised px-2 text-left focus-visible:ring-2 focus-visible:ring-bvbp-gold/45">
+                    <span className="block font-label text-[9px] font-semibold uppercase tracking-[0.06em] text-bvbp-muted-ink">Atual</span>
+                    <span className="mt-1 block truncate font-semibold text-bvbp-ink">{currentMetricValue === undefined ? "Sem valor" : formatMetricValue(currentMetricValue, initiative.metricUnit)}</span>
+                  </button>
+                  {editingField === "target" ? <div ref={editorRef} className="min-w-0 rounded-[6px] bg-bvbp-raised px-2 py-2">
+                    <span className="block font-label text-[9px] font-semibold uppercase tracking-[0.06em] text-bvbp-muted-ink">Meta</span>
+                    <div className="mt-1 flex gap-1"><Input value={draftValue} onChange={(event) => setDraftValue(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setEditingField(null); if (event.key === "Enter") saveTextField(); }} className="h-7 min-w-0 px-1.5" autoFocus /><Button type="button" size="icon" className="h-7 w-7 shrink-0" onClick={saveTextField}><Check className="h-3 w-3" /></Button></div>
+                  </div> : <button type="button" onClick={() => startEditing("target", initiative.targetValue === undefined ? initiative.target : String(initiative.targetValue))} className="min-w-0 rounded-[6px] bg-bvbp-raised px-2 text-left focus-visible:ring-2 focus-visible:ring-bvbp-gold/45">
+                    <span className="block font-label text-[9px] font-semibold uppercase tracking-[0.06em] text-bvbp-muted-ink">Meta</span><span className="mt-1 block truncate font-semibold text-bvbp-ink">{targetLabel}</span>
+                  </button>}
+                </div>
+              ) : null}
               <div className="h-[68px] py-3">
                 <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Início</span>
                 {editingField === "startDate" ? <div ref={editorRef} className="mt-1"><DatePickerBr id="initiative-inline-start" value={initiative.startDate} onChange={(startDate) => savePatch({ startDate })} /></div> : <button type="button" className="mt-1 font-semibold text-bvbp-ink" onClick={() => startEditing("startDate")}>{formatDateBr(initiative.startDate)}</button>}
@@ -354,20 +375,10 @@ export function InitiativeDetailPanel({
                 <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Prazo</span>
                 {editingField === "deadline" ? <div ref={editorRef} className="mt-1"><DatePickerBr id="initiative-inline-deadline" value={initiative.deadline || initiative.endDate} onChange={(deadline) => savePatch({ deadline, endDate: deadline })} /></div> : <button type="button" className="mt-1 font-semibold text-bvbp-ink" onClick={() => startEditing("deadline")}>{formatDateBr(initiative.deadline || initiative.endDate)}</button>}
               </div>
-              <button type="button" onClick={() => startEditing("focus")} className="block h-[68px] w-full py-3 text-left">
-                <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Ponteiro</span>
-                <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{getInitiativeMetricLabel(initiative)}</span>
-              </button>
+              {renderEditableMetadata("team", "Equipe", initiative.teamMembers?.length ? initiative.teamMembers.join(", ") : "Sem equipe definida")}
               {initiative.metricId ? (
                 <>
-                  {renderEditableMetadata("baseline", "Baseline", baselineLabel)}
-                  <button type="button" onClick={() => canManageInitiative && setMeasurementOpen(true)} className="block h-[68px] w-full py-3 text-left">
-                    <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Atual</span>
-                    <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{currentMetricValue === undefined ? "Sem valor atual" : formatMetricValue(currentMetricValue, initiative.metricUnit)}</span>
-                  </button>
-                  {renderEditableMetadata("target", "Meta", targetLabel)}
                   {renderEditableMetadata("source", "Fonte", sourceLabel, initiative.metricSourceSnapshot || "")}
-                  <div className="py-3"><span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Progresso</span><span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{getInitiativeImpactLabel(initiative, currentMetricValue)}</span></div>
                 </>
               ) : null}
             </div>
