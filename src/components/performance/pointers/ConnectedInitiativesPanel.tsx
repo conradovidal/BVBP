@@ -36,7 +36,7 @@ export function ConnectedInitiativesPanel({ initiatives, initiativesHref, limit 
                 <div className="flex flex-wrap items-center gap-3">
                   <h3 className="font-heading text-base font-semibold leading-tight text-bvbp-ink">{initiative.title}</h3>
                   <StatusBadge label={initiative.pdcaStatus} />
-                  {!initiative.pillarId || !initiative.metricId || !initiative.painLabel ? <StatusBadge label="Vínculo a revisar" /> : null}
+                  {!initiative.pillarId || !initiative.metricId ? <StatusBadge label="Vínculo a revisar" /> : null}
                 </div>
                 <p className="mt-2 text-sm leading-6 text-bvbp-muted-ink">{initiative.nextDecision}</p>
                 <p className="mt-2 text-xs leading-5 text-bvbp-muted-ink">

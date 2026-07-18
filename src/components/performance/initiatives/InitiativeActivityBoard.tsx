@@ -13,7 +13,8 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SectionHeader } from "@/components/performance/SectionHeader";
-import { ActivityCard, activityListGridClass } from "@/components/performance/initiatives/ActivityCard";
+import { ActivityCard } from "@/components/performance/initiatives/ActivityCard";
+import { activityListGridClass } from "@/components/performance/initiatives/initiativeListLayout";
 import { ActivityForm } from "@/components/performance/initiatives/ActivityForm";
 import {
   type InitiativeActivity,
@@ -89,14 +90,14 @@ export function InitiativeActivityBoard({
       </Dialog>
 
       <div className="overflow-hidden rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset">
-        <div className={cn("hidden gap-2 border-b border-bvbp-ink/10 px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink min-[1180px]:grid", activityListGridClass)}>
+        <div className={cn("hidden gap-3 border-b border-bvbp-ink/10 px-3 py-2 font-label text-[9px] font-medium uppercase tracking-[0.08em] text-bvbp-muted-ink min-[1180px]:grid", activityListGridClass)}>
           <span aria-hidden="true" />
           <span>ID</span>
           <span>Atividade</span>
           <span>Responsável</span>
           <span>Prioridade</span>
-          <span>Status</span>
           <span>Prazo</span>
+          <span>Status</span>
         </div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={sortedActivities.map((activity) => activity.id)} strategy={verticalListSortingStrategy}>

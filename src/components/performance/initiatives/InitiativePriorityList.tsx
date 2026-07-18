@@ -6,11 +6,10 @@ import { DatePickerBr } from "@/components/ui/date-picker-br";
 import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
 import type { Company, InitiativePriority, PdcaCycle, PdcaStatus } from "@/data/performanceSystem";
-import { getInitiativeFocusLabel, inferInitiativeFocusType } from "@/lib/initiativeFocus";
+import { getInitiativeMetricLabel } from "@/lib/initiativeFocus";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
-
-export const initiativeListGridClass = "min-[1180px]:grid-cols-[20px_58px_minmax(160px,1.35fr)_104px_minmax(120px,1fr)_68px_66px_108px]";
+import { initiativeListGridClass } from "@/components/performance/initiatives/initiativeListLayout";
 
 function formatCompactDate(value?: string) {
   if (!value) return "—";
@@ -65,7 +64,7 @@ function SortableInitiativeRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "grid gap-2 border-b border-bvbp-ink/10 bg-bvbp-raised px-3 py-2.5 shadow-none transition-colors last:border-b-0 min-[1180px]:items-center",
+        "grid gap-3 border-b border-bvbp-ink/10 bg-bvbp-raised px-3 py-2.5 shadow-none transition-colors last:border-b-0 min-[1180px]:items-center",
         initiativeListGridClass,
         isSelected ? "bg-bvbp-inset" : "hover:bg-bvbp-inset/60",
         isDragging && "relative z-20 opacity-80",
@@ -90,7 +89,7 @@ function SortableInitiativeRow({
       <button type="button" className="min-w-0 text-left" onClick={() => onSelect(initiative)}>
         <div className="flex min-w-0 items-center gap-2">
           <h2 className="truncate text-sm font-medium leading-5 text-bvbp-ink">{initiative.title}</h2>
-          {!initiative.pillarId || !inferInitiativeFocusType(initiative) ? <StatusBadge label="Vínculo a revisar" /> : null}
+          {!initiative.pillarId || !initiative.metricId ? <StatusBadge label="Vínculo a revisar" /> : null}
         </div>
       </button>
 
@@ -98,8 +97,8 @@ function SortableInitiativeRow({
         {initiative.owner || "A definir"}
       </button>
 
-      <button type="button" className="min-w-0 truncate text-left text-sm font-normal text-bvbp-ink" title={getInitiativeFocusLabel(initiative)} onClick={() => onSelect(initiative)}>
-        {getInitiativeFocusLabel(initiative)}
+      <button type="button" className="min-w-0 truncate text-left text-sm font-normal text-bvbp-ink" title={getInitiativeMetricLabel(initiative)} onClick={() => onSelect(initiative)}>
+        {getInitiativeMetricLabel(initiative)}
       </button>
 
       <div onClick={(event) => event.stopPropagation()}>
@@ -127,7 +126,7 @@ function SortableInitiativeRow({
           <InitiativeStatusMenu
             status={initiative.pdcaStatus}
             onChange={(status) => onStatusChange(initiative.id, status)}
-            className="w-full"
+            className="w-auto min-w-0"
           />
         ) : (
           <StatusBadge label={initiative.pdcaStatus} />

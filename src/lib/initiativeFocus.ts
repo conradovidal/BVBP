@@ -26,3 +26,8 @@ export function getInitiativeFocusLabel(initiative: Pick<PdcaCycle, "focusType" 
   if (focusType === "maturity") return `Maturidade: nível ${initiative.maturityTargetLevel || "—"}/5`;
   return initiative.pillarId ? `${bvbpPillarLabels[initiative.pillarId]}: vínculo a revisar` : "Vínculo a revisar";
 }
+
+export function getInitiativeMetricLabel(initiative: Pick<PdcaCycle, "metricId" | "metricNameSnapshot" | "affectedPointer">) {
+  if (!initiative.metricId) return "Vínculo a revisar";
+  return initiative.metricNameSnapshot || initiative.affectedPointer || "Ponteiro a definir";
+}

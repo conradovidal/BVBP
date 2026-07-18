@@ -1,6 +1,7 @@
 import {
   type BvbpPillarId,
   type Company,
+  type MaturityCriterionDefinition,
   type MaturityLevelDefinition,
   type PdcaCycle,
 } from "@/data/performanceSystem";
@@ -51,6 +52,8 @@ export interface PointerPillarDiagnostic {
     completedCriteria: number;
     totalCriteria: number;
     levels: MaturityLevelDefinition[];
+    currentCriteria: MaturityCriterionDefinition[];
+    completedCriterionIds: string[];
   };
   initiatives: PdcaCycle[];
   nextDecision: {
@@ -192,6 +195,7 @@ export function buildPerformancePointersModel(
     pointerPillars[0];
   const initiatives = sortOverviewInitiatives(summary.relatedInitiatives);
   const criticalPointer = buildCriticalPointer(summary);
+  const pillarConfiguration = configuration.pillars.find((pillar) => pillar.pillar === summary.id);
 
   return {
     activePillar,
@@ -212,6 +216,8 @@ export function buildPerformancePointersModel(
       completedCriteria: summary.completedMaturityCriteria,
       totalCriteria: summary.totalMaturityCriteria,
       levels: summary.maturityLevels,
+      currentCriteria: summary.maturityLevels[summary.maturityLevel - 1]?.criteria || [],
+      completedCriterionIds: pillarConfiguration?.completedMaturityCriterionIds || [],
     },
     initiatives,
     nextDecision: buildNextDecision(summary, criticalPointer, initiatives),
