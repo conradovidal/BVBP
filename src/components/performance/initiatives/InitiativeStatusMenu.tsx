@@ -14,9 +14,10 @@ interface InitiativeStatusMenuProps {
   status: PdcaStatus;
   onChange: (status: PdcaStatus) => void;
   className?: string;
+  showChevron?: boolean;
 }
 
-export function InitiativeStatusMenu({ status, onChange, className }: InitiativeStatusMenuProps) {
+export function InitiativeStatusMenu({ status, onChange, className, showChevron = false }: InitiativeStatusMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,7 +31,7 @@ export function InitiativeStatusMenu({ status, onChange, className }: Initiative
           )}
           aria-label={`Alterar status: ${status}`}
         >
-          <StatusBadge label={status} />
+          <StatusBadge label={status} showChevron={showChevron} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

@@ -9,7 +9,7 @@ import type { Company, InitiativePriority, PdcaCycle, PdcaStatus } from "@/data/
 import { getInitiativeMetricLabel } from "@/lib/initiativeFocus";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
-import { initiativeListGridClass } from "@/components/performance/initiatives/initiativeListLayout";
+import { formatCompactOwner, initiativeListGridClass } from "@/components/performance/initiatives/initiativeListLayout";
 
 function formatCompactDate(value?: string) {
   if (!value) return "—";
@@ -93,8 +93,8 @@ function SortableInitiativeRow({
         </div>
       </button>
 
-      <button type="button" className="min-w-0 truncate text-center text-sm font-normal text-bvbp-ink" onClick={() => onSelect(initiative)}>
-        {initiative.owner || "A definir"}
+      <button type="button" className="min-w-0 truncate text-center text-sm font-normal text-bvbp-ink" title={initiative.owner || "A definir"} onClick={() => onSelect(initiative)}>
+        {formatCompactOwner(initiative.owner)}
       </button>
 
       <button type="button" className="min-w-0 truncate text-left text-sm font-normal text-bvbp-ink" title={getInitiativeMetricLabel(initiative)} onClick={() => onSelect(initiative)}>

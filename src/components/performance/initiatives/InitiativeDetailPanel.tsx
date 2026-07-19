@@ -15,10 +15,11 @@ import {
 import { StatusBadge } from "@/components/performance/StatusBadge";
 import { SectionHeader } from "@/components/performance/SectionHeader";
 import { InitiativeActivityBoard } from "@/components/performance/initiatives/InitiativeActivityBoard";
+import { InitiativeLinkChips } from "@/components/performance/initiatives/InitiativeLinkChips";
 import { InitiativePriorityMenu } from "@/components/performance/initiatives/InitiativePriorityMenu";
 import { InitiativeStatusMenu } from "@/components/performance/initiatives/InitiativeStatusMenu";
 import { MetricMeasurementDialog } from "@/components/performance/pointers/MetricMeasurementDialog";
-import { bvbpPillarLabels, type ClientConfiguration, type ClientMetricConfig, type Company, type EvidenceType, type PdcaCycle } from "@/data/performanceSystem";
+import { type ClientConfiguration, type ClientMetricConfig, type Company, type EvidenceType, type PdcaCycle } from "@/data/performanceSystem";
 import type { EvidenceInput, PdcaCycleInput } from "@/lib/pdcaCycleStore";
 import {
   type InitiativeActivity,
@@ -82,7 +83,7 @@ export function InitiativeDetailPanel({
   onMetricUpdated,
   createdByName,
 }: InitiativeDetailPanelProps) {
-  type EditableField = "title" | "hypothesis" | "whyItMatters" | "owner" | "team" | "startDate" | "deadline" | "focus" | "baseline" | "target" | "source";
+  type EditableField = "title" | "hypothesis" | "whyItMatters" | "owner" | "team" | "startDate" | "deadline" | "baseline" | "target" | "source";
   const [editingField, setEditingField] = useState<EditableField | null>(null);
   const [draftValue, setDraftValue] = useState("");
   const [isMeasurementOpen, setMeasurementOpen] = useState(false);
@@ -154,9 +155,6 @@ export function InitiativeDetailPanel({
     if (patch) savePatch(patch);
   };
 
-  const selectedMetricIds = new Set(configuration.pillars.flatMap((pillar) => pillar.selectedMetricIds));
-  const availableMetrics = configuration.metrics.filter((metric) => selectedMetricIds.has(metric.id));
-
   const saveMetric = (metric: ClientMetricConfig) => {
     savePatch({
       pillarId: metric.pillar,
@@ -220,19 +218,9 @@ export function InitiativeDetailPanel({
           )}
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-full bg-bvbp-inset px-2.5 py-1 text-xs font-semibold text-bvbp-muted-ink">
-              {initiative.pillarId ? bvbpPillarLabels[initiative.pillarId] : "Vínculo a revisar"}
-            </span>
-            {editingField === "focus" ? (
-              <div ref={editorRef} className="h-6 w-56">
-                <Select value={initiative.metricId || ""} onValueChange={(value) => { const metric = availableMetrics.find((item) => item.id === value); if (metric) saveMetric(metric); }} open onOpenChange={(open) => { if (!open) setEditingField(null); }}>
-                  <SelectTrigger className="h-6 rounded-full border-0 bg-bvbp-inset px-2.5 text-xs font-semibold text-bvbp-muted-ink shadow-none" aria-label="Ponteiro da iniciativa"><SelectValue placeholder="Selecione o ponteiro" /></SelectTrigger>
-                  <SelectContent>{availableMetrics.map((metric) => <SelectItem key={metric.id} value={metric.id}>{bvbpPillarLabels[metric.pillar]} · {metric.name}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-            ) : <button type="button" onClick={() => startEditing("focus")} className="h-6 rounded-full bg-bvbp-inset px-2.5 text-xs font-semibold text-bvbp-muted-ink">{getInitiativeMetricLabel(initiative)}</button>}
-            {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} /> : <StatusBadge label={initiative.pdcaStatus} />}
-            <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} />
+            <InitiativeLinkChips initiative={initiative} configuration={configuration} canManage={canManageInitiative} onSelectMetric={saveMetric} />
+            {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} className="h-7" showChevron /> : <StatusBadge label={initiative.pdcaStatus} />}
+            <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} className="h-7" />
           </div>
         </div>
       </div>
@@ -343,10 +331,10 @@ export function InitiativeDetailPanel({
           <div className="space-y-5 lg:sticky lg:top-0">
             <div className="divide-y divide-bvbp-ink/10 text-sm">
               {renderEditableMetadata("owner", "Responsável", initiative.owner || "Sem responsável")}
-              <button type="button" onClick={() => startEditing("focus")} className="block h-[68px] w-full py-3 text-left">
+              <div className="block h-[68px] w-full py-3 text-left">
                 <span className="block font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Ponteiro</span>
                 <span className="mt-1 block font-semibold leading-5 text-bvbp-ink">{getInitiativeMetricLabel(initiative)}</span>
-              </button>
+              </div>
               {initiative.metricId ? (
                 <div className="grid h-[88px] grid-cols-3 gap-2 py-3">
                   {editingField === "baseline" ? <div ref={editorRef} className="min-w-0 rounded-[6px] bg-bvbp-raised px-2 py-2">
