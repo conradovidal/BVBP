@@ -71,13 +71,13 @@ export function MetricMeasurementDialog({ open, onOpenChange, company, metric, i
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent withinContentArea className="w-[calc(100%-2rem)] max-w-xl bg-bvbp-ivory">
+      <DialogContent withinContentArea className="w-[calc(100%-2rem)] !max-w-md gap-3 bg-bvbp-ivory p-5">
         <DialogHeader>
           <DialogTitle>Atualizar {metric?.name || "ponteiro"}</DialogTitle>
           <DialogDescription>O novo valor será refletido em todas as telas e iniciativas conectadas.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="metric-measurement-value">Valor atual</Label>
             <Input id="metric-measurement-value" inputMode="decimal" value={value} onChange={(event) => setValue(event.target.value)} placeholder="Informe o valor" autoFocus />
@@ -104,11 +104,11 @@ export function MetricMeasurementDialog({ open, onOpenChange, company, metric, i
         </div>
 
         {metric?.measurements?.length ? (
-          <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset p-3">
+          <section className="rounded-[8px] border border-bvbp-ink/10 bg-bvbp-inset px-3 py-2.5">
             <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-bvbp-muted-ink">Últimas atualizações</p>
             <div className="mt-2 divide-y divide-bvbp-ink/10">
               {metric.measurements.slice(0, 3).map((measurement) => (
-                <div key={measurement.id} className="grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-3 py-2 text-xs">
+                <div key={measurement.id} className="grid grid-cols-[auto_auto_minmax(0,1fr)] items-center gap-2 py-1.5 text-xs">
                   <strong className="text-bvbp-ink">{formatMetricValue(measurement.value, metric.unit)}</strong>
                   <span className="text-bvbp-muted-ink">{formatDate(measurement.measuredAt)}</span>
                   <span className="truncate text-right text-bvbp-muted-ink">{measurement.context}{measurement.createdByName ? ` · ${measurement.createdByName}` : ""}</span>

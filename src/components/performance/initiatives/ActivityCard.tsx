@@ -18,7 +18,7 @@ import { StatusBadge } from "@/components/performance/StatusBadge";
 import type { Company } from "@/data/performanceSystem";
 import { formatWorkItemReference } from "@/lib/workItemReferences";
 import { cn } from "@/lib/utils";
-import { activityListGridClass } from "@/components/performance/initiatives/initiativeListLayout";
+import { activityListGridClass, formatCompactOwner } from "@/components/performance/initiatives/initiativeListLayout";
 import {
   type InitiativeActivity,
   type InitiativeActivityInput,
@@ -45,6 +45,7 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
   const [isDefinitionOpen, setIsDefinitionOpen] = useState(false);
   const [definitionOfDone, setDefinitionOfDone] = useState("");
   const [owner, setOwner] = useState(activity.owner || "");
+  const [isOwnerFocused, setOwnerFocused] = useState(false);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: activity.id,
     disabled: !canReorder,
@@ -101,14 +102,19 @@ export function ActivityCard({ activity, company, canManage, canReorder, onStatu
 
         {canManage ? (
           <Input
-            value={owner}
+            value={isOwnerFocused ? owner : formatCompactOwner(owner)}
             onChange={(event) => setOwner(event.target.value)}
-            onBlur={() => owner.trim() !== (activity.owner || "") && onUpdate({ ...activity, owner })}
+            onFocus={() => setOwnerFocused(true)}
+            onBlur={() => {
+              setOwnerFocused(false);
+              if (owner.trim() !== (activity.owner || "")) onUpdate({ ...activity, owner });
+            }}
             className="h-8 min-w-0 truncate whitespace-nowrap border-0 bg-transparent px-1 text-center text-xs font-normal shadow-none focus-visible:ring-1"
             placeholder="A definir"
+            title={activity.owner || "A definir"}
             aria-label={`Responsável por ${activity.title}`}
           />
-        ) : <span className="truncate text-center text-sm font-normal text-bvbp-ink">{activity.owner || "A definir"}</span>}
+        ) : <span className="truncate text-center text-sm font-normal text-bvbp-ink" title={activity.owner || "A definir"}>{formatCompactOwner(activity.owner)}</span>}
 
         <div className="flex items-center justify-center"><InitiativePriorityMenu priority={activity.priority} canManage={canManage} compact onChange={(priority) => onUpdate({ ...activity, priority })} /></div>
 

@@ -20,9 +20,10 @@ interface InitiativePriorityMenuProps {
   canManage: boolean;
   onChange: (priority: InitiativePriority) => void;
   compact?: boolean;
+  className?: string;
 }
 
-export function InitiativePriorityMenu({ priority, canManage, onChange, compact = false }: InitiativePriorityMenuProps) {
+export function InitiativePriorityMenu({ priority, canManage, onChange, compact = false, className }: InitiativePriorityMenuProps) {
   const current = priority ? priorityMeta[priority] : null;
   const CurrentIcon = current?.icon;
   const DisplayIcon = CurrentIcon || CircleDashed;
@@ -39,7 +40,11 @@ export function InitiativePriorityMenu({ priority, canManage, onChange, compact 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" variant="ghost" size="sm" className={cn("h-8 justify-start gap-1.5 px-2", compact && "w-8 justify-center px-0")} aria-label={`Alterar prioridade: ${priority || "A definir"}`}>
+        <Button type="button" variant="ghost" size="sm" className={cn(
+          "h-8 justify-start gap-1.5 rounded-full border border-bvbp-ink/10 bg-bvbp-inset px-2.5 hover:bg-bvbp-inset/80",
+          compact && "w-8 justify-center border-0 bg-transparent px-0 hover:bg-bvbp-inset",
+          className,
+        )} aria-label={`Alterar prioridade: ${priority || "A definir"}`}>
           <DisplayIcon className={cn("h-4 w-4", current?.className || "text-bvbp-muted-ink")} aria-hidden="true" />
           {compact ? null : <span className="text-xs font-semibold">{priority || "A definir"}</span>}
           {compact ? null : <ChevronDown className="h-3.5 w-3.5 text-bvbp-muted-ink" aria-hidden="true" />}

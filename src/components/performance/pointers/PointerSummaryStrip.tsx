@@ -77,7 +77,7 @@ export function PointerSummaryStrip({ diagnostic, onUpdateMetric }: PointerSumma
     <section className="grid gap-4 lg:grid-cols-[1fr_1fr_1.05fr]">
       <PointerBlock label="Ponteiro principal" metrics={primary} initiatives={diagnostic.initiatives} onUpdateMetric={onUpdateMetric} primary />
       <PointerBlock label="Ponteiros de suporte" metrics={support} initiatives={diagnostic.initiatives} onUpdateMetric={onUpdateMetric} />
-      <article className="relative overflow-hidden rounded-[8px] border border-bvbp-gold/30 bg-bvbp-forest p-5 text-white shadow-[0_8px_24px_rgba(10,49,39,0.10)] before:absolute before:inset-y-0 before:left-0 before:w-1 before:bg-bvbp-gold">
+      <article className="relative overflow-hidden rounded-[8px] border border-bvbp-gold/30 bg-bvbp-forest p-5 text-white shadow-[0_8px_24px_rgba(10,49,39,0.10)]">
         <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-white/60">Próxima ação priorizada</p>
         {priorityInitiative ? (
           <div className="mt-3">
