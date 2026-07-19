@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -65,7 +65,6 @@ export function InitiativeLinkChips({ initiative, configuration, canManage, onSe
         <PopoverTrigger asChild>
           <button type="button" className={chipClassName} aria-label="Alterar pilar e ponteiro da iniciativa">
             {initiative.pillarId ? bvbpPillarLabels[initiative.pillarId] : "Vínculo a revisar"}
-            <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-80 rounded-[8px] border-bvbp-ink/10 bg-bvbp-raised p-3 shadow-[0_18px_50px_rgba(26,25,23,0.12)]">
@@ -116,7 +115,6 @@ export function InitiativeLinkChips({ initiative, configuration, canManage, onSe
         <PopoverTrigger asChild>
           <button type="button" className={chipClassName} aria-label="Alterar ponteiro da iniciativa">
             {currentMetric?.name || "Ponteiro a definir"}
-            <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         </PopoverTrigger>
         <PopoverContent align="start" className="w-64 rounded-[8px] border-bvbp-ink/10 bg-bvbp-raised p-2 shadow-[0_18px_50px_rgba(26,25,23,0.12)]">
