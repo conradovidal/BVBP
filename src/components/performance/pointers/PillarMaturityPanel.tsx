@@ -58,9 +58,9 @@ export function PillarMaturityPanel({ maturity, canManage = false, onToggleCrite
               onClick={() => setSelectedLevel(level.level)}
               className={cn(
                 "relative min-h-[68px] rounded-[8px] border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bvbp-signal/40",
-                isSelected
-                  ? maturityActiveCardClass(level.level)
-                  : "border-bvbp-ink/10 bg-bvbp-inset text-bvbp-muted-ink hover:border-bvbp-signal/30",
+                maturityActiveCardClass(level.level),
+                isSelected && "ring-2 ring-bvbp-ink/20 ring-offset-1",
+                !isSelected && "hover:brightness-[0.98]",
               )}
             >
               {isFuture ? <LockKeyhole className="absolute right-2 top-2 h-3.5 w-3.5 opacity-55" aria-hidden="true" /> : null}

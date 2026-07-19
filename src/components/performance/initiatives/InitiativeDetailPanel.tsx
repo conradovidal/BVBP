@@ -219,8 +219,8 @@ export function InitiativeDetailPanel({
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <InitiativeLinkChips initiative={initiative} configuration={configuration} canManage={canManageInitiative} onSelectMetric={saveMetric} />
-            {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} className="h-7" showChevron /> : <StatusBadge label={initiative.pdcaStatus} />}
-            <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} className="h-7" />
+            <InitiativePriorityMenu priority={initiative.priority} canManage={canManageInitiative} onChange={(priority) => savePatch({ priority })} className="h-7" showChevron={false} />
+            {canManageInitiative ? <InitiativeStatusMenu status={initiative.pdcaStatus} onChange={(pdcaStatus) => savePatch({ pdcaStatus })} className="h-7" /> : <StatusBadge label={initiative.pdcaStatus} />}
           </div>
         </div>
       </div>

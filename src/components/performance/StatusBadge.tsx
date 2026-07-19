@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Tone = "green" | "orange" | "red" | "blue" | "lightBlue" | "gray";
@@ -40,10 +39,9 @@ function toneForLabel(label: string): Tone {
 interface StatusBadgeProps {
   label: string;
   className?: string;
-  showChevron?: boolean;
 }
 
-export function StatusBadge({ label, className, showChevron = false }: StatusBadgeProps) {
+export function StatusBadge({ label, className }: StatusBadgeProps) {
   return (
     <span
       className={cn(
@@ -53,7 +51,6 @@ export function StatusBadge({ label, className, showChevron = false }: StatusBad
       )}
     >
       {label}
-      {showChevron ? <ChevronDown className="ml-1 h-3 w-3" aria-hidden="true" /> : null}
     </span>
   );
 }

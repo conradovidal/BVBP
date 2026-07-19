@@ -21,9 +21,10 @@ interface InitiativePriorityMenuProps {
   onChange: (priority: InitiativePriority) => void;
   compact?: boolean;
   className?: string;
+  showChevron?: boolean;
 }
 
-export function InitiativePriorityMenu({ priority, canManage, onChange, compact = false, className }: InitiativePriorityMenuProps) {
+export function InitiativePriorityMenu({ priority, canManage, onChange, compact = false, className, showChevron = true }: InitiativePriorityMenuProps) {
   const current = priority ? priorityMeta[priority] : null;
   const CurrentIcon = current?.icon;
   const DisplayIcon = CurrentIcon || CircleDashed;
@@ -47,7 +48,7 @@ export function InitiativePriorityMenu({ priority, canManage, onChange, compact 
         )} aria-label={`Alterar prioridade: ${priority || "A definir"}`}>
           <DisplayIcon className={cn("h-4 w-4", current?.className || "text-bvbp-muted-ink")} aria-hidden="true" />
           {compact ? null : <span className="text-xs font-semibold">{priority || "A definir"}</span>}
-          {compact ? null : <ChevronDown className="h-3.5 w-3.5 text-bvbp-muted-ink" aria-hidden="true" />}
+          {!compact && showChevron ? <ChevronDown className="h-3.5 w-3.5 text-bvbp-muted-ink" aria-hidden="true" /> : null}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
