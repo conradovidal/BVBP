@@ -61,6 +61,7 @@ interface InitiativeDetailPanelProps {
   onEvidenceFormChange: (value: EvidenceInput) => void;
   onAddEvidence: () => void;
   onMetricUpdated?: () => void;
+  createdByUserId?: string;
   createdByName?: string;
 }
 
@@ -81,6 +82,7 @@ export function InitiativeDetailPanel({
   onEvidenceFormChange,
   onAddEvidence,
   onMetricUpdated,
+  createdByUserId,
   createdByName,
 }: InitiativeDetailPanelProps) {
   type EditableField = "title" | "hypothesis" | "whyItMatters" | "owner" | "team" | "startDate" | "deadline" | "baseline" | "target" | "source";
@@ -166,9 +168,9 @@ export function InitiativeDetailPanel({
       metricSourceSnapshot: metric.source,
       metricValueOrigin: metric.valueOrigin,
       affectedPointer: metric.name,
-      baselineValue: metric.currentValue,
+      baselineValue: metric.baselineValue,
       targetValue: parseMetricNumber(metric.target),
-      baseline: metric.currentValue === undefined ? "" : String(metric.currentValue),
+      baseline: metric.baselineValue === undefined ? "" : String(metric.baselineValue),
       target: metric.target || "",
       painLabel: undefined,
       maturityTargetLevel: undefined,
@@ -373,7 +375,7 @@ export function InitiativeDetailPanel({
           </div>
         </aside>
       </div>
-      <MetricMeasurementDialog open={isMeasurementOpen} onOpenChange={setMeasurementOpen} company={company} metric={linkedMetric} initiativeId={initiative.id} createdByName={createdByName} onSaved={onMetricUpdated} />
+      <MetricMeasurementDialog open={isMeasurementOpen} onOpenChange={setMeasurementOpen} company={company} metric={linkedMetric} initiativeId={initiative.id} createdByUserId={createdByUserId} createdByName={createdByName} onSaved={onMetricUpdated} />
     </section>
   );
 }

@@ -233,7 +233,7 @@ function createInitialState(company: Company | undefined, configuration: ClientC
       startDate: company?.startDate || "",
     },
     configuration: {
-      schemaVersion: 5,
+      schemaVersion: 6,
       pillars: configuration.pillars,
       metrics: configuration.metrics,
     },

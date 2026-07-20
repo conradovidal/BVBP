@@ -1,7 +1,6 @@
 import type { PdcaCycle } from "@/data/performanceSystem";
 import type { OverviewMetricView } from "@/lib/performanceOverviewModel";
 import type { PointerPillarDiagnostic } from "@/lib/performancePointersModel";
-import { PencilLine } from "lucide-react";
 import { StatusBadge } from "@/components/performance/StatusBadge";
 
 interface PointerSummaryStripProps {
@@ -20,13 +19,11 @@ function PointerBlock({
   label,
   metrics,
   initiatives,
-  onUpdateMetric,
   primary = false,
 }: {
   label: string;
   metrics: OverviewMetricView[];
   initiatives: PdcaCycle[];
-  onUpdateMetric?: (metricId: string) => void;
   primary?: boolean;
 }) {
   return (
@@ -47,13 +44,13 @@ function PointerBlock({
                   <p className="font-heading text-lg font-semibold text-bvbp-ink">{metric.name}</p>
                   <p className={primary ? "font-heading text-4xl font-semibold leading-none text-bvbp-ink" : "font-heading text-3xl font-semibold leading-none text-bvbp-ink"}>{metric.displayValue}</p>
                 </div>
+                {metric.baselineStatus !== "confirmed" ? (
+                  <p className="mt-1 text-[11px] text-bvbp-muted-ink">
+                    {metric.baselineStatus === "legacy" ? "Baseline a confirmar" : "Baseline a definir"}
+                  </p>
+                ) : null}
                 {pains.length ? (
                   <p className="mt-1 text-xs leading-5 text-bvbp-muted-ink">Dores: {pains.join(" · ")}</p>
-                ) : null}
-                {onUpdateMetric ? (
-                  <button type="button" onClick={() => onUpdateMetric(metric.id)} className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium text-bvbp-muted-ink transition-colors hover:text-bvbp-forest hover:underline">
-                    <PencilLine className="h-3 w-3" aria-hidden="true" /> Atualizar
-                  </button>
                 ) : null}
               </div>
             );
@@ -66,7 +63,7 @@ function PointerBlock({
   );
 }
 
-export function PointerSummaryStrip({ diagnostic, onUpdateMetric }: PointerSummaryStripProps & { onUpdateMetric?: (metricId: string) => void }) {
+export function PointerSummaryStrip({ diagnostic }: PointerSummaryStripProps) {
   const primary = diagnostic.criticalMetricId
     ? diagnostic.metrics.filter((metric) => metric.id === diagnostic.criticalMetricId)
     : [];
@@ -75,8 +72,8 @@ export function PointerSummaryStrip({ diagnostic, onUpdateMetric }: PointerSumma
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1fr_1fr_1.05fr]">
-      <PointerBlock label="Ponteiro principal" metrics={primary} initiatives={diagnostic.initiatives} onUpdateMetric={onUpdateMetric} primary />
-      <PointerBlock label="Ponteiros de suporte" metrics={support} initiatives={diagnostic.initiatives} onUpdateMetric={onUpdateMetric} />
+      <PointerBlock label="Ponteiro principal" metrics={primary} initiatives={diagnostic.initiatives} primary />
+      <PointerBlock label="Ponteiros de suporte" metrics={support} initiatives={diagnostic.initiatives} />
       <article className="relative overflow-hidden rounded-[8px] border border-bvbp-gold/30 bg-bvbp-forest p-5 text-white shadow-[0_8px_24px_rgba(10,49,39,0.10)]">
         <p className="font-label text-[10px] font-semibold uppercase tracking-[0.08em] text-white/60">Próxima ação priorizada</p>
         {priorityInitiative ? (
