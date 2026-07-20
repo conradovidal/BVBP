@@ -19,6 +19,7 @@ interface MetricMeasurementDialogProps {
   company: Company;
   metric?: ClientMetricConfig;
   initiativeId?: string;
+  createdByUserId?: string;
   createdByName?: string;
   onSaved?: () => void;
 }
@@ -28,12 +29,14 @@ function formatDate(value: string) {
   return year && month && day ? `${day}/${month}/${year}` : value;
 }
 
-export function MetricMeasurementDialog({ open, onOpenChange, company, metric, initiativeId, createdByName, onSaved }: MetricMeasurementDialogProps) {
+export function MetricMeasurementDialog({ open, onOpenChange, company, metric, initiativeId, createdByUserId, createdByName, onSaved }: MetricMeasurementDialogProps) {
   const [value, setValue] = useState("");
   const [measuredAt, setMeasuredAt] = useState("");
   const [context, setContext] = useState<ClientMetricMeasurementContext>("Dado");
   const [source, setSource] = useState("");
   const [note, setNote] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
@@ -42,31 +45,41 @@ export function MetricMeasurementDialog({ open, onOpenChange, company, metric, i
     setContext("Dado");
     setSource(metric?.source || "");
     setNote("");
+    setError("");
   }, [metric, open]);
 
   const numericValue = value.trim() === "" ? undefined : Number(value.replace(",", "."));
   const canSave = numericValue !== undefined && Number.isFinite(numericValue) && Boolean(measuredAt) && Boolean(context);
 
-  const save = () => {
+  const save = async () => {
     if (!metric || numericValue === undefined || !canSave) return;
-    const result = updateClientMetricMeasurement(company, metric.id, {
-      value: numericValue,
-      measuredAt,
-      context,
-      source,
-      note,
-      createdByName,
-    });
-    if (!result) return;
-    if (initiativeId) {
-      addPdcaHistory(initiativeId, {
-        kind: "content",
-        description: `${metric.name}: valor atual registrado como ${formatMetricValue(numericValue, metric.unit)} (${context.toLowerCase()}).`,
+    setIsSaving(true);
+    setError("");
+    try {
+      const result = await updateClientMetricMeasurement(company, metric.id, {
+        value: numericValue,
+        measuredAt,
+        context,
+        source,
+        note,
+        createdByUserId,
         createdByName,
       });
+      if (!result) throw new Error("Não foi possível registrar a medição.");
+      if (initiativeId) {
+        addPdcaHistory(initiativeId, {
+          kind: "content",
+          description: `${metric.name}: valor atual registrado como ${formatMetricValue(numericValue, metric.unit)} (${context.toLowerCase()}).`,
+          createdByName,
+        });
+      }
+      onSaved?.();
+      onOpenChange(false);
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Não foi possível registrar a medição.");
+    } finally {
+      setIsSaving(false);
     }
-    onSaved?.();
-    onOpenChange(false);
   };
 
   return (
@@ -118,9 +131,11 @@ export function MetricMeasurementDialog({ open, onOpenChange, company, metric, i
           </section>
         ) : null}
 
+        {error ? <p role="alert" className="text-sm text-bvbp-risk">{error}</p> : null}
+
         <DialogFooter>
           <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button type="button" onClick={save} disabled={!canSave}><Check className="h-4 w-4" /> Registrar atualização</Button>
+          <Button type="button" onClick={save} disabled={!canSave || isSaving}><Check className="h-4 w-4" /> {isSaving ? "Salvando..." : "Registrar atualização"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

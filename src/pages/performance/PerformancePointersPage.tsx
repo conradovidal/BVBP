@@ -3,7 +3,7 @@ import { useLocation, useOutletContext, useSearchParams } from "react-router-dom
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InitiativeDetailPanel } from "@/components/performance/initiatives/InitiativeDetailPanel";
-import { MetricMeasurementDialog } from "@/components/performance/pointers/MetricMeasurementDialog";
+import { PillarPointerEditorDialog } from "@/components/performance/pointers/PillarPointerEditorDialog";
 import { ConnectedInitiativesPanel } from "@/components/performance/pointers/ConnectedInitiativesPanel";
 import { PillarMaturityPanel } from "@/components/performance/pointers/PillarMaturityPanel";
 import { PointerPillarSelector } from "@/components/performance/pointers/PointerPillarSelector";
@@ -46,7 +46,7 @@ const PerformancePointersPage = () => {
   const [, setConfigurationVersion] = useState(0);
   const [, setDataVersion] = useState(0);
   const [selectedInitiativeId, setSelectedInitiativeId] = useState<string | null>(null);
-  const [selectedMetricId, setSelectedMetricId] = useState<string | null>(null);
+  const [editingPillarId, setEditingPillarId] = useState<PointerPillarId | null>(null);
   const [evidenceForm, setEvidenceForm] = useState<EvidenceInput>(blankEvidence);
   const [activityForm, setActivityForm] = useState<InitiativeActivityInput>(blankActivity());
   const activePillarId = getActivePointerPillar(searchParams.get("pillar"));
@@ -59,7 +59,6 @@ const PerformancePointersPage = () => {
   const selectedInitiative = cycles.find((initiative) => initiative.id === selectedInitiativeId) || null;
   const activities = getActivitiesForInitiatives(cycles);
   const selectedActivities = selectedInitiative ? activities.filter((activity) => activity.initiativeId === selectedInitiative.id) : [];
-  const selectedMetric = configuration.metrics.find((metric) => metric.id === selectedMetricId);
 
   const refresh = () => {
     setDataVersion((current) => current + 1);
@@ -156,6 +155,11 @@ const PerformancePointersPage = () => {
     setSearchParams(pillarId === "financial" ? {} : { pillar: pillarId });
   };
 
+  const editPillar = (pillarId: PointerPillarId) => {
+    setPillar(pillarId);
+    setEditingPillarId(pillarId);
+  };
+
   return (
     <>
       <Helmet>
@@ -174,9 +178,10 @@ const PerformancePointersPage = () => {
           pillars={diagnostic.pillars}
           activePillarId={diagnostic.activePillar.id}
           onSelect={setPillar}
+          onEdit={canManageMaturity ? editPillar : undefined}
         />
 
-        <PointerSummaryStrip diagnostic={diagnostic} onUpdateMetric={canManageMaturity ? setSelectedMetricId : undefined} />
+        <PointerSummaryStrip diagnostic={diagnostic} />
 
         <section className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
           <PillarMaturityPanel maturity={diagnostic.maturity} canManage={canManageMaturity} onToggleCriterion={toggleMaturityCriterion} />
@@ -188,7 +193,17 @@ const PerformancePointersPage = () => {
         </section>
       </div>
 
-      <MetricMeasurementDialog open={Boolean(selectedMetricId)} onOpenChange={(open) => !open && setSelectedMetricId(null)} company={activeCompany} metric={selectedMetric} createdByName={performanceSession?.user.name} onSaved={refresh} />
+      <PillarPointerEditorDialog
+        open={Boolean(editingPillarId)}
+        onOpenChange={(open) => !open && setEditingPillarId(null)}
+        company={activeCompany}
+        pillarId={editingPillarId || activePillarId}
+        configuration={configuration}
+        initiatives={cycles}
+        createdByUserId={performanceSession?.user.id}
+        createdByName={performanceSession?.user.name}
+        onSaved={refresh}
+      />
 
       <Dialog open={Boolean(selectedInitiative)} onOpenChange={(open) => !open && setSelectedInitiativeId(null)}>
         <DialogContent withinContentArea className="max-h-[92vh] max-w-6xl overflow-y-auto bg-bvbp-ivory p-0">
@@ -210,6 +225,7 @@ const PerformancePointersPage = () => {
             onEvidenceFormChange={setEvidenceForm}
             onAddEvidence={addEvidence}
             onMetricUpdated={refresh}
+            createdByUserId={performanceSession?.user.id}
             createdByName={performanceSession?.user.name}
           />
         </DialogContent>

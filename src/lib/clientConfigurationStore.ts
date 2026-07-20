@@ -1,6 +1,7 @@
 import {
   type BvbpPillarId,
   type ClientConfiguration,
+  type ClientMetricBaselineRevision,
   type ClientMetricConfig,
   type ClientMetricMeasurement,
   type ClientMetricMeasurementContext,
@@ -132,7 +133,7 @@ export function withDerivedBaseMaturityCriteria<T extends Pick<ClientConfigurati
       const criticalMetric = pillar.criticalMetricId ? metricById.get(pillar.criticalMetricId) : undefined;
       const completedBaseCriteria = [
         Boolean(criticalMetric),
-        criticalMetric?.currentValue !== undefined && Boolean(criticalMetric.source?.trim()),
+        criticalMetric?.baselineValue !== undefined && Boolean(criticalMetric.source?.trim()),
         Boolean(criticalMetric?.target?.trim()) && Boolean(criticalMetric?.benchmark?.trim()),
       ];
       const completedMaturityCriterionIds = pillar.completedMaturityCriterionIds
@@ -211,6 +212,36 @@ function normalizeMetric(
         typeof measurement.createdAt === "string",
       ))
     : [];
+  const baselineHistory = Array.isArray(storedMetric?.baselineHistory)
+    ? storedMetric.baselineHistory.filter((revision): revision is ClientMetricBaselineRevision => Boolean(
+        revision &&
+        typeof revision.id === "string" &&
+        typeof revision.value === "number" &&
+        typeof revision.measuredAt === "string" &&
+        typeof revision.createdAt === "string",
+      ))
+    : [];
+  const oldestMeasurement = [...measurements].sort((left, right) => (
+    left.measuredAt.localeCompare(right.measuredAt) || left.createdAt.localeCompare(right.createdAt)
+  ))[0];
+  const storedBaselineValue = typeof storedMetric?.baselineValue === "number" && Number.isFinite(storedMetric.baselineValue)
+    ? storedMetric.baselineValue
+    : undefined;
+  const baselineValue = isGeneratedSeed ? undefined : storedBaselineValue ?? oldestMeasurement?.value;
+  const baselineMeasuredAt = baselineValue === undefined
+    ? undefined
+    : storedMetric?.baselineMeasuredAt || oldestMeasurement?.measuredAt;
+  const normalizedBaselineHistory = baselineHistory.length || !oldestMeasurement || storedBaselineValue !== undefined
+    ? baselineHistory
+    : [{
+        id: `baseline-derived-${oldestMeasurement.id}`,
+        value: oldestMeasurement.value,
+        measuredAt: oldestMeasurement.measuredAt,
+        source: oldestMeasurement.source,
+        createdAt: oldestMeasurement.createdAt,
+        createdByUserId: oldestMeasurement.createdByUserId,
+        createdByName: oldestMeasurement.createdByName,
+      }];
 
   return {
     id: storedMetric?.id || fallback.id,
@@ -219,6 +250,9 @@ function normalizeMetric(
     description: storedMetric?.description || fallback.description,
     unit: storedMetric?.unit || fallback.unit,
     formula: storedMetric?.formula?.trim() || fallback.formula,
+    baselineValue,
+    baselineMeasuredAt,
+    baselineHistory: normalizedBaselineHistory,
     currentValue,
     valueOrigin,
     target: storedMetric?.target,
@@ -248,7 +282,7 @@ function normalizeClientConfiguration(company: Company, storedConfig?: StoredCli
   const availableMetricIds = new Set([...defaultMetrics, ...customMetrics].map((metric) => metric.id));
 
   return withDerivedBaseMaturityCriteria({
-    schemaVersion: 5,
+    schemaVersion: 6,
     companyId: company.id,
     metrics: [...defaultMetrics, ...customMetrics],
     pillars: defaultConfig.pillars.map((pillar) => {
@@ -298,6 +332,15 @@ export function saveClientConfiguration(config: ClientConfiguration) {
   return config;
 }
 
+export async function persistClientConfiguration(config: ClientConfiguration) {
+  const normalizedConfig: ClientConfiguration = withDerivedBaseMaturityCriteria({ ...config, schemaVersion: 6 }) as ClientConfiguration;
+  if (!portalRuntimeConfig.enableDemoData) {
+    const synced = await syncClientConfigurationToSupabase(normalizedConfig);
+    if (!synced) throw new Error("Não foi possível salvar a configuração no Supabase.");
+  }
+  return storeClientConfiguration(normalizedConfig);
+}
+
 export interface ToggleMaturityCriterionInput {
   company: Company;
   pillarId: BvbpPillarId;
@@ -337,7 +380,7 @@ export function toggleMaturityCriterion(input: ToggleMaturityCriterionInput) {
 
   const nextConfiguration: ClientConfiguration = {
     ...configuration,
-    schemaVersion: 5,
+    schemaVersion: 6,
     pillars: configuration.pillars.map((item) => item.pillar === input.pillarId
       ? {
           ...item,
@@ -384,7 +427,7 @@ async function persistClientBundle(company: Company, configuration: ClientConfig
 export async function createClientWithConfiguration(input: ClientSetupInput) {
   const company = buildPortalCompany(input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 5,
+    schemaVersion: 6,
     companyId: company.id,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -400,7 +443,7 @@ export async function updateClientWithConfiguration(companyId: string, input: Cl
 
   const company = buildUpdatedPortalCompany(existingCompany, input.company);
   const configuration: ClientConfiguration = {
-    schemaVersion: 5,
+    schemaVersion: 6,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -416,7 +459,7 @@ export async function upsertClientWithConfiguration(companyId: string, input: Cl
     : buildPortalCompany({ ...input.company, id: companyId });
 
   const configuration: ClientConfiguration = {
-    schemaVersion: 5,
+    schemaVersion: 6,
     companyId,
     pillars: input.configuration.pillars,
     metrics: input.configuration.metrics,
@@ -466,10 +509,11 @@ export interface ClientMetricMeasurementInput {
   context: ClientMetricMeasurementContext;
   source?: string;
   note?: string;
+  createdByUserId?: string;
   createdByName?: string;
 }
 
-export function updateClientMetricMeasurement(company: Company, metricId: string, input: ClientMetricMeasurementInput) {
+export async function updateClientMetricMeasurement(company: Company, metricId: string, input: ClientMetricMeasurementInput) {
   if (!Number.isFinite(input.value) || !input.measuredAt || !input.context) return undefined;
   const configuration = getClientConfiguration(company);
   const metric = configuration.metrics.find((item) => item.id === metricId);
@@ -484,6 +528,7 @@ export function updateClientMetricMeasurement(company: Company, metricId: string
     source: input.source?.trim() || undefined,
     note: input.note?.trim() || undefined,
     createdAt: now,
+    createdByUserId: input.createdByUserId,
     createdByName: input.createdByName?.trim() || undefined,
   };
   const nextConfiguration: ClientConfiguration = {
@@ -497,8 +542,8 @@ export function updateClientMetricMeasurement(company: Company, metricId: string
     } : item),
   };
 
-  saveClientConfiguration(nextConfiguration);
-  return { configuration: nextConfiguration, measurement };
+  const savedConfiguration = await persistClientConfiguration(nextConfiguration);
+  return { configuration: savedConfiguration, measurement };
 }
 
 export function getSelectedClientMetricsByPillar(company: Company, pillarId: BvbpPillarId) {

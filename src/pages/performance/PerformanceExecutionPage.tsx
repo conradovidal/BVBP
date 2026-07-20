@@ -343,7 +343,7 @@ const PerformanceExecutionPage = () => {
   };
 
   const selectInitiativeMetric = (metric: ClientMetricConfig) => {
-    const baselineValue = metric.currentValue;
+    const baselineValue = metric.baselineValue;
     const targetValue = parseMetricNumber(metric.target);
     setInitiativeForm((current) => ({
       ...current,
@@ -635,6 +635,7 @@ const PerformanceExecutionPage = () => {
             onEvidenceFormChange={setEvidenceForm}
             onAddEvidence={addEvidence}
             onMetricUpdated={() => { setConfigurationVersion((current) => current + 1); refreshInitiatives(selectedInitiative?.id); }}
+            createdByUserId={performanceSession?.user.id}
             createdByName={performanceSession?.user.name}
           />
         </DialogContent>

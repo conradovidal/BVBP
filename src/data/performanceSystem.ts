@@ -86,6 +86,9 @@ export interface ClientMetricConfig {
   description: string;
   unit: ClientMetricUnit;
   formula: string;
+  baselineValue?: number;
+  baselineMeasuredAt?: string;
+  baselineHistory?: ClientMetricBaselineRevision[];
   currentValue?: number;
   valueOrigin?: ClientMetricValueOrigin;
   target?: string;
@@ -95,6 +98,16 @@ export interface ClientMetricConfig {
   owner?: string;
   measurements?: ClientMetricMeasurement[];
   custom: boolean;
+}
+
+export interface ClientMetricBaselineRevision {
+  id: string;
+  value: number;
+  measuredAt: string;
+  source?: string;
+  createdAt: string;
+  createdByUserId?: string;
+  createdByName?: string;
 }
 
 export type ClientMetricMeasurementContext = "Reunião" | "Dado" | "Decisão" | "Estimativa";
@@ -107,6 +120,7 @@ export interface ClientMetricMeasurement {
   source?: string;
   note?: string;
   createdAt: string;
+  createdByUserId?: string;
   createdByName?: string;
 }
 
@@ -121,7 +135,7 @@ export interface ClientPillarConfig {
 }
 
 export interface ClientConfiguration {
-  schemaVersion: 5;
+  schemaVersion: 6;
   companyId: string;
   pillars: ClientPillarConfig[];
   metrics: ClientMetricConfig[];
@@ -506,9 +520,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico financeiro possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("financial-1-revenue-cost-source", "O ponteiro principal de Finanças está definido."),
-          criterion("financial-1-cash-commitments", "O ponteiro principal possui baseline e fonte."),
-          criterion("financial-1-update-owner", "O ponteiro principal possui meta e benchmark."),
+          criterion("financial-1-revenue-cost-source", "Está claro qual é o principal indicador financeiro da empresa?"),
+          criterion("financial-1-cash-commitments", "Esse indicador possui baseline e uma fonte confiável?"),
+          criterion("financial-1-update-owner", "Existe uma meta e um benchmark definidos para esse indicador?"),
         ],
       },
       {
@@ -516,9 +530,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Visibilidade financeira",
         description: "A empresa enxerga sua situação atual e começa a conectar números a decisões.",
         criteria: [
-          criterion("financial-2-margin-validated", "A margem operacional está calculada e validada."),
-          criterion("financial-2-goals-routine", "Metas financeiras são acompanhadas em uma rotina definida."),
-          criterion("financial-2-deviation-actions", "Desvios geram ações com responsável e prazo."),
+          criterion("financial-2-margin-validated", "A margem operacional está calculada e validada em uma rotina recorrente?"),
+          criterion("financial-2-goals-routine", "As metas financeiras são acompanhadas em uma rotina definida?"),
+          criterion("financial-2-deviation-actions", "Os desvios financeiros geram ações com responsável e prazo?"),
         ],
       },
       {
@@ -526,9 +540,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Gestão de resultado",
         description: "Os ponteiros financeiros orientam prioridades, ações e alocação de recursos.",
         criteria: [
-          criterion("financial-3-projection-updated", "A projeção de caixa e receita é atualizada regularmente."),
-          criterion("financial-3-risk-scenarios", "Riscos e cenários financeiros são avaliados antes das decisões."),
-          criterion("financial-3-investment-history", "Decisões de investimento consideram o histórico dos ponteiros."),
+          criterion("financial-3-projection-updated", "As projeções de caixa e receita são atualizadas regularmente?"),
+          criterion("financial-3-risk-scenarios", "Riscos e cenários financeiros são avaliados antes das decisões?"),
+          criterion("financial-3-investment-history", "As decisões de investimento consideram o histórico dos indicadores?"),
         ],
       },
       {
@@ -536,9 +550,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Previsibilidade",
         description: "Projeções e realizado são comparados para antecipar riscos e oportunidades.",
         criteria: [
-          criterion("financial-4-forecast-actual", "O forecast é comparado sistematicamente com o realizado."),
-          criterion("financial-4-return-risk", "Recursos são priorizados considerando retorno e risco."),
-          criterion("financial-4-proven-impact", "Ciclos de melhoria comprovam impacto financeiro."),
+          criterion("financial-4-forecast-actual", "O forecast é comparado sistematicamente com o realizado?"),
+          criterion("financial-4-return-risk", "Os recursos são priorizados considerando retorno e risco?"),
+          criterion("financial-4-proven-impact", "Os ciclos de melhoria comprovam impacto financeiro?"),
         ],
       },
       {
@@ -557,9 +571,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico comercial possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("commercial-1-funnel-stages", "O ponteiro principal de Comercial está definido."),
-          criterion("commercial-1-qualified-origin", "O ponteiro principal possui baseline e fonte."),
-          criterion("commercial-1-owner-next-action", "O ponteiro principal possui meta e benchmark."),
+          criterion("commercial-1-funnel-stages", "Está claro qual é o principal indicador comercial da empresa?"),
+          criterion("commercial-1-qualified-origin", "Esse indicador possui baseline e uma fonte confiável?"),
+          criterion("commercial-1-owner-next-action", "Existe uma meta e um benchmark definidos para esse indicador?"),
         ],
       },
       {
@@ -567,9 +581,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Funil visível",
         description: "A empresa enxerga oportunidades, etapas e responsabilidades do processo comercial.",
         criteria: [
-          criterion("commercial-2-conversion-cycle", "Conversão e ciclo de vendas possuem baseline."),
-          criterion("commercial-2-pipeline-routine", "O pipeline é revisado em uma rotina definida."),
-          criterion("commercial-2-loss-reasons", "Perdas são registradas com seus motivos."),
+          criterion("commercial-2-conversion-cycle", "Conversão e ciclo de vendas possuem baseline confiável?"),
+          criterion("commercial-2-pipeline-routine", "O pipeline é revisado em uma rotina definida?"),
+          criterion("commercial-2-loss-reasons", "As perdas são registradas com seus motivos?"),
         ],
       },
       {
@@ -577,9 +591,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Gestão comercial",
         description: "Metas e gargalos do funil orientam a atuação do time comercial.",
         criteria: [
-          criterion("commercial-3-stage-goals", "Existem metas definidas por etapa do funil."),
-          criterion("commercial-3-forecast-updated", "O forecast comercial é atualizado regularmente."),
-          criterion("commercial-3-bottleneck-actions", "Ações comerciais atacam os gargalos identificados."),
+          criterion("commercial-3-stage-goals", "Existem metas definidas por etapa do funil?"),
+          criterion("commercial-3-forecast-updated", "O forecast comercial é atualizado regularmente?"),
+          criterion("commercial-3-bottleneck-actions", "As ações comerciais atacam os gargalos identificados?"),
         ],
       },
       {
@@ -587,9 +601,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Receita previsível",
         description: "Histórico e forecast permitem antecipar receita e ajustar a estratégia.",
         criteria: [
-          criterion("commercial-4-forecast-accuracy", "A acurácia do forecast é medida."),
-          criterion("commercial-4-channel-comparison", "Canais de aquisição são comparados por resultado."),
-          criterion("commercial-4-playbook", "Aprendizados comerciais estão consolidados em um playbook."),
+          criterion("commercial-4-forecast-accuracy", "A acurácia do forecast é medida?"),
+          criterion("commercial-4-channel-comparison", "Os canais de aquisição são comparados por resultado?"),
+          criterion("commercial-4-playbook", "Os aprendizados comerciais estão consolidados em um playbook?"),
         ],
       },
       {
@@ -608,9 +622,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico operacional possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("operation-1-critical-flow", "O ponteiro principal de Operação está definido."),
-          criterion("operation-1-roles", "O ponteiro principal possui baseline e fonte."),
-          criterion("operation-1-baseline", "O ponteiro principal possui meta e benchmark."),
+          criterion("operation-1-critical-flow", "Está claro qual é o principal indicador operacional da empresa?"),
+          criterion("operation-1-roles", "Esse indicador possui baseline e uma fonte confiável?"),
+          criterion("operation-1-baseline", "Existe uma meta e um benchmark definidos para esse indicador?"),
         ],
       },
       {
@@ -618,9 +632,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Fluxo visível",
         description: "Etapas, responsabilidades e problemas recorrentes são conhecidos.",
         criteria: [
-          criterion("operation-2-rework", "O retrabalho é medido."),
-          criterion("operation-2-management-routine", "Existe uma rotina ativa de acompanhamento operacional."),
-          criterion("operation-2-bottleneck-actions", "Gargalos geram ações com responsável."),
+          criterion("operation-2-rework", "O retrabalho é medido regularmente?"),
+          criterion("operation-2-management-routine", "Existe uma rotina ativa de acompanhamento operacional?"),
+          criterion("operation-2-bottleneck-actions", "Os gargalos geram ações com responsável?"),
         ],
       },
       {
@@ -628,9 +642,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Gestão do fluxo",
         description: "Capacidade, demanda e desempenho orientam as decisões operacionais.",
         criteria: [
-          criterion("operation-3-capacity-demand", "Capacidade e demanda são comparadas."),
-          criterion("operation-3-sla", "O cumprimento de SLA é acompanhado."),
-          criterion("operation-3-risk-anticipation", "Riscos operacionais são antecipados."),
+          criterion("operation-3-capacity-demand", "Capacidade e demanda são comparadas?"),
+          criterion("operation-3-sla", "O cumprimento de SLA é acompanhado?"),
+          criterion("operation-3-risk-anticipation", "Os riscos operacionais são antecipados?"),
         ],
       },
       {
@@ -638,9 +652,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Operação previsível",
         description: "A operação mantém padrões, antecipa desvios e sustenta seus ganhos.",
         criteria: [
-          criterion("operation-4-before-after", "Melhorias mensuram resultados antes e depois."),
-          criterion("operation-4-standards", "Padrões operacionais estão documentados."),
-          criterion("operation-4-sustained-gains", "Os ganhos permanecem após o encerramento do ciclo."),
+          criterion("operation-4-before-after", "As melhorias mensuram resultados antes e depois?"),
+          criterion("operation-4-standards", "Os padrões operacionais estão documentados?"),
+          criterion("operation-4-sustained-gains", "Os ganhos permanecem após o encerramento do ciclo?"),
         ],
       },
       {
@@ -659,9 +673,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base BVBP",
         description: "O diagnóstico tecnológico possui o mínimo de transparência para orientar a primeira decisão.",
         criteria: [
-          criterion("technology-1-inventory", "O ponteiro principal de Tecnologia está definido."),
-          criterion("technology-1-owners", "O ponteiro principal possui baseline e fonte."),
-          criterion("technology-1-access", "O ponteiro principal possui meta e benchmark."),
+          criterion("technology-1-inventory", "Está claro qual é o principal indicador tecnológico da empresa?"),
+          criterion("technology-1-owners", "Esse indicador possui baseline e uma fonte confiável?"),
+          criterion("technology-1-access", "Existe uma meta e um benchmark definidos para esse indicador?"),
         ],
       },
       {
@@ -669,9 +683,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Base organizada",
         description: "A empresa conhece sua base tecnológica e começa a aplicá-la aos gargalos prioritários.",
         criteria: [
-          criterion("technology-2-automations", "Existem automações em produção."),
-          criterion("technology-2-integrations", "Integrações removem etapas manuais do processo."),
-          criterion("technology-2-baseline", "Horas manuais ou erros possuem baseline."),
+          criterion("technology-2-automations", "Existem automações em produção?"),
+          criterion("technology-2-integrations", "As integrações removem etapas manuais do processo?"),
+          criterion("technology-2-baseline", "Horas manuais ou erros possuem baseline confiável?"),
         ],
       },
       {
@@ -679,9 +693,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Tecnologia aplicada",
         description: "Soluções digitais removem gargalos e possuem responsáveis claros.",
         criteria: [
-          criterion("technology-3-adoption-incidents", "Adoção e incidentes são medidos."),
-          criterion("technology-3-monitoring", "As soluções críticas são monitoradas."),
-          criterion("technology-3-business-pointers", "Resultados tecnológicos estão conectados a ponteiros do negócio."),
+          criterion("technology-3-adoption-incidents", "Adoção e incidentes são medidos?"),
+          criterion("technology-3-monitoring", "As soluções críticas são monitoradas?"),
+          criterion("technology-3-business-pointers", "Os resultados tecnológicos estão conectados a indicadores do negócio?"),
         ],
       },
       {
@@ -689,9 +703,9 @@ export const maturityDefinitionsByPillar: Record<BvbpPillarId, PillarMaturityDef
         name: "Adoção mensurada",
         description: "A tecnologia é priorizada por impacto, adoção e continuidade.",
         criteria: [
-          criterion("technology-4-impact-portfolio", "O portfólio tecnológico é priorizado por impacto."),
-          criterion("technology-4-continuity-governance", "Continuidade e governança estão definidas."),
-          criterion("technology-4-measured-cycles", "A evolução ocorre em ciclos com resultados mensurados."),
+          criterion("technology-4-impact-portfolio", "O portfólio tecnológico é priorizado por impacto?"),
+          criterion("technology-4-continuity-governance", "Continuidade e governança estão definidas?"),
+          criterion("technology-4-measured-cycles", "A evolução ocorre em ciclos com resultados mensurados?"),
         ],
       },
       {
@@ -963,7 +977,7 @@ export function createDefaultClientConfiguration(
   );
 
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     companyId: company.id,
     metrics,
     pillars: bvbpPillarIds.map((pillar) => {

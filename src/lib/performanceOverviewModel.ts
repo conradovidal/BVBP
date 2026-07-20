@@ -23,6 +23,8 @@ export interface OverviewMetricView {
   unit: ClientMetricUnit;
   dataType: OverviewDataStatus;
   currentValue?: number;
+  baselineValue?: number;
+  baselineStatus: "confirmed" | "legacy" | "missing";
   displayValue: string;
   target?: string;
   benchmark?: string;
@@ -156,7 +158,9 @@ function metricViewFromConfig(metric: ClientMetricConfig): OverviewMetricView {
     unit: metric.unit,
     dataType,
     currentValue: canDisplayValue ? metric.currentValue : undefined,
-    displayValue: canDisplayValue ? formatOverviewMetricValue(metric.unit, metric.currentValue) : dataType,
+    baselineValue: metric.baselineValue,
+    baselineStatus: metric.baselineValue !== undefined ? "confirmed" : metric.currentValue !== undefined ? "legacy" : "missing",
+    displayValue: canDisplayValue ? formatOverviewMetricValue(metric.unit, metric.currentValue) : "—",
     target: metric.target,
     benchmark: metric.benchmark,
     source: metric.source || "Fonte não informada",
